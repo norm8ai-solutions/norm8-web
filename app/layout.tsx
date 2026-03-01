@@ -5,6 +5,9 @@ import Footer from "@/components/layout/Footer"
 export const metadata = {
   title: "Norm8 — Sistemas de IA",
   description: "Desenvolvemos sistemas de Inteligência Artificial que automatizam, otimizam e escalam negócios reais.",
+  icons: {
+  icon: "/favicon.png",
+  },
 }
 
 export default function RootLayout({
