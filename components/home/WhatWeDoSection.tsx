@@ -49,7 +49,9 @@ export default function WhatWeDoSection() {
 
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
             Soluções de IA,{" "}
-            <span className="text-gray-500">não apenas automações</span>
+            <span className="gradient-text">
+              não apenas automações
+            </span>
           </h2>
         </motion.div>
 

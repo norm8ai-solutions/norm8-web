@@ -80,10 +80,10 @@ export default function SeguroScout() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 mb-6">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 mr-2 animate-pulse" />
-                Produto ativo
-              </Badge>
+              <Badge className="mb-6 bg-emerald-500/20 text-emerald-400 border-emerald-500/30 inline-flex items-center gap-2 px-3 py-1 rounded-full">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    Produto ativo
+                  </Badge>
 
               <div className="flex items-center gap-4 mb-6">
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center shadow-2xl shadow-blue-500/25">

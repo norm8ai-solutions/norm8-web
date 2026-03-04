@@ -15,7 +15,8 @@ const useCases = [
 export default function CustomAutomationSection() {
   return (
     <section id="automacao" className="relative py-32 bg-[#0A0A0F]">
-      
+
+      {/* Background */}
       <div className="absolute inset-0">
         <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[150px] -translate-y-1/2" />
       </div>
@@ -58,6 +59,7 @@ export default function CustomAutomationSection() {
                   <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-blue-500/50 group-hover:bg-blue-500/10 transition-all duration-300">
                     <useCase.icon className="w-5 h-5 text-gray-400 group-hover:text-blue-400 transition-colors" />
                   </div>
+
                   <span className="text-gray-300 group-hover:text-white transition-colors">
                     {useCase.text}
                   </span>
@@ -80,6 +82,7 @@ export default function CustomAutomationSection() {
 
           </motion.div>
 
+
           {/* Visual */}
           <motion.div
             initial={{ opacity: 0, x: 40 }}
@@ -88,36 +91,98 @@ export default function CustomAutomationSection() {
             transition={{ duration: 0.6 }}
             className="relative hidden lg:block"
           >
-            <div className="relative p-8 rounded-3xl bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/10">
 
-              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 400">
-                <motion.path
-                  d="M50 200 Q200 100 350 200"
-                  stroke="url(#gradient1)"
-                  strokeWidth="1"
-                  fill="none"
-                  initial={{ pathLength: 0, opacity: 0 }}
-                  whileInView={{ pathLength: 1, opacity: 0.5 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
+            <div className="relative">
 
-                <defs>
-                  <linearGradient id="gradient1">
-                    <stop offset="0%" stopColor="#3B82F6" stopOpacity="0" />
-                    <stop offset="50%" stopColor="#3B82F6" />
-                    <stop offset="100%" stopColor="#3B82F6" stopOpacity="0" />
-                  </linearGradient>
-                </defs>
-              </svg>
+              {/* Main Card */}
+              <div className="relative p-8 rounded-3xl bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/10">
 
-              <div className="relative h-80 flex items-center justify-center">
-                <div className="absolute w-20 h-20 rounded-2xl bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
-                  <Bot className="w-10 h-10 text-white" />
+                {/* Animated Connection Lines */}
+                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 400">
+
+                  <motion.path
+                    d="M50 200 Q200 100 350 200"
+                    stroke="url(#gradient1)"
+                    strokeWidth="1"
+                    fill="none"
+                    initial={{ pathLength: 0, opacity: 0 }}
+                    whileInView={{ pathLength: 1, opacity: 0.5 }}
+                    viewport={{ once: true }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      repeatType: "loop"
+                    }}
+                  />
+
+                  <motion.path
+                    d="M100 350 Q200 200 300 50"
+                    stroke="url(#gradient2)"
+                    strokeWidth="1"
+                    fill="none"
+                    initial={{ pathLength: 0, opacity: 0 }}
+                    whileInView={{ pathLength: 1, opacity: 0.5 }}
+                    viewport={{ once: true }}
+                    transition={{
+                      duration: 2.5,
+                      repeat: Infinity,
+                      repeatType: "loop",
+                      delay: 0.5
+                    }}
+                  />
+
+                  <defs>
+                    <linearGradient id="gradient1">
+                      <stop offset="0%" stopColor="#3B82F6" stopOpacity="0" />
+                      <stop offset="50%" stopColor="#3B82F6" />
+                      <stop offset="100%" stopColor="#3B82F6" stopOpacity="0" />
+                    </linearGradient>
+
+                    <linearGradient id="gradient2">
+                      <stop offset="0%" stopColor="#8B5CF6" stopOpacity="0" />
+                      <stop offset="50%" stopColor="#8B5CF6" />
+                      <stop offset="100%" stopColor="#8B5CF6" stopOpacity="0" />
+                    </linearGradient>
+                  </defs>
+
+                </svg>
+
+                {/* Nodes */}
+                <div className="relative h-80 flex items-center justify-center">
+
+                  {/* Center Bot */}
+                  <div className="absolute w-20 h-20 rounded-2xl bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center shadow-2xl shadow-blue-500/25">
+                    <Bot className="w-10 h-10 text-white" />
+                  </div>
+
+                  {[
+                    { Icon: Cog, pos: "top-4 left-4" },
+                    { Icon: MessageSquare, pos: "top-4 right-4" },
+                    { Icon: Database, pos: "bottom-4 left-4" },
+                    { Icon: Link2, pos: "bottom-4 right-4" }
+                  ].map((node, index) => (
+                    <motion.div
+                      key={index}
+                      animate={{
+                        scale: [1, 1.1, 1],
+                        opacity: [0.5, 1, 0.5]
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        delay: index * 0.5
+                      }}
+                      className={`absolute ${node.pos} w-12 h-12 rounded-xl bg-white/5 border border-white/20 flex items-center justify-center`}
+                    >
+                      <node.Icon className="w-6 h-6 text-gray-400" />
+                    </motion.div>
+                  ))}
+
                 </div>
-              </div>
 
+              </div>
             </div>
+
           </motion.div>
 
         </div>

@@ -61,7 +61,7 @@ export default function HeroSection() {
         >
           Sistemas de IA criados
           <br />
-          <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-purple-500 bg-clip-text text-transparent">
+          <span className="gradient-text">
             para escalar negócios reais.
           </span>
         </motion.h1>

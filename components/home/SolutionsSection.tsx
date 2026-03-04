@@ -23,6 +23,7 @@ export default function SolutionsSection() {
   return (
     <section id="solucoes" className="relative py-32 bg-[#0A0A0F]">
 
+      {/* Background glow */}
       <div className="absolute inset-0">
         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[150px]" />
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[150px]" />
@@ -46,7 +47,7 @@ export default function SolutionsSection() {
           </h2>
         </motion.div>
 
-        {/* Featured */}
+        {/* Featured product */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -63,7 +64,10 @@ export default function SolutionsSection() {
 
                 {/* Content */}
                 <div>
-                  <Badge className="mb-6 bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
+
+                  {/* Active badge */}
+                  <Badge className="mb-6 bg-emerald-500/20 text-emerald-400 border-emerald-500/30 inline-flex items-center gap-2 px-3 py-1 rounded-full">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                     Produto ativo
                   </Badge>
 
@@ -87,10 +91,11 @@ export default function SolutionsSection() {
                     informadas e eficientes.
                   </p>
 
+                  {/* Features */}
                   <div className="grid sm:grid-cols-2 gap-3 mb-8">
                     {seguroScoutFeatures.map((feature, index) => (
                       <div key={index} className="flex items-center gap-3">
-                        <CheckCircle2 className="w-5 h-5 text-blue-400" />
+                        <CheckCircle2 className="w-5 h-5 text-blue-400 flex-shrink-0" />
                         <span className="text-gray-300 text-sm">{feature}</span>
                       </div>
                     ))}
@@ -102,22 +107,45 @@ export default function SolutionsSection() {
                       <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </Button>
                   </Link>
+
                 </div>
 
                 {/* Visual */}
                 <div className="relative hidden lg:block">
                   <div className="relative aspect-square max-w-md mx-auto">
+
+                    {/* Rings */}
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="w-64 h-64 rounded-full border border-blue-500/20 animate-pulse" />
                       <div className="absolute w-80 h-80 rounded-full border border-purple-500/10 animate-pulse delay-300" />
                       <div className="absolute w-96 h-96 rounded-full border border-white/5 animate-pulse delay-500" />
                     </div>
 
+                    {/* Center icon */}
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-24 h-24 rounded-3xl bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
+                      <div className="w-24 h-24 rounded-3xl bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center shadow-2xl shadow-blue-500/25">
                         <Shield className="w-12 h-12 text-white" />
                       </div>
                     </div>
+
+                    {/* Floating icon 1 */}
+                    <motion.div
+                      animate={{ y: [-10, 10, -10] }}
+                      transition={{ duration: 4, repeat: Infinity }}
+                      className="absolute top-10 right-10 w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center backdrop-blur-sm"
+                    >
+                      <Zap className="w-6 h-6 text-blue-400" />
+                    </motion.div>
+
+                    {/* Floating icon 2 */}
+                    <motion.div
+                      animate={{ y: [10, -10, 10] }}
+                      transition={{ duration: 5, repeat: Infinity }}
+                      className="absolute bottom-10 left-10 w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center backdrop-blur-sm"
+                    >
+                      <TrendingUp className="w-6 h-6 text-emerald-400" />
+                    </motion.div>
+
                   </div>
                 </div>
 
@@ -126,7 +154,7 @@ export default function SolutionsSection() {
           </div>
         </motion.div>
 
-        {/* Upcoming */}
+        {/* Upcoming products */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -139,18 +167,25 @@ export default function SolutionsSection() {
           </h4>
 
           <div className="grid md:grid-cols-3 gap-6">
-            {upcomingProducts.map((product, index) => (
-              <div key={index} className="p-6 rounded-2xl bg-white/[0.03] border border-white/10 border-dashed">
-                <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center mb-4">
-                  <product.icon className="w-6 h-6 text-gray-400" />
-                </div>
-                <h5 className="text-lg font-medium text-gray-300 mb-2">{product.title}</h5>
-                <Badge variant="outline" className="border-gray-700 text-gray-500">
-                  Em desenvolvimento
-                </Badge>
+          {upcomingProducts.map((product, index) => (
+            <div
+              key={index}
+              className="group relative p-6 rounded-2xl bg-white/[0.03] border border-white/10 border-dashed hover:border-white/20 transition-all duration-300"
+            >
+              <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center mb-4 group-hover:bg-white/10 transition-colors">
+                <product.icon className="w-6 h-6 text-gray-400" />
               </div>
-            ))}
-          </div>
+
+              <h5 className="text-lg font-medium text-gray-300 mb-2">
+                {product.title}
+              </h5>
+
+              <Badge variant="outline" className="border-gray-700 text-gray-500">
+                Em desenvolvimento
+              </Badge>
+            </div>
+          ))}
+        </div>
 
           <p className="text-center text-gray-500 mt-8">
             Novas soluções de IA a serem lançadas em breve.
