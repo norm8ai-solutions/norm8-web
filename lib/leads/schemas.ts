@@ -83,9 +83,12 @@ export const meetingRequestSchema = z.object({
   company: requiredText('Empresa'),
   email: emailSchema,
   phone: optionalText,
-  meetingGoal: optionalText,
+  meetingGoal: requiredText('Objetivo da reunião'),
   selectedDate: requiredText('Data'),
   selectedTime: requiredText('Hora'),
+  startsAt: requiredText('Início da reunião'),
+  endsAt: requiredText('Fim da reunião'),
+  timezone: requiredText('Timezone'),
 });
 
 export type AuditRequestInput = z.infer<typeof auditRequestSchema>;

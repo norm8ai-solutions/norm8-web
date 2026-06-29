@@ -66,3 +66,8 @@ export type Notification = Prisma.NotificationModel
  * Outbox-style record for confirmation emails that will be sent by a provider later.
  */
 export type EmailLog = Prisma.EmailLogModel
+/**
+ * Model MeetingBooking
+ * Operational record for meeting requests created from website submissions.
+ */
+export type MeetingBooking = Prisma.MeetingBookingModel

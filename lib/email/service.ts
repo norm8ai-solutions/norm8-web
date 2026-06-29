@@ -3,9 +3,9 @@
  * File: lib/email/service.ts
  * Description: Transactional email workflow service for Norm8 submissions.
  * Responsibilities:
- * - Send customer confirmation emails based on submission type.
+ * - Send customer confirmation emails based on submission type and booking state.
  * - Send internal lead notifications to the Norm8 team.
- * - Update EmailLog records with SENT or FAILED delivery state.
+ * - Update EmailLog records with SENT or FAILED state and meeting metadata.
  * - Keep email failures isolated from the primary lead submission flow.
  * ------------------------------------------------------------------
  */
@@ -13,8 +13,9 @@
 import 'server-only';
 
 import { createElement, type ReactNode } from 'react';
-import type { SubmissionType } from '@/app/generated/prisma/client';
+import type { MeetingBookingStatus, SubmissionType } from '@/app/generated/prisma/client';
 import { prisma } from '@/lib/db/prisma';
+import { formatSubmissionType } from './formatters';
 import { EmailConfigurationError, getResendClient } from './resend';
 import type {
   EmailType,
@@ -30,22 +31,24 @@ import MeetingRequestConfirmationEmail from './templates/MeetingRequestConfirmat
 
 const DEFAULT_EMAIL_FROM = 'Norm8 <no-reply@norm8.pt>';
 
+type EmailMetadata = Record<string, string | null>;
+
 type EmailSendJob = {
   logId: string;
   to: string;
   subject: string;
   type: EmailType;
   react: ReactNode;
+  metadata?: EmailMetadata;
 };
 
 /**
  * Sends all emails related to a newly created lead submission.
  *
- * Email delivery is intentionally best-effort. Provider/configuration errors
- * are written to EmailLog and console.error, but they never throw back into the
- * submission flow after the lead and submission are created.
+ * Email delivery is best-effort. Provider/configuration errors are written to
+ * EmailLog and console.error, but they never throw back into the submission flow.
  *
- * @param params Lead, submission, and optional existing confirmation EmailLog.
+ * @param params Lead, submission, meeting booking, and existing EmailLog context.
  * @returns Promise that resolves after all email attempts have been processed.
  */
 export async function sendSubmissionEmails(
@@ -77,15 +80,17 @@ export async function sendSubmissionEmails(
 /**
  * Builds the customer confirmation email job for the submission type.
  *
- * @param params Lead, submission, and confirmation EmailLog context.
+ * @param params Lead, submission, booking, and confirmation EmailLog context.
  * @returns Email job or null when no customer email can be sent.
  */
 async function buildConfirmationEmailJob({
   lead,
   submission,
+  meetingBooking,
   confirmationEmailLogId,
 }: SendSubmissionEmailsParams): Promise<EmailSendJob | null> {
-  const config = getConfirmationConfig(submission.type);
+  const config = getConfirmationConfig(submission.type, meetingBooking?.status);
+  const metadata = buildEmailMetadata(meetingBooking);
   const logId =
     confirmationEmailLogId ??
     (
@@ -96,9 +101,20 @@ async function buildConfirmationEmailJob({
           to: lead.email || 'missing-lead-email',
           subject: config.subject,
           type: config.type,
+          metadata,
         },
       })
     ).id;
+
+  await prisma.emailLog.update({
+    where: {
+      id: logId,
+    },
+    data: {
+      subject: config.subject,
+      metadata,
+    },
+  });
 
   if (!lead.email) {
     await markEmailFailed(logId, 'Lead email is missing.');
@@ -110,22 +126,31 @@ async function buildConfirmationEmailJob({
     to: lead.email,
     subject: config.subject,
     type: config.type,
-    react: createElement(config.template, { lead, submission }),
+    metadata,
+    react: createElement(config.template, {
+      lead,
+      submission,
+      meetingBooking,
+    }),
   };
 }
 
 /**
  * Builds the internal notification email job and creates its pending EmailLog.
  *
- * @param params Lead and submission context.
+ * @param params Lead, submission, and optional meeting booking context.
  * @returns Email job or null when the internal recipient is not configured.
  */
 async function buildInternalNotificationEmailJob({
   lead,
   submission,
+  meetingBooking,
 }: SendSubmissionEmailsParams): Promise<EmailSendJob | null> {
   const to = process.env.INTERNAL_NOTIFICATION_EMAIL;
-  const subject = 'Nova submissão recebida no website Norm8';
+  const subject = `Nova submissão recebida no website Norm8 — ${formatSubmissionType(
+    submission.type,
+  )}`;
+  const metadata = buildEmailMetadata(meetingBooking);
   const log = await prisma.emailLog.create({
     data: {
       leadId: lead.id,
@@ -133,6 +158,7 @@ async function buildInternalNotificationEmailJob({
       to: to || 'missing-internal-notification-email',
       subject,
       type: 'INTERNAL_NOTIFICATION',
+      metadata,
     },
   });
 
@@ -141,13 +167,14 @@ async function buildInternalNotificationEmailJob({
     return null;
   }
 
-  const templateProps = buildInternalTemplateProps(lead, submission);
+  const templateProps = buildInternalTemplateProps(lead, submission, meetingBooking);
 
   return {
     logId: log.id,
     to,
     subject,
     type: 'INTERNAL_NOTIFICATION',
+    metadata,
     react: createElement(InternalLeadNotificationEmail, templateProps),
   };
 }
@@ -169,7 +196,7 @@ async function sendEmailJob(job: EmailSendJob): Promise<void> {
     });
 
     if (response.error) {
-      await markEmailFailed(job.logId, response.error.message);
+      await markEmailFailed(job.logId, response.error.message, job.metadata);
       console.error(`Failed to send ${job.type} email`, response.error);
       return;
     }
@@ -181,6 +208,8 @@ async function sendEmailJob(job: EmailSendJob): Promise<void> {
       data: {
         status: 'SENT',
         providerMessageId: response.data?.id,
+        subject: job.subject,
+        metadata: job.metadata,
       },
     });
   } catch (error) {
@@ -189,7 +218,7 @@ async function sendEmailJob(job: EmailSendJob): Promise<void> {
         ? error.message
         : 'Unknown email provider error.';
 
-    await markEmailFailed(job.logId, message);
+    await markEmailFailed(job.logId, message, job.metadata);
     console.error(`Failed to send ${job.type} email`, error);
   }
 }
@@ -199,15 +228,21 @@ async function sendEmailJob(job: EmailSendJob): Promise<void> {
  *
  * @param logId EmailLog identifier.
  * @param reason Internal failure reason for server logs.
+ * @param metadata Optional booking metadata to preserve on failure.
  * @returns Promise that resolves after the log is updated.
  */
-async function markEmailFailed(logId: string, reason: string): Promise<void> {
+async function markEmailFailed(
+  logId: string,
+  reason: string,
+  metadata?: EmailMetadata,
+): Promise<void> {
   await prisma.emailLog.update({
     where: {
       id: logId,
     },
     data: {
       status: 'FAILED',
+      metadata,
     },
   });
 
@@ -227,9 +262,13 @@ type ConfirmationConfig = {
  * Resolves the customer email subject, type, and template by submission type.
  *
  * @param type Submission type stored in the database.
+ * @param meetingStatus Optional booking status for meeting email subject.
  * @returns Confirmation email configuration.
  */
-function getConfirmationConfig(type: SubmissionType): ConfirmationConfig {
+function getConfirmationConfig(
+  type: SubmissionType,
+  meetingStatus?: MeetingBookingStatus,
+): ConfirmationConfig {
   switch (type) {
     case 'AUDIT_REQUEST':
       return {
@@ -245,7 +284,10 @@ function getConfirmationConfig(type: SubmissionType): ConfirmationConfig {
       };
     case 'MEETING_REQUEST':
       return {
-        subject: 'Recebemos o seu pedido de reunião',
+        subject:
+          meetingStatus === 'CONFIRMED'
+            ? 'Reunião confirmada com a Norm8'
+            : 'Recebemos o seu pedido de reunião',
         type: 'MEETING_CONFIRMATION',
         template: MeetingRequestConfirmationEmail,
       };
@@ -253,23 +295,44 @@ function getConfirmationConfig(type: SubmissionType): ConfirmationConfig {
 }
 
 /**
+ * Builds provider-independent email metadata for EmailLog records.
+ *
+ * @param meetingBooking Optional meeting booking context.
+ * @returns JSON-safe metadata object.
+ */
+function buildEmailMetadata(
+  meetingBooking?: SendSubmissionEmailsParams['meetingBooking'],
+): EmailMetadata | undefined {
+  if (!meetingBooking) {
+    return undefined;
+  }
+
+  return {
+    meetingBookingStatus: meetingBooking.status,
+    googleEventId: meetingBooking.googleEventId ?? null,
+    googleEventHtmlLink: meetingBooking.googleEventHtmlLink ?? null,
+  };
+}
+
+/**
  * Builds the props consumed by the internal notification template.
  *
  * @param lead Lead identity fields.
  * @param submission Submission and payload context.
+ * @param meetingBooking Optional meeting booking context.
  * @returns Internal email template props.
  */
 function buildInternalTemplateProps(
   lead: SubmissionEmailLead,
   submission: SubmissionEmailSubmission,
+  meetingBooking?: SendSubmissionEmailsParams['meetingBooking'],
 ): InternalLeadNotificationEmailProps {
-  const payloadFields = getPayloadFields(submission.payload);
-
   return {
     lead,
     submission,
-    payloadFields,
-    summary: getSubmissionSummary(submission.type, payloadFields),
+    meetingBooking,
+    payloadFields: getPayloadFields(submission.payload),
+    summary: getSubmissionSummary(submission.type, submission.payload),
   };
 }
 
@@ -316,15 +379,16 @@ function stringifyPayloadValue(value: unknown): string {
  * Creates a short internal summary by submission type.
  *
  * @param type Submission type stored in the database.
- * @param payloadFields Flattened payload fields.
+ * @param payload Raw submission payload.
  * @returns Portuguese summary for the internal notification.
  */
 function getSubmissionSummary(
   type: SubmissionType,
-  payloadFields: Array<{ label: string; value: string }>,
+  payload: SubmissionEmailSubmission['payload'],
 ): string {
+  const fields = getPayloadFields(payload);
   const challenge =
-    payloadFields.find((field) =>
+    fields.find((field) =>
       ['mainChallenge', 'processToAutomate', 'meetingGoal'].includes(field.label),
     )?.value ?? 'Sem resumo indicado.';
 
@@ -334,6 +398,6 @@ function getSubmissionSummary(
     case 'CUSTOM_AUTOMATION_REQUEST':
       return `Novo pedido de Automação Personalizada. Resumo: ${challenge}`;
     case 'MEETING_REQUEST':
-      return `Novo pedido de reunião. Objetivo: ${challenge}`;
+      return `Nova marcação de reunião. Objetivo: ${challenge}`;
   }
 }

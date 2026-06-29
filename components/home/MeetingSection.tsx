@@ -11,9 +11,14 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { getAvailableMeetingSlotsAction } from '@/app/actions/meeting-availability';
 import { submitMeetingRequest } from '@/app/actions/lead-submissions';
+import type {
+  AvailableMeetingDay,
+  AvailableMeetingSlot,
+} from '@/lib/calendar/types';
 import type { ValidationErrors } from '@/lib/leads/types';
 import { ArrowRight, Calendar, CheckCircle2, Clock } from 'lucide-react';
 
@@ -23,24 +28,10 @@ const SURFACE2 = '#0D1526';
 const BORDER = '#182034';
 const MUTED = '#8399B8';
 
-const timeSlots: string[] = [
-  '09:00',
-  '09:30',
-  '10:00',
-  '10:30',
-  '11:00',
-  '11:30',
-  '14:00',
-  '14:30',
-  '15:00',
-  '15:30',
-  '16:00',
-  '16:30',
-];
-
 type CalendarDay = {
   date: Date;
   available: boolean;
+  slots: AvailableMeetingSlot[];
 };
 
 type FormState = {
@@ -99,24 +90,25 @@ const labelStyle: React.CSSProperties = {
   marginBottom: 8,
 };
 
-const getCalendarDays = (): CalendarDay[] => {
-  const today = new Date();
-  const days: CalendarDay[] = [];
+const toDateKey = (date: Date): string => date.toISOString().slice(0, 10);
 
-  for (let i = 0; i < 28; i += 1) {
-    const date = new Date(today);
-    date.setDate(today.getDate() + i);
+const getAvailabilityRange = (): { startDate: string; endDate: string } => {
+  const start = new Date();
+  const end = new Date(start);
+  end.setDate(start.getDate() + 27);
 
-    const isWeekend = date.getDay() === 0 || date.getDay() === 6;
-
-    days.push({
-      date,
-      available: !isWeekend && i !== 0,
-    });
-  }
-
-  return days;
+  return {
+    startDate: toDateKey(start),
+    endDate: toDateKey(end),
+  };
 };
+
+const toCalendarDays = (days: AvailableMeetingDay[]): CalendarDay[] =>
+  days.map((day) => ({
+    date: new Date(`${day.date}T00:00:00.000Z`),
+    available: day.available,
+    slots: day.slots,
+  }));
 
 /**
  * Renders the meeting request form and stores the request through the generic
@@ -125,10 +117,20 @@ const getCalendarDays = (): CalendarDay[] => {
 export default function MeetingSection() {
   const [submitted, setSubmitted] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isLoadingAvailability, setIsLoadingAvailability] = useState<boolean>(true);
+  const [availabilityError, setAvailabilityError] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successTitle, setSuccessTitle] = useState<string>(
+    'Pedido de reunião recebido!',
+  );
+  const [successMessage, setSuccessMessage] = useState<string>(
+    'Pedido de reunião recebido. Iremos confirmar a disponibilidade.',
+  );
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<AvailableMeetingSlot | null>(null);
+  const [calDays, setCalDays] = useState<CalendarDay[]>([]);
 
   const [form, setForm] = useState<FormState>({
     nome: '',
@@ -138,7 +140,40 @@ export default function MeetingSection() {
     objetivo: '',
   });
 
-  const calDays = getCalendarDays();
+  useEffect(() => {
+    let isMounted = true;
+
+    /**
+     * Loads real availability from the server-side Google Calendar integration.
+     * The UI keeps the same calendar structure while replacing mocked slots.
+     */
+    const loadAvailability = async (): Promise<void> => {
+      setIsLoadingAvailability(true);
+      setAvailabilityError(null);
+
+      const result = await getAvailableMeetingSlotsAction(getAvailabilityRange());
+
+      if (!isMounted) {
+        return;
+      }
+
+      if (!result.success) {
+        setAvailabilityError(result.error);
+        setCalDays([]);
+        setIsLoadingAvailability(false);
+        return;
+      }
+
+      setCalDays(toCalendarDays(result.days));
+      setIsLoadingAvailability(false);
+    };
+
+    void loadAvailability();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const update = (key: keyof FormState, value: string): void => {
     setForm((currentForm) => ({
@@ -171,7 +206,7 @@ export default function MeetingSection() {
     setErrorMessage(null);
     setValidationErrors({});
 
-    if (!selectedDate || !selectedTime) {
+    if (!selectedDate || !selectedTime || !selectedSlot) {
       setErrorMessage('Selecione data e hora para continuar.');
       return;
     }
@@ -184,8 +219,11 @@ export default function MeetingSection() {
       email: form.email,
       phone: form.telefone,
       meetingGoal: form.objetivo,
-      selectedDate: selectedDate.toISOString().slice(0, 10),
+      selectedDate: selectedSlot.date,
       selectedTime,
+      startsAt: selectedSlot.startsAt,
+      endsAt: selectedSlot.endsAt,
+      timezone: selectedSlot.timezone,
     });
 
     setIsSubmitting(false);
@@ -196,7 +234,49 @@ export default function MeetingSection() {
       return;
     }
 
+    if (result.meetingBookingStatus === 'CONFIRMED') {
+      setSuccessTitle('Reunião marcada com sucesso!');
+      setSuccessMessage(
+        result.message ??
+          'A sua reunião foi confirmada e adicionada ao calendário. Enviámos também o convite por email.',
+      );
+      removeSelectedSlotFromAvailability(selectedSlot);
+    } else {
+      setSuccessTitle('Pedido de reunião recebido!');
+      setSuccessMessage(
+        result.message ??
+          result.warning ??
+          'Recebemos o seu pedido, mas não foi possível confirmar automaticamente a reunião. A equipa da Norm8 irá entrar em contacto.',
+      );
+    }
+
     setSubmitted(true);
+  };
+
+  /**
+   * Removes the confirmed slot from the current browser state after Google
+   * Calendar accepts the event, avoiding stale availability in the UI.
+   *
+   * @param slot Confirmed meeting slot.
+   */
+  const removeSelectedSlotFromAvailability = (slot: AvailableMeetingSlot): void => {
+    setCalDays((currentDays) =>
+      currentDays.map((day) => {
+        if (toDateKey(day.date) !== slot.date) {
+          return day;
+        }
+
+        const slots = day.slots.filter(
+          (availableSlot) => availableSlot.startsAt !== slot.startsAt,
+        );
+
+        return {
+          ...day,
+          available: slots.length > 0,
+          slots,
+        };
+      }),
+    );
   };
 
   const validationSummary = Object.values(validationErrors).flat();
@@ -213,6 +293,10 @@ export default function MeetingSection() {
     });
   };
 
+  const selectedDay = selectedDate
+    ? calDays.find((day) => day.date.toDateString() === selectedDate.toDateString())
+    : undefined;
+  const selectedDaySlots = selectedDay?.slots ?? [];
   const firstDay = calDays[0]?.date.getDay() ?? 1;
   const offset = firstDay === 0 ? 6 : firstDay - 1;
 
@@ -370,6 +454,7 @@ export default function MeetingSection() {
                             if (day.available) {
                               setSelectedDate(day.date);
                               setSelectedTime(null);
+                              setSelectedSlot(null);
                             }
                           }}
                           style={{
@@ -426,35 +511,76 @@ export default function MeetingSection() {
                           gap: 6,
                         }}
                       >
-                        {timeSlots.map((time) => (
+                        {selectedDaySlots.map((slot) => (
                           <button
-                            key={time}
+                            key={slot.startsAt}
                             type="button"
-                            onClick={() => setSelectedTime(time)}
+                            onClick={() => {
+                              setSelectedTime(slot.time);
+                              setSelectedSlot(slot);
+                            }}
                             style={{
                               padding: '8px',
                               borderRadius: 8,
                               fontSize: 12,
                               fontWeight: 500,
                               border:
-                                selectedTime === time
+                                selectedSlot?.startsAt === slot.startsAt
                                   ? `1px solid ${BLUE}`
                                   : `1px solid ${BORDER}`,
                               backgroundColor:
-                                selectedTime === time
+                                selectedSlot?.startsAt === slot.startsAt
                                   ? 'rgba(37,99,235,0.2)'
                                   : SURFACE2,
                               color:
-                                selectedTime === time ? '#fff' : '#E8EDF8',
+                                selectedSlot?.startsAt === slot.startsAt
+                                  ? '#fff'
+                                  : '#E8EDF8',
                               cursor: 'pointer',
                               transition: 'all 0.15s',
                             }}
                           >
-                            {time}
+                            {slot.time}
                           </button>
                         ))}
                       </div>
+
+                      {!isLoadingAvailability && selectedDaySlots.length === 0 && (
+                        <p
+                          style={{
+                            color: MUTED,
+                            fontSize: 12,
+                            marginTop: 12,
+                          }}
+                        >
+                          Sem horários disponíveis neste dia.
+                        </p>
+                      )}
                     </motion.div>
+                  )}
+
+                  {isLoadingAvailability && (
+                    <p
+                      style={{
+                        color: MUTED,
+                        fontSize: 12,
+                        marginTop: 20,
+                      }}
+                    >
+                      A carregar horários disponíveis...
+                    </p>
+                  )}
+
+                  {availabilityError && (
+                    <p
+                      style={{
+                        color: '#fecaca',
+                        fontSize: 12,
+                        marginTop: 20,
+                      }}
+                    >
+                      {availabilityError}
+                    </p>
                   )}
                 </div>
 
@@ -497,9 +623,10 @@ export default function MeetingSection() {
                     ))}
 
                     <div>
-                      <label style={labelStyle}>Objetivo da Reunião</label>
+                      <label style={labelStyle}>Objetivo da Reunião *</label>
 
                       <select
+                        required
                         value={form.objetivo}
                         onChange={(event) =>
                           update('objetivo', event.target.value)
@@ -546,7 +673,13 @@ export default function MeetingSection() {
 
                   <button
                     type="submit"
-                    disabled={isSubmitting || !selectedDate || !selectedTime}
+                    disabled={
+                      isSubmitting ||
+                      !selectedDate ||
+                      !selectedTime ||
+                      !selectedSlot ||
+                      Boolean(availabilityError)
+                    }
                     style={{
                       marginTop: 28,
                       width: '100%',
@@ -558,31 +691,40 @@ export default function MeetingSection() {
                       fontSize: 15,
                       fontWeight: 700,
                       cursor:
-                        selectedDate && selectedTime && !isSubmitting
+                        selectedDate &&
+                        selectedTime &&
+                        selectedSlot &&
+                        !availabilityError &&
+                        !isSubmitting
                           ? 'pointer'
                           : 'not-allowed',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       gap: 8,
-                      opacity: !selectedDate || !selectedTime ? 0.5 : 1,
+                      opacity:
+                        !selectedDate || !selectedTime || !selectedSlot
+                          ? 0.5
+                          : 1,
                       transition: 'opacity 0.2s',
                     }}
                     onMouseEnter={(event) => {
-                      if (selectedDate && selectedTime) {
+                      if (selectedDate && selectedTime && selectedSlot) {
                         event.currentTarget.style.opacity = '0.9';
                       }
                     }}
                     onMouseLeave={(event) => {
                       event.currentTarget.style.opacity =
-                        !selectedDate || !selectedTime ? '0.5' : '1';
+                        !selectedDate || !selectedTime || !selectedSlot
+                          ? '0.5'
+                          : '1';
                     }}
                   >
                     {isSubmitting ? 'A enviar...' : 'Marcar Reunião'}{' '}
                     <ArrowRight size={16} />
                   </button>
 
-                  {(!selectedDate || !selectedTime) && (
+                  {(!selectedDate || !selectedTime || !selectedSlot) && (
                     <p
                       style={{
                         textAlign: 'center',
@@ -635,7 +777,7 @@ export default function MeetingSection() {
                   marginBottom: 12,
                 }}
               >
-                Pedido de reunião recebido!
+                {successTitle}
               </h3>
 
               <p
@@ -644,7 +786,7 @@ export default function MeetingSection() {
                   color: MUTED,
                 }}
               >
-                Pedido de reunião recebido. Iremos confirmar a disponibilidade.
+                {successMessage}
               </p>
             </motion.div>
           )}

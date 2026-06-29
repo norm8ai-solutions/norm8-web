@@ -9,7 +9,7 @@
  * ------------------------------------------------------------------
  */
 
-import type { Lead, Submission } from '@/app/generated/prisma/client';
+import type { Lead, MeetingBooking, Submission } from '@/app/generated/prisma/client';
 
 export type EmailType =
   | 'AUDIT_CONFIRMATION'
@@ -35,12 +35,14 @@ export type SubmissionEmailSubmission = Pick<
 export type SendSubmissionEmailsParams = {
   lead: SubmissionEmailLead;
   submission: SubmissionEmailSubmission;
+  meetingBooking?: MeetingBooking;
   confirmationEmailLogId?: string;
 };
 
 export type EmailTemplateProps = {
   lead: SubmissionEmailLead;
   submission: SubmissionEmailSubmission;
+  meetingBooking?: MeetingBooking;
 };
 
 export type InternalLeadNotificationEmailProps = EmailTemplateProps & {

@@ -56,6 +56,7 @@ export type EmailLogCountAggregateOutputType = {
   subject: number
   type: number
   status: number
+  metadata: number
   providerMessageId: number
   createdAt: number
   _all: number
@@ -94,6 +95,7 @@ export type EmailLogCountAggregateInputType = {
   subject?: true
   type?: true
   status?: true
+  metadata?: true
   providerMessageId?: true
   createdAt?: true
   _all?: true
@@ -179,6 +181,7 @@ export type EmailLogGroupByOutputType = {
   subject: string
   type: string
   status: $Enums.EmailStatus
+  metadata: runtime.JsonValue | null
   providerMessageId: string | null
   createdAt: Date
   _count: EmailLogCountAggregateOutputType | null
@@ -212,6 +215,7 @@ export type EmailLogWhereInput = {
   subject?: Prisma.StringFilter<"EmailLog"> | string
   type?: Prisma.StringFilter<"EmailLog"> | string
   status?: Prisma.EnumEmailStatusFilter<"EmailLog"> | $Enums.EmailStatus
+  metadata?: Prisma.JsonNullableFilter<"EmailLog">
   providerMessageId?: Prisma.StringNullableFilter<"EmailLog"> | string | null
   createdAt?: Prisma.DateTimeFilter<"EmailLog"> | Date | string
   lead?: Prisma.XOR<Prisma.LeadNullableScalarRelationFilter, Prisma.LeadWhereInput> | null
@@ -226,6 +230,7 @@ export type EmailLogOrderByWithRelationInput = {
   subject?: Prisma.SortOrder
   type?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  metadata?: Prisma.SortOrderInput | Prisma.SortOrder
   providerMessageId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   lead?: Prisma.LeadOrderByWithRelationInput
@@ -243,6 +248,7 @@ export type EmailLogWhereUniqueInput = Prisma.AtLeast<{
   subject?: Prisma.StringFilter<"EmailLog"> | string
   type?: Prisma.StringFilter<"EmailLog"> | string
   status?: Prisma.EnumEmailStatusFilter<"EmailLog"> | $Enums.EmailStatus
+  metadata?: Prisma.JsonNullableFilter<"EmailLog">
   providerMessageId?: Prisma.StringNullableFilter<"EmailLog"> | string | null
   createdAt?: Prisma.DateTimeFilter<"EmailLog"> | Date | string
   lead?: Prisma.XOR<Prisma.LeadNullableScalarRelationFilter, Prisma.LeadWhereInput> | null
@@ -257,6 +263,7 @@ export type EmailLogOrderByWithAggregationInput = {
   subject?: Prisma.SortOrder
   type?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  metadata?: Prisma.SortOrderInput | Prisma.SortOrder
   providerMessageId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.EmailLogCountOrderByAggregateInput
@@ -275,6 +282,7 @@ export type EmailLogScalarWhereWithAggregatesInput = {
   subject?: Prisma.StringWithAggregatesFilter<"EmailLog"> | string
   type?: Prisma.StringWithAggregatesFilter<"EmailLog"> | string
   status?: Prisma.EnumEmailStatusWithAggregatesFilter<"EmailLog"> | $Enums.EmailStatus
+  metadata?: Prisma.JsonNullableWithAggregatesFilter<"EmailLog">
   providerMessageId?: Prisma.StringNullableWithAggregatesFilter<"EmailLog"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"EmailLog"> | Date | string
 }
@@ -285,6 +293,7 @@ export type EmailLogCreateInput = {
   subject: string
   type: string
   status?: $Enums.EmailStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   providerMessageId?: string | null
   createdAt?: Date | string
   lead?: Prisma.LeadCreateNestedOneWithoutEmailLogsInput
@@ -299,6 +308,7 @@ export type EmailLogUncheckedCreateInput = {
   subject: string
   type: string
   status?: $Enums.EmailStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   providerMessageId?: string | null
   createdAt?: Date | string
 }
@@ -309,6 +319,7 @@ export type EmailLogUpdateInput = {
   subject?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumEmailStatusFieldUpdateOperationsInput | $Enums.EmailStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   providerMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lead?: Prisma.LeadUpdateOneWithoutEmailLogsNestedInput
@@ -323,6 +334,7 @@ export type EmailLogUncheckedUpdateInput = {
   subject?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumEmailStatusFieldUpdateOperationsInput | $Enums.EmailStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   providerMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -335,6 +347,7 @@ export type EmailLogCreateManyInput = {
   subject: string
   type: string
   status?: $Enums.EmailStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   providerMessageId?: string | null
   createdAt?: Date | string
 }
@@ -345,6 +358,7 @@ export type EmailLogUpdateManyMutationInput = {
   subject?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumEmailStatusFieldUpdateOperationsInput | $Enums.EmailStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   providerMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -357,6 +371,7 @@ export type EmailLogUncheckedUpdateManyInput = {
   subject?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumEmailStatusFieldUpdateOperationsInput | $Enums.EmailStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   providerMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -379,6 +394,7 @@ export type EmailLogCountOrderByAggregateInput = {
   subject?: Prisma.SortOrder
   type?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  metadata?: Prisma.SortOrder
   providerMessageId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -501,6 +517,7 @@ export type EmailLogCreateWithoutLeadInput = {
   subject: string
   type: string
   status?: $Enums.EmailStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   providerMessageId?: string | null
   createdAt?: Date | string
   submission?: Prisma.SubmissionCreateNestedOneWithoutEmailLogsInput
@@ -513,6 +530,7 @@ export type EmailLogUncheckedCreateWithoutLeadInput = {
   subject: string
   type: string
   status?: $Enums.EmailStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   providerMessageId?: string | null
   createdAt?: Date | string
 }
@@ -554,6 +572,7 @@ export type EmailLogScalarWhereInput = {
   subject?: Prisma.StringFilter<"EmailLog"> | string
   type?: Prisma.StringFilter<"EmailLog"> | string
   status?: Prisma.EnumEmailStatusFilter<"EmailLog"> | $Enums.EmailStatus
+  metadata?: Prisma.JsonNullableFilter<"EmailLog">
   providerMessageId?: Prisma.StringNullableFilter<"EmailLog"> | string | null
   createdAt?: Prisma.DateTimeFilter<"EmailLog"> | Date | string
 }
@@ -564,6 +583,7 @@ export type EmailLogCreateWithoutSubmissionInput = {
   subject: string
   type: string
   status?: $Enums.EmailStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   providerMessageId?: string | null
   createdAt?: Date | string
   lead?: Prisma.LeadCreateNestedOneWithoutEmailLogsInput
@@ -576,6 +596,7 @@ export type EmailLogUncheckedCreateWithoutSubmissionInput = {
   subject: string
   type: string
   status?: $Enums.EmailStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   providerMessageId?: string | null
   createdAt?: Date | string
 }
@@ -613,6 +634,7 @@ export type EmailLogCreateManyLeadInput = {
   subject: string
   type: string
   status?: $Enums.EmailStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   providerMessageId?: string | null
   createdAt?: Date | string
 }
@@ -623,6 +645,7 @@ export type EmailLogUpdateWithoutLeadInput = {
   subject?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumEmailStatusFieldUpdateOperationsInput | $Enums.EmailStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   providerMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   submission?: Prisma.SubmissionUpdateOneWithoutEmailLogsNestedInput
@@ -635,6 +658,7 @@ export type EmailLogUncheckedUpdateWithoutLeadInput = {
   subject?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumEmailStatusFieldUpdateOperationsInput | $Enums.EmailStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   providerMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -646,6 +670,7 @@ export type EmailLogUncheckedUpdateManyWithoutLeadInput = {
   subject?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumEmailStatusFieldUpdateOperationsInput | $Enums.EmailStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   providerMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -657,6 +682,7 @@ export type EmailLogCreateManySubmissionInput = {
   subject: string
   type: string
   status?: $Enums.EmailStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   providerMessageId?: string | null
   createdAt?: Date | string
 }
@@ -667,6 +693,7 @@ export type EmailLogUpdateWithoutSubmissionInput = {
   subject?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumEmailStatusFieldUpdateOperationsInput | $Enums.EmailStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   providerMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lead?: Prisma.LeadUpdateOneWithoutEmailLogsNestedInput
@@ -679,6 +706,7 @@ export type EmailLogUncheckedUpdateWithoutSubmissionInput = {
   subject?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumEmailStatusFieldUpdateOperationsInput | $Enums.EmailStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   providerMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -690,6 +718,7 @@ export type EmailLogUncheckedUpdateManyWithoutSubmissionInput = {
   subject?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumEmailStatusFieldUpdateOperationsInput | $Enums.EmailStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   providerMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -704,6 +733,7 @@ export type EmailLogSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   subject?: boolean
   type?: boolean
   status?: boolean
+  metadata?: boolean
   providerMessageId?: boolean
   createdAt?: boolean
   lead?: boolean | Prisma.EmailLog$leadArgs<ExtArgs>
@@ -718,6 +748,7 @@ export type EmailLogSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   subject?: boolean
   type?: boolean
   status?: boolean
+  metadata?: boolean
   providerMessageId?: boolean
   createdAt?: boolean
   lead?: boolean | Prisma.EmailLog$leadArgs<ExtArgs>
@@ -732,6 +763,7 @@ export type EmailLogSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   subject?: boolean
   type?: boolean
   status?: boolean
+  metadata?: boolean
   providerMessageId?: boolean
   createdAt?: boolean
   lead?: boolean | Prisma.EmailLog$leadArgs<ExtArgs>
@@ -746,11 +778,12 @@ export type EmailLogSelectScalar = {
   subject?: boolean
   type?: boolean
   status?: boolean
+  metadata?: boolean
   providerMessageId?: boolean
   createdAt?: boolean
 }
 
-export type EmailLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "leadId" | "submissionId" | "to" | "subject" | "type" | "status" | "providerMessageId" | "createdAt", ExtArgs["result"]["emailLog"]>
+export type EmailLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "leadId" | "submissionId" | "to" | "subject" | "type" | "status" | "metadata" | "providerMessageId" | "createdAt", ExtArgs["result"]["emailLog"]>
 export type EmailLogInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   lead?: boolean | Prisma.EmailLog$leadArgs<ExtArgs>
   submission?: boolean | Prisma.EmailLog$submissionArgs<ExtArgs>
@@ -778,6 +811,7 @@ export type $EmailLogPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     subject: string
     type: string
     status: $Enums.EmailStatus
+    metadata: runtime.JsonValue | null
     providerMessageId: string | null
     createdAt: Date
   }, ExtArgs["result"]["emailLog"]>
@@ -1212,6 +1246,7 @@ export interface EmailLogFieldRefs {
   readonly subject: Prisma.FieldRef<"EmailLog", 'String'>
   readonly type: Prisma.FieldRef<"EmailLog", 'String'>
   readonly status: Prisma.FieldRef<"EmailLog", 'EmailStatus'>
+  readonly metadata: Prisma.FieldRef<"EmailLog", 'Json'>
   readonly providerMessageId: Prisma.FieldRef<"EmailLog", 'String'>
   readonly createdAt: Prisma.FieldRef<"EmailLog", 'DateTime'>
 }

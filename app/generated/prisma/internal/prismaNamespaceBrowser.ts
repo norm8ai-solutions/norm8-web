@@ -55,7 +55,8 @@ export const ModelName = {
   Submission: 'Submission',
   LeadActivity: 'LeadActivity',
   Notification: 'Notification',
-  EmailLog: 'EmailLog'
+  EmailLog: 'EmailLog',
+  MeetingBooking: 'MeetingBooking'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -140,11 +141,36 @@ export const EmailLogScalarFieldEnum = {
   subject: 'subject',
   type: 'type',
   status: 'status',
+  metadata: 'metadata',
   providerMessageId: 'providerMessageId',
   createdAt: 'createdAt'
 } as const
 
 export type EmailLogScalarFieldEnum = (typeof EmailLogScalarFieldEnum)[keyof typeof EmailLogScalarFieldEnum]
+
+
+export const MeetingBookingScalarFieldEnum = {
+  id: 'id',
+  leadId: 'leadId',
+  submissionId: 'submissionId',
+  status: 'status',
+  requestedDate: 'requestedDate',
+  requestedTime: 'requestedTime',
+  startsAt: 'startsAt',
+  endsAt: 'endsAt',
+  timezone: 'timezone',
+  googleEventId: 'googleEventId',
+  googleEventHtmlLink: 'googleEventHtmlLink',
+  calendarId: 'calendarId',
+  attendeeEmail: 'attendeeEmail',
+  attendeeName: 'attendeeName',
+  attendeeCompany: 'attendeeCompany',
+  meetingGoal: 'meetingGoal',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MeetingBookingScalarFieldEnum = (typeof MeetingBookingScalarFieldEnum)[keyof typeof MeetingBookingScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -160,6 +186,14 @@ export const JsonNullValueInput = {
 } as const
 
 export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const QueryMode = {

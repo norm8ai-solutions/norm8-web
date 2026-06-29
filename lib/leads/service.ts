@@ -12,7 +12,13 @@
 
 import 'server-only';
 
-import { Prisma, type LeadPriority, type SubmissionType } from '@/app/generated/prisma/client';
+import {
+  Prisma,
+  type LeadPriority,
+  type MeetingBooking,
+  type SubmissionType,
+} from '@/app/generated/prisma/client';
+import { createMeetingCalendarEvent } from '@/lib/calendar/service';
 import { sendSubmissionEmails } from '@/lib/email/service';
 import { prisma } from '@/lib/db/prisma';
 import {
@@ -133,18 +139,52 @@ export async function createLeadSubmission<TType extends SubmissionType>(
         },
       });
 
+      const meetingBooking =
+        input.type === 'MEETING_REQUEST'
+          ? await tx.meetingBooking.create({
+              data: buildMeetingBookingCreateData(
+                lead.id,
+                submission.id,
+                payload as MeetingRequestInput,
+              ),
+            })
+          : null;
+
       return {
         lead,
         submission,
+        meetingBooking,
         confirmationEmailLogId: confirmationEmailLog.id,
         leadId: lead.id,
         submissionId: submission.id,
       };
     });
 
+    const calendarResult = result.meetingBooking
+      ? await createMeetingCalendarEvent({
+          booking: result.meetingBooking,
+          leadId: result.lead.id,
+          submissionId: result.submission.id,
+          phone: result.lead.phone,
+        })
+      : null;
+    if (calendarResult && result.meetingBooking) {
+      await registerMeetingCalendarOutcome(
+        result.lead.id,
+        result.submission.id,
+        result.meetingBooking.id,
+        calendarResult.success,
+        calendarResult.success ? calendarResult.htmlLink : calendarResult.error,
+      );
+    }
+    const meetingBooking = result.meetingBooking
+      ? await getLatestMeetingBooking(result.meetingBooking.id)
+      : undefined;
+
     await sendSubmissionEmails({
       lead: result.lead,
       submission: result.submission,
+      meetingBooking,
       confirmationEmailLogId: result.confirmationEmailLogId,
     });
 
@@ -152,6 +192,19 @@ export async function createLeadSubmission<TType extends SubmissionType>(
       success: true,
       leadId: result.leadId,
       submissionId: result.submissionId,
+      meetingBookingStatus: meetingBooking?.status,
+      googleEventId:
+        calendarResult && calendarResult.success ? calendarResult.eventId : undefined,
+      googleEventHtmlLink:
+        calendarResult && calendarResult.success ? calendarResult.htmlLink : undefined,
+      message:
+        meetingBooking?.status === 'CONFIRMED'
+          ? 'A sua reunião foi confirmada e adicionada ao calendário. Enviámos também o convite por email.'
+          : calendarResult && !calendarResult.success
+            ? calendarResult.error
+            : undefined,
+      warning:
+        calendarResult && !calendarResult.success ? calendarResult.error : undefined,
     };
   } catch (error) {
     console.error('Failed to create lead submission', error);
@@ -161,6 +214,96 @@ export async function createLeadSubmission<TType extends SubmissionType>(
       error:
         'Não foi possível registar o pedido neste momento. Tente novamente dentro de instantes.',
     };
+  }
+}
+
+/**
+ * Builds the MeetingBooking database payload from validated meeting form data.
+ *
+ * @param leadId Lead identifier created or updated by the submission flow.
+ * @param submissionId Submission identifier linked to the meeting request.
+ * @param payload Validated meeting request payload.
+ * @returns Prisma create input for MeetingBooking.
+ */
+function buildMeetingBookingCreateData(
+  leadId: string,
+  submissionId: string,
+  payload: MeetingRequestInput,
+): Prisma.MeetingBookingUncheckedCreateInput {
+  return {
+    leadId,
+    submissionId,
+    requestedDate: payload.selectedDate,
+    requestedTime: payload.selectedTime,
+    startsAt: new Date(payload.startsAt),
+    endsAt: new Date(payload.endsAt),
+    timezone: payload.timezone,
+    attendeeEmail: payload.email,
+    attendeeName: payload.name,
+    attendeeCompany: payload.company,
+    meetingGoal: payload.meetingGoal,
+  };
+}
+
+/**
+ * Loads the latest MeetingBooking after Google Calendar updates it.
+ *
+ * @param id MeetingBooking identifier.
+ * @returns Updated booking or undefined if not found.
+ */
+async function getLatestMeetingBooking(id: string): Promise<MeetingBooking | undefined> {
+  return (
+    (await prisma.meetingBooking.findUnique({
+      where: {
+        id,
+      },
+    })) ?? undefined
+  );
+}
+
+/**
+ * Registers the Google Calendar result in lead activity and internal notifications.
+ *
+ * @param leadId Lead identifier.
+ * @param submissionId Submission identifier.
+ * @param meetingBookingId MeetingBooking identifier.
+ * @param confirmed Whether Google Calendar confirmed the event.
+ * @param detail Calendar link or failure reason.
+ * @returns Promise that resolves after operational records are created.
+ */
+async function registerMeetingCalendarOutcome(
+  leadId: string,
+  submissionId: string,
+  meetingBookingId: string,
+  confirmed: boolean,
+  detail?: string | null,
+): Promise<void> {
+  await prisma.leadActivity.create({
+    data: {
+      leadId,
+      type: confirmed ? 'MEETING_BOOKING_CONFIRMED' : 'MEETING_BOOKING_FAILED',
+      message: confirmed
+        ? 'Meeting booking was confirmed in Google Calendar.'
+        : 'Meeting booking could not be confirmed automatically in Google Calendar.',
+      metadata: {
+        submissionId,
+        meetingBookingId,
+        detail,
+      },
+    },
+  });
+
+  if (!confirmed) {
+    await prisma.notification.create({
+      data: {
+        title: 'Falha ao confirmar reunião automaticamente',
+        message:
+          'Foi recebido um pedido de reunião, mas o Google Calendar não confirmou o evento automaticamente.',
+        type: 'MEETING_BOOKING_FAILED',
+        relatedLeadId: leadId,
+        relatedSubmissionId: submissionId,
+      },
+    });
   }
 }
 

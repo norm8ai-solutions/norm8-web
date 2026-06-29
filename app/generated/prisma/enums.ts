@@ -66,3 +66,13 @@ export const EmailStatus = {
 } as const
 
 export type EmailStatus = (typeof EmailStatus)[keyof typeof EmailStatus]
+
+
+export const MeetingBookingStatus = {
+  REQUESTED: 'REQUESTED',
+  CONFIRMED: 'CONFIRMED',
+  CANCELLED: 'CANCELLED',
+  FAILED: 'FAILED'
+} as const
+
+export type MeetingBookingStatus = (typeof MeetingBookingStatus)[keyof typeof MeetingBookingStatus]

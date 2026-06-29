@@ -234,6 +234,7 @@ export type LeadWhereInput = {
   activities?: Prisma.LeadActivityListRelationFilter
   notifications?: Prisma.NotificationListRelationFilter
   emailLogs?: Prisma.EmailLogListRelationFilter
+  meetingBookings?: Prisma.MeetingBookingListRelationFilter
 }
 
 export type LeadOrderByWithRelationInput = {
@@ -252,6 +253,7 @@ export type LeadOrderByWithRelationInput = {
   activities?: Prisma.LeadActivityOrderByRelationAggregateInput
   notifications?: Prisma.NotificationOrderByRelationAggregateInput
   emailLogs?: Prisma.EmailLogOrderByRelationAggregateInput
+  meetingBookings?: Prisma.MeetingBookingOrderByRelationAggregateInput
 }
 
 export type LeadWhereUniqueInput = Prisma.AtLeast<{
@@ -273,6 +275,7 @@ export type LeadWhereUniqueInput = Prisma.AtLeast<{
   activities?: Prisma.LeadActivityListRelationFilter
   notifications?: Prisma.NotificationListRelationFilter
   emailLogs?: Prisma.EmailLogListRelationFilter
+  meetingBookings?: Prisma.MeetingBookingListRelationFilter
 }, "id" | "email">
 
 export type LeadOrderByWithAggregationInput = {
@@ -325,6 +328,7 @@ export type LeadCreateInput = {
   activities?: Prisma.LeadActivityCreateNestedManyWithoutLeadInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRelatedLeadInput
   emailLogs?: Prisma.EmailLogCreateNestedManyWithoutLeadInput
+  meetingBookings?: Prisma.MeetingBookingCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateInput = {
@@ -343,6 +347,7 @@ export type LeadUncheckedCreateInput = {
   activities?: Prisma.LeadActivityUncheckedCreateNestedManyWithoutLeadInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRelatedLeadInput
   emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutLeadInput
+  meetingBookings?: Prisma.MeetingBookingUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUpdateInput = {
@@ -361,6 +366,7 @@ export type LeadUpdateInput = {
   activities?: Prisma.LeadActivityUpdateManyWithoutLeadNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRelatedLeadNestedInput
   emailLogs?: Prisma.EmailLogUpdateManyWithoutLeadNestedInput
+  meetingBookings?: Prisma.MeetingBookingUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateInput = {
@@ -379,6 +385,7 @@ export type LeadUncheckedUpdateInput = {
   activities?: Prisma.LeadActivityUncheckedUpdateManyWithoutLeadNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRelatedLeadNestedInput
   emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutLeadNestedInput
+  meetingBookings?: Prisma.MeetingBookingUncheckedUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadCreateManyInput = {
@@ -555,6 +562,20 @@ export type LeadUpdateOneWithoutEmailLogsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.LeadUpdateToOneWithWhereWithoutEmailLogsInput, Prisma.LeadUpdateWithoutEmailLogsInput>, Prisma.LeadUncheckedUpdateWithoutEmailLogsInput>
 }
 
+export type LeadCreateNestedOneWithoutMeetingBookingsInput = {
+  create?: Prisma.XOR<Prisma.LeadCreateWithoutMeetingBookingsInput, Prisma.LeadUncheckedCreateWithoutMeetingBookingsInput>
+  connectOrCreate?: Prisma.LeadCreateOrConnectWithoutMeetingBookingsInput
+  connect?: Prisma.LeadWhereUniqueInput
+}
+
+export type LeadUpdateOneRequiredWithoutMeetingBookingsNestedInput = {
+  create?: Prisma.XOR<Prisma.LeadCreateWithoutMeetingBookingsInput, Prisma.LeadUncheckedCreateWithoutMeetingBookingsInput>
+  connectOrCreate?: Prisma.LeadCreateOrConnectWithoutMeetingBookingsInput
+  upsert?: Prisma.LeadUpsertWithoutMeetingBookingsInput
+  connect?: Prisma.LeadWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.LeadUpdateToOneWithWhereWithoutMeetingBookingsInput, Prisma.LeadUpdateWithoutMeetingBookingsInput>, Prisma.LeadUncheckedUpdateWithoutMeetingBookingsInput>
+}
+
 export type LeadCreateWithoutSubmissionsInput = {
   id?: string
   name?: string | null
@@ -570,6 +591,7 @@ export type LeadCreateWithoutSubmissionsInput = {
   activities?: Prisma.LeadActivityCreateNestedManyWithoutLeadInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRelatedLeadInput
   emailLogs?: Prisma.EmailLogCreateNestedManyWithoutLeadInput
+  meetingBookings?: Prisma.MeetingBookingCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateWithoutSubmissionsInput = {
@@ -587,6 +609,7 @@ export type LeadUncheckedCreateWithoutSubmissionsInput = {
   activities?: Prisma.LeadActivityUncheckedCreateNestedManyWithoutLeadInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRelatedLeadInput
   emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutLeadInput
+  meetingBookings?: Prisma.MeetingBookingUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadCreateOrConnectWithoutSubmissionsInput = {
@@ -620,6 +643,7 @@ export type LeadUpdateWithoutSubmissionsInput = {
   activities?: Prisma.LeadActivityUpdateManyWithoutLeadNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRelatedLeadNestedInput
   emailLogs?: Prisma.EmailLogUpdateManyWithoutLeadNestedInput
+  meetingBookings?: Prisma.MeetingBookingUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutSubmissionsInput = {
@@ -637,6 +661,7 @@ export type LeadUncheckedUpdateWithoutSubmissionsInput = {
   activities?: Prisma.LeadActivityUncheckedUpdateManyWithoutLeadNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRelatedLeadNestedInput
   emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutLeadNestedInput
+  meetingBookings?: Prisma.MeetingBookingUncheckedUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadCreateWithoutActivitiesInput = {
@@ -654,6 +679,7 @@ export type LeadCreateWithoutActivitiesInput = {
   submissions?: Prisma.SubmissionCreateNestedManyWithoutLeadInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRelatedLeadInput
   emailLogs?: Prisma.EmailLogCreateNestedManyWithoutLeadInput
+  meetingBookings?: Prisma.MeetingBookingCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateWithoutActivitiesInput = {
@@ -671,6 +697,7 @@ export type LeadUncheckedCreateWithoutActivitiesInput = {
   submissions?: Prisma.SubmissionUncheckedCreateNestedManyWithoutLeadInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRelatedLeadInput
   emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutLeadInput
+  meetingBookings?: Prisma.MeetingBookingUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadCreateOrConnectWithoutActivitiesInput = {
@@ -704,6 +731,7 @@ export type LeadUpdateWithoutActivitiesInput = {
   submissions?: Prisma.SubmissionUpdateManyWithoutLeadNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRelatedLeadNestedInput
   emailLogs?: Prisma.EmailLogUpdateManyWithoutLeadNestedInput
+  meetingBookings?: Prisma.MeetingBookingUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutActivitiesInput = {
@@ -721,6 +749,7 @@ export type LeadUncheckedUpdateWithoutActivitiesInput = {
   submissions?: Prisma.SubmissionUncheckedUpdateManyWithoutLeadNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRelatedLeadNestedInput
   emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutLeadNestedInput
+  meetingBookings?: Prisma.MeetingBookingUncheckedUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadCreateWithoutNotificationsInput = {
@@ -738,6 +767,7 @@ export type LeadCreateWithoutNotificationsInput = {
   submissions?: Prisma.SubmissionCreateNestedManyWithoutLeadInput
   activities?: Prisma.LeadActivityCreateNestedManyWithoutLeadInput
   emailLogs?: Prisma.EmailLogCreateNestedManyWithoutLeadInput
+  meetingBookings?: Prisma.MeetingBookingCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateWithoutNotificationsInput = {
@@ -755,6 +785,7 @@ export type LeadUncheckedCreateWithoutNotificationsInput = {
   submissions?: Prisma.SubmissionUncheckedCreateNestedManyWithoutLeadInput
   activities?: Prisma.LeadActivityUncheckedCreateNestedManyWithoutLeadInput
   emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutLeadInput
+  meetingBookings?: Prisma.MeetingBookingUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadCreateOrConnectWithoutNotificationsInput = {
@@ -788,6 +819,7 @@ export type LeadUpdateWithoutNotificationsInput = {
   submissions?: Prisma.SubmissionUpdateManyWithoutLeadNestedInput
   activities?: Prisma.LeadActivityUpdateManyWithoutLeadNestedInput
   emailLogs?: Prisma.EmailLogUpdateManyWithoutLeadNestedInput
+  meetingBookings?: Prisma.MeetingBookingUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutNotificationsInput = {
@@ -805,6 +837,7 @@ export type LeadUncheckedUpdateWithoutNotificationsInput = {
   submissions?: Prisma.SubmissionUncheckedUpdateManyWithoutLeadNestedInput
   activities?: Prisma.LeadActivityUncheckedUpdateManyWithoutLeadNestedInput
   emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutLeadNestedInput
+  meetingBookings?: Prisma.MeetingBookingUncheckedUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadCreateWithoutEmailLogsInput = {
@@ -822,6 +855,7 @@ export type LeadCreateWithoutEmailLogsInput = {
   submissions?: Prisma.SubmissionCreateNestedManyWithoutLeadInput
   activities?: Prisma.LeadActivityCreateNestedManyWithoutLeadInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRelatedLeadInput
+  meetingBookings?: Prisma.MeetingBookingCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateWithoutEmailLogsInput = {
@@ -839,6 +873,7 @@ export type LeadUncheckedCreateWithoutEmailLogsInput = {
   submissions?: Prisma.SubmissionUncheckedCreateNestedManyWithoutLeadInput
   activities?: Prisma.LeadActivityUncheckedCreateNestedManyWithoutLeadInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRelatedLeadInput
+  meetingBookings?: Prisma.MeetingBookingUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadCreateOrConnectWithoutEmailLogsInput = {
@@ -872,6 +907,7 @@ export type LeadUpdateWithoutEmailLogsInput = {
   submissions?: Prisma.SubmissionUpdateManyWithoutLeadNestedInput
   activities?: Prisma.LeadActivityUpdateManyWithoutLeadNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRelatedLeadNestedInput
+  meetingBookings?: Prisma.MeetingBookingUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutEmailLogsInput = {
@@ -889,6 +925,95 @@ export type LeadUncheckedUpdateWithoutEmailLogsInput = {
   submissions?: Prisma.SubmissionUncheckedUpdateManyWithoutLeadNestedInput
   activities?: Prisma.LeadActivityUncheckedUpdateManyWithoutLeadNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRelatedLeadNestedInput
+  meetingBookings?: Prisma.MeetingBookingUncheckedUpdateManyWithoutLeadNestedInput
+}
+
+export type LeadCreateWithoutMeetingBookingsInput = {
+  id?: string
+  name?: string | null
+  company: string
+  email: string
+  phone?: string | null
+  website?: string | null
+  source: string
+  status?: $Enums.LeadStatus
+  priority?: $Enums.LeadPriority
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  submissions?: Prisma.SubmissionCreateNestedManyWithoutLeadInput
+  activities?: Prisma.LeadActivityCreateNestedManyWithoutLeadInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRelatedLeadInput
+  emailLogs?: Prisma.EmailLogCreateNestedManyWithoutLeadInput
+}
+
+export type LeadUncheckedCreateWithoutMeetingBookingsInput = {
+  id?: string
+  name?: string | null
+  company: string
+  email: string
+  phone?: string | null
+  website?: string | null
+  source: string
+  status?: $Enums.LeadStatus
+  priority?: $Enums.LeadPriority
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  submissions?: Prisma.SubmissionUncheckedCreateNestedManyWithoutLeadInput
+  activities?: Prisma.LeadActivityUncheckedCreateNestedManyWithoutLeadInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRelatedLeadInput
+  emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutLeadInput
+}
+
+export type LeadCreateOrConnectWithoutMeetingBookingsInput = {
+  where: Prisma.LeadWhereUniqueInput
+  create: Prisma.XOR<Prisma.LeadCreateWithoutMeetingBookingsInput, Prisma.LeadUncheckedCreateWithoutMeetingBookingsInput>
+}
+
+export type LeadUpsertWithoutMeetingBookingsInput = {
+  update: Prisma.XOR<Prisma.LeadUpdateWithoutMeetingBookingsInput, Prisma.LeadUncheckedUpdateWithoutMeetingBookingsInput>
+  create: Prisma.XOR<Prisma.LeadCreateWithoutMeetingBookingsInput, Prisma.LeadUncheckedCreateWithoutMeetingBookingsInput>
+  where?: Prisma.LeadWhereInput
+}
+
+export type LeadUpdateToOneWithWhereWithoutMeetingBookingsInput = {
+  where?: Prisma.LeadWhereInput
+  data: Prisma.XOR<Prisma.LeadUpdateWithoutMeetingBookingsInput, Prisma.LeadUncheckedUpdateWithoutMeetingBookingsInput>
+}
+
+export type LeadUpdateWithoutMeetingBookingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  company?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumLeadStatusFieldUpdateOperationsInput | $Enums.LeadStatus
+  priority?: Prisma.EnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  submissions?: Prisma.SubmissionUpdateManyWithoutLeadNestedInput
+  activities?: Prisma.LeadActivityUpdateManyWithoutLeadNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRelatedLeadNestedInput
+  emailLogs?: Prisma.EmailLogUpdateManyWithoutLeadNestedInput
+}
+
+export type LeadUncheckedUpdateWithoutMeetingBookingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  company?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumLeadStatusFieldUpdateOperationsInput | $Enums.LeadStatus
+  priority?: Prisma.EnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  submissions?: Prisma.SubmissionUncheckedUpdateManyWithoutLeadNestedInput
+  activities?: Prisma.LeadActivityUncheckedUpdateManyWithoutLeadNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRelatedLeadNestedInput
+  emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutLeadNestedInput
 }
 
 
@@ -901,6 +1026,7 @@ export type LeadCountOutputType = {
   activities: number
   notifications: number
   emailLogs: number
+  meetingBookings: number
 }
 
 export type LeadCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -908,6 +1034,7 @@ export type LeadCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   activities?: boolean | LeadCountOutputTypeCountActivitiesArgs
   notifications?: boolean | LeadCountOutputTypeCountNotificationsArgs
   emailLogs?: boolean | LeadCountOutputTypeCountEmailLogsArgs
+  meetingBookings?: boolean | LeadCountOutputTypeCountMeetingBookingsArgs
 }
 
 /**
@@ -948,6 +1075,13 @@ export type LeadCountOutputTypeCountEmailLogsArgs<ExtArgs extends runtime.Types.
   where?: Prisma.EmailLogWhereInput
 }
 
+/**
+ * LeadCountOutputType without action
+ */
+export type LeadCountOutputTypeCountMeetingBookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MeetingBookingWhereInput
+}
+
 
 export type LeadSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -965,6 +1099,7 @@ export type LeadSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   activities?: boolean | Prisma.Lead$activitiesArgs<ExtArgs>
   notifications?: boolean | Prisma.Lead$notificationsArgs<ExtArgs>
   emailLogs?: boolean | Prisma.Lead$emailLogsArgs<ExtArgs>
+  meetingBookings?: boolean | Prisma.Lead$meetingBookingsArgs<ExtArgs>
   _count?: boolean | Prisma.LeadCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["lead"]>
 
@@ -1016,6 +1151,7 @@ export type LeadInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   activities?: boolean | Prisma.Lead$activitiesArgs<ExtArgs>
   notifications?: boolean | Prisma.Lead$notificationsArgs<ExtArgs>
   emailLogs?: boolean | Prisma.Lead$emailLogsArgs<ExtArgs>
+  meetingBookings?: boolean | Prisma.Lead$meetingBookingsArgs<ExtArgs>
   _count?: boolean | Prisma.LeadCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type LeadIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1028,6 +1164,7 @@ export type $LeadPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     activities: Prisma.$LeadActivityPayload<ExtArgs>[]
     notifications: Prisma.$NotificationPayload<ExtArgs>[]
     emailLogs: Prisma.$EmailLogPayload<ExtArgs>[]
+    meetingBookings: Prisma.$MeetingBookingPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1439,6 +1576,7 @@ export interface Prisma__LeadClient<T, Null = never, ExtArgs extends runtime.Typ
   activities<T extends Prisma.Lead$activitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Lead$activitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LeadActivityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   notifications<T extends Prisma.Lead$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Lead$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   emailLogs<T extends Prisma.Lead$emailLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Lead$emailLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EmailLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  meetingBookings<T extends Prisma.Lead$meetingBookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Lead$meetingBookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MeetingBookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1965,6 +2103,30 @@ export type Lead$emailLogsArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.EmailLogScalarFieldEnum | Prisma.EmailLogScalarFieldEnum[]
+}
+
+/**
+ * Lead.meetingBookings
+ */
+export type Lead$meetingBookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MeetingBooking
+   */
+  select?: Prisma.MeetingBookingSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MeetingBooking
+   */
+  omit?: Prisma.MeetingBookingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MeetingBookingInclude<ExtArgs> | null
+  where?: Prisma.MeetingBookingWhereInput
+  orderBy?: Prisma.MeetingBookingOrderByWithRelationInput | Prisma.MeetingBookingOrderByWithRelationInput[]
+  cursor?: Prisma.MeetingBookingWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MeetingBookingScalarFieldEnum | Prisma.MeetingBookingScalarFieldEnum[]
 }
 
 /**

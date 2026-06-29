@@ -45,6 +45,11 @@ export type LeadSubmissionResult =
       success: true;
       leadId: string;
       submissionId: string;
+      message?: string;
+      meetingBookingStatus?: 'REQUESTED' | 'CONFIRMED' | 'CANCELLED' | 'FAILED';
+      googleEventId?: string;
+      googleEventHtmlLink?: string | null;
+      warning?: string;
     }
   | {
       success: false;

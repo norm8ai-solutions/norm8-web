@@ -388,7 +388,8 @@ export const ModelName = {
   Submission: 'Submission',
   LeadActivity: 'LeadActivity',
   Notification: 'Notification',
-  EmailLog: 'EmailLog'
+  EmailLog: 'EmailLog',
+  MeetingBooking: 'MeetingBooking'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -404,7 +405,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "lead" | "submission" | "leadActivity" | "notification" | "emailLog"
+    modelProps: "lead" | "submission" | "leadActivity" | "notification" | "emailLog" | "meetingBooking"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -778,6 +779,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    MeetingBooking: {
+      payload: Prisma.$MeetingBookingPayload<ExtArgs>
+      fields: Prisma.MeetingBookingFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MeetingBookingFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MeetingBookingPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MeetingBookingFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MeetingBookingPayload>
+        }
+        findFirst: {
+          args: Prisma.MeetingBookingFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MeetingBookingPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MeetingBookingFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MeetingBookingPayload>
+        }
+        findMany: {
+          args: Prisma.MeetingBookingFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MeetingBookingPayload>[]
+        }
+        create: {
+          args: Prisma.MeetingBookingCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MeetingBookingPayload>
+        }
+        createMany: {
+          args: Prisma.MeetingBookingCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MeetingBookingCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MeetingBookingPayload>[]
+        }
+        delete: {
+          args: Prisma.MeetingBookingDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MeetingBookingPayload>
+        }
+        update: {
+          args: Prisma.MeetingBookingUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MeetingBookingPayload>
+        }
+        deleteMany: {
+          args: Prisma.MeetingBookingDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MeetingBookingUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MeetingBookingUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MeetingBookingPayload>[]
+        }
+        upsert: {
+          args: Prisma.MeetingBookingUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MeetingBookingPayload>
+        }
+        aggregate: {
+          args: Prisma.MeetingBookingAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMeetingBooking>
+        }
+        groupBy: {
+          args: Prisma.MeetingBookingGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MeetingBookingGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MeetingBookingCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MeetingBookingCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -883,11 +958,36 @@ export const EmailLogScalarFieldEnum = {
   subject: 'subject',
   type: 'type',
   status: 'status',
+  metadata: 'metadata',
   providerMessageId: 'providerMessageId',
   createdAt: 'createdAt'
 } as const
 
 export type EmailLogScalarFieldEnum = (typeof EmailLogScalarFieldEnum)[keyof typeof EmailLogScalarFieldEnum]
+
+
+export const MeetingBookingScalarFieldEnum = {
+  id: 'id',
+  leadId: 'leadId',
+  submissionId: 'submissionId',
+  status: 'status',
+  requestedDate: 'requestedDate',
+  requestedTime: 'requestedTime',
+  startsAt: 'startsAt',
+  endsAt: 'endsAt',
+  timezone: 'timezone',
+  googleEventId: 'googleEventId',
+  googleEventHtmlLink: 'googleEventHtmlLink',
+  calendarId: 'calendarId',
+  attendeeEmail: 'attendeeEmail',
+  attendeeName: 'attendeeName',
+  attendeeCompany: 'attendeeCompany',
+  meetingGoal: 'meetingGoal',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MeetingBookingScalarFieldEnum = (typeof MeetingBookingScalarFieldEnum)[keyof typeof MeetingBookingScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -903,6 +1003,14 @@ export const JsonNullValueInput = {
 } as const
 
 export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const QueryMode = {
@@ -1063,6 +1171,20 @@ export type ListEnumEmailStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$
 
 
 /**
+ * Reference to a field of type 'MeetingBookingStatus'
+ */
+export type EnumMeetingBookingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MeetingBookingStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'MeetingBookingStatus[]'
+ */
+export type ListEnumMeetingBookingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MeetingBookingStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'Int'
  */
 export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -1190,6 +1312,7 @@ export type GlobalOmitConfig = {
   leadActivity?: Prisma.LeadActivityOmit
   notification?: Prisma.NotificationOmit
   emailLog?: Prisma.EmailLogOmit
+  meetingBooking?: Prisma.MeetingBookingOmit
 }
 
 /* Types for Logging */
