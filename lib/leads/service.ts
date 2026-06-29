@@ -13,6 +13,7 @@
 import 'server-only';
 
 import { Prisma, type LeadPriority, type SubmissionType } from '@/app/generated/prisma/client';
+import { sendSubmissionEmails } from '@/lib/email/service';
 import { prisma } from '@/lib/db/prisma';
 import {
   auditRequestSchema,
@@ -122,7 +123,7 @@ export async function createLeadSubmission<TType extends SubmissionType>(
         },
       });
 
-      await tx.emailLog.create({
+      const confirmationEmailLog = await tx.emailLog.create({
         data: {
           leadId: lead.id,
           submissionId: submission.id,
@@ -133,14 +134,24 @@ export async function createLeadSubmission<TType extends SubmissionType>(
       });
 
       return {
+        lead,
+        submission,
+        confirmationEmailLogId: confirmationEmailLog.id,
         leadId: lead.id,
         submissionId: submission.id,
       };
     });
 
+    await sendSubmissionEmails({
+      lead: result.lead,
+      submission: result.submission,
+      confirmationEmailLogId: result.confirmationEmailLogId,
+    });
+
     return {
       success: true,
-      ...result,
+      leadId: result.leadId,
+      submissionId: result.submissionId,
     };
   } catch (error) {
     console.error('Failed to create lead submission', error);
@@ -177,6 +188,7 @@ function getLeadIdentity<TType extends SubmissionType>(
       const auditPayload = payload as AuditRequestInput;
 
       return {
+        name: auditPayload.name,
         company: auditPayload.company,
         email: auditPayload.email,
         phone: auditPayload.phone,

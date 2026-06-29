@@ -31,6 +31,7 @@ const BORDER = '#182034';
 const MUTED = '#8399B8';
 
 type FormState = {
+  nome: string;
   empresa: string;
   website: string;
   setor: string;
@@ -81,6 +82,12 @@ const labelStyle: React.CSSProperties = {
 };
 
 const inputFields: InputField[] = [
+  {
+    k: 'nome',
+    l: 'Nome *',
+    type: 'text',
+    placeholder: 'João Silva',
+  },
   {
     k: 'empresa',
     l: 'Nome da Empresa *',
@@ -166,6 +173,7 @@ export default function AuditSection() {
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
 
   const [form, setForm] = useState<FormState>({
+    nome: '',
     empresa: '',
     website: '',
     setor: '',
@@ -210,6 +218,7 @@ export default function AuditSection() {
     setValidationErrors({});
 
     const result = await submitAuditRequest({
+      name: form.nome,
       company: form.empresa,
       website: form.website,
       email: form.email,

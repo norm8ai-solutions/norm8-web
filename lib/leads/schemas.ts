@@ -14,6 +14,11 @@ import { z } from 'zod';
 const requiredText = (fieldLabel: string) =>
   z.string().trim().min(1, `${fieldLabel} é obrigatório.`);
 
+const requiredName = z
+  .string()
+  .trim()
+  .min(2, 'Nome deve ter pelo menos 2 caracteres.');
+
 const optionalText = z
   .string()
   .trim()
@@ -37,6 +42,7 @@ const websiteSchema = z
  * Validation schema for the Intelligent Audit request flow.
  */
 export const auditRequestSchema = z.object({
+  name: requiredName,
   company: requiredText('Empresa'),
   website: websiteSchema,
   email: emailSchema,
