@@ -1,198 +1,219 @@
-"use client"
+'use client';
 
-import { motion } from "framer-motion"
-import { ArrowRight, Shield, Zap, TrendingUp, Database, CheckCircle2, Sparkles } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import Link from "next/link"
+import { motion } from 'framer-motion';
+import {
+  Workflow,
+  Brain,
+  Server,
+  Plug,
+  TrendingUp,
+  MessageCircle,
+  type LucideIcon,
+} from 'lucide-react';
 
-const upcomingProducts = [
-  { title: "Soluções de IA para operações", icon: Zap },
-  { title: "Plataformas verticais por indústria", icon: TrendingUp },
-  { title: "Sistemas internos de produtividade", icon: Database },
-]
+const BLUE = '#2563EB';
+const SURFACE = '#0A1120';
+const SURFACE2 = '#0D1526';
+const BORDER = '#182034';
+const MUTED = '#8399B8';
 
-const seguroScoutFeatures = [
-  "Recolha automática de dados",
-  "Análise e filtragem inteligente",
-  "Redução de tempo e custos operacionais",
-  "Preparado para escalabilidade e conformidade",
-]
+type Service = {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+};
+
+const services: Service[] = [
+  {
+    icon: Workflow,
+    title: 'Automação de Processos',
+    description:
+      'Identificamos e automatizamos tarefas repetitivas que consomem tempo da equipa, sem substituir o julgamento humano.',
+  },
+  {
+    icon: Brain,
+    title: 'Inteligência Artificial',
+    description:
+      'Implementamos sistemas de IA para classificação, análise e decisão em fluxos de trabalho específicos.',
+  },
+  {
+    icon: Server,
+    title: 'Sistemas Internos',
+    description:
+      'Desenvolvemos ferramentas e plataformas internas adaptadas às necessidades operacionais da empresa.',
+  },
+  {
+    icon: Plug,
+    title: 'Integrações',
+    description:
+      'Conectamos ferramentas e sistemas existentes para eliminar silos de informação e sincronizar dados.',
+  },
+  {
+    icon: TrendingUp,
+    title: 'Automação Comercial',
+    description:
+      'Automatizamos fluxos de prospeção, qualificação e follow-up para equipas comerciais.',
+  },
+  {
+    icon: MessageCircle,
+    title: 'Automação de Suporte',
+    description:
+      'Sistemas de resposta automática e triagem de pedidos para equipas de suporte ao cliente.',
+  },
+];
 
 export default function SolutionsSection() {
   return (
-    <section id="solucoes" className="relative py-32 bg-[#0A0A0F]">
-
-      {/* Background glow */}
-      <div className="absolute inset-0">
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[150px]" />
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[150px]" />
-      </div>
-
-      <div className="relative z-10 max-w-7xl mx-auto px-6">
-
-        {/* Header */}
+    <section
+      id="solucoes"
+      style={{
+        backgroundColor: '#060B14',
+        padding: '100px 0',
+      }}
+    >
+      <div
+        style={{
+          maxWidth: 1200,
+          margin: '0 auto',
+          padding: '0 24px',
+        }}
+      >
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-20"
+          style={{ marginBottom: 64 }}
         >
-          <span className="text-blue-400 text-sm font-medium tracking-wider uppercase mb-4 block">
-            Produtos
-          </span>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white">
-            Soluções Norm8
-          </h2>
-        </motion.div>
-
-        {/* Featured product */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="relative mb-16"
-        >
-          <div className="relative rounded-[2rem] overflow-hidden bg-gradient-to-br from-blue-600/20 via-purple-600/10 to-transparent border border-white/10">
-
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-transparent to-purple-500/10" />
-
-            <div className="relative p-8 md:p-12 lg:p-16">
-              <div className="grid lg:grid-cols-2 gap-12 items-center">
-
-                {/* Content */}
-                <div>
-
-                  {/* Active badge */}
-                  <Badge className="mb-6 bg-emerald-500/20 text-emerald-400 border-emerald-500/30 inline-flex items-center gap-2 px-3 py-1 rounded-full">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    Produto ativo
-                  </Badge>
-
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
-                      <Shield className="w-6 h-6 text-white" />
-                    </div>
-
-                    <h3 className="text-3xl md:text-4xl font-bold text-white">
-                      SeguroScout
-                    </h3>
-                  </div>
-
-                  <p className="text-xl text-blue-200/80 mb-6">
-                    Plataforma inteligente de análise e gestão de seguros.
-                  </p>
-
-                  <p className="text-gray-400 leading-relaxed mb-8">
-                    O SeguroScout utiliza Inteligência Artificial para automatizar a pesquisa,
-                    comparação e qualificação de seguros, permitindo decisões mais rápidas,
-                    informadas e eficientes.
-                  </p>
-
-                  {/* Features */}
-                  <div className="grid sm:grid-cols-2 gap-3 mb-8">
-                    {seguroScoutFeatures.map((feature, index) => (
-                      <div key={index} className="flex items-center gap-3">
-                        <CheckCircle2 className="w-5 h-5 text-blue-400 flex-shrink-0" />
-                        <span className="text-gray-300 text-sm">{feature}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <Link href="/seguro-scout">
-                    <Button className="bg-white text-gray-900 hover:bg-gray-100 px-8 py-6 text-lg rounded-xl group">
-                      Ver SeguroScout
-                      <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                    </Button>
-                  </Link>
-
-                </div>
-
-                {/* Visual */}
-                <div className="relative hidden lg:block">
-                  <div className="relative aspect-square max-w-md mx-auto">
-
-                    {/* Rings */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-64 h-64 rounded-full border border-blue-500/20 animate-pulse" />
-                      <div className="absolute w-80 h-80 rounded-full border border-purple-500/10 animate-pulse delay-300" />
-                      <div className="absolute w-96 h-96 rounded-full border border-white/5 animate-pulse delay-500" />
-                    </div>
-
-                    {/* Center icon */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-24 h-24 rounded-3xl bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center shadow-2xl shadow-blue-500/25">
-                        <Shield className="w-12 h-12 text-white" />
-                      </div>
-                    </div>
-
-                    {/* Floating icon 1 */}
-                    <motion.div
-                      animate={{ y: [-10, 10, -10] }}
-                      transition={{ duration: 4, repeat: Infinity }}
-                      className="absolute top-10 right-10 w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center backdrop-blur-sm"
-                    >
-                      <Zap className="w-6 h-6 text-blue-400" />
-                    </motion.div>
-
-                    {/* Floating icon 2 */}
-                    <motion.div
-                      animate={{ y: [10, -10, 10] }}
-                      transition={{ duration: 5, repeat: Infinity }}
-                      className="absolute bottom-10 left-10 w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center backdrop-blur-sm"
-                    >
-                      <TrendingUp className="w-6 h-6 text-emerald-400" />
-                    </motion.div>
-
-                  </div>
-                </div>
-
-              </div>
-            </div>
+          <div
+            style={{
+              fontSize: 12,
+              fontWeight: 600,
+              letterSpacing: '0.1em',
+              color: BLUE,
+              textTransform: 'uppercase',
+              marginBottom: 12,
+            }}
+          >
+            Serviços
           </div>
-        </motion.div>
 
-        {/* Upcoming products */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <h4 className="text-xl font-semibold text-white mb-8 flex items-center gap-3">
-            <Sparkles className="w-5 h-5 text-blue-400" />
-            Próximos Produtos
-          </h4>
+          <h2
+            style={{
+              fontSize: 'clamp(28px, 3.5vw, 42px)',
+              fontWeight: 800,
+              color: '#E8EDF8',
+              letterSpacing: '-0.02em',
+              marginBottom: 10,
+            }}
+          >
+            O que desenvolvemos.
+          </h2>
 
-          <div className="grid md:grid-cols-3 gap-6">
-          {upcomingProducts.map((product, index) => (
-            <div
-              key={index}
-              className="group relative p-6 rounded-2xl bg-white/[0.03] border border-white/10 border-dashed hover:border-white/20 transition-all duration-300"
-            >
-              <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center mb-4 group-hover:bg-white/10 transition-colors">
-                <product.icon className="w-6 h-6 text-gray-400" />
-              </div>
-
-              <h5 className="text-lg font-medium text-gray-300 mb-2">
-                {product.title}
-              </h5>
-
-              <Badge variant="outline" className="border-gray-700 text-gray-500">
-                Em desenvolvimento
-              </Badge>
-            </div>
-          ))}
-        </div>
-
-          <p className="text-center text-gray-500 mt-8">
-            Novas soluções de IA a serem lançadas em breve.
+          <p
+            style={{
+              fontSize: 16,
+              color: MUTED,
+              maxWidth: 520,
+            }}
+          >
+            Acreditamos que processos bem estruturados criam empresas mais
+            eficientes.
           </p>
         </motion.div>
 
+        <div
+          className="services-grid"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: 2,
+            backgroundColor: BORDER,
+            border: `1px solid ${BORDER}`,
+            borderRadius: 16,
+            overflow: 'hidden',
+          }}
+        >
+          {services.map((service, index) => {
+            const Icon = service.icon;
+
+            return (
+              <motion.div
+                key={service.title}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.06 }}
+                style={{
+                  backgroundColor: SURFACE,
+                  padding: '32px',
+                  transition: 'background-color 0.2s',
+                  cursor: 'default',
+                }}
+                onMouseEnter={(event) => {
+                  event.currentTarget.style.backgroundColor = SURFACE2;
+                }}
+                onMouseLeave={(event) => {
+                  event.currentTarget.style.backgroundColor = SURFACE;
+                }}
+              >
+                <div
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 10,
+                    backgroundColor: 'rgba(37,99,235,0.1)',
+                    border: '1px solid rgba(37,99,235,0.18)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: 18,
+                  }}
+                >
+                  <Icon size={18} color={BLUE} />
+                </div>
+
+                <h3
+                  style={{
+                    fontSize: 15,
+                    fontWeight: 700,
+                    color: '#E8EDF8',
+                    marginBottom: 8,
+                  }}
+                >
+                  {service.title}
+                </h3>
+
+                <p
+                  style={{
+                    fontSize: 13,
+                    color: MUTED,
+                    lineHeight: 1.65,
+                    margin: 0,
+                  }}
+                >
+                  {service.description}
+                </p>
+              </motion.div>
+            );
+          })}
+        </div>
       </div>
+
+      <style>
+        {`
+          @media (max-width: 900px) {
+            .services-grid {
+              grid-template-columns: repeat(2, 1fr) !important;
+            }
+          }
+
+          @media (max-width: 580px) {
+            .services-grid {
+              grid-template-columns: 1fr !important;
+            }
+          }
+        `}
+      </style>
     </section>
-  )
+  );
 }

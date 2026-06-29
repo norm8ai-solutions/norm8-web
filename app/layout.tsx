@@ -1,27 +1,30 @@
-import "./globals.css"
-import Navbar from "@/components/layout/Navbar"
-import Footer from "@/components/layout/Footer"
+import type { Metadata } from 'next';
 
-export const metadata = {
-  title: "Norm8 — Sistemas de IA",
-  description: "Desenvolvemos sistemas de Inteligência Artificial que automatizam, otimizam e escalam negócios reais.",
+import './globals.css';
+import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
+
+export const metadata: Metadata = {
+  title: 'Norm8 — Sistemas de IA',
+  description:
+    'Desenvolvemos sistemas de Inteligência Artificial que automatizam, otimizam e escalam negócios reais.',
   icons: {
-  icon: "/favicon.png",
+    icon: '/favicon.png',
   },
-}
+};
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+type RootLayoutProps = {
+  children: React.ReactNode;
+};
+
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="pt">
-      <body className="bg-[#0A0A0F] text-white min-h-screen">
+      <body className="min-h-screen bg-[#060B14] text-[#E8EDF8]">
         <Navbar />
         <main>{children}</main>
         <Footer />
       </body>
     </html>
-  )
+  );
 }

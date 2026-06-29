@@ -1,107 +1,73 @@
 @import "tailwindcss";
 
-/* ================= BASE TOKENS ================= */
+:root {
+  --background: 220 54% 5%;
+  --foreground: 220 36% 94%;
 
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+  --card: 219 44% 8%;
+  --card-foreground: 220 36% 94%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+  --popover: 219 44% 8%;
+  --popover-foreground: 220 36% 94%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
+  --primary: 221 83% 53%;
+  --primary-foreground: 0 0% 100%;
 
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
+  --secondary: 219 38% 12%;
+  --secondary-foreground: 220 36% 94%;
 
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
+  --muted: 219 32% 14%;
+  --muted-foreground: 216 23% 62%;
 
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
+  --accent: 221 83% 53%;
+  --accent-foreground: 0 0% 100%;
 
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 98%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+  --border: 222 37% 15%;
+  --input: 222 37% 15%;
+  --ring: 221 83% 53%;
 
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-
-    --radius: 0.5rem;
-  }
-
-  .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-  }
+  --radius: 0.75rem;
 }
 
-/* ================= GLOBAL RESET ================= */
-
-@layer base {
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  border-color: hsl(var(--border));
 }
 
+html {
+  scroll-behavior: smooth;
+}
 
 body {
-  background: hsl(var(--background));
-  color: hsl(var(--foreground));
-  -webkit-font-smoothing: antialiased;
+  margin: 0;
+  min-height: 100vh;
+  background-color: #060b14;
+  color: #e8edf8;
 }
 
-/* ================= NORM8 GRADIENT TEXT ================= */
-
-.gradient-text {
-  background: linear-gradient(
-    90deg,
-    #60a5fa,
-    #3b82f6,
-    #8b5cf6,
-    #60a5fa
-  );
-  background-size: 200% auto;
-  animation: gradientMove 10s linear infinite;
-
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
+::selection {
+  background-color: rgba(37, 99, 235, 0.4);
+  color: white;
 }
 
-@keyframes gradientMove {
-  0% {
-    background-position: 0% center;
-  }
-  100% {
-    background-position: 200% center;
-  }
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #060b14;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #182034;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2563eb;
 }
