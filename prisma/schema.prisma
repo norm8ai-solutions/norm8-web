@@ -1,0 +1,169 @@
+/// ------------------------------------------------------------------
+/// File: prisma/schema.prisma
+/// Description: Database schema for Norm8 lead capture and submissions.
+/// Responsibilities:
+/// - Define the reusable lead/submission data model.
+/// - Store internal notifications, lead activities, and prepared email logs.
+/// - Keep request types generic so new acquisition flows can reuse the same core.
+/// ------------------------------------------------------------------
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// Business identity captured from public forms and reused across submissions.
+model Lead {
+  id         String       @id @default(cuid())
+  name       String?
+  company    String
+  email      String       @unique
+  phone      String?
+  website    String?
+  source     String
+  status     LeadStatus   @default(NEW)
+  priority   LeadPriority @default(MEDIUM)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  submissions   Submission[]
+  activities    LeadActivity[]
+  notifications Notification[]
+  emailLogs     EmailLog[]
+
+  @@index([status])
+  @@index([priority])
+  @@index([createdAt])
+}
+
+/// A concrete request submitted by a lead, with type-specific data stored in payload.
+model Submission {
+  id        String           @id @default(cuid())
+  leadId    String
+  type      SubmissionType
+  status    SubmissionStatus @default(NEW)
+  payload   Json
+  notes     String?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  lead          Lead           @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  notifications Notification[]
+  emailLogs     EmailLog[]
+
+  @@index([leadId])
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
+}
+
+/// Timeline event used to explain what happened to a lead over time.
+model LeadActivity {
+  id        String   @id @default(cuid())
+  leadId    String
+  type      String
+  message   String
+  metadata  Json
+  createdAt DateTime @default(now())
+
+  lead Lead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([leadId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+/// Internal notification prepared for future back-office and sales workflows.
+model Notification {
+  id                  String             @id @default(cuid())
+  title               String
+  message             String
+  type                String
+  status              NotificationStatus @default(UNREAD)
+  relatedLeadId       String?
+  relatedSubmissionId String?
+  createdAt           DateTime           @default(now())
+  readAt              DateTime?
+
+  relatedLead       Lead?       @relation(fields: [relatedLeadId], references: [id], onDelete: SetNull)
+  relatedSubmission Submission? @relation(fields: [relatedSubmissionId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([type])
+  @@index([relatedLeadId])
+  @@index([relatedSubmissionId])
+  @@index([createdAt])
+}
+
+/// Outbox-style record for confirmation emails that will be sent by a provider later.
+model EmailLog {
+  id                String      @id @default(cuid())
+  leadId            String?
+  submissionId      String?
+  to                String
+  subject           String
+  type              String
+  status            EmailStatus @default(PENDING)
+  providerMessageId String?
+  createdAt         DateTime    @default(now())
+
+  lead       Lead?       @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  submission Submission? @relation(fields: [submissionId], references: [id], onDelete: SetNull)
+
+  @@index([leadId])
+  @@index([submissionId])
+  @@index([status])
+  @@index([type])
+  @@index([createdAt])
+}
+
+/// Supported public acquisition flows that all use the same submissions pipeline.
+enum SubmissionType {
+  AUDIT_REQUEST
+  CUSTOM_AUTOMATION_REQUEST
+  MEETING_REQUEST
+}
+
+/// Operational lifecycle for a submitted request.
+enum SubmissionStatus {
+  NEW
+  IN_REVIEW
+  CONTACTED
+  CLOSED
+  ARCHIVED
+}
+
+/// Commercial lifecycle for the lead identity behind one or more submissions.
+enum LeadStatus {
+  NEW
+  QUALIFIED
+  CONTACTED
+  CONVERTED
+  LOST
+}
+
+/// Internal priority used for triage and future sales automation.
+enum LeadPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+/// Read state for internal notifications.
+enum NotificationStatus {
+  UNREAD
+  READ
+  ARCHIVED
+}
+
+/// Delivery state for prepared email records.
+enum EmailStatus {
+  PENDING
+  SENT
+  FAILED
+}

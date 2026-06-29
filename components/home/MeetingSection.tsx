@@ -1,7 +1,20 @@
+/**
+ * ------------------------------------------------------------------
+ * File: components/home/MeetingSection.tsx
+ * Description: Public meeting request section for the Norm8 website.
+ * Responsibilities:
+ * - Render a lightweight date/time selection experience.
+ * - Capture meeting intent without depending on Google Calendar yet.
+ * - Submit requests through the generic lead submissions server action.
+ * ------------------------------------------------------------------
+ */
+
 'use client';
 
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { submitMeetingRequest } from '@/app/actions/lead-submissions';
+import type { ValidationErrors } from '@/lib/leads/types';
 import { ArrowRight, Calendar, CheckCircle2, Clock } from 'lucide-react';
 
 const BLUE = '#2563EB';
@@ -105,8 +118,15 @@ const getCalendarDays = (): CalendarDay[] => {
   return days;
 };
 
+/**
+ * Renders the meeting request form and stores the request through the generic
+ * lead submissions pipeline without integrating a real calendar yet.
+ */
 export default function MeetingSection() {
   const [submitted, setSubmitted] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
 
@@ -139,15 +159,47 @@ export default function MeetingSection() {
     event.currentTarget.style.borderColor = BORDER;
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
+  /**
+   * Sends the selected meeting slot and contact details to the server action.
+   *
+   * @param event Browser form submit event.
+   */
+  const handleSubmit = async (
+    event: React.FormEvent<HTMLFormElement>,
+  ): Promise<void> => {
     event.preventDefault();
+    setErrorMessage(null);
+    setValidationErrors({});
 
     if (!selectedDate || !selectedTime) {
+      setErrorMessage('Selecione data e hora para continuar.');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    const result = await submitMeetingRequest({
+      name: form.nome,
+      company: form.empresa,
+      email: form.email,
+      phone: form.telefone,
+      meetingGoal: form.objetivo,
+      selectedDate: selectedDate.toISOString().slice(0, 10),
+      selectedTime,
+    });
+
+    setIsSubmitting(false);
+
+    if (!result.success) {
+      setErrorMessage(result.error);
+      setValidationErrors(result.validationErrors ?? {});
       return;
     }
 
     setSubmitted(true);
   };
+
+  const validationSummary = Object.values(validationErrors).flat();
 
   const formatDate = (date: Date | null): string => {
     if (!date) {
@@ -470,8 +522,31 @@ export default function MeetingSection() {
                     </div>
                   </div>
 
+                  {(errorMessage || validationSummary.length > 0) && (
+                    <div
+                      style={{
+                        backgroundColor: 'rgba(248,113,113,0.08)',
+                        border: '1px solid rgba(248,113,113,0.25)',
+                        borderRadius: 10,
+                        color: '#fecaca',
+                        fontSize: 13,
+                        marginTop: 20,
+                        padding: '12px 14px',
+                      }}
+                    >
+                      {errorMessage && <p style={{ margin: 0 }}>{errorMessage}</p>}
+
+                      {validationSummary.map((message) => (
+                        <p key={message} style={{ margin: '6px 0 0' }}>
+                          {message}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+
                   <button
                     type="submit"
+                    disabled={isSubmitting || !selectedDate || !selectedTime}
                     style={{
                       marginTop: 28,
                       width: '100%',
@@ -483,7 +558,9 @@ export default function MeetingSection() {
                       fontSize: 15,
                       fontWeight: 700,
                       cursor:
-                        selectedDate && selectedTime ? 'pointer' : 'not-allowed',
+                        selectedDate && selectedTime && !isSubmitting
+                          ? 'pointer'
+                          : 'not-allowed',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -501,7 +578,8 @@ export default function MeetingSection() {
                         !selectedDate || !selectedTime ? '0.5' : '1';
                     }}
                   >
-                    Marcar Reunião <ArrowRight size={16} />
+                    {isSubmitting ? 'A enviar...' : 'Marcar Reunião'}{' '}
+                    <ArrowRight size={16} />
                   </button>
 
                   {(!selectedDate || !selectedTime) && (
@@ -557,7 +635,7 @@ export default function MeetingSection() {
                   marginBottom: 12,
                 }}
               >
-                Reunião marcada!
+                Pedido de reunião recebido!
               </h3>
 
               <p
@@ -566,8 +644,7 @@ export default function MeetingSection() {
                   color: MUTED,
                 }}
               >
-                {formatDate(selectedDate)} às {selectedTime}. Receberá uma
-                confirmação em {form.email}.
+                Pedido de reunião recebido. Iremos confirmar a disponibilidade.
               </p>
             </motion.div>
           )}
