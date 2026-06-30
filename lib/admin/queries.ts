@@ -1,0 +1,219 @@
+/**
+ * ------------------------------------------------------------------
+ * File: lib/admin/queries.ts
+ * Description: Server-side Prisma queries for the Norm8 admin dashboard.
+ * Responsibilities:
+ * - Fetch overview metrics and operational tables from the database.
+ * - Keep admin pages thin and focused on rendering.
+ * - Provide reusable data access for future authenticated admin features.
+ * ------------------------------------------------------------------
+ */
+
+import 'server-only';
+
+import type { Prisma } from '@/app/generated/prisma/client';
+import { prisma } from '@/lib/db/prisma';
+import type {
+  EmailFilter,
+  LeadFilters,
+  MeetingFilter,
+  NotificationFilter,
+} from './types';
+
+/**
+ * Loads overview KPIs and latest operational records.
+ *
+ * @returns Aggregated admin overview data.
+ */
+export async function getAdminOverview() {
+  const now = new Date();
+  const [
+    totalLeads,
+    newLeads,
+    totalSubmissions,
+    auditRequests,
+    automationRequests,
+    confirmedMeetings,
+    failedMeetings,
+    sentEmails,
+    failedEmails,
+    latestSubmissions,
+    upcomingMeetings,
+    latestNotifications,
+  ] = await Promise.all([
+    prisma.lead.count(),
+    prisma.lead.count({ where: { status: 'NEW' } }),
+    prisma.submission.count(),
+    prisma.submission.count({ where: { type: 'AUDIT_REQUEST' } }),
+    prisma.submission.count({ where: { type: 'CUSTOM_AUTOMATION_REQUEST' } }),
+    prisma.meetingBooking.count({ where: { status: 'CONFIRMED' } }),
+    prisma.meetingBooking.count({ where: { status: 'FAILED' } }),
+    prisma.emailLog.count({ where: { status: 'SENT' } }),
+    prisma.emailLog.count({ where: { status: 'FAILED' } }),
+    prisma.submission.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 6,
+      include: { lead: true },
+    }),
+    prisma.meetingBooking.findMany({
+      where: { startsAt: { gte: now } },
+      orderBy: { startsAt: 'asc' },
+      take: 6,
+      include: { lead: true },
+    }),
+    prisma.notification.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 6,
+    }),
+  ]);
+
+  return {
+    metrics: {
+      totalLeads,
+      newLeads,
+      totalSubmissions,
+      auditRequests,
+      automationRequests,
+      confirmedMeetings,
+      failedMeetings,
+      sentEmails,
+      failedEmails,
+    },
+    latestSubmissions,
+    upcomingMeetings,
+    latestNotifications,
+  };
+}
+
+/**
+ * Loads leads with search and filter support.
+ *
+ * @param filters Search, status, and priority filters.
+ * @returns Matching leads ordered by creation date.
+ */
+export async function getLeads(filters: LeadFilters = {}) {
+  const where: Prisma.LeadWhereInput = {
+    AND: [
+      filters.search
+        ? {
+            OR: [
+              { name: { contains: filters.search, mode: 'insensitive' } },
+              { company: { contains: filters.search, mode: 'insensitive' } },
+              { email: { contains: filters.search, mode: 'insensitive' } },
+            ],
+          }
+        : {},
+      filters.status && filters.status !== 'ALL' ? { status: filters.status } : {},
+      filters.priority && filters.priority !== 'ALL'
+        ? { priority: filters.priority }
+        : {},
+    ],
+  };
+
+  return prisma.lead.findMany({
+    where,
+    orderBy: { createdAt: 'desc' },
+    include: {
+      submissions: { select: { id: true } },
+      meetingBookings: { select: { id: true } },
+    },
+  });
+}
+
+/**
+ * Loads a lead detail with all related operational records.
+ *
+ * @param id Lead identifier.
+ * @returns Lead detail or null.
+ */
+export async function getLeadById(id: string) {
+  return prisma.lead.findUnique({
+    where: { id },
+    include: {
+      submissions: { orderBy: { createdAt: 'desc' } },
+      meetingBookings: { orderBy: { startsAt: 'desc' } },
+      emailLogs: { orderBy: { createdAt: 'desc' } },
+      activities: { orderBy: { createdAt: 'desc' } },
+      notifications: { orderBy: { createdAt: 'desc' } },
+    },
+  });
+}
+
+/**
+ * Loads all submissions with lead context.
+ *
+ * @returns Submissions ordered by newest first.
+ */
+export async function getSubmissions() {
+  return prisma.submission.findMany({
+    orderBy: { createdAt: 'desc' },
+    include: { lead: true, meetingBooking: true },
+  });
+}
+
+/**
+ * Loads a single submission detail.
+ *
+ * @param id Submission identifier.
+ * @returns Submission detail or null.
+ */
+export async function getSubmissionById(id: string) {
+  return prisma.submission.findUnique({
+    where: { id },
+    include: { lead: true, meetingBooking: true, emailLogs: true },
+  });
+}
+
+/**
+ * Loads meeting bookings with admin filters.
+ *
+ * @param filter Meeting filter.
+ * @returns Matching meeting bookings.
+ */
+export async function getMeetings(filter: MeetingFilter = 'ALL') {
+  const now = new Date();
+  const where: Prisma.MeetingBookingWhereInput =
+    filter === 'CONFIRMED'
+      ? { status: 'CONFIRMED' }
+      : filter === 'FAILED'
+        ? { status: 'FAILED' }
+        : filter === 'UPCOMING'
+          ? { startsAt: { gte: now } }
+          : filter === 'PAST'
+            ? { startsAt: { lt: now } }
+            : {};
+
+  return prisma.meetingBooking.findMany({
+    where,
+    orderBy: { startsAt: 'desc' },
+    include: { lead: true, submission: true },
+  });
+}
+
+/**
+ * Loads email logs with optional status filter.
+ *
+ * @param filter Email status filter.
+ * @returns Matching email logs.
+ */
+export async function getEmailLogs(filter: EmailFilter = 'ALL') {
+  return prisma.emailLog.findMany({
+    where: filter === 'ALL' ? {} : { status: filter },
+    orderBy: { createdAt: 'desc' },
+    include: { lead: true, submission: true },
+  });
+}
+
+/**
+ * Loads notifications with optional status filter.
+ *
+ * @param filter Notification status filter.
+ * @returns Matching notifications.
+ */
+export async function getNotifications(filter: NotificationFilter = 'ALL') {
+  return prisma.notification.findMany({
+    where: filter === 'ALL' ? {} : { status: filter },
+    orderBy: { createdAt: 'desc' },
+    include: { relatedLead: true, relatedSubmission: true },
+  });
+}

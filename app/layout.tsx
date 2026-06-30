@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
 
 import './globals.css';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
+import SiteChrome from '@/components/layout/SiteChrome';
 
 export const metadata: Metadata = {
   title: 'Norm8 — Sistemas de IA',
@@ -21,9 +20,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="pt">
       <body className="min-h-screen bg-[#060B14] text-[#E8EDF8]">
-        <Navbar />
-        <main>{children}</main>
-        <Footer />
+        <SiteChrome>{children}</SiteChrome>
       </body>
     </html>
   );
