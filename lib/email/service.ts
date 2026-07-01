@@ -4,8 +4,8 @@
  * Description: Transactional email workflow service for Norm8 submissions.
  * Responsibilities:
  * - Send customer confirmation emails based on submission type and booking state.
+ * - Send Executive Audit Preview when audit client preview data is available.
  * - Send internal lead notifications to the Norm8 team.
- * - Update EmailLog records with SENT or FAILED state and meeting metadata.
  * - Keep email failures isolated from the primary lead submission flow.
  * ------------------------------------------------------------------
  */
@@ -13,9 +13,16 @@
 import 'server-only';
 
 import { createElement, type ReactNode } from 'react';
-import type { MeetingBookingStatus, SubmissionType } from '@/app/generated/prisma/client';
+import type {
+  AuditAnalysis,
+  MeetingBookingStatus,
+  SubmissionType,
+} from '@/app/generated/prisma/client';
 import { prisma } from '@/lib/db/prisma';
-import { formatSubmissionType } from './formatters';
+import {
+  formatSubmissionType,
+  getSubmissionContactSnapshot,
+} from './formatters';
 import { EmailConfigurationError, getResendClient } from './resend';
 import type {
   EmailType,
@@ -26,6 +33,7 @@ import type {
 } from './types';
 import AuditConfirmationEmail from './templates/AuditConfirmationEmail';
 import CustomAutomationConfirmationEmail from './templates/CustomAutomationConfirmationEmail';
+import ExecutiveAuditPreviewEmail from './templates/ExecutiveAuditPreviewEmail';
 import InternalLeadNotificationEmail from './templates/InternalLeadNotificationEmail';
 import MeetingRequestConfirmationEmail from './templates/MeetingRequestConfirmationEmail';
 
@@ -42,13 +50,24 @@ type EmailSendJob = {
   metadata?: EmailMetadata;
 };
 
+type ConfirmationConfig = {
+  subject: string;
+  type: Exclude<EmailType, 'INTERNAL_NOTIFICATION'>;
+  template:
+    | typeof AuditConfirmationEmail
+    | typeof CustomAutomationConfirmationEmail
+    | typeof ExecutiveAuditPreviewEmail
+    | typeof MeetingRequestConfirmationEmail;
+  clientPreviewSent?: boolean;
+};
+
 /**
  * Sends all emails related to a newly created lead submission.
  *
  * Email delivery is best-effort. Provider/configuration errors are written to
  * EmailLog and console.error, but they never throw back into the submission flow.
  *
- * @param params Lead, submission, meeting booking, and existing EmailLog context.
+ * @param params Lead, submission, meeting booking, existing EmailLog, and audit context.
  * @returns Promise that resolves after all email attempts have been processed.
  */
 export async function sendSubmissionEmails(
@@ -80,7 +99,7 @@ export async function sendSubmissionEmails(
 /**
  * Builds the customer confirmation email job for the submission type.
  *
- * @param params Lead, submission, booking, and confirmation EmailLog context.
+ * @param params Lead, submission, booking, audit analysis, and confirmation EmailLog context.
  * @returns Email job or null when no customer email can be sent.
  */
 async function buildConfirmationEmailJob({
@@ -88,9 +107,18 @@ async function buildConfirmationEmailJob({
   submission,
   meetingBooking,
   confirmationEmailLogId,
+  auditAnalysis,
 }: SendSubmissionEmailsParams): Promise<EmailSendJob | null> {
-  const config = getConfirmationConfig(submission.type, meetingBooking?.status);
-  const metadata = buildEmailMetadata(meetingBooking);
+  const config = getConfirmationConfig(
+    submission.type,
+    meetingBooking?.status,
+    auditAnalysis,
+  );
+  const metadata = buildEmailMetadata(meetingBooking, auditAnalysis, {
+    clientPreviewSent: config.clientPreviewSent ?? false,
+  });
+  const contactSnapshot = getSubmissionContactSnapshot(submission, lead);
+  const recipientEmail = contactSnapshot.email;
   const logId =
     confirmationEmailLogId ??
     (
@@ -98,7 +126,7 @@ async function buildConfirmationEmailJob({
         data: {
           leadId: lead.id,
           submissionId: submission.id,
-          to: lead.email || 'missing-lead-email',
+          to: recipientEmail || 'missing-lead-email',
           subject: config.subject,
           type: config.type,
           metadata,
@@ -111,26 +139,28 @@ async function buildConfirmationEmailJob({
       id: logId,
     },
     data: {
+      to: recipientEmail || 'missing-lead-email',
       subject: config.subject,
       metadata,
     },
   });
 
-  if (!lead.email) {
+  if (!recipientEmail) {
     await markEmailFailed(logId, 'Lead email is missing.');
     return null;
   }
 
   return {
     logId,
-    to: lead.email,
+    to: recipientEmail,
     subject: config.subject,
     type: config.type,
     metadata,
     react: createElement(config.template, {
-      lead,
+      lead: contactSnapshot,
       submission,
       meetingBooking,
+      auditAnalysis,
     }),
   };
 }
@@ -138,19 +168,23 @@ async function buildConfirmationEmailJob({
 /**
  * Builds the internal notification email job and creates its pending EmailLog.
  *
- * @param params Lead, submission, and optional meeting booking context.
+ * @param params Lead, submission, optional meeting booking, and audit analysis context.
  * @returns Email job or null when the internal recipient is not configured.
  */
 async function buildInternalNotificationEmailJob({
   lead,
   submission,
   meetingBooking,
+  auditAnalysis,
 }: SendSubmissionEmailsParams): Promise<EmailSendJob | null> {
   const to = process.env.INTERNAL_NOTIFICATION_EMAIL;
-  const subject = `Nova submissão recebida no website Norm8 — ${formatSubmissionType(
-    submission.type,
-  )}`;
-  const metadata = buildEmailMetadata(meetingBooking);
+  const subject =
+    submission.type === 'AUDIT_REQUEST'
+      ? 'Nova Auditoria Inteligente recebida'
+      : `Nova submissão recebida no website Norm8 - ${formatSubmissionType(
+          submission.type,
+        )}`;
+  const metadata = buildEmailMetadata(meetingBooking, auditAnalysis);
   const log = await prisma.emailLog.create({
     data: {
       leadId: lead.id,
@@ -167,7 +201,12 @@ async function buildInternalNotificationEmailJob({
     return null;
   }
 
-  const templateProps = buildInternalTemplateProps(lead, submission, meetingBooking);
+  const templateProps = buildInternalTemplateProps(
+    lead,
+    submission,
+    meetingBooking,
+    auditAnalysis,
+  );
 
   return {
     logId: log.id,
@@ -228,7 +267,7 @@ async function sendEmailJob(job: EmailSendJob): Promise<void> {
  *
  * @param logId EmailLog identifier.
  * @param reason Internal failure reason for server logs.
- * @param metadata Optional booking metadata to preserve on failure.
+ * @param metadata Optional booking/audit metadata to preserve on failure.
  * @returns Promise that resolves after the log is updated.
  */
 async function markEmailFailed(
@@ -249,32 +288,35 @@ async function markEmailFailed(
   console.error(`EmailLog ${logId} marked as FAILED: ${reason}`);
 }
 
-type ConfirmationConfig = {
-  subject: string;
-  type: Exclude<EmailType, 'INTERNAL_NOTIFICATION'>;
-  template:
-    | typeof AuditConfirmationEmail
-    | typeof CustomAutomationConfirmationEmail
-    | typeof MeetingRequestConfirmationEmail;
-};
-
 /**
  * Resolves the customer email subject, type, and template by submission type.
  *
  * @param type Submission type stored in the database.
  * @param meetingStatus Optional booking status for meeting email subject.
+ * @param auditAnalysis Optional audit analysis used for Executive Audit Preview.
  * @returns Confirmation email configuration.
  */
 function getConfirmationConfig(
   type: SubmissionType,
   meetingStatus?: MeetingBookingStatus,
+  auditAnalysis?: SendSubmissionEmailsParams['auditAnalysis'],
 ): ConfirmationConfig {
   switch (type) {
     case 'AUDIT_REQUEST':
+      if (hasClientPreview(auditAnalysis)) {
+        return {
+          subject: 'A sua pré-análise de automação da Norm8',
+          type: 'AUDIT_CONFIRMATION',
+          template: ExecutiveAuditPreviewEmail,
+          clientPreviewSent: true,
+        };
+      }
+
       return {
         subject: 'Recebemos o seu pedido de Auditoria Inteligente',
         type: 'AUDIT_CONFIRMATION',
         template: AuditConfirmationEmail,
+        clientPreviewSent: false,
       };
     case 'CUSTOM_AUTOMATION_REQUEST':
       return {
@@ -298,20 +340,38 @@ function getConfirmationConfig(
  * Builds provider-independent email metadata for EmailLog records.
  *
  * @param meetingBooking Optional meeting booking context.
+ * @param auditAnalysis Optional audit analysis context.
+ * @param options Optional email-specific metadata flags.
  * @returns JSON-safe metadata object.
  */
 function buildEmailMetadata(
   meetingBooking?: SendSubmissionEmailsParams['meetingBooking'],
+  auditAnalysis?: SendSubmissionEmailsParams['auditAnalysis'],
+  options: { clientPreviewSent?: boolean } = {},
 ): EmailMetadata | undefined {
-  if (!meetingBooking) {
-    return undefined;
+  const metadata: EmailMetadata = {};
+
+  if (meetingBooking) {
+    metadata.meetingBookingStatus = meetingBooking.status;
+    metadata.googleEventId = meetingBooking.googleEventId ?? null;
+    metadata.googleEventHtmlLink = meetingBooking.googleEventHtmlLink ?? null;
   }
 
-  return {
-    meetingBookingStatus: meetingBooking.status,
-    googleEventId: meetingBooking.googleEventId ?? null,
-    googleEventHtmlLink: meetingBooking.googleEventHtmlLink ?? null,
-  };
+  if (auditAnalysis) {
+    metadata.auditAnalysisStatus = auditAnalysis.status;
+    metadata.auditAnalysisId = auditAnalysis.id;
+    metadata.auditAnalysisScore =
+      auditAnalysis.score === null || auditAnalysis.score === undefined
+        ? null
+        : String(auditAnalysis.score);
+    metadata.clientPreviewReady = hasClientPreview(auditAnalysis) ? 'true' : 'false';
+  }
+
+  if (options.clientPreviewSent !== undefined) {
+    metadata.clientPreviewSent = options.clientPreviewSent ? 'true' : 'false';
+  }
+
+  return Object.keys(metadata).length > 0 ? metadata : undefined;
 }
 
 /**
@@ -320,17 +380,20 @@ function buildEmailMetadata(
  * @param lead Lead identity fields.
  * @param submission Submission and payload context.
  * @param meetingBooking Optional meeting booking context.
+ * @param auditAnalysis Optional audit analysis context.
  * @returns Internal email template props.
  */
 function buildInternalTemplateProps(
   lead: SubmissionEmailLead,
   submission: SubmissionEmailSubmission,
   meetingBooking?: SendSubmissionEmailsParams['meetingBooking'],
+  auditAnalysis?: SendSubmissionEmailsParams['auditAnalysis'],
 ): InternalLeadNotificationEmailProps {
   return {
-    lead,
+    lead: getSubmissionContactSnapshot(submission, lead),
     submission,
     meetingBooking,
+    auditAnalysis,
     payloadFields: getPayloadFields(submission.payload),
     summary: getSubmissionSummary(submission.type, submission.payload),
   };
@@ -400,4 +463,24 @@ function getSubmissionSummary(
     case 'MEETING_REQUEST':
       return `Nova marcação de reunião. Objetivo: ${challenge}`;
   }
+}
+
+/**
+ * Checks whether a completed audit analysis has enough client preview data for email.
+ *
+ * @param auditAnalysis Optional audit analysis record.
+ * @returns Whether the Executive Audit Preview can be sent.
+ */
+function hasClientPreview(auditAnalysis?: AuditAnalysis | null): auditAnalysis is AuditAnalysis {
+  return Boolean(
+    auditAnalysis?.status === 'COMPLETED' &&
+      auditAnalysis.clientPreviewTitle &&
+      auditAnalysis.clientPreviewSummary &&
+      auditAnalysis.clientPreviewRecommendedDirection &&
+      auditAnalysis.clientPreviewNextStep &&
+      Array.isArray(auditAnalysis.clientPreviewOpportunities) &&
+      auditAnalysis.clientPreviewOpportunities.length > 0 &&
+      Array.isArray(auditAnalysis.clientPreviewBenefits) &&
+      auditAnalysis.clientPreviewBenefits.length >= 3,
+  );
 }

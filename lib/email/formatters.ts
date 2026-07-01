@@ -13,6 +13,10 @@ import type {
   MeetingBookingStatus,
   SubmissionType,
 } from '@/app/generated/prisma/client';
+import type {
+  SubmissionEmailLead,
+  SubmissionEmailSubmission,
+} from './types';
 
 /**
  * Converts internal submission types into readable Portuguese labels.
@@ -81,11 +85,14 @@ export function formatPayloadLabel(label: string): string {
     company: 'Empresa',
     email: 'Email',
     phone: 'Telefone',
+    website: 'Website',
     meetingGoal: 'Objetivo',
     selectedDate: 'Data pedida',
     selectedTime: 'Hora pedida',
     industry: 'Setor',
     employees: 'Colaboradores',
+    annualRevenue: 'Receita anual',
+    toolsUsed: 'Ferramentas usadas',
     mainChallenge: 'Principal desafio',
     mainGoal: 'Objetivo principal',
     processToAutomate: 'Processo a automatizar',
@@ -128,4 +135,61 @@ export function formatMeetingDuration(startsAt: Date, endsAt: Date): string {
   const minutes = Math.round((endsAt.getTime() - startsAt.getTime()) / 60_000);
 
   return `${minutes} minutos`;
+}
+
+export type SubmissionContactSnapshot = SubmissionEmailLead & {
+  industry?: string;
+};
+
+/**
+ * Builds the historical contact snapshot for a submission-related email.
+ *
+ * Lead records are consolidated by email and can keep older identity fields.
+ * Customer and internal emails tied to a Submission must therefore prefer the
+ * immutable Submission.payload values and only use Lead as fallback.
+ *
+ * @param submission Submission context with immutable payload.
+ * @param lead Consolidated Lead fallback.
+ * @returns Contact data that reflects the submitted form snapshot.
+ */
+export function getSubmissionContactSnapshot(
+  submission: SubmissionEmailSubmission,
+  lead: SubmissionEmailLead,
+): SubmissionContactSnapshot {
+  return {
+    id: lead.id,
+    name: getPayloadString(submission.payload, 'name') ?? lead.name,
+    company: getPayloadString(submission.payload, 'company') ?? lead.company,
+    email: getPayloadString(submission.payload, 'email') ?? lead.email,
+    phone: getPayloadString(submission.payload, 'phone') ?? lead.phone,
+    website: getPayloadString(submission.payload, 'website') ?? lead.website,
+    industry: getPayloadString(submission.payload, 'industry'),
+  };
+}
+
+/**
+ * Reads a printable string from a submission payload.
+ *
+ * @param payload Submission payload snapshot.
+ * @param key Payload key to read.
+ * @returns Trimmed string value or undefined.
+ */
+function getPayloadString(payload: unknown, key: string): string | undefined {
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+    return undefined;
+  }
+
+  const value = (payload as Record<string, unknown>)[key];
+
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+
+    return trimmed || undefined;
+  }
+
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return String(value);
+  }
+
+  return undefined;
 }

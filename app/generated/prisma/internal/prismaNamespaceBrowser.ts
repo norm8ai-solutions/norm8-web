@@ -56,7 +56,8 @@ export const ModelName = {
   LeadActivity: 'LeadActivity',
   Notification: 'Notification',
   EmailLog: 'EmailLog',
-  MeetingBooking: 'MeetingBooking'
+  MeetingBooking: 'MeetingBooking',
+  AuditAnalysis: 'AuditAnalysis'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -82,6 +83,9 @@ export const LeadScalarFieldEnum = {
   email: 'email',
   phone: 'phone',
   website: 'website',
+  normalizedCompany: 'normalizedCompany',
+  normalizedWebsite: 'normalizedWebsite',
+  normalizedEmail: 'normalizedEmail',
   source: 'source',
   status: 'status',
   priority: 'priority',
@@ -171,6 +175,34 @@ export const MeetingBookingScalarFieldEnum = {
 } as const
 
 export type MeetingBookingScalarFieldEnum = (typeof MeetingBookingScalarFieldEnum)[keyof typeof MeetingBookingScalarFieldEnum]
+
+
+export const AuditAnalysisScalarFieldEnum = {
+  id: 'id',
+  submissionId: 'submissionId',
+  leadId: 'leadId',
+  score: 'score',
+  priority: 'priority',
+  companySummary: 'companySummary',
+  operationalProblems: 'operationalProblems',
+  automationOpportunities: 'automationOpportunities',
+  recommendedSolutions: 'recommendedSolutions',
+  nextStep: 'nextStep',
+  internalSummary: 'internalSummary',
+  clientPreviewTitle: 'clientPreviewTitle',
+  clientPreviewSummary: 'clientPreviewSummary',
+  clientPreviewOpportunities: 'clientPreviewOpportunities',
+  clientPreviewBenefits: 'clientPreviewBenefits',
+  clientPreviewRecommendedDirection: 'clientPreviewRecommendedDirection',
+  clientPreviewNextStep: 'clientPreviewNextStep',
+  aiModel: 'aiModel',
+  status: 'status',
+  errorMessage: 'errorMessage',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AuditAnalysisScalarFieldEnum = (typeof AuditAnalysisScalarFieldEnum)[keyof typeof AuditAnalysisScalarFieldEnum]
 
 
 export const SortOrder = {

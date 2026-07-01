@@ -21,9 +21,12 @@ model Lead {
   id         String       @id @default(cuid())
   name       String?
   company    String
-  email      String       @unique
+  email      String
   phone      String?
   website    String?
+  normalizedCompany String?
+  normalizedWebsite String?
+  normalizedEmail   String?
   source     String
   status     LeadStatus   @default(NEW)
   priority   LeadPriority @default(MEDIUM)
@@ -35,7 +38,11 @@ model Lead {
   notifications Notification[]
   emailLogs     EmailLog[]
   meetingBookings MeetingBooking[]
+  auditAnalyses AuditAnalysis[]
 
+  @@index([normalizedCompany])
+  @@index([normalizedWebsite])
+  @@index([normalizedEmail])
   @@index([status])
   @@index([priority])
   @@index([createdAt])
@@ -56,6 +63,7 @@ model Submission {
   notifications Notification[]
   emailLogs     EmailLog[]
   meetingBooking MeetingBooking?
+  auditAnalysis AuditAnalysis?
 
   @@index([leadId])
   @@index([type])
@@ -154,6 +162,39 @@ model MeetingBooking {
   @@index([createdAt])
 }
 
+/// AI-generated operational audit analysis for intelligent audit submissions.
+model AuditAnalysis {
+  id                      String              @id @default(cuid())
+  submissionId            String              @unique
+  leadId                  String
+  score                   Int?
+  priority                AuditPriority?
+  companySummary          String?
+  operationalProblems     Json?
+  automationOpportunities Json?
+  recommendedSolutions    Json?
+  nextStep                String?
+  internalSummary         String?
+  clientPreviewTitle String?
+  clientPreviewSummary String?
+  clientPreviewOpportunities Json?
+  clientPreviewBenefits Json?
+  clientPreviewRecommendedDirection String?
+  clientPreviewNextStep String?
+  aiModel                 String?
+  status                  AuditAnalysisStatus @default(PENDING)
+  errorMessage            String?
+  createdAt               DateTime            @default(now())
+  updatedAt               DateTime            @updatedAt
+
+  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  lead       Lead       @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([leadId])
+  @@index([status])
+  @@index([priority])
+  @@index([createdAt])
+}
 /// Supported public acquisition flows that all use the same submissions pipeline.
 enum SubmissionType {
   AUDIT_REQUEST
@@ -208,3 +249,19 @@ enum MeetingBookingStatus {
   CANCELLED
   FAILED
 }
+
+/// Lifecycle for AI-generated audit analysis records.
+enum AuditAnalysisStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+/// Commercial priority produced by the AI audit analysis.
+enum AuditPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+

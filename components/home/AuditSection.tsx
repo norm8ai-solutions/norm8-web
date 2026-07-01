@@ -16,11 +16,10 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { submitAuditRequest } from '@/app/actions/lead-submissions';
 import type { ValidationErrors } from '@/lib/leads/types';
 import {
-  BarChart3,
   CheckCircle2,
+  MailCheck,
+  SearchCheck,
   Sparkles,
-  TrendingUp,
-  Zap,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -53,10 +52,10 @@ type InputField = {
   placeholder: string;
 };
 
-type ScoreCard = {
+type ProcessCard = {
   icon: LucideIcon;
   label: string;
-  val: string;
+  subtext: string;
   color: string;
 };
 
@@ -141,23 +140,23 @@ const receitaOptions: string[] = [
   'Acima de 20M€',
 ];
 
-const scoreCards: ScoreCard[] = [
+const processCards: ProcessCard[] = [
   {
-    icon: BarChart3,
-    label: 'Audit Score',
-    val: '—',
+    icon: CheckCircle2,
+    label: 'Pedido recebido',
+    subtext: 'Informações registadas com sucesso',
     color: BLUE,
   },
   {
-    icon: Zap,
-    label: 'Automation Opportunity Score',
-    val: '—',
+    icon: SearchCheck,
+    label: 'Pré-análise gerada',
+    subtext: 'Resumo inicial preparado com IA',
     color: '#8b5cf6',
   },
   {
-    icon: TrendingUp,
-    label: 'Potential Savings',
-    val: '—',
+    icon: MailCheck,
+    label: 'Próximos passos por email',
+    subtext: 'Receberá a pré-análise na sua caixa de entrada',
     color: '#10b981',
   },
 ];
@@ -605,28 +604,27 @@ export default function AuditSection() {
                 style={{
                   fontSize: 16,
                   color: MUTED,
-                  maxWidth: 440,
+                  maxWidth: 520,
                   margin: '0 auto 48px',
                 }}
               >
-                Auditoria recebida. A equipa da Norm8 irá analisar as
-                informações e entrar em contacto.
+                A sua pré-análise está a ser preparada e será enviada por email dentro de instantes.
               </p>
 
               <div
-                className="scores-grid"
+                className="process-grid"
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(3, 1fr)',
+                  gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
                   gap: 16,
                 }}
               >
-                {scoreCards.map((score) => {
-                  const Icon = score.icon;
+                {processCards.map((card) => {
+                  const Icon = card.icon;
 
                   return (
                     <div
-                      key={score.label}
+                      key={card.label}
                       style={{
                         backgroundColor: SURFACE2,
                         border: `1px solid ${BORDER}`,
@@ -639,49 +637,40 @@ export default function AuditSection() {
                           width: 40,
                           height: 40,
                           borderRadius: 10,
-                          backgroundColor: `${score.color}15`,
+                          backgroundColor: `${card.color}15`,
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           margin: '0 auto 12px',
                         }}
                       >
-                        <Icon size={18} color={score.color} />
+                        <Icon size={18} color={card.color} />
                       </div>
 
                       <div
                         style={{
-                          fontSize: 28,
+                          fontSize: 17,
                           fontWeight: 800,
                           color: '#E8EDF8',
-                          marginBottom: 4,
+                          marginBottom: 6,
                         }}
                       >
-                        {score.val}
+                        {card.label}
                       </div>
 
                       <div
                         style={{
-                          fontSize: 12,
+                          fontSize: 13,
                           color: MUTED,
+                          lineHeight: 1.5,
                         }}
                       >
-                        {score.label}
+                        {card.subtext}
                       </div>
                     </div>
                   );
                 })}
               </div>
-
-              <p
-                style={{
-                  fontSize: 13,
-                  color: MUTED,
-                  marginTop: 24,
-                }}
-              >
-                Os scores serão calculados após análise da equipa Norm8.
-              </p>
             </motion.div>
           )}
         </AnimatePresence>
@@ -694,7 +683,7 @@ export default function AuditSection() {
               grid-template-columns: 1fr !important;
             }
 
-            .scores-grid {
+            .process-grid {
               grid-template-columns: 1fr !important;
             }
           }

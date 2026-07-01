@@ -76,3 +76,22 @@ export const MeetingBookingStatus = {
 } as const
 
 export type MeetingBookingStatus = (typeof MeetingBookingStatus)[keyof typeof MeetingBookingStatus]
+
+
+export const AuditAnalysisStatus = {
+  PENDING: 'PENDING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED'
+} as const
+
+export type AuditAnalysisStatus = (typeof AuditAnalysisStatus)[keyof typeof AuditAnalysisStatus]
+
+
+export const AuditPriority = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+  URGENT: 'URGENT'
+} as const
+
+export type AuditPriority = (typeof AuditPriority)[keyof typeof AuditPriority]

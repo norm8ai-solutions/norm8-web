@@ -40,6 +40,7 @@ import {
   formatDatePt,
   formatMeetingDate,
   formatTimeRangePt,
+  getSubmissionDisplayData,
 } from '@/lib/admin/formatters';
 
 /**
@@ -191,33 +192,37 @@ export default async function AdminOverviewPage() {
         <AdminPanel title="Últimas submissões" subtitle="Atividade comercial recente.">
           {overview.latestSubmissions.length > 0 ? (
             <div className="admin-rich-list">
-              {overview.latestSubmissions.map((submission) => (
-                <article className="admin-rich-item" key={submission.id}>
-                  <div className="admin-rich-item-top">
-                    <div style={{ alignItems: 'center', display: 'flex', gap: 9 }}>
-                      <span className="admin-rich-dot" />
-                      <SubmissionTypeBadge type={submission.type} />
+              {overview.latestSubmissions.map((submission) => {
+                const display = getSubmissionDisplayData(submission);
+
+                return (
+                  <article className="admin-rich-item" key={submission.id}>
+                    <div className="admin-rich-item-top">
+                      <div style={{ alignItems: 'center', display: 'flex', gap: 9 }}>
+                        <span className="admin-rich-dot" />
+                        <SubmissionTypeBadge type={submission.type} />
+                      </div>
+                      <LeadPriorityBadge priority={submission.lead.priority} />
                     </div>
-                    <LeadPriorityBadge priority={submission.lead.priority} />
-                  </div>
-                  <div>
-                    <p className="admin-rich-title">{submission.lead.company}</p>
-                    <p className="admin-rich-meta">
-                      {submission.lead.name ?? 'Sem nome'} ·{' '}
-                      {formatRelativeAdminDate(submission.createdAt)}
-                    </p>
-                  </div>
-                  <div className="admin-rich-item-bottom">
-                    <span className="admin-rich-meta">Pipeline</span>
-                    <Link
-                      className="admin-rich-action"
-                      href={`/admin/submissions/${submission.id}`}
-                    >
-                      Abrir <ArrowRight size={13} />
-                    </Link>
-                  </div>
-                </article>
-              ))}
+                    <div>
+                      <p className="admin-rich-title">{display.company ?? 'Sem empresa'}</p>
+                      <p className="admin-rich-meta">
+                        {display.name ?? 'Sem nome'} ·{' '}
+                        {formatRelativeAdminDate(submission.createdAt)}
+                      </p>
+                    </div>
+                    <div className="admin-rich-item-bottom">
+                      <span className="admin-rich-meta">Pipeline</span>
+                      <Link
+                        className="admin-rich-action"
+                        href={`/admin/submissions/${submission.id}`}
+                      >
+                        Abrir <ArrowRight size={13} />
+                      </Link>
+                    </div>
+                  </article>
+                );
+              })}
             </div>
           ) : (
             <AdminEmptyState>Ainda não existem submissões.</AdminEmptyState>

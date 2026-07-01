@@ -21,7 +21,7 @@ import {
 } from '@/components/admin/AdminPrimitives';
 import {
   formatDatePt,
-  formatSubmissionSummary,
+  getSubmissionDisplayData,
 } from '@/lib/admin/formatters';
 import { getSubmissions } from '@/lib/admin/queries';
 
@@ -39,23 +39,27 @@ export default async function AdminSubmissionsPage() {
         <AdminTable
           headers={['Tipo', 'Lead', 'Empresa', 'Email', 'Estado', 'Criado em', 'Resumo']}
         >
-          {submissions.map((submission) => (
-            <tr key={submission.id}>
-              <td>
-                <Link className="admin-link" href={`/admin/submissions/${submission.id}`}>
-                  <SubmissionTypeBadge type={submission.type} />
-                </Link>
-              </td>
-              <td>{submission.lead.name ?? 'Sem nome'}</td>
-              <td>{submission.lead.company}</td>
-              <td>{submission.lead.email}</td>
-              <td>
-                <SubmissionStatusBadge status={submission.status} />
-              </td>
-              <td>{formatDatePt(submission.createdAt)}</td>
-              <td>{formatSubmissionSummary(submission.payload)}</td>
-            </tr>
-          ))}
+          {submissions.map((submission) => {
+            const display = getSubmissionDisplayData(submission);
+
+            return (
+              <tr key={submission.id}>
+                <td>
+                  <Link className="admin-link" href={`/admin/submissions/${submission.id}`}>
+                    <SubmissionTypeBadge type={submission.type} />
+                  </Link>
+                </td>
+                <td>{display.name ?? 'Sem nome'}</td>
+                <td>{display.company ?? 'Sem empresa'}</td>
+                <td>{display.email ?? 'Sem email'}</td>
+                <td>
+                  <SubmissionStatusBadge status={submission.status} />
+                </td>
+                <td>{formatDatePt(submission.createdAt)}</td>
+                <td>{display.summary}</td>
+              </tr>
+            );
+          })}
         </AdminTable>
       ) : (
         <AdminEmptyState>Ainda não existem submissões.</AdminEmptyState>

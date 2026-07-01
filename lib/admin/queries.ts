@@ -160,7 +160,7 @@ export async function getSubmissions() {
 export async function getSubmissionById(id: string) {
   return prisma.submission.findUnique({
     where: { id },
-    include: { lead: true, meetingBooking: true, emailLogs: true },
+    include: { lead: true, meetingBooking: true, emailLogs: true, auditAnalysis: true },
   });
 }
 
@@ -217,3 +217,4 @@ export async function getNotifications(filter: NotificationFilter = 'ALL') {
     include: { relatedLead: true, relatedSubmission: true },
   });
 }
+

@@ -16,6 +16,7 @@ import { cookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import type { LeadPriority, LeadStatus } from '@/app/generated/prisma/client';
+import { createAuditAnalysisForSubmission } from '@/lib/audit-analysis/service';
 import { prisma } from '@/lib/db/prisma';
 
 const ADMIN_COOKIE_NAME = 'norm8_admin_access';
@@ -128,4 +129,32 @@ export async function markNotificationAsRead(formData: FormData): Promise<void> 
 
   revalidatePath('/admin');
   revalidatePath('/admin/notifications');
+}
+
+/**
+ * Regenerates the AI audit analysis for an audit submission.
+ *
+ * @param formData Form data containing the submission id.
+ * @returns Revalidates the submission detail page.
+ */
+export async function regenerateAuditAnalysis(formData: FormData): Promise<void> {
+  const submissionId = String(formData.get('submissionId') ?? '');
+
+  if (!submissionId) {
+    return;
+  }
+
+  const submission = await prisma.submission.findUnique({
+    where: { id: submissionId },
+  });
+
+  if (!submission || submission.type !== 'AUDIT_REQUEST') {
+    return;
+  }
+
+  await createAuditAnalysisForSubmission(submission);
+
+  revalidatePath(`/admin/submissions/${submissionId}`);
+  revalidatePath('/admin/submissions');
+  revalidatePath(`/admin/leads/${submission.leadId}`);
 }

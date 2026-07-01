@@ -9,6 +9,7 @@
  * ------------------------------------------------------------------
  */
 
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import {
   LeadPriorityBadge,
@@ -32,6 +33,7 @@ import {
   formatDatePt,
   formatMeetingDate,
   formatTimeRangePt,
+  getSubmissionDisplayData,
 } from '@/lib/admin/formatters';
 import { getLeadById } from '@/lib/admin/queries';
 
@@ -122,13 +124,26 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
           <AdminPanel title="Submissões" subtitle="Pedidos associados ao lead.">
             {lead.submissions.length > 0 ? (
               <div className="admin-row-list">
-                {lead.submissions.map((submission) => (
-                  <AdminRow
-                    key={submission.id}
-                    title={<SubmissionTypeBadge type={submission.type} />}
-                    meta={formatDatePt(submission.createdAt)}
-                  />
-                ))}
+                {lead.submissions.map((submission) => {
+                  const display = getSubmissionDisplayData({
+                    payload: submission.payload,
+                    lead,
+                  });
+
+                  return (
+                    <AdminRow
+                      key={submission.id}
+                      title={
+                        <Link className="admin-link" href={`/admin/submissions/${submission.id}`}>
+                          <SubmissionTypeBadge type={submission.type} />
+                        </Link>
+                      }
+                      meta={`${display.company ?? 'Sem empresa'} · ${formatDatePt(submission.createdAt)}`}
+                    >
+                      {display.name ?? 'Sem nome'} · {display.summary}
+                    </AdminRow>
+                  );
+                })}
               </div>
             ) : (
               <AdminEmptyState>Sem submissões associadas.</AdminEmptyState>

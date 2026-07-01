@@ -389,7 +389,8 @@ export const ModelName = {
   LeadActivity: 'LeadActivity',
   Notification: 'Notification',
   EmailLog: 'EmailLog',
-  MeetingBooking: 'MeetingBooking'
+  MeetingBooking: 'MeetingBooking',
+  AuditAnalysis: 'AuditAnalysis'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -405,7 +406,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "lead" | "submission" | "leadActivity" | "notification" | "emailLog" | "meetingBooking"
+    modelProps: "lead" | "submission" | "leadActivity" | "notification" | "emailLog" | "meetingBooking" | "auditAnalysis"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -853,6 +854,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    AuditAnalysis: {
+      payload: Prisma.$AuditAnalysisPayload<ExtArgs>
+      fields: Prisma.AuditAnalysisFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AuditAnalysisFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditAnalysisPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AuditAnalysisFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditAnalysisPayload>
+        }
+        findFirst: {
+          args: Prisma.AuditAnalysisFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditAnalysisPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AuditAnalysisFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditAnalysisPayload>
+        }
+        findMany: {
+          args: Prisma.AuditAnalysisFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditAnalysisPayload>[]
+        }
+        create: {
+          args: Prisma.AuditAnalysisCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditAnalysisPayload>
+        }
+        createMany: {
+          args: Prisma.AuditAnalysisCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AuditAnalysisCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditAnalysisPayload>[]
+        }
+        delete: {
+          args: Prisma.AuditAnalysisDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditAnalysisPayload>
+        }
+        update: {
+          args: Prisma.AuditAnalysisUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditAnalysisPayload>
+        }
+        deleteMany: {
+          args: Prisma.AuditAnalysisDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AuditAnalysisUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AuditAnalysisUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditAnalysisPayload>[]
+        }
+        upsert: {
+          args: Prisma.AuditAnalysisUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditAnalysisPayload>
+        }
+        aggregate: {
+          args: Prisma.AuditAnalysisAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAuditAnalysis>
+        }
+        groupBy: {
+          args: Prisma.AuditAnalysisGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AuditAnalysisGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AuditAnalysisCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AuditAnalysisCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -899,6 +974,9 @@ export const LeadScalarFieldEnum = {
   email: 'email',
   phone: 'phone',
   website: 'website',
+  normalizedCompany: 'normalizedCompany',
+  normalizedWebsite: 'normalizedWebsite',
+  normalizedEmail: 'normalizedEmail',
   source: 'source',
   status: 'status',
   priority: 'priority',
@@ -988,6 +1066,34 @@ export const MeetingBookingScalarFieldEnum = {
 } as const
 
 export type MeetingBookingScalarFieldEnum = (typeof MeetingBookingScalarFieldEnum)[keyof typeof MeetingBookingScalarFieldEnum]
+
+
+export const AuditAnalysisScalarFieldEnum = {
+  id: 'id',
+  submissionId: 'submissionId',
+  leadId: 'leadId',
+  score: 'score',
+  priority: 'priority',
+  companySummary: 'companySummary',
+  operationalProblems: 'operationalProblems',
+  automationOpportunities: 'automationOpportunities',
+  recommendedSolutions: 'recommendedSolutions',
+  nextStep: 'nextStep',
+  internalSummary: 'internalSummary',
+  clientPreviewTitle: 'clientPreviewTitle',
+  clientPreviewSummary: 'clientPreviewSummary',
+  clientPreviewOpportunities: 'clientPreviewOpportunities',
+  clientPreviewBenefits: 'clientPreviewBenefits',
+  clientPreviewRecommendedDirection: 'clientPreviewRecommendedDirection',
+  clientPreviewNextStep: 'clientPreviewNextStep',
+  aiModel: 'aiModel',
+  status: 'status',
+  errorMessage: 'errorMessage',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AuditAnalysisScalarFieldEnum = (typeof AuditAnalysisScalarFieldEnum)[keyof typeof AuditAnalysisScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1197,6 +1303,48 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
+
+/**
+ * Reference to a field of type 'AuditPriority'
+ */
+export type EnumAuditPriorityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AuditPriority'>
+    
+
+
+/**
+ * Reference to a field of type 'AuditPriority[]'
+ */
+export type ListEnumAuditPriorityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AuditPriority[]'>
+    
+
+
+/**
+ * Reference to a field of type 'AuditAnalysisStatus'
+ */
+export type EnumAuditAnalysisStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AuditAnalysisStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'AuditAnalysisStatus[]'
+ */
+export type ListEnumAuditAnalysisStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AuditAnalysisStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Float'
+ */
+export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+/**
+ * Reference to a field of type 'Float[]'
+ */
+export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
 /**
  * Batch Payload for updateMany & deleteMany & createMany
  */
@@ -1313,6 +1461,7 @@ export type GlobalOmitConfig = {
   notification?: Prisma.NotificationOmit
   emailLog?: Prisma.EmailLogOmit
   meetingBooking?: Prisma.MeetingBookingOmit
+  auditAnalysis?: Prisma.AuditAnalysisOmit
 }
 
 /* Types for Logging */

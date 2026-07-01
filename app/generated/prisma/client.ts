@@ -71,3 +71,8 @@ export type EmailLog = Prisma.EmailLogModel
  * Operational record for meeting requests created from website submissions.
  */
 export type MeetingBooking = Prisma.MeetingBookingModel
+/**
+ * Model AuditAnalysis
+ * AI-generated operational audit analysis for intelligent audit submissions.
+ */
+export type AuditAnalysis = Prisma.AuditAnalysisModel

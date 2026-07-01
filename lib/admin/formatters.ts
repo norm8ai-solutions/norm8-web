@@ -210,6 +210,57 @@ export function formatPayloadLabel(key: string): string {
   return labels[key] ?? key;
 }
 
+type SubmissionDisplayLead = {
+  name?: string | null;
+  company?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  website?: string | null;
+};
+
+type SubmissionDisplaySource = {
+  payload: unknown;
+  lead?: SubmissionDisplayLead | null;
+};
+
+export type SubmissionDisplayData = {
+  name?: string;
+  company?: string;
+  email?: string;
+  phone?: string;
+  website?: string;
+  summary: string;
+};
+
+/**
+ * Builds display data for a Submission using the immutable payload snapshot first.
+ *
+ * Lead records are consolidated by email and may change over time. Submission
+ * rows must therefore prefer Submission.payload so old submissions keep the
+ * exact name, company and contact details sent at that moment.
+ *
+ * @param submission Submission-like object with payload and optional lead.
+ * @returns Snapshot-first display data for admin submission contexts.
+ */
+export function getSubmissionDisplayData(
+  submission: SubmissionDisplaySource,
+): SubmissionDisplayData {
+  return {
+    name: getPayloadString(submission.payload, 'name') ?? submission.lead?.name ?? undefined,
+    company:
+      getPayloadString(submission.payload, 'company') ??
+      submission.lead?.company ??
+      undefined,
+    email: getPayloadString(submission.payload, 'email') ?? submission.lead?.email ?? undefined,
+    phone: getPayloadString(submission.payload, 'phone') ?? submission.lead?.phone ?? undefined,
+    website:
+      getPayloadString(submission.payload, 'website') ??
+      submission.lead?.website ??
+      undefined,
+    summary: formatSubmissionSummary(submission.payload),
+  };
+}
+
 /**
  * Converts payload JSON into readable admin rows.
  *
@@ -227,12 +278,7 @@ export function formatPayloadRows(
     .filter(([, value]) => value !== null && value !== undefined && value !== '')
     .map(([key, value]) => ({
       label: formatPayloadLabel(key),
-      value:
-        typeof value === 'string' ||
-        typeof value === 'number' ||
-        typeof value === 'boolean'
-          ? String(value)
-          : JSON.stringify(value),
+      value: formatPayloadValue(key, value),
     }));
 }
 
@@ -251,4 +297,54 @@ export function formatSubmissionSummary(payload: unknown): string {
   );
 
   return preferred?.value ?? rows[0]?.value ?? 'Sem resumo';
+}
+
+/**
+ * Formats payload values for admin display.
+ *
+ * @param key Raw payload key.
+ * @param value Raw payload value.
+ * @returns Human-readable payload value.
+ */
+function formatPayloadValue(key: string, value: unknown): string {
+  if (key === 'industry' && value === 'Outro') {
+    return 'Não especificado';
+  }
+
+  if (
+    typeof value === 'string' ||
+    typeof value === 'number' ||
+    typeof value === 'boolean'
+  ) {
+    return String(value);
+  }
+
+  return JSON.stringify(value);
+}
+
+/**
+ * Reads a string-like field from a Submission payload object.
+ *
+ * @param payload Submission payload snapshot.
+ * @param key Payload key to read.
+ * @returns Trimmed string or undefined.
+ */
+function getPayloadString(payload: unknown, key: string): string | undefined {
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+    return undefined;
+  }
+
+  const value = (payload as Record<string, unknown>)[key];
+
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+
+    return trimmed || undefined;
+  }
+
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return String(value);
+  }
+
+  return undefined;
 }

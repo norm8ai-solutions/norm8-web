@@ -4,8 +4,8 @@
  * Description: Customer confirmation email for Intelligent Audit requests.
  * Responsibilities:
  * - Confirm that Norm8 received the audit request.
- * - Set expectations for manual review by the Norm8 team.
- * - Keep email markup simple and compatible with common email clients.
+ * - Set expectations for review by the Norm8 team.
+ * - Keep internal AI scoring out of customer-facing email.
  * ------------------------------------------------------------------
  */
 
@@ -48,13 +48,19 @@ export default function AuditConfirmationEmail({ lead }: EmailTemplateProps) {
           Olá{lead.name ? `, ${lead.name}` : ''}.
         </p>
         <p style={{ fontSize: 15, lineHeight: 1.7 }}>
-          Confirmamos a receção do pedido de auditoria da {lead.company}. A
-          equipa da Norm8 irá analisar as informações enviadas e entrará em
-          contacto com os próximos passos.
+          Recebemos o pedido de Auditoria Inteligente para a {lead.company}.
+        </p>
+        <p style={{ fontSize: 15, lineHeight: 1.7 }}>
+          A equipa da Norm8 vai analisar os processos, ferramentas e desafios
+          indicados para identificar oportunidades reais de automação.
+        </p>
+        <p style={{ fontSize: 15, lineHeight: 1.7 }}>
+          Entraremos em contacto com os próximos passos assim que a análise
+          inicial estiver concluída.
         </p>
         <p style={{ color: '#6b7280', fontSize: 13, lineHeight: 1.6 }}>
-          Este email confirma apenas a receção do pedido. Não é necessário
-          responder, a menos que queira acrescentar informação relevante.
+          Obrigado,<br />
+          Equipa Norm8
         </p>
       </div>
     </div>
