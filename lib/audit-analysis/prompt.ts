@@ -4,7 +4,7 @@
  * Description: Prompt builder for Intelligent Audit AI analysis.
  * Responsibilities:
  * - Convert a validated audit request payload into a focused AI prompt.
- * - Ask for internal analysis and a client-safe Executive Audit Preview.
+ * - Ask for internal analysis, sales playbook, roadmap, and client-safe preview.
  * - Keep prompt wording separated from service and persistence logic.
  * ------------------------------------------------------------------
  */
@@ -18,14 +18,15 @@ import type { AuditRequestInput } from '@/lib/leads/schemas';
  */
 export function buildAuditAnalysisSystemPrompt(): string {
   return [
-    'És um consultor sénior da Norm8 especializado em automação operacional B2B.',
-    'Analisa pedidos de Auditoria Inteligente para identificar oportunidades comerciais reais.',
-    'Tens de devolver apenas JSON válido, sem markdown, sem comentários e sem texto fora do objecto JSON.',
-    'Usa português europeu, tom profissional, consultivo, directo, premium e claro.',
-    'Não inventes dados que não estejam no formulário; quando necessário, faz inferências prudentes e declara-as de forma conservadora.',
-    'O output tem duas camadas: análise interna para a equipa Norm8 e preview executivo seguro para o cliente.',
-    'A versão cliente nunca pode revelar score, prioridade comercial, potencial de contrato, margens, pipeline, notas internas ou linguagem de venda interna.',
-    'A versão cliente nunca deve prometer resultados específicos, percentagens inventadas ou ganhos garantidos.',
+    'Es um consultor senior da Norm8 especializado em automacao operacional B2B.',
+    'Analisa pedidos de Auditoria Inteligente para identificar oportunidades comerciais reais e preparar discovery calls praticas.',
+    'Tens de devolver apenas JSON valido, sem markdown, sem comentarios e sem texto fora do objecto JSON.',
+    'Usa portugues europeu, tom profissional, consultivo, directo, premium e claro.',
+    'Nao inventes dados que nao estejam no formulario; quando necessario, faz inferencias prudentes e conservadoras.',
+    'O output tem tres camadas: analise interna, playbook/roadmap internos, e preview executivo seguro para o cliente.',
+    'salesPlaybook, implementationRoadmap, closingProbability e dados comerciais sao apenas internos.',
+    'A versao cliente nunca pode revelar score, prioridade comercial, potencial de contrato, probabilidade de fecho, objecoes, cross-sell, margens, pipeline, notas internas ou linguagem de venda interna.',
+    'A versao cliente nunca deve prometer resultados especificos, percentagens inventadas ou ganhos garantidos.',
   ].join('\n');
 }
 
@@ -36,18 +37,18 @@ export function buildAuditAnalysisSystemPrompt(): string {
  * @returns Prompt containing business context and the expected JSON contract.
  */
 export function buildAuditAnalysisUserPrompt(payload: AuditRequestInput): string {
-  return `Analisa esta submissão de Auditoria Inteligente da Norm8.
+  return `Analisa esta submissao de Auditoria Inteligente da Norm8.
 
 Dados da empresa:
 - Nome do contacto: ${payload.name}
 - Empresa: ${payload.company}
-- Website: ${payload.website ?? 'Não indicado'}
+- Website: ${payload.website ?? 'Nao indicado'}
 - Email: ${payload.email}
-- Telefone: ${payload.phone ?? 'Não indicado'}
+- Telefone: ${payload.phone ?? 'Nao indicado'}
 - Setor: ${payload.industry}
 - Colaboradores: ${payload.employees}
-- Receita anual: ${payload.annualRevenue ?? 'Não indicado'}
-- Ferramentas usadas: ${payload.toolsUsed ?? 'Não indicado'}
+- Receita anual: ${payload.annualRevenue ?? 'Nao indicado'}
+- Ferramentas usadas: ${payload.toolsUsed ?? 'Nao indicado'}
 - Principal desafio operacional: ${payload.mainChallenge}
 - Objetivo principal: ${payload.mainGoal}
 
@@ -80,6 +81,49 @@ Devolve exactamente este JSON:
   ],
   "nextStep": "...",
   "internalSummary": "...",
+  "contractValueEstimate": {
+    "minimum": 30000,
+    "maximum": 45000,
+    "currency": "EUR",
+    "confidence": "LOW | MEDIUM | HIGH",
+    "rationale": "..."
+  },
+  "implementationComplexity": "LOW | MEDIUM | HIGH",
+  "estimatedDelivery": {
+    "range": "2-4 semanas | 4-8 semanas | 8-16 semanas",
+    "rationale": "..."
+  },
+  "closingProbability": 78,
+  "closingProbabilityRationale": "...",
+  "commercialRationale": "...",
+  "salesPlaybook": {
+    "likelyDecisionMaker": "CEO | COO | Head of Operations | Sales Director | Clinic Manager | ...",
+    "painPoints": ["...", "...", "..."],
+    "likelyObjections": [
+      {
+        "objection": "...",
+        "response": "..."
+      }
+    ],
+    "quickWins": ["...", "...", "..."],
+    "futureCrossSell": ["AI Agents", "Knowledge Hub", "Customer Support AI"],
+    "closingProbability": 78,
+    "salesStrategy": "...",
+    "discoveryQuestions": ["...", "...", "..."]
+  },
+  "implementationRoadmap": [
+    {
+      "phase": 1,
+      "title": "...",
+      "description": "...",
+      "objective": "...",
+      "deliverables": ["..."],
+      "estimatedDuration": "2-4 semanas",
+      "dependencies": ["..."],
+      "expectedImpact": "...",
+      "complexity": "LOW | MEDIUM | HIGH"
+    }
+  ],
   "clientPreview": {
     "title": "...",
     "summary": "...",
@@ -97,20 +141,42 @@ Devolve exactamente este JSON:
   }
 }
 
-Critérios da análise interna:
+Criterios da analise interna:
 - score deve estar entre 0 e 100.
-- priority deve reflectir urgência comercial e potencial de automação.
+- priority deve reflectir urgencia comercial e potencial de automacao.
 - inclui 3 a 5 problemas operacionais.
-- inclui 3 a 5 oportunidades de automação.
-- inclui 2 a 4 soluções recomendadas.
-- nextStep deve ser accionável para a equipa comercial da Norm8.
+- inclui 3 a 5 oportunidades de automacao.
+- inclui 2 a 4 solucoes recomendadas.
+- nextStep deve ser accionavel para a equipa comercial da Norm8.
+- closingProbability deve considerar urgencia, dimensao, clareza do objetivo, maturidade digital, complexidade, potencial de orcamento e alinhamento com solucoes Norm8.
+- closingProbabilityRationale deve explicar a probabilidade de fecho em 1 a 2 frases.
 
-Critérios do clientPreview:
-- escrever directamente para o cliente, não para a equipa Norm8.
-- máximo 3 opportunities.
-- expectedBenefits deve ter entre 3 e 5 itens.
-- não incluir score, prioridade comercial, valor potencial, margens, pipeline, notas internas ou linguagem de venda interna.
-- não prometer resultados específicos nem usar percentagens inventadas.
-- recommendedDirection deve explicar a possível direcção da solução de forma consultiva.
-- nextStep deve preparar o cliente para uma revisão pela equipa Norm8.`;
+Criterios do salesPlaybook:
+- incluir 3 a 5 painPoints.
+- incluir 3 a 5 likelyObjections, cada uma com response consultiva, curta e profissional.
+- incluir 3 a 5 quickWins implementaveis numa primeira fase.
+- incluir 3 a 6 oportunidades de futureCrossSell realistas.
+- discoveryQuestions deve ter 5 a 8 perguntas praticas para a primeira reuniao.
+- likelyDecisionMaker e obrigatorio e nunca pode ser Nao identificado, Unknown, N/A ou vazio; se necessario, inferir por setor e dimensao da empresa.
+- salesStrategy deve explicar como conduzir a discovery call sem linguagem agressiva.
+
+Criterios do implementationRoadmap:
+- incluir obrigatoriamente 3 a 5 fases ordenadas por phase; nunca devolver apenas uma fase.
+- cada fase deve ter titulo, descricao, objective, deliverables, estimatedDuration, dependencies, expectedImpact e complexity.
+- evitar promessas impossiveis; usar estimativas prudentes.
+- transformar a analise numa sequencia clara de implementacao.
+
+Criterios do clientPreview:
+- escrever directamente para o cliente, nao para a equipa Norm8.
+- usar explicitamente o contexto do formulario: setor, ferramentas usadas, principal desafio operacional e objetivo principal.
+- nao devolver frases genericas quando o formulario tiver informacao suficiente; cada bloco deve parecer escrito para esta empresa.
+- summary deve ter 2 a 4 frases e explicar o ponto de partida operacional sem repetir literalmente o desafio do formulario.
+- devolver exactamente 3 opportunities, cada uma com titulo concreto e descricao pratica ligada ao desafio, ferramentas ou objetivo indicados.
+- expectedBenefits deve ter entre 4 e 6 itens, especificos e verificaveis em discovery, sem percentagens nem promessas garantidas.
+- recommendedDirection deve propor uma direccao concreta de solucao: fluxos a automatizar, sistemas a ligar e visibilidade a criar.
+- nextStep deve ser accionavel: preparar uma reuniao de 30 minutos para validar processo actual, ferramentas, prioridades e uma primeira fase de implementacao.
+- nao incluir score, prioridade comercial, valor potencial, probabilidade de fecho, objecoes, cross-sell, margens, pipeline, notas internas ou linguagem de venda interna.
+- nao prometer resultados especificos nem usar percentagens inventadas.`;
 }
+
+

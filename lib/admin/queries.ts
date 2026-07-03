@@ -131,6 +131,7 @@ export async function getLeadById(id: string) {
     where: { id },
     include: {
       submissions: { orderBy: { createdAt: 'desc' } },
+      auditAnalyses: { orderBy: { createdAt: 'desc' } },
       meetingBookings: { orderBy: { startsAt: 'desc' } },
       emailLogs: { orderBy: { createdAt: 'desc' } },
       activities: { orderBy: { createdAt: 'desc' } },

@@ -28,10 +28,12 @@ export type AggregateAuditAnalysis = {
 
 export type AuditAnalysisAvgAggregateOutputType = {
   score: number | null
+  closingProbability: number | null
 }
 
 export type AuditAnalysisSumAggregateOutputType = {
   score: number | null
+  closingProbability: number | null
 }
 
 export type AuditAnalysisMinAggregateOutputType = {
@@ -43,6 +45,10 @@ export type AuditAnalysisMinAggregateOutputType = {
   companySummary: string | null
   nextStep: string | null
   internalSummary: string | null
+  implementationComplexity: $Enums.ImplementationComplexity | null
+  closingProbability: number | null
+  closingProbabilityRationale: string | null
+  commercialRationale: string | null
   clientPreviewTitle: string | null
   clientPreviewSummary: string | null
   clientPreviewRecommendedDirection: string | null
@@ -63,6 +69,10 @@ export type AuditAnalysisMaxAggregateOutputType = {
   companySummary: string | null
   nextStep: string | null
   internalSummary: string | null
+  implementationComplexity: $Enums.ImplementationComplexity | null
+  closingProbability: number | null
+  closingProbabilityRationale: string | null
+  commercialRationale: string | null
   clientPreviewTitle: string | null
   clientPreviewSummary: string | null
   clientPreviewRecommendedDirection: string | null
@@ -86,6 +96,14 @@ export type AuditAnalysisCountAggregateOutputType = {
   recommendedSolutions: number
   nextStep: number
   internalSummary: number
+  contractValueEstimate: number
+  implementationComplexity: number
+  estimatedDelivery: number
+  closingProbability: number
+  closingProbabilityRationale: number
+  commercialRationale: number
+  salesPlaybook: number
+  implementationRoadmap: number
   clientPreviewTitle: number
   clientPreviewSummary: number
   clientPreviewOpportunities: number
@@ -103,10 +121,12 @@ export type AuditAnalysisCountAggregateOutputType = {
 
 export type AuditAnalysisAvgAggregateInputType = {
   score?: true
+  closingProbability?: true
 }
 
 export type AuditAnalysisSumAggregateInputType = {
   score?: true
+  closingProbability?: true
 }
 
 export type AuditAnalysisMinAggregateInputType = {
@@ -118,6 +138,10 @@ export type AuditAnalysisMinAggregateInputType = {
   companySummary?: true
   nextStep?: true
   internalSummary?: true
+  implementationComplexity?: true
+  closingProbability?: true
+  closingProbabilityRationale?: true
+  commercialRationale?: true
   clientPreviewTitle?: true
   clientPreviewSummary?: true
   clientPreviewRecommendedDirection?: true
@@ -138,6 +162,10 @@ export type AuditAnalysisMaxAggregateInputType = {
   companySummary?: true
   nextStep?: true
   internalSummary?: true
+  implementationComplexity?: true
+  closingProbability?: true
+  closingProbabilityRationale?: true
+  commercialRationale?: true
   clientPreviewTitle?: true
   clientPreviewSummary?: true
   clientPreviewRecommendedDirection?: true
@@ -161,6 +189,14 @@ export type AuditAnalysisCountAggregateInputType = {
   recommendedSolutions?: true
   nextStep?: true
   internalSummary?: true
+  contractValueEstimate?: true
+  implementationComplexity?: true
+  estimatedDelivery?: true
+  closingProbability?: true
+  closingProbabilityRationale?: true
+  commercialRationale?: true
+  salesPlaybook?: true
+  implementationRoadmap?: true
   clientPreviewTitle?: true
   clientPreviewSummary?: true
   clientPreviewOpportunities?: true
@@ -273,6 +309,14 @@ export type AuditAnalysisGroupByOutputType = {
   recommendedSolutions: runtime.JsonValue | null
   nextStep: string | null
   internalSummary: string | null
+  contractValueEstimate: runtime.JsonValue | null
+  implementationComplexity: $Enums.ImplementationComplexity | null
+  estimatedDelivery: runtime.JsonValue | null
+  closingProbability: number | null
+  closingProbabilityRationale: string | null
+  commercialRationale: string | null
+  salesPlaybook: runtime.JsonValue | null
+  implementationRoadmap: runtime.JsonValue | null
   clientPreviewTitle: string | null
   clientPreviewSummary: string | null
   clientPreviewOpportunities: runtime.JsonValue | null
@@ -321,6 +365,14 @@ export type AuditAnalysisWhereInput = {
   recommendedSolutions?: Prisma.JsonNullableFilter<"AuditAnalysis">
   nextStep?: Prisma.StringNullableFilter<"AuditAnalysis"> | string | null
   internalSummary?: Prisma.StringNullableFilter<"AuditAnalysis"> | string | null
+  contractValueEstimate?: Prisma.JsonNullableFilter<"AuditAnalysis">
+  implementationComplexity?: Prisma.EnumImplementationComplexityNullableFilter<"AuditAnalysis"> | $Enums.ImplementationComplexity | null
+  estimatedDelivery?: Prisma.JsonNullableFilter<"AuditAnalysis">
+  closingProbability?: Prisma.IntNullableFilter<"AuditAnalysis"> | number | null
+  closingProbabilityRationale?: Prisma.StringNullableFilter<"AuditAnalysis"> | string | null
+  commercialRationale?: Prisma.StringNullableFilter<"AuditAnalysis"> | string | null
+  salesPlaybook?: Prisma.JsonNullableFilter<"AuditAnalysis">
+  implementationRoadmap?: Prisma.JsonNullableFilter<"AuditAnalysis">
   clientPreviewTitle?: Prisma.StringNullableFilter<"AuditAnalysis"> | string | null
   clientPreviewSummary?: Prisma.StringNullableFilter<"AuditAnalysis"> | string | null
   clientPreviewOpportunities?: Prisma.JsonNullableFilter<"AuditAnalysis">
@@ -348,6 +400,14 @@ export type AuditAnalysisOrderByWithRelationInput = {
   recommendedSolutions?: Prisma.SortOrderInput | Prisma.SortOrder
   nextStep?: Prisma.SortOrderInput | Prisma.SortOrder
   internalSummary?: Prisma.SortOrderInput | Prisma.SortOrder
+  contractValueEstimate?: Prisma.SortOrderInput | Prisma.SortOrder
+  implementationComplexity?: Prisma.SortOrderInput | Prisma.SortOrder
+  estimatedDelivery?: Prisma.SortOrderInput | Prisma.SortOrder
+  closingProbability?: Prisma.SortOrderInput | Prisma.SortOrder
+  closingProbabilityRationale?: Prisma.SortOrderInput | Prisma.SortOrder
+  commercialRationale?: Prisma.SortOrderInput | Prisma.SortOrder
+  salesPlaybook?: Prisma.SortOrderInput | Prisma.SortOrder
+  implementationRoadmap?: Prisma.SortOrderInput | Prisma.SortOrder
   clientPreviewTitle?: Prisma.SortOrderInput | Prisma.SortOrder
   clientPreviewSummary?: Prisma.SortOrderInput | Prisma.SortOrder
   clientPreviewOpportunities?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -378,6 +438,14 @@ export type AuditAnalysisWhereUniqueInput = Prisma.AtLeast<{
   recommendedSolutions?: Prisma.JsonNullableFilter<"AuditAnalysis">
   nextStep?: Prisma.StringNullableFilter<"AuditAnalysis"> | string | null
   internalSummary?: Prisma.StringNullableFilter<"AuditAnalysis"> | string | null
+  contractValueEstimate?: Prisma.JsonNullableFilter<"AuditAnalysis">
+  implementationComplexity?: Prisma.EnumImplementationComplexityNullableFilter<"AuditAnalysis"> | $Enums.ImplementationComplexity | null
+  estimatedDelivery?: Prisma.JsonNullableFilter<"AuditAnalysis">
+  closingProbability?: Prisma.IntNullableFilter<"AuditAnalysis"> | number | null
+  closingProbabilityRationale?: Prisma.StringNullableFilter<"AuditAnalysis"> | string | null
+  commercialRationale?: Prisma.StringNullableFilter<"AuditAnalysis"> | string | null
+  salesPlaybook?: Prisma.JsonNullableFilter<"AuditAnalysis">
+  implementationRoadmap?: Prisma.JsonNullableFilter<"AuditAnalysis">
   clientPreviewTitle?: Prisma.StringNullableFilter<"AuditAnalysis"> | string | null
   clientPreviewSummary?: Prisma.StringNullableFilter<"AuditAnalysis"> | string | null
   clientPreviewOpportunities?: Prisma.JsonNullableFilter<"AuditAnalysis">
@@ -405,6 +473,14 @@ export type AuditAnalysisOrderByWithAggregationInput = {
   recommendedSolutions?: Prisma.SortOrderInput | Prisma.SortOrder
   nextStep?: Prisma.SortOrderInput | Prisma.SortOrder
   internalSummary?: Prisma.SortOrderInput | Prisma.SortOrder
+  contractValueEstimate?: Prisma.SortOrderInput | Prisma.SortOrder
+  implementationComplexity?: Prisma.SortOrderInput | Prisma.SortOrder
+  estimatedDelivery?: Prisma.SortOrderInput | Prisma.SortOrder
+  closingProbability?: Prisma.SortOrderInput | Prisma.SortOrder
+  closingProbabilityRationale?: Prisma.SortOrderInput | Prisma.SortOrder
+  commercialRationale?: Prisma.SortOrderInput | Prisma.SortOrder
+  salesPlaybook?: Prisma.SortOrderInput | Prisma.SortOrder
+  implementationRoadmap?: Prisma.SortOrderInput | Prisma.SortOrder
   clientPreviewTitle?: Prisma.SortOrderInput | Prisma.SortOrder
   clientPreviewSummary?: Prisma.SortOrderInput | Prisma.SortOrder
   clientPreviewOpportunities?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -438,6 +514,14 @@ export type AuditAnalysisScalarWhereWithAggregatesInput = {
   recommendedSolutions?: Prisma.JsonNullableWithAggregatesFilter<"AuditAnalysis">
   nextStep?: Prisma.StringNullableWithAggregatesFilter<"AuditAnalysis"> | string | null
   internalSummary?: Prisma.StringNullableWithAggregatesFilter<"AuditAnalysis"> | string | null
+  contractValueEstimate?: Prisma.JsonNullableWithAggregatesFilter<"AuditAnalysis">
+  implementationComplexity?: Prisma.EnumImplementationComplexityNullableWithAggregatesFilter<"AuditAnalysis"> | $Enums.ImplementationComplexity | null
+  estimatedDelivery?: Prisma.JsonNullableWithAggregatesFilter<"AuditAnalysis">
+  closingProbability?: Prisma.IntNullableWithAggregatesFilter<"AuditAnalysis"> | number | null
+  closingProbabilityRationale?: Prisma.StringNullableWithAggregatesFilter<"AuditAnalysis"> | string | null
+  commercialRationale?: Prisma.StringNullableWithAggregatesFilter<"AuditAnalysis"> | string | null
+  salesPlaybook?: Prisma.JsonNullableWithAggregatesFilter<"AuditAnalysis">
+  implementationRoadmap?: Prisma.JsonNullableWithAggregatesFilter<"AuditAnalysis">
   clientPreviewTitle?: Prisma.StringNullableWithAggregatesFilter<"AuditAnalysis"> | string | null
   clientPreviewSummary?: Prisma.StringNullableWithAggregatesFilter<"AuditAnalysis"> | string | null
   clientPreviewOpportunities?: Prisma.JsonNullableWithAggregatesFilter<"AuditAnalysis">
@@ -461,6 +545,14 @@ export type AuditAnalysisCreateInput = {
   recommendedSolutions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   nextStep?: string | null
   internalSummary?: string | null
+  contractValueEstimate?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationComplexity?: $Enums.ImplementationComplexity | null
+  estimatedDelivery?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  closingProbability?: number | null
+  closingProbabilityRationale?: string | null
+  commercialRationale?: string | null
+  salesPlaybook?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationRoadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientPreviewTitle?: string | null
   clientPreviewSummary?: string | null
   clientPreviewOpportunities?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -488,6 +580,14 @@ export type AuditAnalysisUncheckedCreateInput = {
   recommendedSolutions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   nextStep?: string | null
   internalSummary?: string | null
+  contractValueEstimate?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationComplexity?: $Enums.ImplementationComplexity | null
+  estimatedDelivery?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  closingProbability?: number | null
+  closingProbabilityRationale?: string | null
+  commercialRationale?: string | null
+  salesPlaybook?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationRoadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientPreviewTitle?: string | null
   clientPreviewSummary?: string | null
   clientPreviewOpportunities?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -511,6 +611,14 @@ export type AuditAnalysisUpdateInput = {
   recommendedSolutions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   nextStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   internalSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractValueEstimate?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationComplexity?: Prisma.NullableEnumImplementationComplexityFieldUpdateOperationsInput | $Enums.ImplementationComplexity | null
+  estimatedDelivery?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  closingProbability?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  closingProbabilityRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commercialRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesPlaybook?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationRoadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientPreviewTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientPreviewSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientPreviewOpportunities?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -538,6 +646,14 @@ export type AuditAnalysisUncheckedUpdateInput = {
   recommendedSolutions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   nextStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   internalSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractValueEstimate?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationComplexity?: Prisma.NullableEnumImplementationComplexityFieldUpdateOperationsInput | $Enums.ImplementationComplexity | null
+  estimatedDelivery?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  closingProbability?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  closingProbabilityRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commercialRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesPlaybook?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationRoadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientPreviewTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientPreviewSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientPreviewOpportunities?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -563,6 +679,14 @@ export type AuditAnalysisCreateManyInput = {
   recommendedSolutions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   nextStep?: string | null
   internalSummary?: string | null
+  contractValueEstimate?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationComplexity?: $Enums.ImplementationComplexity | null
+  estimatedDelivery?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  closingProbability?: number | null
+  closingProbabilityRationale?: string | null
+  commercialRationale?: string | null
+  salesPlaybook?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationRoadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientPreviewTitle?: string | null
   clientPreviewSummary?: string | null
   clientPreviewOpportunities?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -586,6 +710,14 @@ export type AuditAnalysisUpdateManyMutationInput = {
   recommendedSolutions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   nextStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   internalSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractValueEstimate?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationComplexity?: Prisma.NullableEnumImplementationComplexityFieldUpdateOperationsInput | $Enums.ImplementationComplexity | null
+  estimatedDelivery?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  closingProbability?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  closingProbabilityRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commercialRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesPlaybook?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationRoadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientPreviewTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientPreviewSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientPreviewOpportunities?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -611,6 +743,14 @@ export type AuditAnalysisUncheckedUpdateManyInput = {
   recommendedSolutions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   nextStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   internalSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractValueEstimate?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationComplexity?: Prisma.NullableEnumImplementationComplexityFieldUpdateOperationsInput | $Enums.ImplementationComplexity | null
+  estimatedDelivery?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  closingProbability?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  closingProbabilityRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commercialRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesPlaybook?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationRoadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientPreviewTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientPreviewSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientPreviewOpportunities?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -651,6 +791,14 @@ export type AuditAnalysisCountOrderByAggregateInput = {
   recommendedSolutions?: Prisma.SortOrder
   nextStep?: Prisma.SortOrder
   internalSummary?: Prisma.SortOrder
+  contractValueEstimate?: Prisma.SortOrder
+  implementationComplexity?: Prisma.SortOrder
+  estimatedDelivery?: Prisma.SortOrder
+  closingProbability?: Prisma.SortOrder
+  closingProbabilityRationale?: Prisma.SortOrder
+  commercialRationale?: Prisma.SortOrder
+  salesPlaybook?: Prisma.SortOrder
+  implementationRoadmap?: Prisma.SortOrder
   clientPreviewTitle?: Prisma.SortOrder
   clientPreviewSummary?: Prisma.SortOrder
   clientPreviewOpportunities?: Prisma.SortOrder
@@ -666,6 +814,7 @@ export type AuditAnalysisCountOrderByAggregateInput = {
 
 export type AuditAnalysisAvgOrderByAggregateInput = {
   score?: Prisma.SortOrder
+  closingProbability?: Prisma.SortOrder
 }
 
 export type AuditAnalysisMaxOrderByAggregateInput = {
@@ -677,6 +826,10 @@ export type AuditAnalysisMaxOrderByAggregateInput = {
   companySummary?: Prisma.SortOrder
   nextStep?: Prisma.SortOrder
   internalSummary?: Prisma.SortOrder
+  implementationComplexity?: Prisma.SortOrder
+  closingProbability?: Prisma.SortOrder
+  closingProbabilityRationale?: Prisma.SortOrder
+  commercialRationale?: Prisma.SortOrder
   clientPreviewTitle?: Prisma.SortOrder
   clientPreviewSummary?: Prisma.SortOrder
   clientPreviewRecommendedDirection?: Prisma.SortOrder
@@ -697,6 +850,10 @@ export type AuditAnalysisMinOrderByAggregateInput = {
   companySummary?: Prisma.SortOrder
   nextStep?: Prisma.SortOrder
   internalSummary?: Prisma.SortOrder
+  implementationComplexity?: Prisma.SortOrder
+  closingProbability?: Prisma.SortOrder
+  closingProbabilityRationale?: Prisma.SortOrder
+  commercialRationale?: Prisma.SortOrder
   clientPreviewTitle?: Prisma.SortOrder
   clientPreviewSummary?: Prisma.SortOrder
   clientPreviewRecommendedDirection?: Prisma.SortOrder
@@ -710,6 +867,7 @@ export type AuditAnalysisMinOrderByAggregateInput = {
 
 export type AuditAnalysisSumOrderByAggregateInput = {
   score?: Prisma.SortOrder
+  closingProbability?: Prisma.SortOrder
 }
 
 export type AuditAnalysisCreateNestedManyWithoutLeadInput = {
@@ -798,6 +956,10 @@ export type NullableEnumAuditPriorityFieldUpdateOperationsInput = {
   set?: $Enums.AuditPriority | null
 }
 
+export type NullableEnumImplementationComplexityFieldUpdateOperationsInput = {
+  set?: $Enums.ImplementationComplexity | null
+}
+
 export type EnumAuditAnalysisStatusFieldUpdateOperationsInput = {
   set?: $Enums.AuditAnalysisStatus
 }
@@ -812,6 +974,14 @@ export type AuditAnalysisCreateWithoutLeadInput = {
   recommendedSolutions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   nextStep?: string | null
   internalSummary?: string | null
+  contractValueEstimate?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationComplexity?: $Enums.ImplementationComplexity | null
+  estimatedDelivery?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  closingProbability?: number | null
+  closingProbabilityRationale?: string | null
+  commercialRationale?: string | null
+  salesPlaybook?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationRoadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientPreviewTitle?: string | null
   clientPreviewSummary?: string | null
   clientPreviewOpportunities?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -837,6 +1007,14 @@ export type AuditAnalysisUncheckedCreateWithoutLeadInput = {
   recommendedSolutions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   nextStep?: string | null
   internalSummary?: string | null
+  contractValueEstimate?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationComplexity?: $Enums.ImplementationComplexity | null
+  estimatedDelivery?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  closingProbability?: number | null
+  closingProbabilityRationale?: string | null
+  commercialRationale?: string | null
+  salesPlaybook?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationRoadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientPreviewTitle?: string | null
   clientPreviewSummary?: string | null
   clientPreviewOpportunities?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -891,6 +1069,14 @@ export type AuditAnalysisScalarWhereInput = {
   recommendedSolutions?: Prisma.JsonNullableFilter<"AuditAnalysis">
   nextStep?: Prisma.StringNullableFilter<"AuditAnalysis"> | string | null
   internalSummary?: Prisma.StringNullableFilter<"AuditAnalysis"> | string | null
+  contractValueEstimate?: Prisma.JsonNullableFilter<"AuditAnalysis">
+  implementationComplexity?: Prisma.EnumImplementationComplexityNullableFilter<"AuditAnalysis"> | $Enums.ImplementationComplexity | null
+  estimatedDelivery?: Prisma.JsonNullableFilter<"AuditAnalysis">
+  closingProbability?: Prisma.IntNullableFilter<"AuditAnalysis"> | number | null
+  closingProbabilityRationale?: Prisma.StringNullableFilter<"AuditAnalysis"> | string | null
+  commercialRationale?: Prisma.StringNullableFilter<"AuditAnalysis"> | string | null
+  salesPlaybook?: Prisma.JsonNullableFilter<"AuditAnalysis">
+  implementationRoadmap?: Prisma.JsonNullableFilter<"AuditAnalysis">
   clientPreviewTitle?: Prisma.StringNullableFilter<"AuditAnalysis"> | string | null
   clientPreviewSummary?: Prisma.StringNullableFilter<"AuditAnalysis"> | string | null
   clientPreviewOpportunities?: Prisma.JsonNullableFilter<"AuditAnalysis">
@@ -914,6 +1100,14 @@ export type AuditAnalysisCreateWithoutSubmissionInput = {
   recommendedSolutions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   nextStep?: string | null
   internalSummary?: string | null
+  contractValueEstimate?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationComplexity?: $Enums.ImplementationComplexity | null
+  estimatedDelivery?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  closingProbability?: number | null
+  closingProbabilityRationale?: string | null
+  commercialRationale?: string | null
+  salesPlaybook?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationRoadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientPreviewTitle?: string | null
   clientPreviewSummary?: string | null
   clientPreviewOpportunities?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -939,6 +1133,14 @@ export type AuditAnalysisUncheckedCreateWithoutSubmissionInput = {
   recommendedSolutions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   nextStep?: string | null
   internalSummary?: string | null
+  contractValueEstimate?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationComplexity?: $Enums.ImplementationComplexity | null
+  estimatedDelivery?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  closingProbability?: number | null
+  closingProbabilityRationale?: string | null
+  commercialRationale?: string | null
+  salesPlaybook?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationRoadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientPreviewTitle?: string | null
   clientPreviewSummary?: string | null
   clientPreviewOpportunities?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -978,6 +1180,14 @@ export type AuditAnalysisUpdateWithoutSubmissionInput = {
   recommendedSolutions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   nextStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   internalSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractValueEstimate?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationComplexity?: Prisma.NullableEnumImplementationComplexityFieldUpdateOperationsInput | $Enums.ImplementationComplexity | null
+  estimatedDelivery?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  closingProbability?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  closingProbabilityRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commercialRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesPlaybook?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationRoadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientPreviewTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientPreviewSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientPreviewOpportunities?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1003,6 +1213,14 @@ export type AuditAnalysisUncheckedUpdateWithoutSubmissionInput = {
   recommendedSolutions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   nextStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   internalSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractValueEstimate?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationComplexity?: Prisma.NullableEnumImplementationComplexityFieldUpdateOperationsInput | $Enums.ImplementationComplexity | null
+  estimatedDelivery?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  closingProbability?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  closingProbabilityRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commercialRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesPlaybook?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationRoadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientPreviewTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientPreviewSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientPreviewOpportunities?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1027,6 +1245,14 @@ export type AuditAnalysisCreateManyLeadInput = {
   recommendedSolutions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   nextStep?: string | null
   internalSummary?: string | null
+  contractValueEstimate?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationComplexity?: $Enums.ImplementationComplexity | null
+  estimatedDelivery?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  closingProbability?: number | null
+  closingProbabilityRationale?: string | null
+  commercialRationale?: string | null
+  salesPlaybook?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationRoadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientPreviewTitle?: string | null
   clientPreviewSummary?: string | null
   clientPreviewOpportunities?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1050,6 +1276,14 @@ export type AuditAnalysisUpdateWithoutLeadInput = {
   recommendedSolutions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   nextStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   internalSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractValueEstimate?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationComplexity?: Prisma.NullableEnumImplementationComplexityFieldUpdateOperationsInput | $Enums.ImplementationComplexity | null
+  estimatedDelivery?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  closingProbability?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  closingProbabilityRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commercialRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesPlaybook?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationRoadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientPreviewTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientPreviewSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientPreviewOpportunities?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1075,6 +1309,14 @@ export type AuditAnalysisUncheckedUpdateWithoutLeadInput = {
   recommendedSolutions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   nextStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   internalSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractValueEstimate?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationComplexity?: Prisma.NullableEnumImplementationComplexityFieldUpdateOperationsInput | $Enums.ImplementationComplexity | null
+  estimatedDelivery?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  closingProbability?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  closingProbabilityRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commercialRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesPlaybook?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationRoadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientPreviewTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientPreviewSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientPreviewOpportunities?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1099,6 +1341,14 @@ export type AuditAnalysisUncheckedUpdateManyWithoutLeadInput = {
   recommendedSolutions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   nextStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   internalSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractValueEstimate?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationComplexity?: Prisma.NullableEnumImplementationComplexityFieldUpdateOperationsInput | $Enums.ImplementationComplexity | null
+  estimatedDelivery?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  closingProbability?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  closingProbabilityRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commercialRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesPlaybook?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  implementationRoadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientPreviewTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientPreviewSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientPreviewOpportunities?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1126,6 +1376,14 @@ export type AuditAnalysisSelect<ExtArgs extends runtime.Types.Extensions.Interna
   recommendedSolutions?: boolean
   nextStep?: boolean
   internalSummary?: boolean
+  contractValueEstimate?: boolean
+  implementationComplexity?: boolean
+  estimatedDelivery?: boolean
+  closingProbability?: boolean
+  closingProbabilityRationale?: boolean
+  commercialRationale?: boolean
+  salesPlaybook?: boolean
+  implementationRoadmap?: boolean
   clientPreviewTitle?: boolean
   clientPreviewSummary?: boolean
   clientPreviewOpportunities?: boolean
@@ -1153,6 +1411,14 @@ export type AuditAnalysisSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   recommendedSolutions?: boolean
   nextStep?: boolean
   internalSummary?: boolean
+  contractValueEstimate?: boolean
+  implementationComplexity?: boolean
+  estimatedDelivery?: boolean
+  closingProbability?: boolean
+  closingProbabilityRationale?: boolean
+  commercialRationale?: boolean
+  salesPlaybook?: boolean
+  implementationRoadmap?: boolean
   clientPreviewTitle?: boolean
   clientPreviewSummary?: boolean
   clientPreviewOpportunities?: boolean
@@ -1180,6 +1446,14 @@ export type AuditAnalysisSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   recommendedSolutions?: boolean
   nextStep?: boolean
   internalSummary?: boolean
+  contractValueEstimate?: boolean
+  implementationComplexity?: boolean
+  estimatedDelivery?: boolean
+  closingProbability?: boolean
+  closingProbabilityRationale?: boolean
+  commercialRationale?: boolean
+  salesPlaybook?: boolean
+  implementationRoadmap?: boolean
   clientPreviewTitle?: boolean
   clientPreviewSummary?: boolean
   clientPreviewOpportunities?: boolean
@@ -1207,6 +1481,14 @@ export type AuditAnalysisSelectScalar = {
   recommendedSolutions?: boolean
   nextStep?: boolean
   internalSummary?: boolean
+  contractValueEstimate?: boolean
+  implementationComplexity?: boolean
+  estimatedDelivery?: boolean
+  closingProbability?: boolean
+  closingProbabilityRationale?: boolean
+  commercialRationale?: boolean
+  salesPlaybook?: boolean
+  implementationRoadmap?: boolean
   clientPreviewTitle?: boolean
   clientPreviewSummary?: boolean
   clientPreviewOpportunities?: boolean
@@ -1220,7 +1502,7 @@ export type AuditAnalysisSelectScalar = {
   updatedAt?: boolean
 }
 
-export type AuditAnalysisOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "submissionId" | "leadId" | "score" | "priority" | "companySummary" | "operationalProblems" | "automationOpportunities" | "recommendedSolutions" | "nextStep" | "internalSummary" | "clientPreviewTitle" | "clientPreviewSummary" | "clientPreviewOpportunities" | "clientPreviewBenefits" | "clientPreviewRecommendedDirection" | "clientPreviewNextStep" | "aiModel" | "status" | "errorMessage" | "createdAt" | "updatedAt", ExtArgs["result"]["auditAnalysis"]>
+export type AuditAnalysisOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "submissionId" | "leadId" | "score" | "priority" | "companySummary" | "operationalProblems" | "automationOpportunities" | "recommendedSolutions" | "nextStep" | "internalSummary" | "contractValueEstimate" | "implementationComplexity" | "estimatedDelivery" | "closingProbability" | "closingProbabilityRationale" | "commercialRationale" | "salesPlaybook" | "implementationRoadmap" | "clientPreviewTitle" | "clientPreviewSummary" | "clientPreviewOpportunities" | "clientPreviewBenefits" | "clientPreviewRecommendedDirection" | "clientPreviewNextStep" | "aiModel" | "status" | "errorMessage" | "createdAt" | "updatedAt", ExtArgs["result"]["auditAnalysis"]>
 export type AuditAnalysisInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   submission?: boolean | Prisma.SubmissionDefaultArgs<ExtArgs>
   lead?: boolean | Prisma.LeadDefaultArgs<ExtArgs>
@@ -1252,6 +1534,14 @@ export type $AuditAnalysisPayload<ExtArgs extends runtime.Types.Extensions.Inter
     recommendedSolutions: runtime.JsonValue | null
     nextStep: string | null
     internalSummary: string | null
+    contractValueEstimate: runtime.JsonValue | null
+    implementationComplexity: $Enums.ImplementationComplexity | null
+    estimatedDelivery: runtime.JsonValue | null
+    closingProbability: number | null
+    closingProbabilityRationale: string | null
+    commercialRationale: string | null
+    salesPlaybook: runtime.JsonValue | null
+    implementationRoadmap: runtime.JsonValue | null
     clientPreviewTitle: string | null
     clientPreviewSummary: string | null
     clientPreviewOpportunities: runtime.JsonValue | null
@@ -1699,6 +1989,14 @@ export interface AuditAnalysisFieldRefs {
   readonly recommendedSolutions: Prisma.FieldRef<"AuditAnalysis", 'Json'>
   readonly nextStep: Prisma.FieldRef<"AuditAnalysis", 'String'>
   readonly internalSummary: Prisma.FieldRef<"AuditAnalysis", 'String'>
+  readonly contractValueEstimate: Prisma.FieldRef<"AuditAnalysis", 'Json'>
+  readonly implementationComplexity: Prisma.FieldRef<"AuditAnalysis", 'ImplementationComplexity'>
+  readonly estimatedDelivery: Prisma.FieldRef<"AuditAnalysis", 'Json'>
+  readonly closingProbability: Prisma.FieldRef<"AuditAnalysis", 'Int'>
+  readonly closingProbabilityRationale: Prisma.FieldRef<"AuditAnalysis", 'String'>
+  readonly commercialRationale: Prisma.FieldRef<"AuditAnalysis", 'String'>
+  readonly salesPlaybook: Prisma.FieldRef<"AuditAnalysis", 'Json'>
+  readonly implementationRoadmap: Prisma.FieldRef<"AuditAnalysis", 'Json'>
   readonly clientPreviewTitle: Prisma.FieldRef<"AuditAnalysis", 'String'>
   readonly clientPreviewSummary: Prisma.FieldRef<"AuditAnalysis", 'String'>
   readonly clientPreviewOpportunities: Prisma.FieldRef<"AuditAnalysis", 'Json'>

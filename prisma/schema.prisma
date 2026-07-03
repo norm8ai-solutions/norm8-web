@@ -175,6 +175,14 @@ model AuditAnalysis {
   recommendedSolutions    Json?
   nextStep                String?
   internalSummary         String?
+  contractValueEstimate  Json?
+  implementationComplexity ImplementationComplexity?
+  estimatedDelivery Json?
+  closingProbability Int?
+  closingProbabilityRationale String?
+  commercialRationale String?
+  salesPlaybook Json?
+  implementationRoadmap Json?
   clientPreviewTitle String?
   clientPreviewSummary String?
   clientPreviewOpportunities Json?
@@ -265,3 +273,16 @@ enum AuditPriority {
   URGENT
 }
 
+/// Confidence level for internal contract value estimates.
+enum ContractConfidence {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+/// Estimated delivery complexity for internal commercial planning.
+enum ImplementationComplexity {
+  LOW
+  MEDIUM
+  HIGH
+}

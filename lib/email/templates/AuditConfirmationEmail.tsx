@@ -1,68 +1,96 @@
 /**
  * ------------------------------------------------------------------
  * File: lib/email/templates/AuditConfirmationEmail.tsx
- * Description: Customer confirmation email for Intelligent Audit requests.
+ * Description: Premium fallback customer email for Intelligent Audit requests.
  * Responsibilities:
  * - Confirm that Norm8 received the audit request.
- * - Set expectations for review by the Norm8 team.
+ * - Keep the experience premium when AI analysis is unavailable.
  * - Keep internal AI scoring out of customer-facing email.
  * ------------------------------------------------------------------
  */
 
-import type { CSSProperties } from 'react';
+import EmailCard from '../components/EmailCard';
+import EmailFooter from '../components/EmailFooter';
+import EmailHeader from '../components/EmailHeader';
+import EmailSection from '../components/EmailSection';
+import EmailShell from '../components/EmailShell';
 import type { EmailTemplateProps } from '../types';
 
-const containerStyle: CSSProperties = {
-  backgroundColor: '#f6f8fb',
-  color: '#111827',
-  fontFamily: 'Arial, sans-serif',
-  padding: '32px',
-};
-
-const cardStyle: CSSProperties = {
-  backgroundColor: '#ffffff',
-  border: '1px solid #e5e7eb',
-  borderRadius: 12,
-  margin: '0 auto',
-  maxWidth: 560,
-  padding: 32,
-};
-
 /**
- * Renders the customer confirmation email for audit requests.
+ * Renders the customer fallback confirmation email for audit requests.
  *
  * @param props Lead and submission context.
  * @returns React email template.
  */
-export default function AuditConfirmationEmail({ lead }: EmailTemplateProps) {
+export default function AuditConfirmationEmail({ lead, submission }: EmailTemplateProps) {
+  const submissionDate = submission.createdAt.toLocaleDateString('pt-PT', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  });
+
   return (
-    <div style={containerStyle}>
-      <div style={cardStyle}>
-        <p style={{ color: '#2563eb', fontSize: 12, fontWeight: 700, margin: 0 }}>
-          Norm8
+    <EmailShell>
+      <EmailHeader
+        description="Pedido recebido pela Norm8. A nossa equipa vai validar o contexto enviado e preparar os proximos passos."
+        label="Auditoria Inteligente"
+        meta={[
+          { label: 'Empresa', value: lead.company },
+          { label: 'Data', value: submissionDate },
+        ]}
+        title="Recebemos o seu pedido de Auditoria Inteligente"
+      />
+
+      <EmailSection>
+        <p style={{ color: '#E8EDF8', fontSize: 15, lineHeight: 1.75, margin: 0 }}>
+          Ola{lead.name ? `, ${lead.name}` : ''}. Obrigado por preencher a Auditoria
+          Inteligente da Norm8 para a {lead.company}.
         </p>
-        <h1 style={{ fontSize: 24, lineHeight: 1.3, margin: '12px 0 16px' }}>
-          Recebemos o seu pedido de Auditoria Inteligente
-        </h1>
-        <p style={{ fontSize: 15, lineHeight: 1.7 }}>
-          Olá{lead.name ? `, ${lead.name}` : ''}.
+        <p style={{ color: '#8399B8', fontSize: 14, lineHeight: 1.7, margin: '14px 0 0' }}>
+          Estamos a organizar as informacoes recebidas para identificar oportunidades
+          reais de automatizacao, reduzir trabalho manual e melhorar a visibilidade
+          operacional.
         </p>
-        <p style={{ fontSize: 15, lineHeight: 1.7 }}>
-          Recebemos o pedido de Auditoria Inteligente para a {lead.company}.
+      </EmailSection>
+
+      <EmailSection title="O que acontece agora">
+        <EmailCard compact>
+          <p style={{ color: '#E8EDF8', fontSize: 15, fontWeight: 800, margin: '0 0 6px' }}>
+            Contexto recebido
+          </p>
+          <p style={{ color: '#8399B8', fontSize: 14, lineHeight: 1.65, margin: 0 }}>
+            Os dados submetidos ficaram registados e associados ao seu pedido.
+          </p>
+        </EmailCard>
+        <EmailCard compact>
+          <p style={{ color: '#E8EDF8', fontSize: 15, fontWeight: 800, margin: '0 0 6px' }}>
+            Analise inicial
+          </p>
+          <p style={{ color: '#8399B8', fontSize: 14, lineHeight: 1.65, margin: 0 }}>
+            Um especialista Norm8 ira rever os processos, ferramentas e desafios
+            indicados antes de qualquer recomendacao final.
+          </p>
+        </EmailCard>
+        <EmailCard compact>
+          <p style={{ color: '#E8EDF8', fontSize: 15, fontWeight: 800, margin: '0 0 6px' }}>
+            Proximo contacto
+          </p>
+          <p style={{ color: '#8399B8', fontSize: 14, lineHeight: 1.65, margin: 0 }}>
+            Entraremos em contacto com uma leitura inicial e uma sugestao clara de
+            proximo passo.
+          </p>
+        </EmailCard>
+      </EmailSection>
+
+      <EmailSection title="Nota">
+        <p style={{ color: '#8399B8', fontSize: 13, lineHeight: 1.7, margin: 0 }}>
+          Este email e o fallback de rececao da Auditoria Inteligente. Quando a
+          pre-analise automatica estiver disponivel, recebera um Executive Audit
+          Preview mais completo.
         </p>
-        <p style={{ fontSize: 15, lineHeight: 1.7 }}>
-          A equipa da Norm8 vai analisar os processos, ferramentas e desafios
-          indicados para identificar oportunidades reais de automação.
-        </p>
-        <p style={{ fontSize: 15, lineHeight: 1.7 }}>
-          Entraremos em contacto com os próximos passos assim que a análise
-          inicial estiver concluída.
-        </p>
-        <p style={{ color: '#6b7280', fontSize: 13, lineHeight: 1.6 }}>
-          Obrigado,<br />
-          Equipa Norm8
-        </p>
-      </div>
-    </div>
+      </EmailSection>
+
+      <EmailFooter />
+    </EmailShell>
   );
 }

@@ -95,3 +95,21 @@ export const AuditPriority = {
 } as const
 
 export type AuditPriority = (typeof AuditPriority)[keyof typeof AuditPriority]
+
+
+export const ContractConfidence = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH'
+} as const
+
+export type ContractConfidence = (typeof ContractConfidence)[keyof typeof ContractConfidence]
+
+
+export const ImplementationComplexity = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH'
+} as const
+
+export type ImplementationComplexity = (typeof ImplementationComplexity)[keyof typeof ImplementationComplexity]

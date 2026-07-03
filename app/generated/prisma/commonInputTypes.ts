@@ -374,6 +374,13 @@ export type EnumAuditPriorityNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumAuditPriorityNullableFilter<$PrismaModel> | $Enums.AuditPriority | null
 }
 
+export type EnumImplementationComplexityNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ImplementationComplexity | Prisma.EnumImplementationComplexityFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ImplementationComplexity[] | Prisma.ListEnumImplementationComplexityFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ImplementationComplexity[] | Prisma.ListEnumImplementationComplexityFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumImplementationComplexityNullableFilter<$PrismaModel> | $Enums.ImplementationComplexity | null
+}
+
 export type EnumAuditAnalysisStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.AuditAnalysisStatus | Prisma.EnumAuditAnalysisStatusFieldRefInput<$PrismaModel>
   in?: $Enums.AuditAnalysisStatus[] | Prisma.ListEnumAuditAnalysisStatusFieldRefInput<$PrismaModel>
@@ -405,6 +412,16 @@ export type EnumAuditPriorityNullableWithAggregatesFilter<$PrismaModel = never> 
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedEnumAuditPriorityNullableFilter<$PrismaModel>
   _max?: Prisma.NestedEnumAuditPriorityNullableFilter<$PrismaModel>
+}
+
+export type EnumImplementationComplexityNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ImplementationComplexity | Prisma.EnumImplementationComplexityFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ImplementationComplexity[] | Prisma.ListEnumImplementationComplexityFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ImplementationComplexity[] | Prisma.ListEnumImplementationComplexityFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumImplementationComplexityNullableWithAggregatesFilter<$PrismaModel> | $Enums.ImplementationComplexity | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumImplementationComplexityNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumImplementationComplexityNullableFilter<$PrismaModel>
 }
 
 export type EnumAuditAnalysisStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -725,6 +742,13 @@ export type NestedEnumAuditPriorityNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumAuditPriorityNullableFilter<$PrismaModel> | $Enums.AuditPriority | null
 }
 
+export type NestedEnumImplementationComplexityNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ImplementationComplexity | Prisma.EnumImplementationComplexityFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ImplementationComplexity[] | Prisma.ListEnumImplementationComplexityFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ImplementationComplexity[] | Prisma.ListEnumImplementationComplexityFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumImplementationComplexityNullableFilter<$PrismaModel> | $Enums.ImplementationComplexity | null
+}
+
 export type NestedEnumAuditAnalysisStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.AuditAnalysisStatus | Prisma.EnumAuditAnalysisStatusFieldRefInput<$PrismaModel>
   in?: $Enums.AuditAnalysisStatus[] | Prisma.ListEnumAuditAnalysisStatusFieldRefInput<$PrismaModel>
@@ -767,6 +791,16 @@ export type NestedEnumAuditPriorityNullableWithAggregatesFilter<$PrismaModel = n
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedEnumAuditPriorityNullableFilter<$PrismaModel>
   _max?: Prisma.NestedEnumAuditPriorityNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumImplementationComplexityNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ImplementationComplexity | Prisma.EnumImplementationComplexityFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ImplementationComplexity[] | Prisma.ListEnumImplementationComplexityFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ImplementationComplexity[] | Prisma.ListEnumImplementationComplexityFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumImplementationComplexityNullableWithAggregatesFilter<$PrismaModel> | $Enums.ImplementationComplexity | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumImplementationComplexityNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumImplementationComplexityNullableFilter<$PrismaModel>
 }
 
 export type NestedEnumAuditAnalysisStatusWithAggregatesFilter<$PrismaModel = never> = {

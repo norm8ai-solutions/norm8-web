@@ -1080,6 +1080,14 @@ export const AuditAnalysisScalarFieldEnum = {
   recommendedSolutions: 'recommendedSolutions',
   nextStep: 'nextStep',
   internalSummary: 'internalSummary',
+  contractValueEstimate: 'contractValueEstimate',
+  implementationComplexity: 'implementationComplexity',
+  estimatedDelivery: 'estimatedDelivery',
+  closingProbability: 'closingProbability',
+  closingProbabilityRationale: 'closingProbabilityRationale',
+  commercialRationale: 'commercialRationale',
+  salesPlaybook: 'salesPlaybook',
+  implementationRoadmap: 'implementationRoadmap',
   clientPreviewTitle: 'clientPreviewTitle',
   clientPreviewSummary: 'clientPreviewSummary',
   clientPreviewOpportunities: 'clientPreviewOpportunities',
@@ -1315,6 +1323,20 @@ export type EnumAuditPriorityFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
  * Reference to a field of type 'AuditPriority[]'
  */
 export type ListEnumAuditPriorityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AuditPriority[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ImplementationComplexity'
+ */
+export type EnumImplementationComplexityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ImplementationComplexity'>
+    
+
+
+/**
+ * Reference to a field of type 'ImplementationComplexity[]'
+ */
+export type ListEnumImplementationComplexityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ImplementationComplexity[]'>
     
 
 

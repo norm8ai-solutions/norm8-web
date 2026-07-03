@@ -221,7 +221,7 @@ export async function createLeadSubmission<TType extends SubmissionType>(
         calendarResult && calendarResult.success ? calendarResult.htmlLink : undefined,
       message:
         meetingBooking?.status === 'CONFIRMED'
-          ? 'A sua reuniÃ£o foi confirmada e adicionada ao calendÃ¡rio. EnviÃ¡mos tambÃ©m o convite por email.'
+          ? 'A sua reunião foi confirmada e adicionada ao calendário. Enviámos também o convite por email.'
           : calendarResult && !calendarResult.success
             ? calendarResult.error
             : undefined,
@@ -234,7 +234,7 @@ export async function createLeadSubmission<TType extends SubmissionType>(
     return {
       success: false,
       error:
-        'NÃ£o foi possÃ­vel registar o pedido neste momento. Tente novamente dentro de instantes.',
+        'Não foi possível registar o pedido neste momento. Tente novamente dentro de instantes.',
     };
   }
 }
@@ -318,9 +318,9 @@ async function registerMeetingCalendarOutcome(
   if (!confirmed) {
     await prisma.notification.create({
       data: {
-        title: 'Falha ao confirmar reuniÃ£o automaticamente',
+        title: 'Falha ao confirmar reunião automaticamente',
         message:
-          'Foi recebido um pedido de reuniÃ£o, mas o Google Calendar nÃ£o confirmou o evento automaticamente.',
+          'Foi recebido um pedido de reunião, mas o Google Calendar não confirmou o evento automaticamente.',
         type: 'MEETING_BOOKING_FAILED',
         relatedLeadId: leadId,
         relatedSubmissionId: submissionId,
@@ -698,18 +698,18 @@ function getSubmissionLabels(type: SubmissionType): SubmissionLabels {
     case 'CUSTOM_AUTOMATION_REQUEST':
       return {
         activityMessage: 'Lead submitted a custom automation request.',
-        notificationTitle: 'Novo pedido de automaÃ§Ã£o personalizada',
+        notificationTitle: 'Novo pedido de automação personalizada',
         notificationMessage:
-          'Foi recebido um novo pedido de automaÃ§Ã£o personalizada.',
-        emailSubject: 'Recebemos o seu pedido de automaÃ§Ã£o Norm8',
+          'Foi recebido um novo pedido de automação personalizada.',
+        emailSubject: 'Recebemos o seu pedido de automação Norm8',
         emailType: 'CUSTOM_AUTOMATION_CONFIRMATION',
       };
     case 'MEETING_REQUEST':
       return {
         activityMessage: 'Lead submitted a meeting request.',
-        notificationTitle: 'Novo pedido de reuniÃ£o',
-        notificationMessage: 'Foi recebido um novo pedido de reuniÃ£o.',
-        emailSubject: 'Recebemos o seu pedido de reuniÃ£o Norm8',
+        notificationTitle: 'Novo pedido de reunião',
+        notificationMessage: 'Foi recebido um novo pedido de reunião.',
+        emailSubject: 'Recebemos o seu pedido de reunião Norm8',
         emailType: 'MEETING_CONFIRMATION',
       };
   }

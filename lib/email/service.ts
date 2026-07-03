@@ -59,6 +59,7 @@ type ConfirmationConfig = {
     | typeof ExecutiveAuditPreviewEmail
     | typeof MeetingRequestConfirmationEmail;
   clientPreviewSent?: boolean;
+  selectedTemplate: string;
 };
 
 /**
@@ -116,6 +117,7 @@ async function buildConfirmationEmailJob({
   );
   const metadata = buildEmailMetadata(meetingBooking, auditAnalysis, {
     clientPreviewSent: config.clientPreviewSent ?? false,
+    selectedEmailTemplate: config.selectedTemplate,
   });
   const contactSnapshot = getSubmissionContactSnapshot(submission, lead);
   const recipientEmail = contactSnapshot.email;
@@ -303,12 +305,13 @@ function getConfirmationConfig(
 ): ConfirmationConfig {
   switch (type) {
     case 'AUDIT_REQUEST':
-      if (hasClientPreview(auditAnalysis)) {
+      if (canSendExecutiveAuditPreview(auditAnalysis)) {
         return {
           subject: 'A sua pré-análise de automação da Norm8',
           type: 'AUDIT_CONFIRMATION',
           template: ExecutiveAuditPreviewEmail,
           clientPreviewSent: true,
+          selectedTemplate: 'ExecutiveAuditPreviewEmail',
         };
       }
 
@@ -317,12 +320,14 @@ function getConfirmationConfig(
         type: 'AUDIT_CONFIRMATION',
         template: AuditConfirmationEmail,
         clientPreviewSent: false,
+        selectedTemplate: 'AuditConfirmationEmail',
       };
     case 'CUSTOM_AUTOMATION_REQUEST':
       return {
         subject: 'Recebemos o seu pedido de Automação Personalizada',
         type: 'CUSTOM_AUTOMATION_CONFIRMATION',
         template: CustomAutomationConfirmationEmail,
+        selectedTemplate: 'CustomAutomationConfirmationEmail',
       };
     case 'MEETING_REQUEST':
       return {
@@ -332,6 +337,7 @@ function getConfirmationConfig(
             : 'Recebemos o seu pedido de reunião',
         type: 'MEETING_CONFIRMATION',
         template: MeetingRequestConfirmationEmail,
+        selectedTemplate: 'MeetingRequestConfirmationEmail',
       };
   }
 }
@@ -347,7 +353,7 @@ function getConfirmationConfig(
 function buildEmailMetadata(
   meetingBooking?: SendSubmissionEmailsParams['meetingBooking'],
   auditAnalysis?: SendSubmissionEmailsParams['auditAnalysis'],
-  options: { clientPreviewSent?: boolean } = {},
+  options: { clientPreviewSent?: boolean; selectedEmailTemplate?: string } = {},
 ): EmailMetadata | undefined {
   const metadata: EmailMetadata = {};
 
@@ -358,20 +364,37 @@ function buildEmailMetadata(
   }
 
   if (auditAnalysis) {
-    metadata.auditAnalysisStatus = auditAnalysis.status;
+    metadata.auditStatus = auditAnalysis.status;
     metadata.auditAnalysisId = auditAnalysis.id;
     metadata.auditAnalysisScore =
       auditAnalysis.score === null || auditAnalysis.score === undefined
         ? null
         : String(auditAnalysis.score);
-    metadata.clientPreviewReady = hasClientPreview(auditAnalysis) ? 'true' : 'false';
+    metadata.hasClientPreview = hasUsableClientPreview(auditAnalysis) ? 'true' : 'false';
+    metadata.previewTitle = auditAnalysis.clientPreviewTitle ?? null;
+    metadata.previewOpportunityCount = String(getClientPreviewOpportunityCount(auditAnalysis));
   }
 
   if (options.clientPreviewSent !== undefined) {
     metadata.clientPreviewSent = options.clientPreviewSent ? 'true' : 'false';
   }
 
+  if (options.selectedEmailTemplate) {
+    metadata.selectedTemplate = options.selectedEmailTemplate;
+  }
+
   return Object.keys(metadata).length > 0 ? metadata : undefined;
+}
+
+/**
+ * Counts persisted client preview opportunities for safe operational metadata.
+ */
+function getClientPreviewOpportunityCount(
+  auditAnalysis?: SendSubmissionEmailsParams['auditAnalysis'],
+): number {
+  return Array.isArray(auditAnalysis?.clientPreviewOpportunities)
+    ? auditAnalysis.clientPreviewOpportunities.length
+    : 0;
 }
 
 /**
@@ -466,21 +489,32 @@ function getSubmissionSummary(
 }
 
 /**
- * Checks whether a completed audit analysis has enough client preview data for email.
+ * Checks whether the customer should receive the Executive Audit Preview.
+ *
+ * Fallback AuditConfirmationEmail is reserved for failed AI analysis or missing
+ * preview content. Optional preview fields enrich the email but do not block it.
  *
  * @param auditAnalysis Optional audit analysis record.
  * @returns Whether the Executive Audit Preview can be sent.
  */
-function hasClientPreview(auditAnalysis?: AuditAnalysis | null): auditAnalysis is AuditAnalysis {
+function canSendExecutiveAuditPreview(
+  auditAnalysis?: AuditAnalysis | null,
+): auditAnalysis is AuditAnalysis {
   return Boolean(
-    auditAnalysis?.status === 'COMPLETED' &&
-      auditAnalysis.clientPreviewTitle &&
-      auditAnalysis.clientPreviewSummary &&
-      auditAnalysis.clientPreviewRecommendedDirection &&
-      auditAnalysis.clientPreviewNextStep &&
-      Array.isArray(auditAnalysis.clientPreviewOpportunities) &&
-      auditAnalysis.clientPreviewOpportunities.length > 0 &&
-      Array.isArray(auditAnalysis.clientPreviewBenefits) &&
-      auditAnalysis.clientPreviewBenefits.length >= 3,
+    auditAnalysis?.status === 'COMPLETED' && hasUsableClientPreview(auditAnalysis),
   );
 }
+
+/**
+ * Checks the minimum persisted client preview needed for the premium email.
+ * Optional preview sections are rendered with local fallbacks by the template.
+ */
+function hasUsableClientPreview(auditAnalysis?: AuditAnalysis | null): boolean {
+  return Boolean(
+    auditAnalysis?.clientPreviewSummary &&
+      Array.isArray(auditAnalysis.clientPreviewOpportunities) &&
+      auditAnalysis.clientPreviewOpportunities.length > 0,
+  );
+}
+
+

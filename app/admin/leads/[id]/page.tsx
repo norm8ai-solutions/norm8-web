@@ -37,6 +37,18 @@ import {
 } from '@/lib/admin/formatters';
 import { getLeadById } from '@/lib/admin/queries';
 
+
+
+type EstimatedDelivery = {
+  range: string;
+  rationale?: string;
+};type ContractEstimate = {
+  minimum: number;
+  maximum: number;
+  currency: 'EUR';
+  confidence: 'LOW' | 'MEDIUM' | 'HIGH';
+  rationale?: string;
+};
 type LeadDetailPageProps = {
   params: Promise<{ id: string }>;
 };
@@ -57,6 +69,12 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
   if (!lead) {
     notFound();
   }
+
+  const latestAnalysis = lead.auditAnalyses[0];
+  const latestContractEstimate = parseContractEstimate(
+    latestAnalysis?.contractValueEstimate,
+  );
+  const latestEstimatedDelivery = parseEstimatedDelivery(latestAnalysis?.estimatedDelivery);
 
   return (
     <div className="admin-page-grid">
@@ -181,6 +199,70 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
             </div>
           </AdminPanel>
 
+          
+          <AdminPanel title="Potencial Comercial">
+            <div className="admin-field-grid">
+              <AdminField
+                label="Valor estimado"
+                value={formatContractEstimate(latestContractEstimate)}
+              />
+              <AdminField
+                label="Probabilidade de Fecho"
+                value={
+                  latestAnalysis?.closingProbability === null ||
+                  latestAnalysis?.closingProbability === undefined
+                    ? 'Não estimada'
+                    : `${latestAnalysis.closingProbability}%`
+                }
+              />
+              <AdminField
+                label="Tempo estimado"
+                value={
+                  latestEstimatedDelivery?.range ??
+                  getDeliveryRange(latestAnalysis?.implementationComplexity)
+                }
+              />
+              <AdminField
+                label="Complexidade"
+                value={formatImplementationComplexity(latestAnalysis?.implementationComplexity)}
+              />
+              <AdminField
+                label="Confiança"
+                value={formatContractConfidence(latestContractEstimate?.confidence)}
+              />
+              <AdminField
+                label="Justificação"
+                value={latestContractEstimate?.rationale ?? 'Não disponível'}
+              />
+            </div>
+          </AdminPanel>
+          <AdminPanel title="AI Sales Assets" subtitle="Resumo da analise mais recente.">
+            {latestAnalysis ? (
+              <div className="admin-field-grid">
+                <AdminField
+                  label="Sales Playbook"
+                  value={latestAnalysis.salesPlaybook ? 'Disponivel' : 'Nao gerado'}
+                />
+                <AdminField
+                  label="Roadmap sugerido"
+                  value={latestAnalysis.implementationRoadmap ? 'Disponivel' : 'Nao gerado'}
+                />
+                <AdminField
+                  label="Detalhe completo"
+                  value={
+                    <Link
+                      className="admin-link"
+                      href={`/admin/submissions/${latestAnalysis.submissionId}`}
+                    >
+                      Abrir submissao
+                    </Link>
+                  }
+                />
+              </div>
+            ) : (
+              <AdminEmptyState>Sem analise IA associada.</AdminEmptyState>
+            )}
+          </AdminPanel>
           <AdminPanel title="Reuniões">
             {lead.meetingBookings.length > 0 ? (
               <div className="admin-row-list">
@@ -243,4 +325,133 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
       </section>
     </div>
   );
+}
+
+/**
+ * Parses the internal contract value estimate JSON.
+ *
+ * @param value Stored Prisma Json value.
+ * @returns Parsed estimate or undefined.
+ */
+function parseContractEstimate(value: unknown): ContractEstimate | undefined {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return undefined;
+  }
+
+  const record = value as Record<string, unknown>;
+
+  if (
+    typeof record.minimum !== 'number' ||
+    typeof record.maximum !== 'number' ||
+    record.currency !== 'EUR' ||
+    !['LOW', 'MEDIUM', 'HIGH'].includes(String(record.confidence))
+  ) {
+    return undefined;
+  }
+
+  return {
+    minimum: record.minimum,
+    maximum: record.maximum,
+    currency: 'EUR',
+    confidence: record.confidence as ContractEstimate['confidence'],
+    rationale: typeof record.rationale === 'string' ? record.rationale : undefined,
+  };
+}
+
+/**
+ * Formats a commercial estimate range.
+ *
+ * @param estimate Parsed estimate.
+ * @returns Compact EUR range.
+ */
+function formatContractEstimate(estimate?: ContractEstimate): string {
+  if (!estimate) {
+    return 'Não estimado';
+  }
+
+  return `${formatCompactEuro(estimate.minimum)}–${formatCompactEuro(estimate.maximum)}`;
+}
+
+/**
+ * Formats contract confidence into Portuguese.
+ *
+ * @param confidence Confidence enum value.
+ * @returns Portuguese label.
+ */
+function formatContractConfidence(confidence?: string): string {
+  const labels: Record<string, string> = {
+    LOW: 'Baixa',
+    MEDIUM: 'Média',
+    HIGH: 'Alta',
+  };
+
+  return confidence ? labels[confidence] ?? confidence : 'Não atribuída';
+}
+
+/**
+ * Formats EUR values in compact notation.
+ *
+ * @param value Numeric EUR value.
+ * @returns Compact display string.
+ */
+function formatCompactEuro(value: number): string {
+  if (value >= 1000) {
+    return `${Math.round(value / 1000)}k€`;
+  }
+
+  return `${value}€`;
+}
+/**
+ * Parses the internal estimated delivery JSON.
+ *
+ * @param value Stored Prisma Json value.
+ * @returns Parsed delivery estimate or undefined.
+ */
+function parseEstimatedDelivery(value: unknown): EstimatedDelivery | undefined {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return undefined;
+  }
+
+  const record = value as Record<string, unknown>;
+
+  if (typeof record.range !== 'string') {
+    return undefined;
+  }
+
+  return {
+    range: record.range,
+    rationale: typeof record.rationale === 'string' ? record.rationale : undefined,
+  };
+}
+
+/**
+ * Formats implementation complexity into Portuguese.
+ *
+ * @param complexity Complexity enum value.
+ * @returns Portuguese label.
+ */
+function formatImplementationComplexity(complexity?: string | null): string {
+  const labels: Record<string, string> = {
+    LOW: 'Baixa',
+    MEDIUM: 'Média',
+    HIGH: 'Alta',
+  };
+
+  return complexity ? labels[complexity] ?? complexity : 'Não estimada';
+}
+
+/**
+ * Returns a delivery fallback from implementation complexity.
+ *
+ * @param complexity Complexity enum value.
+ * @returns Delivery range.
+ */
+function getDeliveryRange(complexity?: string | null): string {
+  const ranges: Record<string, string> = {
+    LOW: '2-4 semanas',
+    MEDIUM: '4-8 semanas',
+    HIGH: '8-16 semanas',
+  };
+
+  return complexity ? ranges[complexity] ?? 'Não estimado' : 'Não estimado';
 }

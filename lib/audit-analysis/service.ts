@@ -17,6 +17,7 @@ import { createGroqClient } from '@/lib/ai/groq';
 import { prisma } from '@/lib/db/prisma';
 import { auditRequestSchema } from '@/lib/leads/schemas';
 import { buildAuditAnalysisSystemPrompt, buildAuditAnalysisUserPrompt } from './prompt';
+import { normalizeAuditAnalysisOutput } from './normalization';
 import {
   clientExecutivePreviewSchema,
   internalAuditAnalysisSchema,
@@ -174,10 +175,13 @@ export async function generateAuditAnalysis(
     : `Groq client preview output failed validation: ${parsedClientPreview.error.message}`;
 
   return {
-    analysis: {
-      ...parsedInternalAnalysis.data,
-      clientPreview,
-    },
+    analysis: normalizeAuditAnalysisOutput(
+      {
+        ...parsedInternalAnalysis.data,
+        clientPreview,
+      },
+      context.payload,
+    ),
     model,
     previewWarning,
   };
@@ -215,6 +219,16 @@ export async function saveAuditAnalysis(params: {
         params.analysis.recommendedSolutions as Prisma.InputJsonValue,
       nextStep: params.analysis.nextStep,
       internalSummary: params.analysis.internalSummary,
+      contractValueEstimate:
+        params.analysis.contractValueEstimate as Prisma.InputJsonValue,
+      implementationComplexity: params.analysis.implementationComplexity,
+      estimatedDelivery: params.analysis.estimatedDelivery as Prisma.InputJsonValue,
+      closingProbability: params.analysis.closingProbability,
+      closingProbabilityRationale: params.analysis.closingProbabilityRationale ?? null,
+      commercialRationale: params.analysis.commercialRationale,
+      salesPlaybook: params.analysis.salesPlaybook as Prisma.InputJsonValue,
+      implementationRoadmap:
+        params.analysis.implementationRoadmap as Prisma.InputJsonValue,
       ...clientPreviewData,
       aiModel: params.model,
       status: 'COMPLETED',
@@ -232,6 +246,16 @@ export async function saveAuditAnalysis(params: {
         params.analysis.recommendedSolutions as Prisma.InputJsonValue,
       nextStep: params.analysis.nextStep,
       internalSummary: params.analysis.internalSummary,
+      contractValueEstimate:
+        params.analysis.contractValueEstimate as Prisma.InputJsonValue,
+      implementationComplexity: params.analysis.implementationComplexity,
+      estimatedDelivery: params.analysis.estimatedDelivery as Prisma.InputJsonValue,
+      closingProbability: params.analysis.closingProbability,
+      closingProbabilityRationale: params.analysis.closingProbabilityRationale ?? null,
+      commercialRationale: params.analysis.commercialRationale,
+      salesPlaybook: params.analysis.salesPlaybook as Prisma.InputJsonValue,
+      implementationRoadmap:
+        params.analysis.implementationRoadmap as Prisma.InputJsonValue,
       ...clientPreviewData,
       aiModel: params.model,
       status: 'COMPLETED',
@@ -319,3 +343,4 @@ function buildClientPreviewPersistenceData(clientPreview?: ClientExecutivePrevie
     clientPreviewNextStep: clientPreview?.nextStep ?? null,
   };
 }
+

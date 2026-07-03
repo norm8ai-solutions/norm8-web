@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ------------------------------------------------------------------
  * File: lib/audit-analysis/types.ts
  * Description: Types for AI audit analysis generation and persistence.
@@ -9,7 +9,11 @@
  * ------------------------------------------------------------------
  */
 
-import type { AuditPriority } from '@/app/generated/prisma/client';
+import type {
+  AuditPriority,
+  ContractConfidence,
+  ImplementationComplexity,
+} from '@/app/generated/prisma/client';
 import type { AuditRequestInput } from '@/lib/leads/schemas';
 
 export type OperationalProblem = {
@@ -41,6 +45,14 @@ export type ClientPreviewOpportunity = {
   description: string;
 };
 
+export type ContractValueEstimate = {
+  minimum: number;
+  maximum: number;
+  currency: 'EUR';
+  confidence: ContractConfidence;
+  rationale: string;
+};
+
 export type ClientExecutivePreview = {
   title: string;
   summary: string;
@@ -48,6 +60,39 @@ export type ClientExecutivePreview = {
   expectedBenefits: string[];
   recommendedDirection: string;
   nextStep: string;
+};
+
+export type EstimatedDelivery = {
+  range: string;
+  rationale: string;
+};
+
+export type SalesPlaybookObjection = {
+  objection: string;
+  response: string;
+};
+
+export type SalesPlaybook = {
+  likelyDecisionMaker: string;
+  painPoints: string[];
+  likelyObjections: SalesPlaybookObjection[];
+  quickWins: string[];
+  futureCrossSell: string[];
+  closingProbability?: number;
+  salesStrategy: string;
+  discoveryQuestions: string[];
+};
+
+export type ImplementationRoadmapPhase = {
+  phase: number;
+  title: string;
+  description: string;
+  objective: string;
+  deliverables: string[];
+  estimatedDuration: string;
+  dependencies: string[];
+  expectedImpact: string;
+  complexity: 'LOW' | 'MEDIUM' | 'HIGH';
 };
 
 export type AuditAnalysisOutput = {
@@ -59,6 +104,14 @@ export type AuditAnalysisOutput = {
   recommendedSolutions: RecommendedSolution[];
   nextStep: string;
   internalSummary: string;
+  contractValueEstimate: ContractValueEstimate;
+  implementationComplexity: ImplementationComplexity;
+  estimatedDelivery: EstimatedDelivery;
+  closingProbability: number;
+  closingProbabilityRationale?: string;
+  commercialRationale: string;
+  salesPlaybook: SalesPlaybook;
+  implementationRoadmap: ImplementationRoadmapPhase[];
   clientPreview?: ClientExecutivePreview;
 };
 
