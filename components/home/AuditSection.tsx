@@ -11,9 +11,11 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { submitAuditRequest } from '@/app/actions/lead-submissions';
+import { FieldError } from '@/components/ui/field-error';
+import { Norm8Select } from '@/components/ui/norm8-select';
 import type { ValidationErrors } from '@/lib/leads/types';
 import {
   CheckCircle2,
@@ -28,6 +30,7 @@ const SURFACE = '#0A1120';
 const SURFACE2 = '#0D1526';
 const BORDER = '#182034';
 const MUTED = '#8399B8';
+const ERROR = '#F87171';
 
 type FormState = {
   nome: string;
@@ -80,6 +83,25 @@ const labelStyle: React.CSSProperties = {
   marginBottom: 8,
 };
 
+const getInputStyle = (hasError: boolean): React.CSSProperties => ({
+  ...inputStyle,
+  borderColor: hasError ? ERROR : BORDER,
+  boxShadow: hasError ? '0 0 0 2px rgba(248,113,113,0.12)' : undefined,
+});
+
+const requiredFieldMessages: Partial<Record<FormKey, string>> = {
+  nome: 'Indique o seu nome.',
+  empresa: 'Indique o nome da empresa.',
+  email: 'Indique um email válido.',
+  setor: 'Selecione o setor de atividade.',
+  colaboradores: 'Selecione o número de colaboradores.',
+  receita: 'Selecione a receita anual estimada.',
+  desafio: 'Indique o maior desafio operacional.',
+  objetivo: 'Indique o objetivo principal.',
+};
+
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 const inputFields: InputField[] = [
   {
     k: 'nome',
@@ -113,32 +135,58 @@ const inputFields: InputField[] = [
   },
 ];
 
-const setores: string[] = [
-  'Tecnologia',
-  'Saúde',
-  'Retalho / E-commerce',
+const setores = [
+  'Serviços Profissionais',
+  'Consultoria',
   'Imobiliário',
-  'Finanças',
-  'Serviços B2B',
-  'Educação',
+  'Saúde e Clínicas',
+  'Estética e Bem-estar',
+  'Restauração',
+  'Hotelaria e Turismo',
+  'Educação e Formação',
+  'E-commerce',
+  'Retalho',
+  'Construção',
+  'Seguros',
+  'Contabilidade e Finanças',
+  'Jurídico',
+  'Tecnologia / SaaS',
+  'Marketing e Agências',
+  'Automóvel',
+  'Indústria',
+  'Logística',
   'Outro',
-];
+].map((setor) => ({
+  value: setor,
+  label: setor,
+}));
 
-const colaboradoresOptions: string[] = [
+const colaboradoresOptions = [
   '1–10',
   '11–50',
   '51–200',
   '201–500',
   '500+',
-];
+].map((option) => ({
+  value: option,
+  label: option,
+}));
 
-const receitaOptions: string[] = [
-  'Abaixo de 250k€',
-  '250k–1M€',
-  '1M–5M€',
-  '5M–20M€',
-  'Acima de 20M€',
-];
+const receitaOptions = [
+  'Ainda sem receita',
+  'Até 50.000€',
+  '50.000€ – 100.000€',
+  '100.000€ – 250.000€',
+  '250.000€ – 500.000€',
+  '500.000€ – 1M€',
+  '1M€ – 2.5M€',
+  '2.5M€ – 5M€',
+  'Mais de 5M€',
+  'Prefiro não dizer',
+].map((option) => ({
+  value: option,
+  label: option,
+}));
 
 const processCards: ProcessCard[] = [
   {
@@ -170,6 +218,8 @@ export default function AuditSection() {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
+  const [fieldErrors, setFieldErrors] = useState<Partial<Record<FormKey, string>>>({});
+  const formRef = useRef<HTMLFormElement>(null);
 
   const [form, setForm] = useState<FormState>({
     nome: '',
@@ -190,18 +240,63 @@ export default function AuditSection() {
       ...currentForm,
       [key]: value,
     }));
+
+    setFieldErrors((currentErrors) => {
+      if (!currentErrors[key]) {
+        return currentErrors;
+      }
+
+      const nextErrors = { ...currentErrors };
+      delete nextErrors[key];
+      return nextErrors;
+    });
+  };
+
+  const focusFirstInvalidField = (errors: Partial<Record<FormKey, string>>): void => {
+    const firstInvalidKey = Object.keys(errors)[0];
+
+    if (!firstInvalidKey) {
+      return;
+    }
+
+    const field = formRef.current?.querySelector<HTMLElement>(
+      `[data-field="${firstInvalidKey}"] input, [data-field="${firstInvalidKey}"] textarea, [data-field="${firstInvalidKey}"] button`,
+    );
+
+    field?.focus({ preventScroll: true });
+    field?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
+  const validateForm = (): Partial<Record<FormKey, string>> => {
+    const errors: Partial<Record<FormKey, string>> = {};
+
+    Object.entries(requiredFieldMessages).forEach(([field, message]) => {
+      const key = field as FormKey;
+
+      if (!form[key].trim()) {
+        errors[key] = message;
+      }
+    });
+
+    if (form.email.trim() && !emailPattern.test(form.email.trim())) {
+      errors.email = 'Indique um email válido.';
+    }
+
+    return errors;
   };
 
   const focusStyle = (
     event: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
   ): void => {
-    event.currentTarget.style.borderColor = BLUE;
+    event.currentTarget.style.borderColor =
+      event.currentTarget.getAttribute('aria-invalid') === 'true' ? ERROR : BLUE;
   };
 
   const blurStyle = (
     event: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
   ): void => {
-    event.currentTarget.style.borderColor = BORDER;
+    event.currentTarget.style.borderColor =
+      event.currentTarget.getAttribute('aria-invalid') === 'true' ? ERROR : BORDER;
   };
 
   /**
@@ -212,9 +307,18 @@ export default function AuditSection() {
     event: React.FormEvent<HTMLFormElement>,
   ): Promise<void> => {
     event.preventDefault();
-    setIsSubmitting(true);
     setErrorMessage(null);
     setValidationErrors({});
+
+    const clientErrors = validateForm();
+
+    if (Object.keys(clientErrors).length > 0) {
+      setFieldErrors(clientErrors);
+      focusFirstInvalidField(clientErrors);
+      return;
+    }
+
+    setIsSubmitting(true);
 
     const result = await submitAuditRequest({
       name: form.nome,
@@ -330,7 +434,7 @@ export default function AuditSection() {
                 margin: '0 auto',
               }}
             >
-              <form onSubmit={handleSubmit}>
+              <form ref={formRef} noValidate onSubmit={handleSubmit}>
                 <div
                   className="form-grid"
                   style={{
@@ -339,102 +443,71 @@ export default function AuditSection() {
                     gap: 24,
                   }}
                 >
-                  {inputFields.map((field) => (
-                    <div key={field.k}>
-                      <label style={labelStyle}>{field.l}</label>
+                  {inputFields.map((field) => {
+                    const error = fieldErrors[field.k];
+                    const errorId = 'audit-' + field.k + '-error';
 
-                      <input
-                        type={field.type}
-                        placeholder={field.placeholder}
-                        required={field.l.includes('*')}
-                        value={form[field.k]}
-                        onChange={(event) =>
-                          update(field.k, event.target.value)
-                        }
-                        style={inputStyle}
-                        onFocus={focusStyle}
-                        onBlur={blurStyle}
-                      />
-                    </div>
-                  ))}
+                    return (
+                      <div data-field={field.k} key={field.k}>
+                        <label style={labelStyle}>{field.l}</label>
 
-                  <div>
+                        <input
+                          aria-describedby={error ? errorId : undefined}
+                          aria-invalid={Boolean(error)}
+                          type={field.type}
+                          placeholder={field.placeholder}
+                          value={form[field.k]}
+                          onChange={(event) =>
+                            update(field.k, event.target.value)
+                          }
+                          style={getInputStyle(Boolean(error))}
+                          onFocus={focusStyle}
+                          onBlur={blurStyle}
+                        />
+                        <FieldError id={errorId} message={error} />
+                      </div>
+                    );
+                  })}
+
+                  <div data-field="setor">
                     <label style={labelStyle}>Setor de Atividade *</label>
-
-                    <select
-                      required
+                    <Norm8Select
+                      error={Boolean(fieldErrors.setor)}
+                      errorId="audit-setor-error"
+                      options={setores}
+                      ariaRequired
                       value={form.setor}
-                      onChange={(event) =>
-                        update('setor', event.target.value)
-                      }
-                      style={{
-                        ...inputStyle,
-                        appearance: 'none',
-                      }}
-                      onFocus={focusStyle}
-                      onBlur={blurStyle}
-                    >
-                      <option value="">Selecionar...</option>
-
-                      {setores.map((setor) => (
-                        <option key={setor} value={setor}>
-                          {setor}
-                        </option>
-                      ))}
-                    </select>
+                      onValueChange={(value) => update('setor', value)}
+                      placeholder="Selecionar setor..."
+                    />
+                    <FieldError id="audit-setor-error" message={fieldErrors.setor} />
                   </div>
 
                   <div>
                     <label style={labelStyle}>
                       Número de Colaboradores *
                     </label>
-
-                    <select
-                      required
+                    <Norm8Select
+                      ariaRequired
+                      options={colaboradoresOptions}
                       value={form.colaboradores}
-                      onChange={(event) =>
-                        update('colaboradores', event.target.value)
-                      }
-                      style={{
-                        ...inputStyle,
-                        appearance: 'none',
-                      }}
-                      onFocus={focusStyle}
-                      onBlur={blurStyle}
-                    >
-                      <option value="">Selecionar...</option>
-
-                      {colaboradoresOptions.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
+                      onValueChange={(value) => update('colaboradores', value)}
+                      placeholder="Selecionar equipa..."
+                    />
                   </div>
 
-                  <div>
-                    <label style={labelStyle}>Receita Anual estimada</label>
-
-                    <select
+                  <div data-field="receita">
+                    <label style={labelStyle}>Receita Anual estimada *</label>
+                    <Norm8Select
+                      error={Boolean(fieldErrors.receita)}
+                      errorId="audit-receita-error"
+                      options={receitaOptions}
+                      ariaRequired
                       value={form.receita}
-                      onChange={(event) =>
-                        update('receita', event.target.value)
-                      }
-                      style={{
-                        ...inputStyle,
-                        appearance: 'none',
-                      }}
-                      onFocus={focusStyle}
-                      onBlur={blurStyle}
-                    >
-                      <option value="">Selecionar...</option>
-
-                      {receitaOptions.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
+                      onValueChange={(value) => update('receita', value)}
+                      placeholder="Selecionar receita..."
+                    />
+                    <FieldError id="audit-receita-error" message={fieldErrors.receita} />
                   </div>
 
                   <div>
@@ -454,44 +527,48 @@ export default function AuditSection() {
                   </div>
                 </div>
 
-                <div style={{ marginTop: 24 }}>
+                <div data-field="desafio" style={{ marginTop: 24 }}>
                   <label style={labelStyle}>Maior Desafio Operacional *</label>
 
                   <textarea
-                    required
+                    aria-describedby={fieldErrors.desafio ? 'audit-desafio-error' : undefined}
+                    aria-invalid={Boolean(fieldErrors.desafio)}
                     placeholder="Descreva o maior ponto de atrito ou processo mais demorado no seu negócio..."
                     value={form.desafio}
                     onChange={(event) =>
                       update('desafio', event.target.value)
                     }
                     style={{
-                      ...inputStyle,
+                      ...getInputStyle(Boolean(fieldErrors.desafio)),
                       minHeight: 100,
                       resize: 'vertical',
                     }}
                     onFocus={focusStyle}
                     onBlur={blurStyle}
                   />
+                  <FieldError id="audit-desafio-error" message={fieldErrors.desafio} />
                 </div>
 
-                <div style={{ marginTop: 24 }}>
+                <div data-field="objetivo" style={{ marginTop: 24 }}>
                   <label style={labelStyle}>Objetivo Principal *</label>
 
                   <textarea
-                    required
+                    aria-describedby={fieldErrors.objetivo ? 'audit-objetivo-error' : undefined}
+                    aria-invalid={Boolean(fieldErrors.objetivo)}
                     placeholder="O que pretende alcançar com automação nos próximos 6–12 meses?"
                     value={form.objetivo}
                     onChange={(event) =>
                       update('objetivo', event.target.value)
                     }
                     style={{
-                      ...inputStyle,
+                      ...getInputStyle(Boolean(fieldErrors.objetivo)),
                       minHeight: 80,
                       resize: 'vertical',
                     }}
                     onFocus={focusStyle}
                     onBlur={blurStyle}
                   />
+                  <FieldError id="audit-objetivo-error" message={fieldErrors.objetivo} />
                 </div>
 
                 {(errorMessage || validationSummary.length > 0) && (

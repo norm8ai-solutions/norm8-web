@@ -33,6 +33,11 @@ export type Submission = Prisma.SubmissionModel
  */
 export type LeadActivity = Prisma.LeadActivityModel
 /**
+ * Model LeadAction
+ * Commercial next action attached to a lead.
+ */
+export type LeadAction = Prisma.LeadActionModel
+/**
  * Model Notification
  * Internal notification prepared for future back-office and sales workflows.
  */

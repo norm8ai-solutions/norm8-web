@@ -25,10 +25,13 @@ import {
   Users,
 } from 'lucide-react';
 import {
+  LeadActionStatusBadge,
+  LeadActionTypeBadge,
   LeadPriorityBadge,
   MeetingStatusBadge,
   SubmissionTypeBadge,
 } from '@/components/admin/AdminBadge';
+import { SubmissionsByDateChart } from '@/components/admin/SubmissionsByDateChart';
 import {
   AdminEmptyState,
   AdminPanel,
@@ -36,6 +39,9 @@ import {
   AdminStatCard,
 } from '@/components/admin/AdminPrimitives';
 import { getAdminOverview } from '@/lib/admin/queries';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 import {
   formatDatePt,
   formatMeetingDate,
@@ -113,63 +119,63 @@ export default async function AdminOverviewPage() {
       label: 'Leads',
       value: overview.metrics.totalLeads,
       context: 'Total captado',
-      trend: '+0%',
+      trend: overview.metrics.trends.totalLeads,
     },
     {
       icon: <Target size={16} />,
       label: 'Novos',
       value: overview.metrics.newLeads,
       context: 'Por qualificar',
-      trend: '+0%',
+      trend: overview.metrics.trends.newLeads,
     },
     {
       icon: <ClipboardCheck size={16} />,
       label: 'Submissões',
       value: overview.metrics.totalSubmissions,
       context: 'Pedidos recebidos',
-      trend: '+0%',
+      trend: overview.metrics.trends.totalSubmissions,
     },
     {
       icon: <ClipboardCheck size={16} />,
       label: 'Auditorias',
       value: overview.metrics.auditRequests,
       context: 'Auditoria Inteligente',
-      trend: '+0%',
+      trend: overview.metrics.trends.auditRequests,
     },
     {
       icon: <Bot size={16} />,
       label: 'Automações',
       value: overview.metrics.automationRequests,
       context: 'Pedidos custom',
-      trend: '+0%',
+      trend: overview.metrics.trends.automationRequests,
     },
     {
       icon: <CalendarCheck size={16} />,
       label: 'Confirmadas',
       value: overview.metrics.confirmedMeetings,
       context: 'Reuniões',
-      trend: '+0%',
+      trend: overview.metrics.trends.confirmedMeetings,
     },
     {
       icon: <CalendarX size={16} />,
       label: 'Falhadas',
       value: overview.metrics.failedMeetings,
       context: 'Reuniões',
-      trend: overview.metrics.failedMeetings > 0 ? 'Rever' : '0',
+      trend: overview.metrics.trends.failedMeetings,
     },
     {
       icon: <MailCheck size={16} />,
       label: 'Enviados',
       value: overview.metrics.sentEmails,
       context: 'Emails',
-      trend: '+0%',
+      trend: overview.metrics.trends.sentEmails,
     },
     {
       icon: <MailX size={16} />,
       label: 'Falhados',
       value: overview.metrics.failedEmails,
       context: 'Emails',
-      trend: overview.metrics.failedEmails > 0 ? 'Rever' : '0',
+      trend: overview.metrics.trends.failedEmails,
     },
   ];
 
@@ -188,6 +194,12 @@ export default async function AdminOverviewPage() {
         ))}
       </section>
 
+      <AdminPanel
+        title="Submissões por data"
+        subtitle="Evolução diária dos pedidos recebidos nos últimos 30 dias."
+      >
+        <SubmissionsByDateChart data={overview.submissionsByDate} />
+      </AdminPanel>
       <section className="admin-grid-2">
         <AdminPanel title="Últimas submissões" subtitle="Atividade comercial recente.">
           {overview.latestSubmissions.length > 0 ? (
@@ -276,7 +288,6 @@ export default async function AdminOverviewPage() {
           )}
         </AdminPanel>
       </section>
-
       <section className="admin-grid-2">
         <AdminPanel title="Notificações recentes" subtitle="Sinais internos do sistema.">
           {overview.latestNotifications.length > 0 ? (

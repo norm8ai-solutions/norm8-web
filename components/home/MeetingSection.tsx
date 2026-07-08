@@ -11,10 +11,12 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { getAvailableMeetingSlotsAction } from '@/app/actions/meeting-availability';
 import { submitMeetingRequest } from '@/app/actions/lead-submissions';
+import { FieldError } from '@/components/ui/field-error';
+import { Norm8Select } from '@/components/ui/norm8-select';
 import type {
   AvailableMeetingDay,
   AvailableMeetingSlot,
@@ -27,6 +29,7 @@ const SURFACE = '#0A1120';
 const SURFACE2 = '#0D1526';
 const BORDER = '#182034';
 const MUTED = '#8399B8';
+const ERROR = '#F87171';
 
 type CalendarDay = {
   date: Date;
@@ -58,14 +61,17 @@ const fields: FieldConfig[] = [
   { k: 'telefone', l: 'Telefone', type: 'tel', ph: '+351 900 000 000' },
 ];
 
-const meetingGoals: string[] = [
+const meetingGoals = [
   'Geração de Leads',
   'Automação de Processos',
   'Customer Support AI',
   'CRM & Vendas',
   'Análise Geral',
   'Outro',
-];
+].map((goal) => ({
+  value: goal,
+  label: goal,
+}));
 
 const weekDays: string[] = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
 
@@ -89,6 +95,21 @@ const labelStyle: React.CSSProperties = {
   color: '#E8EDF8',
   marginBottom: 8,
 };
+
+const getInputStyle = (hasError: boolean): React.CSSProperties => ({
+  ...inputStyle,
+  borderColor: hasError ? ERROR : BORDER,
+  boxShadow: hasError ? '0 0 0 2px rgba(248,113,113,0.12)' : undefined,
+});
+
+const requiredFieldMessages: Partial<Record<keyof FormState, string>> = {
+  nome: 'Indique o seu nome.',
+  empresa: 'Indique o nome da empresa.',
+  email: 'Indique um email válido.',
+  objetivo: 'Selecione o objetivo da reunião.',
+};
+
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const toDateKey = (date: Date): string => date.toISOString().slice(0, 10);
 
@@ -127,6 +148,8 @@ export default function MeetingSection() {
     'Pedido de reunião recebido. Iremos confirmar a disponibilidade.',
   );
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
+  const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof FormState, string>>>({});
+  const formRef = useRef<HTMLFormElement>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<AvailableMeetingSlot | null>(null);
@@ -180,18 +203,63 @@ export default function MeetingSection() {
       ...currentForm,
       [key]: value,
     }));
+
+    setFieldErrors((currentErrors) => {
+      if (!currentErrors[key]) {
+        return currentErrors;
+      }
+
+      const nextErrors = { ...currentErrors };
+      delete nextErrors[key];
+      return nextErrors;
+    });
+  };
+
+  const focusFirstInvalidField = (errors: Partial<Record<keyof FormState, string>>): void => {
+    const firstInvalidKey = Object.keys(errors)[0];
+
+    if (!firstInvalidKey) {
+      return;
+    }
+
+    const field = formRef.current?.querySelector<HTMLElement>(
+      `[data-field="${firstInvalidKey}"] input, [data-field="${firstInvalidKey}"] button`,
+    );
+
+    field?.focus({ preventScroll: true });
+    field?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
+  const validateForm = (): Partial<Record<keyof FormState, string>> => {
+    const errors: Partial<Record<keyof FormState, string>> = {};
+
+    Object.entries(requiredFieldMessages).forEach(([field, message]) => {
+      const key = field as keyof FormState;
+
+      if (!form[key].trim()) {
+        errors[key] = message;
+      }
+    });
+
+    if (form.email.trim() && !emailPattern.test(form.email.trim())) {
+      errors.email = 'Indique um email válido.';
+    }
+
+    return errors;
   };
 
   const focusStyle = (
-    event: React.FocusEvent<HTMLInputElement | HTMLSelectElement>,
+    event: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
   ): void => {
-    event.currentTarget.style.borderColor = BLUE;
+    event.currentTarget.style.borderColor =
+      event.currentTarget.getAttribute('aria-invalid') === 'true' ? ERROR : BLUE;
   };
 
   const blurStyle = (
-    event: React.FocusEvent<HTMLInputElement | HTMLSelectElement>,
+    event: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
   ): void => {
-    event.currentTarget.style.borderColor = BORDER;
+    event.currentTarget.style.borderColor =
+      event.currentTarget.getAttribute('aria-invalid') === 'true' ? ERROR : BORDER;
   };
 
   /**
@@ -205,6 +273,14 @@ export default function MeetingSection() {
     event.preventDefault();
     setErrorMessage(null);
     setValidationErrors({});
+
+    const clientErrors = validateForm();
+
+    if (Object.keys(clientErrors).length > 0) {
+      setFieldErrors(clientErrors);
+      focusFirstInvalidField(clientErrors);
+      return;
+    }
 
     if (!selectedDate || !selectedTime || !selectedSlot) {
       setErrorMessage('Selecione data e hora para continuar.');
@@ -368,6 +444,8 @@ export default function MeetingSection() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              noValidate
+              ref={formRef}
               onSubmit={handleSubmit}
               style={{
                 backgroundColor: SURFACE,
@@ -603,49 +681,47 @@ export default function MeetingSection() {
                       gap: 20,
                     }}
                   >
-                    {fields.map((field) => (
-                      <div key={field.k}>
-                        <label style={labelStyle}>{field.l}</label>
+                    {fields.map((field) => {
+                      const error = fieldErrors[field.k];
+                      const errorId = 'meeting-' + field.k + '-error';
 
-                        <input
-                          type={field.type}
-                          placeholder={field.ph}
-                          required={field.l.includes('*')}
-                          value={form[field.k]}
-                          onChange={(event) =>
-                            update(field.k, event.target.value)
-                          }
-                          style={inputStyle}
-                          onFocus={focusStyle}
-                          onBlur={blurStyle}
-                        />
-                      </div>
-                    ))}
+                      return (
+                        <div data-field={field.k} key={field.k}>
+                          <label style={labelStyle}>{field.l}</label>
 
-                    <div>
+                          <input
+                            aria-describedby={error ? errorId : undefined}
+                            aria-invalid={Boolean(error)}
+                            type={field.type}
+                            placeholder={field.ph}
+                            value={form[field.k]}
+                            onChange={(event) =>
+                              update(field.k, event.target.value)
+                            }
+                            style={getInputStyle(Boolean(error))}
+                            onFocus={focusStyle}
+                            onBlur={blurStyle}
+                          />
+                          <FieldError id={errorId} message={error} />
+                        </div>
+                      );
+                    })}
+
+                    <div data-field="objetivo">
                       <label style={labelStyle}>Objetivo da Reunião *</label>
-
-                      <select
-                        required
+                      <Norm8Select
+                        ariaRequired
+                        error={Boolean(fieldErrors.objetivo)}
+                        errorId="meeting-objetivo-error"
+                        options={meetingGoals}
                         value={form.objetivo}
-                        onChange={(event) =>
-                          update('objetivo', event.target.value)
-                        }
-                        style={{
-                          ...inputStyle,
-                          appearance: 'none',
-                        }}
-                        onFocus={focusStyle}
-                        onBlur={blurStyle}
-                      >
-                        <option value="">Selecionar...</option>
-
-                        {meetingGoals.map((goal) => (
-                          <option key={goal} value={goal}>
-                            {goal}
-                          </option>
-                        ))}
-                      </select>
+                        onValueChange={(value) => update('objetivo', value)}
+                        placeholder="Selecionar objetivo..."
+                      />
+                      <FieldError
+                        id="meeting-objetivo-error"
+                        message={fieldErrors.objetivo}
+                      />
                     </div>
                   </div>
 

@@ -229,11 +229,18 @@ export type JsonWithAggregatesFilterBase<$PrismaModel = never> = {
   _max?: Prisma.NestedJsonFilter<$PrismaModel>
 }
 
-export type EnumNotificationStatusFilter<$PrismaModel = never> = {
-  equals?: $Enums.NotificationStatus | Prisma.EnumNotificationStatusFieldRefInput<$PrismaModel>
-  in?: $Enums.NotificationStatus[] | Prisma.ListEnumNotificationStatusFieldRefInput<$PrismaModel>
-  notIn?: $Enums.NotificationStatus[] | Prisma.ListEnumNotificationStatusFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumNotificationStatusFilter<$PrismaModel> | $Enums.NotificationStatus
+export type EnumLeadActionTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.LeadActionType | Prisma.EnumLeadActionTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.LeadActionType[] | Prisma.ListEnumLeadActionTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LeadActionType[] | Prisma.ListEnumLeadActionTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLeadActionTypeFilter<$PrismaModel> | $Enums.LeadActionType
+}
+
+export type EnumLeadActionStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.LeadActionStatus | Prisma.EnumLeadActionStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.LeadActionStatus[] | Prisma.ListEnumLeadActionStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LeadActionStatus[] | Prisma.ListEnumLeadActionStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLeadActionStatusFilter<$PrismaModel> | $Enums.LeadActionStatus
 }
 
 export type DateTimeNullableFilter<$PrismaModel = never> = {
@@ -247,14 +254,24 @@ export type DateTimeNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
 }
 
-export type EnumNotificationStatusWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.NotificationStatus | Prisma.EnumNotificationStatusFieldRefInput<$PrismaModel>
-  in?: $Enums.NotificationStatus[] | Prisma.ListEnumNotificationStatusFieldRefInput<$PrismaModel>
-  notIn?: $Enums.NotificationStatus[] | Prisma.ListEnumNotificationStatusFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumNotificationStatusWithAggregatesFilter<$PrismaModel> | $Enums.NotificationStatus
+export type EnumLeadActionTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.LeadActionType | Prisma.EnumLeadActionTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.LeadActionType[] | Prisma.ListEnumLeadActionTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LeadActionType[] | Prisma.ListEnumLeadActionTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLeadActionTypeWithAggregatesFilter<$PrismaModel> | $Enums.LeadActionType
   _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumNotificationStatusFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumNotificationStatusFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumLeadActionTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumLeadActionTypeFilter<$PrismaModel>
+}
+
+export type EnumLeadActionStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.LeadActionStatus | Prisma.EnumLeadActionStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.LeadActionStatus[] | Prisma.ListEnumLeadActionStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LeadActionStatus[] | Prisma.ListEnumLeadActionStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLeadActionStatusWithAggregatesFilter<$PrismaModel> | $Enums.LeadActionStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumLeadActionStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumLeadActionStatusFilter<$PrismaModel>
 }
 
 export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -269,6 +286,23 @@ export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
   _max?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
+}
+
+export type EnumNotificationStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.NotificationStatus | Prisma.EnumNotificationStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.NotificationStatus[] | Prisma.ListEnumNotificationStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.NotificationStatus[] | Prisma.ListEnumNotificationStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumNotificationStatusFilter<$PrismaModel> | $Enums.NotificationStatus
+}
+
+export type EnumNotificationStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.NotificationStatus | Prisma.EnumNotificationStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.NotificationStatus[] | Prisma.ListEnumNotificationStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.NotificationStatus[] | Prisma.ListEnumNotificationStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumNotificationStatusWithAggregatesFilter<$PrismaModel> | $Enums.NotificationStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumNotificationStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumNotificationStatusFilter<$PrismaModel>
 }
 
 export type EnumEmailStatusFilter<$PrismaModel = never> = {
@@ -635,11 +669,18 @@ export type NestedJsonFilterBase<$PrismaModel = never> = {
   not?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel> | Prisma.JsonNullValueFilter
 }
 
-export type NestedEnumNotificationStatusFilter<$PrismaModel = never> = {
-  equals?: $Enums.NotificationStatus | Prisma.EnumNotificationStatusFieldRefInput<$PrismaModel>
-  in?: $Enums.NotificationStatus[] | Prisma.ListEnumNotificationStatusFieldRefInput<$PrismaModel>
-  notIn?: $Enums.NotificationStatus[] | Prisma.ListEnumNotificationStatusFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumNotificationStatusFilter<$PrismaModel> | $Enums.NotificationStatus
+export type NestedEnumLeadActionTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.LeadActionType | Prisma.EnumLeadActionTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.LeadActionType[] | Prisma.ListEnumLeadActionTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LeadActionType[] | Prisma.ListEnumLeadActionTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLeadActionTypeFilter<$PrismaModel> | $Enums.LeadActionType
+}
+
+export type NestedEnumLeadActionStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.LeadActionStatus | Prisma.EnumLeadActionStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.LeadActionStatus[] | Prisma.ListEnumLeadActionStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LeadActionStatus[] | Prisma.ListEnumLeadActionStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLeadActionStatusFilter<$PrismaModel> | $Enums.LeadActionStatus
 }
 
 export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
@@ -653,14 +694,24 @@ export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
 }
 
-export type NestedEnumNotificationStatusWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.NotificationStatus | Prisma.EnumNotificationStatusFieldRefInput<$PrismaModel>
-  in?: $Enums.NotificationStatus[] | Prisma.ListEnumNotificationStatusFieldRefInput<$PrismaModel>
-  notIn?: $Enums.NotificationStatus[] | Prisma.ListEnumNotificationStatusFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumNotificationStatusWithAggregatesFilter<$PrismaModel> | $Enums.NotificationStatus
+export type NestedEnumLeadActionTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.LeadActionType | Prisma.EnumLeadActionTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.LeadActionType[] | Prisma.ListEnumLeadActionTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LeadActionType[] | Prisma.ListEnumLeadActionTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLeadActionTypeWithAggregatesFilter<$PrismaModel> | $Enums.LeadActionType
   _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumNotificationStatusFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumNotificationStatusFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumLeadActionTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumLeadActionTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumLeadActionStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.LeadActionStatus | Prisma.EnumLeadActionStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.LeadActionStatus[] | Prisma.ListEnumLeadActionStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LeadActionStatus[] | Prisma.ListEnumLeadActionStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLeadActionStatusWithAggregatesFilter<$PrismaModel> | $Enums.LeadActionStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumLeadActionStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumLeadActionStatusFilter<$PrismaModel>
 }
 
 export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -675,6 +726,23 @@ export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
   _max?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumNotificationStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.NotificationStatus | Prisma.EnumNotificationStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.NotificationStatus[] | Prisma.ListEnumNotificationStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.NotificationStatus[] | Prisma.ListEnumNotificationStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumNotificationStatusFilter<$PrismaModel> | $Enums.NotificationStatus
+}
+
+export type NestedEnumNotificationStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.NotificationStatus | Prisma.EnumNotificationStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.NotificationStatus[] | Prisma.ListEnumNotificationStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.NotificationStatus[] | Prisma.ListEnumNotificationStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumNotificationStatusWithAggregatesFilter<$PrismaModel> | $Enums.NotificationStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumNotificationStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumNotificationStatusFilter<$PrismaModel>
 }
 
 export type NestedEnumEmailStatusFilter<$PrismaModel = never> = {

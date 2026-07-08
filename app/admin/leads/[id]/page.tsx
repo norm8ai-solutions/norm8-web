@@ -10,6 +10,8 @@
  */
 
 import Link from 'next/link';
+import { LeadActionsPanel } from '@/components/admin/LeadActionsPanel';
+import { Norm8Select } from '@/components/ui/norm8-select';
 import { notFound } from 'next/navigation';
 import {
   LeadPriorityBadge,
@@ -51,6 +53,7 @@ type EstimatedDelivery = {
 };
 type LeadDetailPageProps = {
   params: Promise<{ id: string }>;
+  searchParams?: Promise<{ actionError?: string }>;
 };
 
 const leadStatuses = ['NEW', 'QUALIFIED', 'CONTACTED', 'CONVERTED', 'LOST'] as const;
@@ -62,8 +65,9 @@ const leadPriorities = ['LOW', 'MEDIUM', 'HIGH', 'URGENT'] as const;
  * @param props Route params with lead id.
  * @returns Lead detail page.
  */
-export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
+export default async function LeadDetailPage({ params, searchParams }: LeadDetailPageProps) {
   const { id } = await params;
+  const query = await searchParams;
   const lead = await getLeadById(id);
 
   if (!lead) {
@@ -91,13 +95,14 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
         <div className="admin-filters">
           <form action={updateLeadStatus} className="admin-filters">
             <input name="leadId" type="hidden" value={lead.id} />
-            <select className="admin-select" defaultValue={lead.status} name="status">
-              {leadStatuses.map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
-            </select>
+            <Norm8Select
+              defaultValue={lead.status}
+              name="status"
+              options={leadStatuses.map((status) => ({
+                value: status,
+                label: status,
+              }))}
+            />
             <button className="admin-button" type="submit">
               Atualizar estado
             </button>
@@ -105,17 +110,14 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
 
           <form action={updateLeadPriority} className="admin-filters">
             <input name="leadId" type="hidden" value={lead.id} />
-            <select
-              className="admin-select"
+            <Norm8Select
               defaultValue={lead.priority}
               name="priority"
-            >
-              {leadPriorities.map((priority) => (
-                <option key={priority} value={priority}>
-                  {priority}
-                </option>
-              ))}
-            </select>
+              options={leadPriorities.map((priority) => ({
+                value: priority,
+                label: priority,
+              }))}
+            />
             <button className="admin-button admin-button-muted" type="submit">
               Atualizar prioridade
             </button>
@@ -125,6 +127,12 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
 
       <section className="admin-grid-main-aside">
         <div className="admin-page-grid">
+          <LeadActionsPanel
+            actionError={query?.actionError}
+            actions={lead.leadActions}
+            leadId={lead.id}
+          />
+
           <AdminPanel title="Nota interna" subtitle="Regista contexto comercial para a equipa.">
             <form action={addLeadNote} style={{ display: 'grid', gap: 12 }}>
               <input name="leadId" type="hidden" value={lead.id} />

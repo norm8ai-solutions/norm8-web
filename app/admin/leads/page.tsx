@@ -11,6 +11,7 @@
 
 import Link from 'next/link';
 import { Filter } from 'lucide-react';
+import { Norm8Select } from '@/components/ui/norm8-select';
 import type { LeadPriority, LeadStatus } from '@/app/generated/prisma/client';
 import {
   LeadPriorityBadge,
@@ -73,28 +74,22 @@ export default async function AdminLeadsPage({ searchParams }: AdminLeadsPagePro
             name="q"
             placeholder="Pesquisar nome, empresa ou email"
           />
-          <select
-            className="admin-select"
+          <Norm8Select
             defaultValue={params?.status ?? 'ALL'}
             name="status"
-          >
-            {leadStatuses.map((status) => (
-              <option key={status} value={status}>
-                {status === 'ALL' ? 'Todos os estados' : status}
-              </option>
-            ))}
-          </select>
-          <select
-            className="admin-select"
+            options={leadStatuses.map((status) => ({
+              value: status,
+              label: status === 'ALL' ? 'Todos os estados' : status,
+            }))}
+          />
+          <Norm8Select
             defaultValue={params?.priority ?? 'ALL'}
             name="priority"
-          >
-            {leadPriorities.map((priority) => (
-              <option key={priority} value={priority}>
-                {priority === 'ALL' ? 'Todas as prioridades' : priority}
-              </option>
-            ))}
-          </select>
+            options={leadPriorities.map((priority) => ({
+              value: priority,
+              label: priority === 'ALL' ? 'Todas as prioridades' : priority,
+            }))}
+          />
           <button className="admin-filter-button" type="submit">
             <Filter size={14} />
             Filtrar

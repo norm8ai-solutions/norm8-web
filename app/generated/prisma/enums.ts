@@ -40,6 +40,30 @@ export const LeadStatus = {
 export type LeadStatus = (typeof LeadStatus)[keyof typeof LeadStatus]
 
 
+export const LeadActionType = {
+  CALL: 'CALL',
+  SEND_EMAIL: 'SEND_EMAIL',
+  SCHEDULE_MEETING: 'SCHEDULE_MEETING',
+  REVIEW_AUDIT: 'REVIEW_AUDIT',
+  SEND_PROPOSAL: 'SEND_PROPOSAL',
+  FOLLOW_UP: 'FOLLOW_UP',
+  CLOSE_LOST: 'CLOSE_LOST',
+  OTHER: 'OTHER'
+} as const
+
+export type LeadActionType = (typeof LeadActionType)[keyof typeof LeadActionType]
+
+
+export const LeadActionStatus = {
+  PENDING: 'PENDING',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  OVERDUE: 'OVERDUE'
+} as const
+
+export type LeadActionStatus = (typeof LeadActionStatus)[keyof typeof LeadActionStatus]
+
+
 export const LeadPriority = {
   LOW: 'LOW',
   MEDIUM: 'MEDIUM',

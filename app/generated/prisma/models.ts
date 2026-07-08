@@ -11,6 +11,7 @@
 export type * from './models/Lead'
 export type * from './models/Submission'
 export type * from './models/LeadActivity'
+export type * from './models/LeadAction'
 export type * from './models/Notification'
 export type * from './models/EmailLog'
 export type * from './models/MeetingBooking'

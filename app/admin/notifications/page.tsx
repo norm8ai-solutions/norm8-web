@@ -10,6 +10,7 @@
  */
 
 import { Check, Filter } from 'lucide-react';
+import { Norm8Select } from '@/components/ui/norm8-select';
 import { NotificationStatusBadge } from '@/components/admin/AdminBadge';
 import {
   AdminEmptyState,
@@ -49,13 +50,11 @@ export default async function AdminNotificationsPage({
     <div className="admin-page-grid">
       <AdminPanel title="Notificações" subtitle={`${notifications.length} alertas internos`}>
         <form action="/admin/notifications" className="admin-filters">
-          <select className="admin-select" defaultValue={status} name="status">
-            {notificationFilters.map((item) => (
-              <option key={item.value} value={item.value}>
-                {item.label}
-              </option>
-            ))}
-          </select>
+          <Norm8Select
+            defaultValue={status}
+            name="status"
+            options={notificationFilters}
+          />
           <button className="admin-filter-button" type="submit">
             <Filter size={14} />
             Filtrar

@@ -13,12 +13,34 @@ import 'server-only';
 
 import type { Prisma } from '@/app/generated/prisma/client';
 import { prisma } from '@/lib/db/prisma';
+import type { AdminSubmissionChartPoint } from './chart-types';
+import { getMetricTrend } from './metrics';
 import type {
   EmailFilter,
   LeadFilters,
   MeetingFilter,
   NotificationFilter,
 } from './types';
+
+const OVERVIEW_PERIOD_DAYS = 30;
+
+type OverviewMetricKey =
+  | 'totalLeads'
+  | 'newLeads'
+  | 'totalSubmissions'
+  | 'auditRequests'
+  | 'automationRequests'
+  | 'confirmedMeetings'
+  | 'failedMeetings'
+  | 'sentEmails'
+  | 'failedEmails';
+
+type OverviewMetricCounts = Record<OverviewMetricKey, number>;
+type OverviewMetricPeriod = {
+  gte: Date;
+  lt: Date;
+};
+
 
 /**
  * Loads overview KPIs and latest operational records.
@@ -27,29 +49,31 @@ import type {
  */
 export async function getAdminOverview() {
   const now = new Date();
+  const currentPeriodStart = subtractDays(now, OVERVIEW_PERIOD_DAYS);
+  const previousPeriodStart = subtractDays(currentPeriodStart, OVERVIEW_PERIOD_DAYS);
+  const currentPeriod = {
+    gte: currentPeriodStart,
+    lt: now,
+  };
+  const previousPeriod = {
+    gte: previousPeriodStart,
+    lt: currentPeriodStart,
+  };
   const [
-    totalLeads,
-    newLeads,
-    totalSubmissions,
-    auditRequests,
-    automationRequests,
-    confirmedMeetings,
-    failedMeetings,
-    sentEmails,
-    failedEmails,
+    currentMetrics,
+    previousMetrics,
+    submissionsByDate,
+    overdueLeadActions,
+    dueTodayLeadActions,
     latestSubmissions,
     upcomingMeetings,
     latestNotifications,
   ] = await Promise.all([
-    prisma.lead.count(),
-    prisma.lead.count({ where: { status: 'NEW' } }),
-    prisma.submission.count(),
-    prisma.submission.count({ where: { type: 'AUDIT_REQUEST' } }),
-    prisma.submission.count({ where: { type: 'CUSTOM_AUTOMATION_REQUEST' } }),
-    prisma.meetingBooking.count({ where: { status: 'CONFIRMED' } }),
-    prisma.meetingBooking.count({ where: { status: 'FAILED' } }),
-    prisma.emailLog.count({ where: { status: 'SENT' } }),
-    prisma.emailLog.count({ where: { status: 'FAILED' } }),
+    getOverviewMetricCounts(currentPeriod),
+    getOverviewMetricCounts(previousPeriod),
+    getSubmissionChartData(now),
+    getOverdueLeadActions(now),
+    getDueTodayLeadActions(now),
     prisma.submission.findMany({
       orderBy: { createdAt: 'desc' },
       take: 6,
@@ -69,20 +93,199 @@ export async function getAdminOverview() {
 
   return {
     metrics: {
-      totalLeads,
-      newLeads,
-      totalSubmissions,
-      auditRequests,
-      automationRequests,
-      confirmedMeetings,
-      failedMeetings,
-      sentEmails,
-      failedEmails,
+      ...currentMetrics,
+      trends: {
+        totalLeads: getMetricTrend(currentMetrics.totalLeads, previousMetrics.totalLeads),
+        newLeads: getMetricTrend(currentMetrics.newLeads, previousMetrics.newLeads),
+        totalSubmissions: getMetricTrend(
+          currentMetrics.totalSubmissions,
+          previousMetrics.totalSubmissions,
+        ),
+        auditRequests: getMetricTrend(
+          currentMetrics.auditRequests,
+          previousMetrics.auditRequests,
+        ),
+        automationRequests: getMetricTrend(
+          currentMetrics.automationRequests,
+          previousMetrics.automationRequests,
+        ),
+        confirmedMeetings: getMetricTrend(
+          currentMetrics.confirmedMeetings,
+          previousMetrics.confirmedMeetings,
+        ),
+        failedMeetings: getMetricTrend(
+          currentMetrics.failedMeetings,
+          previousMetrics.failedMeetings,
+          { inverseTone: true },
+        ),
+        sentEmails: getMetricTrend(currentMetrics.sentEmails, previousMetrics.sentEmails),
+        failedEmails: getMetricTrend(
+          currentMetrics.failedEmails,
+          previousMetrics.failedEmails,
+          { inverseTone: true },
+        ),
+      },
     },
+    submissionsByDate,
+    overdueLeadActions,
+    dueTodayLeadActions,
     latestSubmissions,
     upcomingMeetings,
     latestNotifications,
   };
+}
+
+async function getOverviewMetricCounts(
+  period: OverviewMetricPeriod,
+): Promise<OverviewMetricCounts> {
+  const [
+    totalLeads,
+    newLeads,
+    totalSubmissions,
+    auditRequests,
+    automationRequests,
+    confirmedMeetings,
+    failedMeetings,
+    sentEmails,
+    failedEmails,
+  ] = await Promise.all([
+    prisma.lead.count({ where: { createdAt: period } }),
+    prisma.lead.count({ where: { status: 'NEW', createdAt: period } }),
+    prisma.submission.count({ where: { createdAt: period } }),
+    prisma.submission.count({ where: { type: 'AUDIT_REQUEST', createdAt: period } }),
+    prisma.submission.count({
+      where: { type: 'CUSTOM_AUTOMATION_REQUEST', createdAt: period },
+    }),
+    prisma.meetingBooking.count({ where: { status: 'CONFIRMED', createdAt: period } }),
+    prisma.meetingBooking.count({ where: { status: 'FAILED', createdAt: period } }),
+    prisma.emailLog.count({ where: { status: 'SENT', createdAt: period } }),
+    prisma.emailLog.count({ where: { status: 'FAILED', createdAt: period } }),
+  ]);
+
+  return {
+    totalLeads,
+    newLeads,
+    totalSubmissions,
+    auditRequests,
+    automationRequests,
+    confirmedMeetings,
+    failedMeetings,
+    sentEmails,
+    failedEmails,
+  };
+}
+
+function getOverdueLeadActions(now: Date) {
+  return prisma.leadAction.findMany({
+    where: {
+      dueAt: { lt: now },
+      status: { not: 'COMPLETED' },
+    },
+    orderBy: { dueAt: 'asc' },
+    take: 6,
+    include: { lead: true },
+  });
+}
+
+function getDueTodayLeadActions(now: Date) {
+  const todayStart = startOfDay(now);
+  const tomorrowStart = addDays(todayStart, 1);
+
+  return prisma.leadAction.findMany({
+    where: {
+      dueAt: {
+        gte: todayStart,
+        lt: tomorrowStart,
+      },
+      status: { not: 'COMPLETED' },
+    },
+    orderBy: { dueAt: 'asc' },
+    take: 6,
+    include: { lead: true },
+  });
+}
+
+async function getSubmissionChartData(now: Date): Promise<AdminSubmissionChartPoint[]> {
+  const currentDayStart = startOfDay(now);
+  const firstDayStart = subtractDays(currentDayStart, OVERVIEW_PERIOD_DAYS - 1);
+  const endExclusive = addDays(currentDayStart, 1);
+  const points = new Map<string, AdminSubmissionChartPoint>();
+
+  for (let index = 0; index < OVERVIEW_PERIOD_DAYS; index += 1) {
+    const date = addDays(firstDayStart, index);
+    const dateKey = formatDateKey(date);
+    points.set(dateKey, {
+      date: dateKey,
+      label: formatChartDateLabel(date),
+      tooltipLabel: formatChartTooltipDate(date),
+      submissions: 0,
+    });
+  }
+
+  const submissions = await prisma.submission.findMany({
+    where: {
+      createdAt: {
+        gte: firstDayStart,
+        lt: endExclusive,
+      },
+    },
+    select: { createdAt: true },
+  });
+
+  submissions.forEach((submission) => {
+    const dateKey = formatDateKey(submission.createdAt);
+    const point = points.get(dateKey);
+
+    if (point) {
+      point.submissions += 1;
+    }
+  });
+
+  return Array.from(points.values());
+}
+
+function startOfDay(date: Date): Date {
+  const result = new Date(date);
+  result.setHours(0, 0, 0, 0);
+
+  return result;
+}
+
+function addDays(date: Date, days: number): Date {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+
+  return result;
+}
+
+function subtractDays(date: Date, days: number): Date {
+  const result = new Date(date);
+  result.setDate(result.getDate() - days);
+
+  return result;
+}
+
+function formatDateKey(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}
+
+function formatChartDateLabel(date: Date): string {
+  return date.toLocaleDateString('pt-PT', {
+    day: '2-digit',
+    month: 'short',
+  });
+}
+
+function formatChartTooltipDate(date: Date): string {
+  return date.toLocaleDateString('pt-PT', {
+    day: '2-digit',
+    month: 'long',
+    weekday: 'long',
+  });
 }
 
 /**
@@ -136,6 +339,7 @@ export async function getLeadById(id: string) {
       emailLogs: { orderBy: { createdAt: 'desc' } },
       activities: { orderBy: { createdAt: 'desc' } },
       notifications: { orderBy: { createdAt: 'desc' } },
+      leadActions: { orderBy: [{ status: 'asc' }, { dueAt: 'asc' }, { createdAt: 'desc' }] },
     },
   });
 }

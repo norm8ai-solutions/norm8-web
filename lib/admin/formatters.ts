@@ -10,6 +10,8 @@
  */
 
 import type {
+  LeadActionStatus,
+  LeadActionType,
   LeadPriority,
   LeadStatus,
   MeetingBookingStatus,
@@ -18,6 +20,44 @@ import type {
   SubmissionType,
 } from '@/app/generated/prisma/client';
 
+
+/**
+ * Formats a commercial action type into Portuguese.
+ *
+ * @param type Lead action type enum value.
+ * @returns Human-readable action type.
+ */
+export function formatLeadActionType(type: LeadActionType): string {
+  const labels: Record<LeadActionType, string> = {
+    CALL: 'Ligar ao contacto',
+    SEND_EMAIL: 'Enviar email',
+    SCHEDULE_MEETING: 'Marcar reuni\u00e3o',
+    REVIEW_AUDIT: 'Rever auditoria',
+    SEND_PROPOSAL: 'Enviar proposta',
+    FOLLOW_UP: 'Fazer follow-up',
+    CLOSE_LOST: 'Fechar como perdida',
+    OTHER: 'Outro',
+  };
+
+  return labels[type];
+}
+
+/**
+ * Formats a commercial action status into Portuguese.
+ *
+ * @param status Lead action status enum value.
+ * @returns Human-readable action status.
+ */
+export function formatLeadActionStatus(status: LeadActionStatus): string {
+  const labels: Record<LeadActionStatus, string> = {
+    PENDING: 'Pendente',
+    IN_PROGRESS: 'Em curso',
+    COMPLETED: 'Conclu\u00edda',
+    OVERDUE: 'Atrasada',
+  };
+
+  return labels[status];
+}
 /**
  * Formats a submission type into Portuguese.
  *

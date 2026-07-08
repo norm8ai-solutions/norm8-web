@@ -11,6 +11,8 @@
 
 import type {
   EmailStatus,
+  LeadActionStatus,
+  LeadActionType,
   LeadPriority,
   LeadStatus,
   MeetingBookingStatus,
@@ -19,6 +21,8 @@ import type {
   SubmissionType,
 } from '@/app/generated/prisma/client';
 import {
+  formatLeadActionStatus,
+  formatLeadActionType,
   formatLeadStatus,
   formatMeetingStatus,
   formatNotificationStatus,
@@ -44,6 +48,48 @@ export function AdminBadge({ children, tone = 'slate' }: AdminBadgeProps) {
   return <span className={`admin-badge admin-badge-${tone}`}>{children}</span>;
 }
 
+
+/**
+ * Renders a commercial action status badge.
+ *
+ * @param props Lead action status value.
+ * @returns Lead action status badge.
+ */
+export function LeadActionStatusBadge({ status }: { status: LeadActionStatus }) {
+  const toneByStatus: Record<LeadActionStatus, BadgeTone> = {
+    PENDING: 'yellow',
+    IN_PROGRESS: 'blue',
+    COMPLETED: 'green',
+    OVERDUE: 'red',
+  };
+
+  return (
+    <AdminBadge tone={toneByStatus[status]}>
+      {formatLeadActionStatus(status)}
+    </AdminBadge>
+  );
+}
+
+/**
+ * Renders a commercial action type badge.
+ *
+ * @param props Lead action type value.
+ * @returns Lead action type badge.
+ */
+export function LeadActionTypeBadge({ type }: { type: LeadActionType }) {
+  const toneByType: Record<LeadActionType, BadgeTone> = {
+    CALL: 'cyan',
+    SEND_EMAIL: 'blue',
+    SCHEDULE_MEETING: 'purple',
+    REVIEW_AUDIT: 'yellow',
+    SEND_PROPOSAL: 'green',
+    FOLLOW_UP: 'blue',
+    CLOSE_LOST: 'red',
+    OTHER: 'slate',
+  };
+
+  return <AdminBadge tone={toneByType[type]}>{formatLeadActionType(type)}</AdminBadge>;
+}
 /**
  * Renders a lead status badge.
  *

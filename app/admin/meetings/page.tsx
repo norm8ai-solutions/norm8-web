@@ -10,6 +10,7 @@
  */
 
 import { ExternalLink, Filter } from 'lucide-react';
+import { Norm8Select } from '@/components/ui/norm8-select';
 import { MeetingStatusBadge } from '@/components/admin/AdminBadge';
 import {
   AdminEmptyState,
@@ -52,13 +53,11 @@ export default async function AdminMeetingsPage({
     <div className="admin-page-grid">
       <AdminPanel title="Reuniões" subtitle={`${meetings.length} marcações encontradas`}>
         <form action="/admin/meetings" className="admin-filters">
-          <select className="admin-select" defaultValue={filter} name="filter">
-            {meetingFilters.map((item) => (
-              <option key={item.value} value={item.value}>
-                {item.label}
-              </option>
-            ))}
-          </select>
+          <Norm8Select
+            defaultValue={filter}
+            name="filter"
+            options={meetingFilters}
+          />
           <button className="admin-filter-button" type="submit">
             <Filter size={14} />
             Filtrar

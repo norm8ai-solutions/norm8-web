@@ -10,6 +10,7 @@
  */
 
 import type { ReactNode } from 'react';
+import type { AdminMetricTrend } from '@/lib/admin/metrics';
 
 type AdminPanelProps = {
   title?: string;
@@ -23,7 +24,7 @@ type AdminStatCardProps = {
   label: string;
   value: number | string;
   context: string;
-  trend?: string;
+  trend?: AdminMetricTrend;
 };
 
 type AdminTableProps = {
@@ -82,7 +83,11 @@ export function AdminStatCard({
     <article className="admin-stat-card">
       <div className="admin-stat-top">
         <div className="admin-stat-icon">{icon}</div>
-        {trend && <span className="admin-stat-trend">{trend}</span>}
+        {trend && (
+          <span className={`admin-stat-trend admin-stat-trend-${trend.tone}`}>
+            {trend.label}
+          </span>
+        )}
       </div>
       <div>
         <p className="admin-stat-label">{label}</p>

@@ -10,6 +10,7 @@
  */
 
 import { Filter } from 'lucide-react';
+import { Norm8Select } from '@/components/ui/norm8-select';
 import { EmailStatusBadge } from '@/components/admin/AdminBadge';
 import {
   AdminEmptyState,
@@ -46,13 +47,11 @@ export default async function AdminEmailsPage({ searchParams }: AdminEmailsPageP
     <div className="admin-page-grid">
       <AdminPanel title="Emails" subtitle={`${emails.length} logs encontrados`}>
         <form action="/admin/emails" className="admin-filters">
-          <select className="admin-select" defaultValue={status} name="status">
-            {emailFilters.map((item) => (
-              <option key={item.value} value={item.value}>
-                {item.label}
-              </option>
-            ))}
-          </select>
+          <Norm8Select
+            defaultValue={status}
+            name="status"
+            options={emailFilters}
+          />
           <button className="admin-filter-button" type="submit">
             <Filter size={14} />
             Filtrar
