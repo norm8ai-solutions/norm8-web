@@ -560,6 +560,7 @@ function buildMeetingUrl(): string {
 function GenericInternalNotification({
   lead,
   meetingBooking,
+  meetingEmailContext,
   payloadFields,
   submission,
   summary,
@@ -574,27 +575,40 @@ function GenericInternalNotification({
         </div>
         <p style={eyebrowStyle}>NORM8 INTERNAL BRIEFING</p>
         <h1 style={{ fontSize: 24, lineHeight: 1.3, margin: '12px 0 16px' }}>
-          Nova submissao recebida no website Norm8
+          {meetingEmailContext?.meetingTitle ?? 'Nova submissão recebida na Norm8'}
         </h1>
         <p style={{ fontSize: 15, lineHeight: 1.7 }}>{summary}</p>
         <section style={sectionStyle}>
           <p style={sectionTitleStyle}>{formatSubmissionType(submission.type)}</p>
           <div style={gridStyle}>
-            <BriefField label="Empresa" value={lead.company} />
-            <BriefField label="Contacto" value={lead.name ?? 'Nao indicado'} />
-            <BriefField label="Email" value={lead.email} />
-            <BriefField label="Telefone" value={lead.phone ?? 'Nao indicado'} />
+            <BriefField label="Empresa" value={meetingEmailContext?.companyName ?? lead.company} />
+            <BriefField label="Contacto" value={meetingEmailContext?.contactName ?? lead.name ?? 'Contacto não indicado'} />
+            <BriefField label="Email" value={meetingEmailContext?.contactEmail ?? lead.email} />
+            <BriefField label="Telefone" value={meetingEmailContext?.contactPhone ?? lead.phone ?? 'Não indicado'} />
           </div>
           {isMeetingRequest && (
             <p style={{ fontSize: 14, lineHeight: 1.7, margin: '18px 0 0' }}>
-              <strong>Estado:</strong> {formatMeetingStatus(meetingBooking.status)}
+              <strong>Estado:</strong> {meetingEmailContext?.status ?? formatMeetingStatus(meetingBooking.status)}
               <br />
-              <strong>Data:</strong> {formatMeetingDate(meetingBooking.startsAt, meetingBooking.timezone)}
+              <strong>Data:</strong> {meetingEmailContext?.meetingDate ?? formatMeetingDate(meetingBooking.startsAt, meetingBooking.timezone)}
               <br />
               <strong>Hora:</strong>{' '}
-              {formatMeetingTimeRange(meetingBooking.startsAt, meetingBooking.endsAt, meetingBooking.timezone)}
+              {meetingEmailContext
+                ? `${meetingEmailContext.meetingStartTime}–${meetingEmailContext.meetingEndTime}`
+                : formatMeetingTimeRange(meetingBooking.startsAt, meetingBooking.endsAt, meetingBooking.timezone)}
               <br />
-              <strong>Duracao:</strong> {formatMeetingDuration(meetingBooking.startsAt, meetingBooking.endsAt)}
+              <strong>Duração:</strong>{' '}
+              {meetingEmailContext
+                ? `${meetingEmailContext.durationMinutes} minutos`
+                : formatMeetingDuration(meetingBooking.startsAt, meetingBooking.endsAt)}
+              {meetingEmailContext ? (
+                <>
+                  <br />
+                  <strong>Origem:</strong> {meetingEmailContext.source}
+                  <br />
+                  <strong>Objetivo interno:</strong> {meetingEmailContext.internalObjective}
+                </>
+              ) : null}
             </p>
           )}
           {!isMeetingRequest && (

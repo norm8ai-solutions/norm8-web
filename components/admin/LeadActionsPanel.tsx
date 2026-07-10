@@ -61,6 +61,10 @@ const COPY = {
     'Não foi possível executar a ação. Confirme os campos obrigatórios e tente novamente.',
   executionMeetingEmailError: 'Não foi possível agendar reunião: a lead não tem email associado.',
   executionMeetingSlotError: 'Este horário já está ocupado. Escolha outro horário.',
+  executionMeetingCalendarError:
+    'Não foi possível criar o evento no Google Calendar. A ação continua pendente.',
+  executionMeetingEmailWarning:
+    'Reunião criada, mas não foi possível enviar um ou mais emails de confirmação.',
   title: 'Título',
   titlePlaceholder: 'Ex.: Fazer follow-up da proposta',
   titleError: 'Indique o título da ação.',
@@ -319,6 +323,14 @@ function getActionExecutionErrorMessage(error?: string): string {
 
   if (error === 'meetingSlot') {
     return COPY.executionMeetingSlotError;
+  }
+
+  if (error === 'meetingCalendar') {
+    return COPY.executionMeetingCalendarError;
+  }
+
+  if (error === 'meetingEmailWarning') {
+    return COPY.executionMeetingEmailWarning;
   }
 
   return COPY.executionError;

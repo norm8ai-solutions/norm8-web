@@ -17,7 +17,10 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import type { LeadActionStatus, LeadActionType, LeadPriority, LeadStatus } from '@/app/generated/prisma/client';
 import { createAuditAnalysisForSubmission } from '@/lib/audit-analysis/service';
+import { createMeetingCalendarEvent } from '@/lib/calendar/service';
 import { prisma } from '@/lib/db/prisma';
+import { sendInternalScheduledMeetingEmails } from '@/lib/email/service';
+import { getMeetingSubmissionSummary } from '@/lib/meetings/objectives';
 import {
   MeetingSlotUnavailableError,
   createMeetingBooking,
@@ -360,7 +363,16 @@ export async function scheduleLeadActionMeeting(formData: FormData): Promise<voi
       lead: {
         include: {
           submissions: {
-            include: { meetingBooking: true },
+            include: {
+              meetingBooking: true,
+              auditAnalysis: {
+                select: {
+                  internalSummary: true,
+                  companySummary: true,
+                  nextStep: true,
+                },
+              },
+            },
             orderBy: { createdAt: 'desc' },
           },
         },
@@ -393,10 +405,17 @@ export async function scheduleLeadActionMeeting(formData: FormData): Promise<voi
   let meeting;
 
   try {
+    console.info('Scheduling internal lead meeting', {
+      leadId,
+      actionId,
+      eventStart: startsAt.toISOString(),
+      eventEnd: endsAt.toISOString(),
+    });
+
     meeting = await createMeetingBooking({
       leadId,
       submissionId: availableSubmission?.id ?? null,
-      status: 'CONFIRMED',
+      status: 'REQUESTED',
       requestedDate: formatDateInputValue(startsAt),
       requestedTime: formatTimeInputValue(startsAt),
       startsAt,
@@ -407,6 +426,28 @@ export async function scheduleLeadActionMeeting(formData: FormData): Promise<voi
       attendeeCompany,
       meetingGoal: notes || title || action.description || action.title,
     });
+
+    const calendarResult = await createMeetingCalendarEvent({
+      booking: meeting,
+      leadId,
+      submissionId: availableSubmission?.id ?? null,
+      phone: action.lead.phone,
+      source: 'Área Interna / Próxima Ação',
+      title,
+    });
+
+    if (!calendarResult.success) {
+      await prisma.meetingBooking.delete({ where: { id: meeting.id } });
+      redirect(
+        `/admin/leads/${leadId}?actionExecutionError=${
+          calendarResult.code === 'SLOT_UNAVAILABLE' ? 'meetingSlot' : 'meetingCalendar'
+        }`,
+      );
+    }
+
+    meeting = await prisma.meetingBooking.findUniqueOrThrow({
+      where: { id: meeting.id },
+    });
   } catch (error) {
     if (error instanceof MeetingSlotUnavailableError) {
       redirect(`/admin/leads/${leadId}?actionExecutionError=meetingSlot`);
@@ -415,34 +456,73 @@ export async function scheduleLeadActionMeeting(formData: FormData): Promise<voi
     throw error;
   }
 
-  await prisma.leadAction.update({
-    where: { id: actionId },
-    data: {
-      status: 'COMPLETED',
-      completedAt: new Date(),
-    },
+  await prisma.$transaction([
+    prisma.leadAction.update({
+      where: { id: actionId },
+      data: { status: 'COMPLETED', completedAt: new Date() },
+    }),
+    prisma.leadActivity.create({
+      data: {
+        leadId,
+        type: 'MEETING_SCHEDULED',
+        message: `Reunião agendada: ${title || action.title}`,
+        metadata: {
+          actionId,
+          meetingBookingId: meeting.id,
+          googleEventId: meeting.googleEventId,
+          googleEventHtmlLink: meeting.googleEventHtmlLink,
+          calendarId: meeting.calendarId,
+          title,
+          durationMinutes,
+          submissionId: availableSubmission?.id ?? null,
+          linkedToSubmission: Boolean(availableSubmission),
+          startsAt: startsAt.toISOString(),
+          endsAt: endsAt.toISOString(),
+        },
+      },
+    }),
+  ]);
+
+  console.info('Internal lead meeting scheduled successfully', {
+    leadId,
+    actionId,
+    meetingBookingId: meeting.id,
+    googleEventCreated: Boolean(meeting.googleEventId),
+    googleEventId: meeting.googleEventId,
   });
 
-  await prisma.leadActivity.create({
-    data: {
-      leadId,
-      type: 'MEETING_SCHEDULED',
-      message: `Reunião agendada: ${title || action.title}`,
-      metadata: {
-        actionId,
-        meetingBookingId: meeting.id,
-        title,
-        durationMinutes,
-        submissionId: availableSubmission?.id ?? null,
-        linkedToSubmission: Boolean(availableSubmission),
-        startsAt: startsAt.toISOString(),
-        endsAt: endsAt.toISOString(),
-      },
-    },
+  const emailResult = await sendInternalScheduledMeetingEmails({
+    lead: action.lead,
+    meetingBooking: meeting,
+    submissionId: availableSubmission?.id ?? null,
+    actionId,
+    title,
+    meetingDescription: notes,
+    leadActionDescription: action.description,
+    submissionSummary:
+      availableSubmission?.auditAnalysis?.internalSummary ??
+      availableSubmission?.auditAnalysis?.companySummary ??
+      availableSubmission?.auditAnalysis?.nextStep ??
+      getMeetingSubmissionSummary(availableSubmission?.payload),
   });
+
+  if (!emailResult.allSent) {
+    await prisma.leadActivity.create({
+      data: {
+        leadId,
+        type: 'MEETING_EMAIL_FAILED',
+        message: 'Reunião criada, mas um ou mais emails de confirmação falharam.',
+        metadata: { actionId, meetingBookingId: meeting.id },
+      },
+    });
+  }
 
   revalidateLeadActionExecutionPaths(leadId);
   revalidatePath('/admin/meetings');
+
+  if (!emailResult.allSent) {
+    redirect(`/admin/leads/${leadId}?actionExecutionError=meetingEmailWarning`);
+  }
 }
 
 /**

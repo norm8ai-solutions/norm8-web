@@ -32,67 +32,66 @@ import type { EmailTemplateProps } from '../types';
 export default function MeetingRequestConfirmationEmail({
   lead,
   meetingBooking,
+  meetingEmailContext,
 }: EmailTemplateProps) {
   const isConfirmed = meetingBooking?.status === 'CONFIRMED';
   const replyTo = process.env.INTERNAL_NOTIFICATION_EMAIL
     ? `mailto:${process.env.INTERNAL_NOTIFICATION_EMAIL}`
     : 'mailto:hello@norm8.pt';
   const title = isConfirmed
-    ? 'Reuniao confirmada com a Norm8'
-    : 'Recebemos o seu pedido de reuniao';
+    ? 'Reunião confirmada com a Norm8'
+    : 'Recebemos o seu pedido de reunião';
 
   return (
     <EmailShell>
       <EmailHeader
         description={
           isConfirmed
-            ? 'A reuniao ficou registada para alinharmos contexto, prioridades e proximos passos.'
-            : 'Recebemos o pedido e vamos confirmar a disponibilidade para fechar o horario.'
+            ? 'A reunião ficou registada para alinharmos contexto, prioridades e próximos passos.'
+            : 'Recebemos o pedido e vamos confirmar a disponibilidade para fechar o horário.'
         }
         label="Meeting Briefing"
         meta={[
-          { label: 'Empresa', value: lead.company },
-          { label: 'Estado', value: isConfirmed ? 'Confirmada' : 'Pendente' },
+          { label: 'Empresa', value: meetingEmailContext?.companyName ?? lead.company },
+          { label: 'Estado', value: meetingEmailContext?.status ?? (isConfirmed ? 'Confirmada' : 'Pendente') },
         ]}
         title={title}
       />
 
       <EmailSection>
         <p style={{ color: '#E8EDF8', fontSize: 15, lineHeight: 1.75, margin: 0 }}>
-          Ola{lead.name ? `, ${lead.name}` : ''}.
+          Olá{meetingEmailContext?.contactName ? `, ${meetingEmailContext.contactName}` : lead.name ? `, ${lead.name}` : ''}.
         </p>
         <p style={{ color: '#8399B8', fontSize: 14, lineHeight: 1.7, margin: '14px 0 0' }}>
           {isConfirmed
-            ? 'A sua reuniao com a Norm8 esta confirmada.'
-            : `Recebemos o pedido de reuniao para a ${lead.company}. A equipa da Norm8 ira entrar em contacto para finalizar a marcacao.`}
+            ? 'A sua reunião com a Norm8 está confirmada.'
+            : `Recebemos o pedido de reunião para a ${meetingEmailContext?.companyName ?? lead.company}. A equipa da Norm8 irá entrar em contacto para finalizar a marcação.`}
         </p>
       </EmailSection>
 
       {isConfirmed && meetingBooking ? (
         <>
-          <EmailSection title="Detalhes da reuniao">
+          <EmailSection title="Detalhes da reunião">
             <table cellPadding="0" cellSpacing="0" role="presentation" style={{ width: '100%' }}>
               <tbody>
                 <tr>
                   <EmailMetric
                     label="Data"
-                    value={formatMeetingDate(meetingBooking.startsAt, meetingBooking.timezone)}
+                    value={meetingEmailContext?.meetingDate ?? formatMeetingDate(meetingBooking.startsAt, meetingBooking.timezone)}
                   />
                   <EmailMetric
                     label="Hora"
-                    value={formatMeetingTimeRange(
-                      meetingBooking.startsAt,
-                      meetingBooking.endsAt,
-                      meetingBooking.timezone,
-                    )}
+                    value={meetingEmailContext
+                      ? `${meetingEmailContext.meetingStartTime}–${meetingEmailContext.meetingEndTime}`
+                      : formatMeetingTimeRange(meetingBooking.startsAt, meetingBooking.endsAt, meetingBooking.timezone)}
                   />
                 </tr>
                 <tr>
                   <EmailMetric
-                    label="Duracao"
-                    value={formatMeetingDuration(meetingBooking.startsAt, meetingBooking.endsAt)}
+                    label="Duração"
+                    value={meetingEmailContext ? `${meetingEmailContext.durationMinutes} minutos` : formatMeetingDuration(meetingBooking.startsAt, meetingBooking.endsAt)}
                   />
-                  <EmailMetric label="Empresa" value={meetingBooking.attendeeCompany} />
+                  <EmailMetric label="Empresa" value={meetingEmailContext?.companyName ?? meetingBooking.attendeeCompany} />
                 </tr>
               </tbody>
             </table>
@@ -101,27 +100,27 @@ export default function MeetingRequestConfirmationEmail({
                 Objetivo
               </p>
               <p style={{ color: '#E8EDF8', fontSize: 14, lineHeight: 1.65, margin: 0 }}>
-                {meetingBooking.meetingGoal}
+                {meetingEmailContext?.clientObjective ?? meetingBooking.meetingGoal}
               </p>
             </EmailCard>
           </EmailSection>
-          <EmailSection align="center" title="Proximos passos">
+          <EmailSection align="center" title="Próximos passos">
             <p style={{ color: '#8399B8', fontSize: 14, lineHeight: 1.7, margin: '0 0 18px' }}>
-              Vamos usar a sessao para validar processos criticos, clarificar prioridades e
-              definir uma primeira direccao de implementacao.
+              A reunião servirá para compreender melhor os processos atuais, identificar
+              oportunidades de automação e definir próximos passos claros.
             </p>
             <EmailButton href={replyTo}>Responder a este email</EmailButton>
           </EmailSection>
         </>
       ) : (
-        <EmailSection title="Proximos passos">
+        <EmailSection title="Próximos passos">
           <EmailCard>
             <p style={{ color: '#E8EDF8', fontSize: 15, fontWeight: 800, margin: '0 0 6px' }}>
-              Confirmacao manual
+              Confirmação manual
             </p>
             <p style={{ color: '#8399B8', fontSize: 14, lineHeight: 1.65, margin: 0 }}>
-              Nao foi possivel confirmar automaticamente o horario neste momento.
-              A equipa Norm8 ira confirmar disponibilidade e enviar os detalhes por email.
+              Não foi possível confirmar automaticamente o horário neste momento.
+              A equipa Norm8 irá confirmar a disponibilidade e enviar os detalhes por email.
             </p>
           </EmailCard>
         </EmailSection>

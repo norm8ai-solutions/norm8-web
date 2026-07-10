@@ -16,7 +16,10 @@ import {
   type MeetingBooking,
   type MeetingBookingStatus,
 } from '@/app/generated/prisma/client';
-import { zonedTimeToUtc } from '@/lib/calendar/availability';
+import {
+  getGoogleCalendarBusyIntervals,
+  zonedTimeToUtc,
+} from '@/lib/calendar/availability';
 import { prisma } from '@/lib/db/prisma';
 
 const BUSY_MEETING_STATUSES: MeetingBookingStatus[] = ['REQUESTED', 'CONFIRMED'];
@@ -163,7 +166,8 @@ export async function getMeetingSlotAvailability({
   const dayStart = zonedTimeToUtc(date, '00:00', timezone);
   const dayEnd = zonedTimeToUtc(addDays(date, 1), '00:00', timezone);
   const now = new Date();
-  const existingMeetings = await prisma.meetingBooking.findMany({
+  const [existingMeetings, googleBusyIntervals] = await Promise.all([
+    prisma.meetingBooking.findMany({
     where: {
       status: { in: BUSY_MEETING_STATUSES },
       startsAt: { lt: dayEnd },
@@ -173,7 +177,9 @@ export async function getMeetingSlotAvailability({
       startsAt: true,
       endsAt: true,
     },
-  });
+    }),
+    getGoogleCalendarBusyIntervals({ startDate: date, endDate: date }),
+  ]);
 
   return {
     date,
@@ -186,6 +192,9 @@ export async function getMeetingSlotAvailability({
         startsAt > now &&
         !existingMeetings.some((meeting) =>
           intervalsOverlap(startsAt, endsAt, meeting.startsAt, meeting.endsAt),
+        ) &&
+        !googleBusyIntervals.some((busy) =>
+          intervalsOverlap(startsAt, endsAt, busy.start, busy.end),
         );
 
       return {

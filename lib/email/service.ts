@@ -16,9 +16,11 @@ import { createElement, type ReactNode } from 'react';
 import type {
   AuditAnalysis,
   MeetingBookingStatus,
+  MeetingBooking,
   SubmissionType,
 } from '@/app/generated/prisma/client';
 import { prisma } from '@/lib/db/prisma';
+import { buildMeetingEmailContext } from '@/lib/meetings/email-context';
 import {
   formatSubmissionType,
   getSubmissionContactSnapshot,
@@ -75,9 +77,22 @@ export async function sendSubmissionEmails(
   params: SendSubmissionEmailsParams,
 ): Promise<void> {
   const jobs: EmailSendJob[] = [];
+  const meetingEmailContext = params.meetingBooking
+    ? await buildMeetingEmailContext({
+        lead: getSubmissionContactSnapshot(params.submission, params.lead),
+        meetingBooking: params.meetingBooking,
+        meetingDescription: params.meetingBooking.meetingGoal,
+        submissionSummary: getSubmissionSummary(
+          params.submission.type,
+          params.submission.payload,
+        ),
+        source: 'Website / Marcar Reunião',
+      })
+    : undefined;
+  const emailParams = { ...params, meetingEmailContext };
 
   try {
-    const confirmationJob = await buildConfirmationEmailJob(params);
+    const confirmationJob = await buildConfirmationEmailJob(emailParams);
     if (confirmationJob) {
       jobs.push(confirmationJob);
     }
@@ -86,7 +101,7 @@ export async function sendSubmissionEmails(
   }
 
   try {
-    const internalJob = await buildInternalNotificationEmailJob(params);
+    const internalJob = await buildInternalNotificationEmailJob(emailParams);
     if (internalJob) {
       jobs.push(internalJob);
     }
@@ -95,6 +110,115 @@ export async function sendSubmissionEmails(
   }
 
   await Promise.all(jobs.map((job) => sendEmailJob(job)));
+}
+
+export async function sendInternalScheduledMeetingEmails(params: {
+  lead: SubmissionEmailLead;
+  meetingBooking: MeetingBooking;
+  submissionId?: string | null;
+  actionId: string;
+  title: string;
+  meetingDescription?: string | null;
+  leadActionDescription?: string | null;
+  submissionSummary?: string | null;
+}): Promise<{ allSent: boolean }> {
+  const {
+    actionId,
+    lead,
+    leadActionDescription,
+    meetingBooking,
+    meetingDescription,
+    submissionId,
+    submissionSummary,
+    title,
+  } = params;
+  const meetingEmailContext = await buildMeetingEmailContext({
+    lead,
+    meetingBooking,
+    meetingTitle: title,
+    meetingDescription,
+    leadActionDescription,
+    submissionSummary,
+    source: 'Área Interna / Próxima Ação',
+  });
+  const submission: SubmissionEmailSubmission = {
+    id: submissionId ?? `internal-${meetingBooking.id}`,
+    type: 'MEETING_REQUEST',
+    createdAt: meetingBooking.createdAt,
+    payload: {
+      source: 'Área Interna / Próxima Ação',
+      actionId,
+      title,
+    },
+  };
+  const metadata = {
+    actionId,
+    calendarId: meetingBooking.calendarId,
+    googleEventId: meetingBooking.googleEventId,
+    meetingBookingId: meetingBooking.id,
+    source: 'Área Interna / Próxima Ação',
+    internalObjective: meetingEmailContext.internalObjective,
+    clientObjective: meetingEmailContext.clientObjective,
+  };
+  const customerLog = await prisma.emailLog.create({
+    data: {
+      leadId: lead.id,
+      submissionId: submissionId ?? null,
+      to: lead.email,
+      subject: 'Reunião de diagnóstico confirmada — Norm8',
+      type: 'MEETING_CONFIRMATION',
+      metadata,
+    },
+  });
+  const jobs: EmailSendJob[] = [{
+    logId: customerLog.id,
+    to: lead.email,
+    subject: 'Reunião de diagnóstico confirmada — Norm8',
+    type: 'MEETING_CONFIRMATION',
+    metadata,
+    react: createElement(MeetingRequestConfirmationEmail, {
+      lead,
+      submission,
+      meetingBooking,
+      meetingEmailContext,
+    }),
+  }];
+  const internalTo = process.env.INTERNAL_NOTIFICATION_EMAIL;
+  const internalLog = await prisma.emailLog.create({
+    data: {
+      leadId: lead.id,
+      submissionId: submissionId ?? null,
+      to: internalTo || 'missing-internal-notification-email',
+      subject: `Nova reunião agendada — ${lead.company}`,
+      type: 'INTERNAL_NOTIFICATION',
+      metadata,
+    },
+  });
+
+  if (internalTo) {
+    jobs.push({
+      logId: internalLog.id,
+      to: internalTo,
+      subject: `Nova reunião agendada — ${lead.company}`,
+      type: 'INTERNAL_NOTIFICATION',
+      metadata,
+      react: createElement(
+        InternalLeadNotificationEmail,
+        buildInternalTemplateProps(
+          lead,
+          submission,
+          meetingBooking,
+          undefined,
+          meetingEmailContext,
+        ),
+      ),
+    });
+  } else {
+    await markEmailFailed(internalLog.id, 'INTERNAL_NOTIFICATION_EMAIL is not configured.');
+  }
+
+  const results = await Promise.all(jobs.map((job) => sendEmailJob(job)));
+  return { allSent: Boolean(internalTo) && results.every(Boolean) };
 }
 
 /**
@@ -109,6 +233,7 @@ async function buildConfirmationEmailJob({
   meetingBooking,
   confirmationEmailLogId,
   auditAnalysis,
+  meetingEmailContext,
 }: SendSubmissionEmailsParams): Promise<EmailSendJob | null> {
   const config = getConfirmationConfig(
     submission.type,
@@ -162,6 +287,7 @@ async function buildConfirmationEmailJob({
       lead: contactSnapshot,
       submission,
       meetingBooking,
+      meetingEmailContext,
       auditAnalysis,
     }),
   };
@@ -178,6 +304,7 @@ async function buildInternalNotificationEmailJob({
   submission,
   meetingBooking,
   auditAnalysis,
+  meetingEmailContext,
 }: SendSubmissionEmailsParams): Promise<EmailSendJob | null> {
   const to = process.env.INTERNAL_NOTIFICATION_EMAIL;
   const subject =
@@ -208,6 +335,7 @@ async function buildInternalNotificationEmailJob({
     submission,
     meetingBooking,
     auditAnalysis,
+    meetingEmailContext,
   );
 
   return {
@@ -226,7 +354,7 @@ async function buildInternalNotificationEmailJob({
  * @param job Fully prepared email send job.
  * @returns Promise that resolves after the EmailLog is updated.
  */
-async function sendEmailJob(job: EmailSendJob): Promise<void> {
+async function sendEmailJob(job: EmailSendJob): Promise<boolean> {
   try {
     const resend = getResendClient();
     const response = await resend.emails.send({
@@ -239,7 +367,7 @@ async function sendEmailJob(job: EmailSendJob): Promise<void> {
     if (response.error) {
       await markEmailFailed(job.logId, response.error.message, job.metadata);
       console.error(`Failed to send ${job.type} email`, response.error);
-      return;
+      return false;
     }
 
     await prisma.emailLog.update({
@@ -253,6 +381,7 @@ async function sendEmailJob(job: EmailSendJob): Promise<void> {
         metadata: job.metadata,
       },
     });
+    return true;
   } catch (error) {
     const message =
       error instanceof EmailConfigurationError || error instanceof Error
@@ -261,6 +390,7 @@ async function sendEmailJob(job: EmailSendJob): Promise<void> {
 
     await markEmailFailed(job.logId, message, job.metadata);
     console.error(`Failed to send ${job.type} email`, error);
+    return false;
   }
 }
 
@@ -411,12 +541,14 @@ function buildInternalTemplateProps(
   submission: SubmissionEmailSubmission,
   meetingBooking?: SendSubmissionEmailsParams['meetingBooking'],
   auditAnalysis?: SendSubmissionEmailsParams['auditAnalysis'],
+  meetingEmailContext?: InternalLeadNotificationEmailProps['meetingEmailContext'],
 ): InternalLeadNotificationEmailProps {
   return {
     lead: getSubmissionContactSnapshot(submission, lead),
     submission,
     meetingBooking,
     auditAnalysis,
+    meetingEmailContext,
     payloadFields: getPayloadFields(submission.payload),
     summary: getSubmissionSummary(submission.type, submission.payload),
   };
@@ -476,7 +608,7 @@ function getSubmissionSummary(
   const challenge =
     fields.find((field) =>
       ['mainChallenge', 'processToAutomate', 'meetingGoal'].includes(field.label),
-    )?.value ?? 'Sem resumo indicado.';
+    )?.value ?? 'Pedido recebido sem contexto adicional.';
 
   switch (type) {
     case 'AUDIT_REQUEST':

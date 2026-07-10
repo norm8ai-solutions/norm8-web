@@ -186,11 +186,14 @@ function MeetingExecutionForm({
   const [startsAt, setStartsAt] = React.useState<Date | null>(() =>
     getMeetingDefaultDate(action.dueAt),
   );
+  const [availabilityDate, setAvailabilityDate] = React.useState<Date>(() =>
+    getMeetingDefaultDate(action.dueAt),
+  );
   const [durationMinutes, setDurationMinutes] = React.useState('45');
   const [availability, setAvailability] = React.useState<AdminMeetingSlotAvailability | null>(null);
   const [availabilityLoading, setAvailabilityLoading] = React.useState(false);
   const [availabilityError, setAvailabilityError] = React.useState<string | null>(null);
-  const selectedDate = startsAt ? toIsoDateValue(startsAt) : toIsoDateValue(getNextUsefulSlot());
+  const selectedDate = toIsoDateValue(availabilityDate);
   const selectedTime = startsAt ? formatTimeValue(startsAt) : '';
   const parsedDuration = Number.parseInt(durationMinutes, 10);
 
@@ -209,6 +212,7 @@ function MeetingExecutionForm({
     let active = true;
 
     setAvailabilityLoading(true);
+    setAvailability(null);
     setAvailabilityError(null);
 
     loadAdminMeetingSlotAvailability({
@@ -242,24 +246,6 @@ function MeetingExecutionForm({
     };
   }, [parsedDuration, selectedDate]);
 
-  React.useEffect(() => {
-    if (!availability || !startsAt) {
-      return;
-    }
-
-    const matchingSlot = availability.slots.find((slot) => slot.time === selectedTime);
-
-    if (matchingSlot?.available) {
-      return;
-    }
-
-    const nextAvailableSlot = availability.slots.find((slot) => slot.available);
-
-    if (nextAvailableSlot) {
-      setStartsAt(new Date(nextAvailableSlot.startsAt));
-    }
-  }, [availability, selectedTime, startsAt]);
-
   const timeOptions = availability
     ? availability.slots.map((slot) => ({
         time: slot.time,
@@ -279,6 +265,12 @@ function MeetingExecutionForm({
   const handleStartsAtChange = (nextDate: Date | null): void => {
     clearExecutionError();
     setStartsAt(nextDate);
+  };
+
+  const handleMeetingDayChange = (nextDay: Date): void => {
+    clearExecutionError();
+    setAvailabilityError(null);
+    setAvailabilityDate(nextDay);
   };
 
   const handleDurationChange = (nextDuration: string): void => {
@@ -309,9 +301,11 @@ function MeetingExecutionForm({
           clearable={false}
           density="compact"
           name="startsAt"
+          onDayChange={handleMeetingDayChange}
           onValueChange={handleStartsAtChange}
           placeholder="Selecionar data e hora da reunião..."
           timeOptions={timeOptions}
+          timeOptionsLoading={availabilityLoading}
           value={startsAt}
         />
       </label>

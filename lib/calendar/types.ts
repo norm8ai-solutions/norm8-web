@@ -59,8 +59,10 @@ export type AvailabilityResult =
 export type CreateCalendarEventParams = {
   booking: MeetingBooking;
   leadId: string;
-  submissionId: string;
+  submissionId?: string | null;
   phone?: string | null;
+  source?: string;
+  title?: string;
 };
 
 export type CalendarEventResult =
@@ -73,4 +75,5 @@ export type CalendarEventResult =
   | {
       success: false;
       error: string;
+      code: 'SLOT_UNAVAILABLE' | 'CALENDAR_ERROR';
     };

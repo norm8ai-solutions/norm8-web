@@ -21,6 +21,47 @@ import type {
   GoogleCalendarConfig,
 } from './types';
 
+export class GoogleCalendarSlotUnavailableError extends Error {
+  constructor() {
+    super('Google Calendar slot is unavailable.');
+    this.name = 'GoogleCalendarSlotUnavailableError';
+  }
+}
+
+export async function assertGoogleCalendarIntervalAvailable(
+  startsAt: Date,
+  endsAt: Date,
+): Promise<void> {
+  const config = getGoogleCalendarConfig();
+  const calendar = getGoogleCalendarClient();
+
+  console.info('Loading Google Calendar freebusy', {
+    calendarId: config.calendarId,
+    timeMin: startsAt.toISOString(),
+    timeMax: endsAt.toISOString(),
+    timezone: config.timezone,
+  });
+
+  const response = await calendar.freebusy.query({
+    requestBody: {
+      timeMin: startsAt.toISOString(),
+      timeMax: endsAt.toISOString(),
+      timeZone: config.timezone,
+      items: [{ id: config.calendarId }],
+    },
+  });
+  const busy = response.data.calendars?.[config.calendarId]?.busy ?? [];
+
+  console.info('Google Calendar freebusy loaded', {
+    calendarId: config.calendarId,
+    busyCount: busy.length,
+  });
+
+  if (busy.length > 0) {
+    throw new GoogleCalendarSlotUnavailableError();
+  }
+}
+
 /**
  * Gets available meeting slots from Google Calendar for a date range.
  *
@@ -48,6 +89,13 @@ export async function getAvailableMeetingSlots(
         'Não foi possível carregar horários disponíveis. Tente novamente dentro de instantes.',
     };
   }
+}
+
+export async function getGoogleCalendarBusyIntervals(
+  range: AvailabilityRange,
+): Promise<BusyInterval[]> {
+  const config = getGoogleCalendarConfig();
+  return getBusyIntervals(range, config);
 }
 
 /**

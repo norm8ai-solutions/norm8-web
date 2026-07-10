@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { createPortal } from 'react-dom';
-import { CalendarIcon, ChevronDown, Clock, X } from 'lucide-react';
+import { ArrowLeft, CalendarIcon, ChevronDown, Clock, LoaderCircle, X } from 'lucide-react';
 import { pt } from 'react-day-picker/locale';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
@@ -13,6 +13,7 @@ type Norm8DateTimePickerProps = {
   value?: Date | string | null;
   defaultValue?: Date | string | null;
   onValueChange?: (value: Date | null) => void;
+  onDayChange?: (value: Date) => void;
   name?: string;
   placeholder?: string;
   ariaRequired?: boolean;
@@ -25,6 +26,8 @@ type Norm8DateTimePickerProps = {
   clearable?: boolean;
   density?: 'default' | 'compact';
   timeOptions?: Norm8TimeOption[];
+  timeOptionsLoading?: boolean;
+  emptyTimeMessage?: string;
 };
 
 type PopoverPosition = {
@@ -65,6 +68,7 @@ export function Norm8DateTimePicker({
   value,
   defaultValue,
   onValueChange,
+  onDayChange,
   name,
   placeholder = 'Selecionar data e hora...',
   ariaRequired,
@@ -77,6 +81,8 @@ export function Norm8DateTimePicker({
   clearable = true,
   density = 'default',
   timeOptions,
+  timeOptionsLoading = false,
+  emptyTimeMessage = 'Sem horários disponíveis para este dia.',
 }: Norm8DateTimePickerProps) {
   const generatedId = React.useId();
   const triggerId = id ?? generatedId;
@@ -86,6 +92,8 @@ export function Norm8DateTimePicker({
     parseDateValue(defaultValue),
   );
   const [open, setOpen] = React.useState(false);
+  const [step, setStep] = React.useState<'date' | 'time'>('date');
+  const [pendingDay, setPendingDay] = React.useState<Date | null>(null);
   const [mounted, setMounted] = React.useState(false);
   const [popoverPosition, setPopoverPosition] =
     React.useState<PopoverPosition | null>(null);
@@ -98,6 +106,7 @@ export function Norm8DateTimePicker({
     [timeOptions],
   );
   const selectedTime = selectedDate ? formatTimeValue(selectedDate) : '10:00';
+  const availableTimeOptions = normalizedTimeOptions.filter((option) => !option.disabled);
 
   const commitValue = React.useCallback(
     (nextValue: Date | null): void => {
@@ -125,15 +134,14 @@ export function Norm8DateTimePicker({
     const viewportHeight = viewport?.height ?? window.innerHeight;
     const viewportPadding = 16;
     const popoverGap = 8;
-    const preferredHeight = density === 'compact' ? 392 : 468;
-    const minimumHeight = density === 'compact' ? 220 : 280;
+    const preferredHeight = step === 'date' ? (density === 'compact' ? 350 : 390) : 360;
     const viewportRight = viewportLeft + viewportWidth;
     const viewportBottom = viewportTop + viewportHeight;
     const availableBelow = viewportBottom - rect.bottom - viewportPadding;
     const availableAbove = rect.top - viewportTop - viewportPadding;
     const opensUp = availableBelow < 340 && availableAbove > availableBelow;
     const maxHeight = Math.max(
-      minimumHeight,
+      120,
       Math.min(preferredHeight, viewportHeight - viewportPadding * 2),
     );
     const desiredTop = opensUp
@@ -158,7 +166,7 @@ export function Norm8DateTimePicker({
       maxHeight,
       placement: opensUp ? 'top' : 'bottom',
     });
-  }, [density]);
+  }, [density, step]);
 
   React.useEffect(() => {
     setMounted(true);
@@ -208,6 +216,8 @@ export function Norm8DateTimePicker({
       const nextOpen = !currentOpen;
 
       if (nextOpen) {
+        setStep('date');
+        setPendingDay(null);
         requestAnimationFrame(updatePopoverPosition);
       }
 
@@ -220,7 +230,9 @@ export function Norm8DateTimePicker({
       return;
     }
 
-    commitValue(mergeDateAndTime(day, selectedTime));
+    setPendingDay(day);
+    setStep('time');
+    onDayChange?.(day);
   };
 
   const handleTimeSelect = (time: string): void => {
@@ -230,8 +242,11 @@ export function Norm8DateTimePicker({
       return;
     }
 
-    const baseDate = selectedDate ?? new Date();
+    const baseDate = pendingDay ?? selectedDate ?? new Date();
     commitValue(mergeDateAndTime(baseDate, time));
+    setOpen(false);
+    setStep('date');
+    setPendingDay(null);
   };
 
   const clearValue = (event: React.MouseEvent<HTMLElement>): void => {
@@ -249,7 +264,7 @@ export function Norm8DateTimePicker({
           <div
             ref={popoverRef}
             className={cn(
-              'fixed z-[9999] overflow-visible rounded-xl border border-[#1F2B44] bg-[#091120]/95 shadow-2xl shadow-black/45 backdrop-blur-xl transition-all duration-150',
+              'fixed z-[9999] overflow-x-hidden overflow-y-auto rounded-xl border border-[#1F2B44] bg-[#091120]/95 shadow-2xl shadow-black/45 backdrop-blur-xl transition-all duration-150',
               open
                 ? 'pointer-events-auto translate-y-0 scale-100 opacity-100'
                 : 'pointer-events-none scale-[0.98] opacity-0',
@@ -266,7 +281,8 @@ export function Norm8DateTimePicker({
               maxHeight: popoverPosition.maxHeight,
             }}
           >
-            <div className={cn('grid max-h-full min-w-0 overflow-y-auto overflow-x-hidden', density === 'compact' ? 'gap-2 p-2' : 'gap-3 p-3')}>
+            <div className={cn('min-w-0 overflow-hidden', density === 'compact' ? 'p-2' : 'p-3')}>
+              {step === 'date' ? (
               <Calendar
                 className={cn('w-full min-w-0 rounded-lg border border-[#182034] bg-[#0D1526]/80 text-[#E8EDF8]', density === 'compact' && 'text-sm')}
                 classNames={{
@@ -311,24 +327,29 @@ export function Norm8DateTimePicker({
                 locale={pt}
                 mode="single"
                 onSelect={handleDaySelect}
-                selected={selectedDate ?? undefined}
+                required
+                selected={pendingDay ?? selectedDate ?? undefined}
                 weekStartsOn={1}
               />
-
-              <div className={cn('rounded-lg border border-[#182034] bg-[#0D1526]/70', density === 'compact' ? 'p-2' : 'p-3')}>
+              ) : (
+              <div className={cn('box-border w-full max-w-full min-w-0 overflow-hidden rounded-lg border border-[#182034] bg-[#0D1526]/70', density === 'compact' ? 'p-2 pb-3' : 'p-3 pb-4')}>
                 <div className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.06em] text-[#8399B8]">
                   <Clock aria-hidden="true" className="size-4 text-[#60A5FA]" />
-                  Hora
+                  Horários disponíveis
                 </div>
-                <div className={cn('grid min-w-0 grid-cols-4 sm:grid-cols-5', density === 'compact' ? 'gap-1.5' : 'gap-2')}>
-                  {normalizedTimeOptions.map((option) => {
+                {pendingDay ? <p className={'mt-1 text-sm font-semibold text-[#E8EDF8]'}>{formatDatePt(pendingDay)}</p> : null}
+                <button className={'mb-3 inline-flex items-center gap-1 text-xs font-semibold text-[#60A5FA]'} onClick={() => setStep('date')} type={'button'}><ArrowLeft className={'size-3.5'} /> Alterar dia</button>
+                {timeOptionsLoading ? <p className={'py-8 text-center text-sm text-[#8399B8]'}><LoaderCircle className={'mr-2 inline size-4 animate-spin'} />A carregar horários...</p> : null}
+                {!timeOptionsLoading && availableTimeOptions.length === 0 ? <p className={'py-8 text-center text-sm text-[#9AAAC2]'}>{emptyTimeMessage}</p> : null}
+                {!timeOptionsLoading && availableTimeOptions.length > 0 ? <div className={cn('grid w-full max-w-full min-w-0 grid-cols-3 sm:grid-cols-4', density === 'compact' ? 'gap-2' : 'gap-2.5')}>
+                  {availableTimeOptions.map((option) => {
                     const { disabled: optionDisabled = false, label, time } = option;
                     const selected = time === selectedTime;
 
                     return (
                       <button
                         className={cn(
-                          'inline-flex pointer-events-auto items-center justify-center rounded-lg border px-2 text-sm font-semibold transition-colors',
+                          'inline-flex pointer-events-auto min-w-0 w-full items-center justify-center rounded-lg border px-1.5 text-sm font-semibold transition-colors',
                           density === 'compact' ? 'min-h-8' : 'min-h-9',
                           optionDisabled
                             ? 'cursor-not-allowed border-[#1F2B44] bg-[#091120]/45 text-[#536682] opacity-55'
@@ -346,8 +367,9 @@ export function Norm8DateTimePicker({
                       </button>
                     );
                   })}
-                </div>
+                </div> : null}
               </div>
+              )}
             </div>
           </div>,
           document.body,
@@ -462,6 +484,10 @@ function formatDateTimePt(date: Date): string {
     month: '2-digit',
     year: 'numeric',
   });
+}
+
+function formatDatePt(date: Date): string {
+  return date.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
 

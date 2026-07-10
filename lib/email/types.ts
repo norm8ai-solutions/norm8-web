@@ -15,6 +15,7 @@ import type {
   MeetingBooking,
   Submission,
 } from '@/app/generated/prisma/client';
+import type { MeetingEmailContext } from '@/lib/meetings/email-context';
 
 export type EmailType =
   | 'AUDIT_CONFIRMATION'
@@ -43,6 +44,7 @@ export type SendSubmissionEmailsParams = {
   meetingBooking?: MeetingBooking;
   confirmationEmailLogId?: string;
   auditAnalysis?: AuditAnalysis | null;
+  meetingEmailContext?: MeetingEmailContext;
 };
 
 export type EmailTemplateProps = {
@@ -50,6 +52,7 @@ export type EmailTemplateProps = {
   submission: SubmissionEmailSubmission;
   meetingBooking?: MeetingBooking;
   auditAnalysis?: AuditAnalysis | null;
+  meetingEmailContext?: MeetingEmailContext;
 };
 
 export type InternalLeadNotificationEmailProps = EmailTemplateProps & {

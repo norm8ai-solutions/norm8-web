@@ -14,6 +14,10 @@ import 'server-only';
 
 import { prisma } from '@/lib/db/prisma';
 import { getGoogleCalendarClient, getGoogleCalendarConfig } from './google';
+import {
+  assertGoogleCalendarIntervalAvailable,
+  GoogleCalendarSlotUnavailableError,
+} from './availability';
 import type { CalendarEventResult, CreateCalendarEventParams } from './types';
 
 /**
@@ -34,6 +38,10 @@ export async function createMeetingCalendarEvent(
   params: CreateCalendarEventParams,
 ): Promise<CalendarEventResult> {
   try {
+    await assertGoogleCalendarIntervalAvailable(
+      params.booking.startsAt,
+      params.booking.endsAt,
+    );
     const config = getGoogleCalendarConfig();
     const calendar = getGoogleCalendarClient();
 
@@ -46,7 +54,7 @@ export async function createMeetingCalendarEvent(
     const response = await calendar.events.insert({
       calendarId: config.calendarId,
       requestBody: {
-        summary: `Discovery Call — ${params.booking.attendeeCompany}`,
+        summary: params.title || `Discovery Call — ${params.booking.attendeeCompany}`,
         description: buildEventDescription(params),
         start: {
           dateTime: params.booking.startsAt.toISOString(),
@@ -122,8 +130,14 @@ export async function createMeetingCalendarEvent(
 
     return {
       success: false,
+      code:
+        error instanceof GoogleCalendarSlotUnavailableError
+          ? 'SLOT_UNAVAILABLE'
+          : 'CALENDAR_ERROR',
       error:
-        'Recebemos o seu pedido, mas não foi possível confirmar automaticamente a reunião. A equipa da Norm8 irá entrar em contacto.',
+        error instanceof GoogleCalendarSlotUnavailableError
+          ? 'Este horário já está ocupado. Escolha outro horário.'
+          : 'Não foi possível criar o evento no Google Calendar. Tente novamente.',
     };
   }
 }
@@ -150,8 +164,8 @@ function getCalendarErrorMessage(error: unknown): string {
  */
 function buildEventDescription(params: CreateCalendarEventParams): string {
   return [
-    'Origem: website Norm8',
-    `Submission ID: ${params.submissionId}`,
+    `Origem: ${params.source ?? 'website Norm8'}`,
+    `Submission ID: ${params.submissionId ?? 'Não associado'}`,
     `Lead ID: ${params.leadId}`,
     '',
     `Nome: ${params.booking.attendeeName}`,
