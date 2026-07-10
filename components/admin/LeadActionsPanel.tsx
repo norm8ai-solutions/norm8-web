@@ -4,34 +4,36 @@
  * Description: Commercial next-actions panel for a lead detail page.
  * Responsibilities:
  * - Show the most urgent pending action.
- * - Let admins create, complete, update, and remove lead actions.
+ * - Let admins create, execute, complete, update, and remove lead actions.
  * - Keep validation errors visual and aligned with the admin dark UI.
  * ------------------------------------------------------------------
  */
 
 import type { LeadAction, LeadActionStatus, LeadActionType } from '@/app/generated/prisma/client';
+import {
+  type LeadActionExecutionContext,
+  LeadActionExecutionControl,
+} from '@/components/admin/LeadActionExecutionControl';
+import { LeadActionCreateForm } from '@/components/admin/LeadActionCreateForm';
+import { LeadActionStatusBadge, LeadActionTypeBadge } from '@/components/admin/AdminBadge';
 import { Norm8Select } from '@/components/ui/norm8-select';
+import type { SuggestedLeadAction } from '@/lib/admin/lead-action-suggestions';
 import {
-  LeadActionStatusBadge,
-  LeadActionTypeBadge,
-} from '@/components/admin/AdminBadge';
-import {
-  completeLeadAction,
-  createLeadAction,
-  deleteLeadAction,
+  completeLeadAction,  deleteLeadAction,
   updateLeadActionStatus,
 } from '@/lib/admin/actions';
 import {
   formatDatePt,
-  formatLeadActionStatus,
-  formatLeadActionType,
-} from '@/lib/admin/formatters';
+  formatLeadActionStatus,} from '@/lib/admin/formatters';
 import { AdminEmptyState, AdminPanel } from './AdminPrimitives';
 
 type LeadActionsPanelProps = {
   actionError?: string;
   actions: LeadAction[];
+  executionContext: LeadActionExecutionContext;
+  executionError?: string;
   leadId: string;
+  suggestedAction: SuggestedLeadAction;
 };
 
 const actionTypes: LeadActionType[] = [
@@ -53,24 +55,29 @@ const actionStatuses: LeadActionStatus[] = [
 ];
 
 const COPY = {
-  panelTitle: 'Pr\u00f3ximas a\u00e7\u00f5es',
-  panelSubtitle: 'Follow-ups comerciais para avan\u00e7ar a oportunidade.',
-  title: 'T\u00edtulo',
+  panelTitle: 'Próximas ações',
+  panelSubtitle: 'Follow-ups comerciais para avançar a oportunidade.',
+  executionError:
+    'Não foi possível executar a ação. Confirme os campos obrigatórios e tente novamente.',
+  executionMeetingEmailError: 'Não foi possível agendar reunião: a lead não tem email associado.',
+  executionMeetingSlotError: 'Este horário já está ocupado. Escolha outro horário.',
+  title: 'Título',
   titlePlaceholder: 'Ex.: Fazer follow-up da proposta',
-  titleError: 'Indique o t\u00edtulo da a\u00e7\u00e3o.',
+  titleError: 'Indique o título da ação.',
   dueAt: 'Data/hora limite',
-  dueAtError: 'Indique uma data/hora v\u00e1lida.',
-  description: 'Descri\u00e7\u00e3o / nota',
-  descriptionPlaceholder: 'Contexto \u00fatil para a pr\u00f3xima intera\u00e7\u00e3o...',
-  create: 'Criar a\u00e7\u00e3o',
+  dueAtError: 'Selecione a data e hora limite.',
+  dueAtPastError: 'A data/hora limite não pode estar no passado.',
+  description: 'Descrição / nota',
+  descriptionPlaceholder: 'Contexto útil para a próxima interação...',
+  create: 'Criar ação',
   pending: 'Pendentes',
-  completedRecent: 'Conclu\u00eddas recentemente',
-  emptyPending: 'Sem a\u00e7\u00f5es pendentes.',
-  emptyAny: 'Sem a\u00e7\u00f5es registadas.',
-  featured: 'Pr\u00f3xima a\u00e7\u00e3o mais urgente',
-  noDescription: 'Sem descri\u00e7\u00e3o adicional.',
+  completedRecent: 'Concluídas recentemente',
+  emptyPending: 'Sem ações pendentes.',
+  emptyAny: 'Sem ações registadas.',
+  featured: 'Próxima ação mais urgente',
+  noDescription: 'Sem descrição adicional.',
   noDueAt: 'Sem data limite',
-  completedAt: 'Conclu\u00edda em',
+  completedAt: 'Concluída em',
   update: 'Atualizar',
   complete: 'Concluir',
   remove: 'Remover',
@@ -85,7 +92,10 @@ const COPY = {
 export function LeadActionsPanel({
   actionError,
   actions,
+  executionContext,
+  executionError,
   leadId,
+  suggestedAction,
 }: LeadActionsPanelProps) {
   const sortedActions = [...actions].sort(compareActionsByUrgency);
   const pendingActions = sortedActions.filter((action) => action.status !== 'COMPLETED');
@@ -97,61 +107,40 @@ export function LeadActionsPanel({
   return (
     <AdminPanel title={COPY.panelTitle} subtitle={COPY.panelSubtitle}>
       <div className="admin-lead-actions">
-        {nextAction ? <FeaturedAction action={nextAction} leadId={leadId} /> : null}
+        {executionError ? (
+          <p className="admin-action-execution-error">{getActionExecutionErrorMessage(executionError)}</p>
+        ) : null}
 
-        <form action={createLeadAction} className="admin-action-form" noValidate>
-          <input name="leadId" type="hidden" value={leadId} />
-          <div className="admin-action-form-grid">
-            <label className="admin-form-control">
-              <span>{COPY.title}</span>
-              <input
-                className="admin-input"
-                name="title"
-                placeholder={COPY.titlePlaceholder}
-              />
-              {actionError === 'title' ? (
-                <small className="admin-field-error">{COPY.titleError}</small>
-              ) : null}
-            </label>
+        {nextAction ? (
+          <FeaturedAction
+            action={nextAction}
+            executionContext={executionContext}
+            leadId={leadId}
+          />
+        ) : null}
 
-            <label className="admin-form-control">
-              <span>Tipo</span>
-              <Norm8Select
-                defaultValue="FOLLOW_UP"
-                name="type"
-                options={actionTypes.map((type) => ({
-                  value: type,
-                  label: formatLeadActionType(type),
-                }))}
-              />
-            </label>
-
-            <label className="admin-form-control">
-              <span>{COPY.dueAt}</span>
-              <input className="admin-input" name="dueAt" type="datetime-local" />
-              {actionError === 'dueAt' ? (
-                <small className="admin-field-error">{COPY.dueAtError}</small>
-              ) : null}
-            </label>
-          </div>
-
-          <label className="admin-form-control">
-            <span>{COPY.description}</span>
-            <textarea
-              className="admin-textarea"
-              name="description"
-              placeholder={COPY.descriptionPlaceholder}
-            />
-          </label>
-
-          <button className="admin-button" type="submit">
-            {COPY.create}
-          </button>
-        </form>
+        <LeadActionCreateForm
+          actionError={actionError}
+          actionTypes={actionTypes}
+          copy={{
+            create: COPY.create,
+            description: COPY.description,
+            descriptionPlaceholder: COPY.descriptionPlaceholder,
+            dueAt: COPY.dueAt,
+            dueAtError: COPY.dueAtError,
+            dueAtPastError: COPY.dueAtPastError,
+            title: COPY.title,
+            titleError: COPY.titleError,
+            titlePlaceholder: COPY.titlePlaceholder,
+          }}
+          leadId={leadId}
+          suggestedAction={suggestedAction}
+        />
 
         <ActionList
           actions={pendingActions}
           emptyMessage={COPY.emptyPending}
+          executionContext={executionContext}
           leadId={leadId}
           title={COPY.pending}
         />
@@ -159,6 +148,7 @@ export function LeadActionsPanel({
         {completedActions.length > 0 ? (
           <ActionList
             actions={completedActions}
+            executionContext={executionContext}
             leadId={leadId}
             title={COPY.completedRecent}
             variant="completed"
@@ -169,7 +159,15 @@ export function LeadActionsPanel({
   );
 }
 
-function FeaturedAction({ action, leadId }: { action: LeadAction; leadId: string }) {
+function FeaturedAction({
+  action,
+  executionContext,
+  leadId,
+}: {
+  action: LeadAction;
+  executionContext: LeadActionExecutionContext;
+  leadId: string;
+}) {
   return (
     <article className="admin-next-action">
       <div>
@@ -181,7 +179,14 @@ function FeaturedAction({ action, leadId }: { action: LeadAction; leadId: string
         <LeadActionStatusBadge status={getEffectiveActionStatus(action)} />
         {action.dueAt ? <span>{formatDatePt(action.dueAt)}</span> : <span>{COPY.noDueAt}</span>}
       </div>
-      <CompleteActionButton actionId={action.id} leadId={leadId} />
+      <div className="admin-next-action-controls">
+        <LeadActionExecutionControl
+          action={action}
+          context={executionContext}
+          emphasis="primary"
+        />
+        <CompleteActionButton actionId={action.id} leadId={leadId} />
+      </div>
     </article>
   );
 }
@@ -189,12 +194,14 @@ function FeaturedAction({ action, leadId }: { action: LeadAction; leadId: string
 function ActionList({
   actions,
   emptyMessage,
+  executionContext,
   leadId,
   title,
   variant,
 }: {
   actions: LeadAction[];
   emptyMessage?: string;
+  executionContext: LeadActionExecutionContext;
   leadId: string;
   title: string;
   variant?: 'completed';
@@ -227,6 +234,7 @@ function ActionList({
                 <DeleteActionButton actionId={action.id} leadId={leadId} />
               ) : (
                 <div className="admin-action-card-controls">
+                  <LeadActionExecutionControl action={action} context={executionContext} />
                   <form action={updateLeadActionStatus} className="admin-action-status-form">
                     <input name="leadId" type="hidden" value={leadId} />
                     <input name="actionId" type="hidden" value={action.id} />
@@ -302,6 +310,18 @@ function getEffectiveActionStatus(action: LeadAction): LeadActionStatus {
   }
 
   return action.status;
+}
+
+function getActionExecutionErrorMessage(error?: string): string {
+  if (error === 'meetingEmail') {
+    return COPY.executionMeetingEmailError;
+  }
+
+  if (error === 'meetingSlot') {
+    return COPY.executionMeetingSlotError;
+  }
+
+  return COPY.executionError;
 }
 
 function compareActionsByUrgency(first: LeadAction, second: LeadAction): number {

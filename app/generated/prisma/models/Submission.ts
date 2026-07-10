@@ -503,10 +503,12 @@ export type SubmissionCreateNestedOneWithoutMeetingBookingInput = {
   connect?: Prisma.SubmissionWhereUniqueInput
 }
 
-export type SubmissionUpdateOneRequiredWithoutMeetingBookingNestedInput = {
+export type SubmissionUpdateOneWithoutMeetingBookingNestedInput = {
   create?: Prisma.XOR<Prisma.SubmissionCreateWithoutMeetingBookingInput, Prisma.SubmissionUncheckedCreateWithoutMeetingBookingInput>
   connectOrCreate?: Prisma.SubmissionCreateOrConnectWithoutMeetingBookingInput
   upsert?: Prisma.SubmissionUpsertWithoutMeetingBookingInput
+  disconnect?: Prisma.SubmissionWhereInput | boolean
+  delete?: Prisma.SubmissionWhereInput | boolean
   connect?: Prisma.SubmissionWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.SubmissionUpdateToOneWithWhereWithoutMeetingBookingInput, Prisma.SubmissionUpdateWithoutMeetingBookingInput>, Prisma.SubmissionUncheckedUpdateWithoutMeetingBookingInput>
 }

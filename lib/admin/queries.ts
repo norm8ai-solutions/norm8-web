@@ -23,6 +23,7 @@ import type {
 } from './types';
 
 const OVERVIEW_PERIOD_DAYS = 30;
+const OVERVIEW_LEAD_ACTION_LIMIT = 5;
 
 type OverviewMetricKey =
   | 'totalLeads'
@@ -175,34 +176,52 @@ async function getOverviewMetricCounts(
   };
 }
 
-function getOverdueLeadActions(now: Date) {
-  return prisma.leadAction.findMany({
-    where: {
-      dueAt: { lt: now },
-      status: { not: 'COMPLETED' },
-    },
-    orderBy: { dueAt: 'asc' },
-    take: 6,
-    include: { lead: true },
-  });
+async function getOverdueLeadActions(now: Date) {
+  const where: Prisma.LeadActionWhereInput = {
+    dueAt: { lt: now },
+    status: { not: 'COMPLETED' },
+  };
+
+  const [items, total] = await Promise.all([
+    prisma.leadAction.findMany({
+      where,
+      orderBy: { dueAt: 'asc' },
+      take: OVERVIEW_LEAD_ACTION_LIMIT,
+      include: { lead: true },
+    }),
+    prisma.leadAction.count({ where }),
+  ]);
+
+  return {
+    items,
+    remainingCount: Math.max(0, total - items.length),
+  };
 }
 
-function getDueTodayLeadActions(now: Date) {
-  const todayStart = startOfDay(now);
-  const tomorrowStart = addDays(todayStart, 1);
-
-  return prisma.leadAction.findMany({
-    where: {
-      dueAt: {
-        gte: todayStart,
-        lt: tomorrowStart,
-      },
-      status: { not: 'COMPLETED' },
+async function getDueTodayLeadActions(now: Date) {
+  const tomorrowStart = addDays(startOfDay(now), 1);
+  const where: Prisma.LeadActionWhereInput = {
+    dueAt: {
+      gte: now,
+      lt: tomorrowStart,
     },
-    orderBy: { dueAt: 'asc' },
-    take: 6,
-    include: { lead: true },
-  });
+    status: { not: 'COMPLETED' },
+  };
+
+  const [items, total] = await Promise.all([
+    prisma.leadAction.findMany({
+      where,
+      orderBy: { dueAt: 'asc' },
+      take: OVERVIEW_LEAD_ACTION_LIMIT,
+      include: { lead: true },
+    }),
+    prisma.leadAction.count({ where }),
+  ]);
+
+  return {
+    items,
+    remainingCount: Math.max(0, total - items.length),
+  };
 }
 
 async function getSubmissionChartData(now: Date): Promise<AdminSubmissionChartPoint[]> {
@@ -391,7 +410,7 @@ export async function getMeetings(filter: MeetingFilter = 'ALL') {
   return prisma.meetingBooking.findMany({
     where,
     orderBy: { startsAt: 'desc' },
-    include: { lead: true, submission: true },
+    include: { lead: true },
   });
 }
 
@@ -405,7 +424,7 @@ export async function getEmailLogs(filter: EmailFilter = 'ALL') {
   return prisma.emailLog.findMany({
     where: filter === 'ALL' ? {} : { status: filter },
     orderBy: { createdAt: 'desc' },
-    include: { lead: true, submission: true },
+    include: { lead: true },
   });
 }
 
@@ -422,4 +441,5 @@ export async function getNotifications(filter: NotificationFilter = 'ALL') {
     include: { relatedLead: true, relatedSubmission: true },
   });
 }
+
 

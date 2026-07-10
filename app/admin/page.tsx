@@ -10,6 +10,7 @@
  */
 
 import Link from 'next/link';
+import type { LeadActionStatus } from '@/app/generated/prisma/client';
 import {
   AlertTriangle,
   ArrowRight,
@@ -28,6 +29,7 @@ import {
   LeadActionStatusBadge,
   LeadActionTypeBadge,
   LeadPriorityBadge,
+  LeadStatusBadge,
   MeetingStatusBadge,
   SubmissionTypeBadge,
 } from '@/components/admin/AdminBadge';
@@ -48,6 +50,150 @@ import {
   formatTimeRangePt,
   getSubmissionDisplayData,
 } from '@/lib/admin/formatters';
+
+type OverviewLeadActionGroup = Awaited<ReturnType<typeof getAdminOverview>>['overdueLeadActions'];
+type OverviewLeadAction = OverviewLeadActionGroup['items'][number];
+
+
+function OverviewActionsPanel({
+  overdueActions,
+  todayActions,
+}: {
+  overdueActions: OverviewLeadActionGroup;
+  todayActions: OverviewLeadActionGroup;
+}) {
+  return (
+    <AdminPanel
+      title="Ações comerciais"
+      subtitle="Follow-ups que precisam de atenção hoje."
+      action={
+        overdueActions.items.length > 0 ? (
+          <span className="admin-pill admin-pill-alert">
+            <AlertTriangle size={14} />
+            {overdueActions.items.length} atrasada{overdueActions.items.length === 1 ? '' : 's'}
+          </span>
+        ) : (
+          <span className="admin-pill">Operacional</span>
+        )
+      }
+    >
+      <div className="admin-overview-actions-grid">
+        <OverviewActionGroup
+          actions={overdueActions.items}
+          emptyMessage="Sem ações atrasadas."
+          remainingCount={overdueActions.remainingCount}
+          title="Atrasadas"
+          variant="overdue"
+        />
+        <OverviewActionGroup
+          actions={todayActions.items}
+          emptyMessage="Sem ações para hoje."
+          remainingCount={todayActions.remainingCount}
+          title="Hoje"
+          variant="today"
+        />
+      </div>
+    </AdminPanel>
+  );
+}
+
+function OverviewActionGroup({
+  actions,
+  emptyMessage,
+  remainingCount,
+  title,
+  variant,
+}: {
+  actions: OverviewLeadAction[];
+  emptyMessage: string;
+  remainingCount: number;
+  title: string;
+  variant: 'overdue' | 'today';
+}) {
+  return (
+    <section className={`admin-overview-action-group admin-overview-action-group-${variant}`}>
+      <div className="admin-overview-action-group-header">
+        <h3>{title}</h3>
+        {remainingCount > 0 ? (
+          <span className="admin-overview-action-more">+{remainingCount} restantes</span>
+        ) : null}
+      </div>
+      {actions.length > 0 ? (
+        <div className="admin-overview-action-list">
+          {actions.map((action) => (
+            <OverviewActionItem action={action} key={action.id} variant={variant} />
+          ))}
+        </div>
+      ) : (
+        <div className="admin-overview-action-empty">{emptyMessage}</div>
+      )}
+    </section>
+  );
+}
+
+function OverviewActionItem({
+  action,
+  variant,
+}: {
+  action: OverviewLeadAction;
+  variant: 'overdue' | 'today';
+}) {
+  return (
+    <article className={`admin-overview-action-item admin-overview-action-item-${variant}`}>
+      <div className="admin-overview-action-topline">
+        <LeadActionTypeBadge type={action.type} />
+        <LeadActionStatusBadge status={getOverviewActionStatus(action)} />
+      </div>
+      <div>
+        <p className="admin-rich-title">{action.title}</p>
+        <p className="admin-rich-meta">{formatOverviewLeadIdentity(action)}</p>
+      </div>
+      <div className="admin-overview-action-meta-row">
+        <span>{action.dueAt ? formatOverviewActionDueAt(action.dueAt, variant) : 'Sem data limite'}</span>
+        <LeadPriorityBadge priority={action.lead.priority} />
+      </div>
+      <div className="admin-rich-item-bottom">
+        <LeadStatusBadge status={action.lead.status} />
+        <Link className="admin-rich-action" href={`/admin/leads/${action.leadId}`}>
+          Abrir lead <ArrowRight size={13} />
+        </Link>
+      </div>
+    </article>
+  );
+}
+
+function getOverviewActionStatus(action: OverviewLeadAction): LeadActionStatus {
+  if (action.status === 'COMPLETED') {
+    return 'COMPLETED';
+  }
+
+  if (action.status === 'OVERDUE' || (action.dueAt && action.dueAt < new Date())) {
+    return 'OVERDUE';
+  }
+
+  return action.status;
+}
+
+function formatOverviewLeadIdentity(action: OverviewLeadAction): string {
+  const company = action.lead.company ?? 'Sem empresa';
+  const name = action.lead.name ?? 'Sem nome';
+
+  return `${company} · ${name}`;
+}
+
+function formatOverviewActionDueAt(
+  dueAt: Date,
+  variant: 'overdue' | 'today',
+): string {
+  if (variant === 'today') {
+    return `Hoje, ${dueAt.toLocaleTimeString('pt-PT', {
+      hour: '2-digit',
+      minute: '2-digit',
+    })}`;
+  }
+
+  return formatDatePt(dueAt);
+}
 
 /**
  * Formats recent dates into compact CRM-friendly copy.
@@ -200,6 +346,12 @@ export default async function AdminOverviewPage() {
       >
         <SubmissionsByDateChart data={overview.submissionsByDate} />
       </AdminPanel>
+
+      <OverviewActionsPanel
+        overdueActions={overview.overdueLeadActions}
+        todayActions={overview.dueTodayLeadActions}
+      />
+
       <section className="admin-grid-2">
         <AdminPanel title="Últimas submissões" subtitle="Atividade comercial recente.">
           {overview.latestSubmissions.length > 0 ? (

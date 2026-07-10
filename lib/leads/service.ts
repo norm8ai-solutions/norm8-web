@@ -25,6 +25,10 @@ import { createMeetingCalendarEvent } from '@/lib/calendar/service';
 import { sendSubmissionEmails } from '@/lib/email/service';
 import { prisma } from '@/lib/db/prisma';
 import {
+  assertMeetingSlotAvailable,
+  buildMeetingBookingCreateData,
+} from '@/lib/meetings/service';
+import {
   auditRequestSchema,
   customAutomationRequestSchema,
   meetingRequestSchema,
@@ -75,6 +79,14 @@ export async function createLeadSubmission<TType extends SubmissionType>(
   const leadIdentity = getLeadIdentity(input.type, payload);
   const priority = getLeadPriority(input.type, payload);
   const labels = getSubmissionLabels(input.type);
+
+  if (input.type === 'MEETING_REQUEST') {
+    const meetingPayload = payload as MeetingRequestInput;
+    await assertMeetingSlotAvailable({
+      startsAt: new Date(meetingPayload.startsAt),
+      endsAt: new Date(meetingPayload.endsAt),
+    });
+  }
 
   try {
     const result = await prisma.$transaction(async (tx) => {
@@ -153,11 +165,19 @@ export async function createLeadSubmission<TType extends SubmissionType>(
       const meetingBooking =
         input.type === 'MEETING_REQUEST'
           ? await tx.meetingBooking.create({
-              data: buildMeetingBookingCreateData(
-                lead.id,
-                submission.id,
-                payload as MeetingRequestInput,
-              ),
+              data: buildMeetingBookingCreateData({
+                leadId: lead.id,
+                submissionId: submission.id,
+                requestedDate: (payload as MeetingRequestInput).selectedDate,
+                requestedTime: (payload as MeetingRequestInput).selectedTime,
+                startsAt: new Date((payload as MeetingRequestInput).startsAt),
+                endsAt: new Date((payload as MeetingRequestInput).endsAt),
+                timezone: (payload as MeetingRequestInput).timezone,
+                attendeeEmail: (payload as MeetingRequestInput).email,
+                attendeeName: (payload as MeetingRequestInput).name,
+                attendeeCompany: (payload as MeetingRequestInput).company,
+                meetingGoal: (payload as MeetingRequestInput).meetingGoal,
+              }),
             })
           : null;
 
@@ -239,33 +259,6 @@ export async function createLeadSubmission<TType extends SubmissionType>(
   }
 }
 
-/**
- * Builds the MeetingBooking database payload from validated meeting form data.
- *
- * @param leadId Lead identifier created or updated by the submission flow.
- * @param submissionId Submission identifier linked to the meeting request.
- * @param payload Validated meeting request payload.
- * @returns Prisma create input for MeetingBooking.
- */
-function buildMeetingBookingCreateData(
-  leadId: string,
-  submissionId: string,
-  payload: MeetingRequestInput,
-): Prisma.MeetingBookingUncheckedCreateInput {
-  return {
-    leadId,
-    submissionId,
-    requestedDate: payload.selectedDate,
-    requestedTime: payload.selectedTime,
-    startsAt: new Date(payload.startsAt),
-    endsAt: new Date(payload.endsAt),
-    timezone: payload.timezone,
-    attendeeEmail: payload.email,
-    attendeeName: payload.name,
-    attendeeCompany: payload.company,
-    meetingGoal: payload.meetingGoal,
-  };
-}
 
 /**
  * Loads the latest MeetingBooking after Google Calendar updates it.

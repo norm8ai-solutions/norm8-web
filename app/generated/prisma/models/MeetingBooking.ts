@@ -228,7 +228,7 @@ export type MeetingBookingGroupByArgs<ExtArgs extends runtime.Types.Extensions.I
 export type MeetingBookingGroupByOutputType = {
   id: string
   leadId: string
-  submissionId: string
+  submissionId: string | null
   status: $Enums.MeetingBookingStatus
   requestedDate: string
   requestedTime: string
@@ -270,7 +270,7 @@ export type MeetingBookingWhereInput = {
   NOT?: Prisma.MeetingBookingWhereInput | Prisma.MeetingBookingWhereInput[]
   id?: Prisma.StringFilter<"MeetingBooking"> | string
   leadId?: Prisma.StringFilter<"MeetingBooking"> | string
-  submissionId?: Prisma.StringFilter<"MeetingBooking"> | string
+  submissionId?: Prisma.StringNullableFilter<"MeetingBooking"> | string | null
   status?: Prisma.EnumMeetingBookingStatusFilter<"MeetingBooking"> | $Enums.MeetingBookingStatus
   requestedDate?: Prisma.StringFilter<"MeetingBooking"> | string
   requestedTime?: Prisma.StringFilter<"MeetingBooking"> | string
@@ -287,13 +287,13 @@ export type MeetingBookingWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"MeetingBooking"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"MeetingBooking"> | Date | string
   lead?: Prisma.XOR<Prisma.LeadScalarRelationFilter, Prisma.LeadWhereInput>
-  submission?: Prisma.XOR<Prisma.SubmissionScalarRelationFilter, Prisma.SubmissionWhereInput>
+  submission?: Prisma.XOR<Prisma.SubmissionNullableScalarRelationFilter, Prisma.SubmissionWhereInput> | null
 }
 
 export type MeetingBookingOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   leadId?: Prisma.SortOrder
-  submissionId?: Prisma.SortOrder
+  submissionId?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   requestedDate?: Prisma.SortOrder
   requestedTime?: Prisma.SortOrder
@@ -336,13 +336,13 @@ export type MeetingBookingWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"MeetingBooking"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"MeetingBooking"> | Date | string
   lead?: Prisma.XOR<Prisma.LeadScalarRelationFilter, Prisma.LeadWhereInput>
-  submission?: Prisma.XOR<Prisma.SubmissionScalarRelationFilter, Prisma.SubmissionWhereInput>
+  submission?: Prisma.XOR<Prisma.SubmissionNullableScalarRelationFilter, Prisma.SubmissionWhereInput> | null
 }, "id" | "submissionId">
 
 export type MeetingBookingOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   leadId?: Prisma.SortOrder
-  submissionId?: Prisma.SortOrder
+  submissionId?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   requestedDate?: Prisma.SortOrder
   requestedTime?: Prisma.SortOrder
@@ -369,7 +369,7 @@ export type MeetingBookingScalarWhereWithAggregatesInput = {
   NOT?: Prisma.MeetingBookingScalarWhereWithAggregatesInput | Prisma.MeetingBookingScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"MeetingBooking"> | string
   leadId?: Prisma.StringWithAggregatesFilter<"MeetingBooking"> | string
-  submissionId?: Prisma.StringWithAggregatesFilter<"MeetingBooking"> | string
+  submissionId?: Prisma.StringNullableWithAggregatesFilter<"MeetingBooking"> | string | null
   status?: Prisma.EnumMeetingBookingStatusWithAggregatesFilter<"MeetingBooking"> | $Enums.MeetingBookingStatus
   requestedDate?: Prisma.StringWithAggregatesFilter<"MeetingBooking"> | string
   requestedTime?: Prisma.StringWithAggregatesFilter<"MeetingBooking"> | string
@@ -405,13 +405,13 @@ export type MeetingBookingCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   lead: Prisma.LeadCreateNestedOneWithoutMeetingBookingsInput
-  submission: Prisma.SubmissionCreateNestedOneWithoutMeetingBookingInput
+  submission?: Prisma.SubmissionCreateNestedOneWithoutMeetingBookingInput
 }
 
 export type MeetingBookingUncheckedCreateInput = {
   id?: string
   leadId: string
-  submissionId: string
+  submissionId?: string | null
   status?: $Enums.MeetingBookingStatus
   requestedDate: string
   requestedTime: string
@@ -447,13 +447,13 @@ export type MeetingBookingUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lead?: Prisma.LeadUpdateOneRequiredWithoutMeetingBookingsNestedInput
-  submission?: Prisma.SubmissionUpdateOneRequiredWithoutMeetingBookingNestedInput
+  submission?: Prisma.SubmissionUpdateOneWithoutMeetingBookingNestedInput
 }
 
 export type MeetingBookingUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   leadId?: Prisma.StringFieldUpdateOperationsInput | string
-  submissionId?: Prisma.StringFieldUpdateOperationsInput | string
+  submissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumMeetingBookingStatusFieldUpdateOperationsInput | $Enums.MeetingBookingStatus
   requestedDate?: Prisma.StringFieldUpdateOperationsInput | string
   requestedTime?: Prisma.StringFieldUpdateOperationsInput | string
@@ -474,7 +474,7 @@ export type MeetingBookingUncheckedUpdateInput = {
 export type MeetingBookingCreateManyInput = {
   id?: string
   leadId: string
-  submissionId: string
+  submissionId?: string | null
   status?: $Enums.MeetingBookingStatus
   requestedDate: string
   requestedTime: string
@@ -514,7 +514,7 @@ export type MeetingBookingUpdateManyMutationInput = {
 export type MeetingBookingUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   leadId?: Prisma.StringFieldUpdateOperationsInput | string
-  submissionId?: Prisma.StringFieldUpdateOperationsInput | string
+  submissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumMeetingBookingStatusFieldUpdateOperationsInput | $Enums.MeetingBookingStatus
   requestedDate?: Prisma.StringFieldUpdateOperationsInput | string
   requestedTime?: Prisma.StringFieldUpdateOperationsInput | string
@@ -705,12 +705,12 @@ export type MeetingBookingCreateWithoutLeadInput = {
   meetingGoal?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  submission: Prisma.SubmissionCreateNestedOneWithoutMeetingBookingInput
+  submission?: Prisma.SubmissionCreateNestedOneWithoutMeetingBookingInput
 }
 
 export type MeetingBookingUncheckedCreateWithoutLeadInput = {
   id?: string
-  submissionId: string
+  submissionId?: string | null
   status?: $Enums.MeetingBookingStatus
   requestedDate: string
   requestedTime: string
@@ -760,7 +760,7 @@ export type MeetingBookingScalarWhereInput = {
   NOT?: Prisma.MeetingBookingScalarWhereInput | Prisma.MeetingBookingScalarWhereInput[]
   id?: Prisma.StringFilter<"MeetingBooking"> | string
   leadId?: Prisma.StringFilter<"MeetingBooking"> | string
-  submissionId?: Prisma.StringFilter<"MeetingBooking"> | string
+  submissionId?: Prisma.StringNullableFilter<"MeetingBooking"> | string | null
   status?: Prisma.EnumMeetingBookingStatusFilter<"MeetingBooking"> | $Enums.MeetingBookingStatus
   requestedDate?: Prisma.StringFilter<"MeetingBooking"> | string
   requestedTime?: Prisma.StringFilter<"MeetingBooking"> | string
@@ -876,7 +876,7 @@ export type MeetingBookingUncheckedUpdateWithoutSubmissionInput = {
 
 export type MeetingBookingCreateManyLeadInput = {
   id?: string
-  submissionId: string
+  submissionId?: string | null
   status?: $Enums.MeetingBookingStatus
   requestedDate: string
   requestedTime: string
@@ -911,12 +911,12 @@ export type MeetingBookingUpdateWithoutLeadInput = {
   meetingGoal?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  submission?: Prisma.SubmissionUpdateOneRequiredWithoutMeetingBookingNestedInput
+  submission?: Prisma.SubmissionUpdateOneWithoutMeetingBookingNestedInput
 }
 
 export type MeetingBookingUncheckedUpdateWithoutLeadInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  submissionId?: Prisma.StringFieldUpdateOperationsInput | string
+  submissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumMeetingBookingStatusFieldUpdateOperationsInput | $Enums.MeetingBookingStatus
   requestedDate?: Prisma.StringFieldUpdateOperationsInput | string
   requestedTime?: Prisma.StringFieldUpdateOperationsInput | string
@@ -936,7 +936,7 @@ export type MeetingBookingUncheckedUpdateWithoutLeadInput = {
 
 export type MeetingBookingUncheckedUpdateManyWithoutLeadInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  submissionId?: Prisma.StringFieldUpdateOperationsInput | string
+  submissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumMeetingBookingStatusFieldUpdateOperationsInput | $Enums.MeetingBookingStatus
   requestedDate?: Prisma.StringFieldUpdateOperationsInput | string
   requestedTime?: Prisma.StringFieldUpdateOperationsInput | string
@@ -976,7 +976,7 @@ export type MeetingBookingSelect<ExtArgs extends runtime.Types.Extensions.Intern
   createdAt?: boolean
   updatedAt?: boolean
   lead?: boolean | Prisma.LeadDefaultArgs<ExtArgs>
-  submission?: boolean | Prisma.SubmissionDefaultArgs<ExtArgs>
+  submission?: boolean | Prisma.MeetingBooking$submissionArgs<ExtArgs>
 }, ExtArgs["result"]["meetingBooking"]>
 
 export type MeetingBookingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -999,7 +999,7 @@ export type MeetingBookingSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   createdAt?: boolean
   updatedAt?: boolean
   lead?: boolean | Prisma.LeadDefaultArgs<ExtArgs>
-  submission?: boolean | Prisma.SubmissionDefaultArgs<ExtArgs>
+  submission?: boolean | Prisma.MeetingBooking$submissionArgs<ExtArgs>
 }, ExtArgs["result"]["meetingBooking"]>
 
 export type MeetingBookingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1022,7 +1022,7 @@ export type MeetingBookingSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   createdAt?: boolean
   updatedAt?: boolean
   lead?: boolean | Prisma.LeadDefaultArgs<ExtArgs>
-  submission?: boolean | Prisma.SubmissionDefaultArgs<ExtArgs>
+  submission?: boolean | Prisma.MeetingBooking$submissionArgs<ExtArgs>
 }, ExtArgs["result"]["meetingBooking"]>
 
 export type MeetingBookingSelectScalar = {
@@ -1049,27 +1049,27 @@ export type MeetingBookingSelectScalar = {
 export type MeetingBookingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "leadId" | "submissionId" | "status" | "requestedDate" | "requestedTime" | "startsAt" | "endsAt" | "timezone" | "googleEventId" | "googleEventHtmlLink" | "calendarId" | "attendeeEmail" | "attendeeName" | "attendeeCompany" | "meetingGoal" | "createdAt" | "updatedAt", ExtArgs["result"]["meetingBooking"]>
 export type MeetingBookingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   lead?: boolean | Prisma.LeadDefaultArgs<ExtArgs>
-  submission?: boolean | Prisma.SubmissionDefaultArgs<ExtArgs>
+  submission?: boolean | Prisma.MeetingBooking$submissionArgs<ExtArgs>
 }
 export type MeetingBookingIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   lead?: boolean | Prisma.LeadDefaultArgs<ExtArgs>
-  submission?: boolean | Prisma.SubmissionDefaultArgs<ExtArgs>
+  submission?: boolean | Prisma.MeetingBooking$submissionArgs<ExtArgs>
 }
 export type MeetingBookingIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   lead?: boolean | Prisma.LeadDefaultArgs<ExtArgs>
-  submission?: boolean | Prisma.SubmissionDefaultArgs<ExtArgs>
+  submission?: boolean | Prisma.MeetingBooking$submissionArgs<ExtArgs>
 }
 
 export type $MeetingBookingPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "MeetingBooking"
   objects: {
     lead: Prisma.$LeadPayload<ExtArgs>
-    submission: Prisma.$SubmissionPayload<ExtArgs>
+    submission: Prisma.$SubmissionPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     leadId: string
-    submissionId: string
+    submissionId: string | null
     status: $Enums.MeetingBookingStatus
     requestedDate: string
     requestedTime: string
@@ -1480,7 +1480,7 @@ readonly fields: MeetingBookingFieldRefs;
 export interface Prisma__MeetingBookingClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   lead<T extends Prisma.LeadDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LeadDefaultArgs<ExtArgs>>): Prisma.Prisma__LeadClient<runtime.Types.Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  submission<T extends Prisma.SubmissionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SubmissionDefaultArgs<ExtArgs>>): Prisma.Prisma__SubmissionClient<runtime.Types.Result.GetResult<Prisma.$SubmissionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  submission<T extends Prisma.MeetingBooking$submissionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MeetingBooking$submissionArgs<ExtArgs>>): Prisma.Prisma__SubmissionClient<runtime.Types.Result.GetResult<Prisma.$SubmissionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1926,6 +1926,25 @@ export type MeetingBookingDeleteManyArgs<ExtArgs extends runtime.Types.Extension
    * Limit how many MeetingBookings to delete.
    */
   limit?: number
+}
+
+/**
+ * MeetingBooking.submission
+ */
+export type MeetingBooking$submissionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Submission
+   */
+  select?: Prisma.SubmissionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Submission
+   */
+  omit?: Prisma.SubmissionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SubmissionInclude<ExtArgs> | null
+  where?: Prisma.SubmissionWhereInput
 }
 
 /**

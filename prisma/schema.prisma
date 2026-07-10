@@ -159,7 +159,7 @@ model EmailLog {
 model MeetingBooking {
   id                  String               @id @default(cuid())
   leadId              String
-  submissionId        String               @unique
+  submissionId        String?              @unique
   status              MeetingBookingStatus @default(REQUESTED)
   requestedDate       String
   requestedTime       String
@@ -177,7 +177,7 @@ model MeetingBooking {
   updatedAt           DateTime             @updatedAt
 
   lead       Lead       @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  submission Submission? @relation(fields: [submissionId], references: [id], onDelete: SetNull)
 
   @@index([leadId])
   @@index([status])

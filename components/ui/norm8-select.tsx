@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import * as React from 'react';
 import { createPortal } from 'react-dom';
@@ -87,12 +87,20 @@ export function Norm8Select({
       Math.min(preferredHeight, availableSpace - menuGap),
     );
 
+    const menuWidth = Math.min(
+      window.innerWidth - viewportPadding * 2,
+      Math.max(rect.width, 180),
+    );
+
     setDropdownPosition({
-      left: rect.left,
+      left: Math.min(
+        Math.max(viewportPadding, rect.left),
+        window.innerWidth - viewportPadding - menuWidth,
+      ),
       top: opensUp
         ? Math.max(viewportPadding, rect.top - maxHeight - menuGap)
         : rect.bottom + menuGap,
-      width: rect.width,
+      width: menuWidth,
       maxHeight,
       placement: opensUp ? 'top' : 'bottom',
     });
@@ -254,7 +262,7 @@ export function Norm8Select({
       : null;
 
   return (
-    <div ref={rootRef} className={cn('relative w-full', className)}>
+    <div ref={rootRef} className={cn('relative min-w-0 w-full', className)}>
       {name ? (
         <input
           name={name}
@@ -271,7 +279,7 @@ export function Norm8Select({
         aria-invalid={error || undefined}
         aria-required={ariaRequired}
         className={cn(
-          'group flex min-h-11 w-full items-center justify-between rounded-xl border border-[#182034] bg-[#0D1526]/90 px-4 py-3 text-left text-sm text-[#E8EDF8] shadow-[0_1px_0_rgba(255,255,255,0.03)_inset] outline-none transition-all duration-200',
+          'group flex min-h-11 min-w-0 w-full items-center justify-between rounded-xl border border-[#182034] bg-[#0D1526]/90 px-4 py-3 text-left text-sm text-[#E8EDF8] shadow-[0_1px_0_rgba(255,255,255,0.03)_inset] outline-none transition-all duration-200',
           'hover:border-[#2563EB]/60 hover:bg-[#101A2D]',
           'focus-visible:border-[#2563EB] focus-visible:ring-2 focus-visible:ring-[#2563EB]/30',
           'disabled:cursor-not-allowed disabled:opacity-50',
@@ -287,7 +295,7 @@ export function Norm8Select({
       >
         <span
           className={cn(
-            'truncate',
+            'min-w-0 truncate',
             !selectedOption && 'text-[#8399B8]',
           )}
         >
@@ -305,3 +313,4 @@ export function Norm8Select({
     </div>
   );
 }
+

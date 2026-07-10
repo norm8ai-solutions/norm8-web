@@ -31,6 +31,7 @@ import {
   updateLeadPriority,
   updateLeadStatus,
 } from '@/lib/admin/actions';
+import { getSuggestedNextLeadAction } from '@/lib/admin/lead-action-suggestions';
 import {
   formatDatePt,
   formatMeetingDate,
@@ -53,7 +54,7 @@ type EstimatedDelivery = {
 };
 type LeadDetailPageProps = {
   params: Promise<{ id: string }>;
-  searchParams?: Promise<{ actionError?: string }>;
+  searchParams?: Promise<{ actionError?: string; actionExecutionError?: string }>;
 };
 
 const leadStatuses = ['NEW', 'QUALIFIED', 'CONTACTED', 'CONVERTED', 'LOST'] as const;
@@ -79,6 +80,25 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
     latestAnalysis?.contractValueEstimate,
   );
   const latestEstimatedDelivery = parseEstimatedDelivery(latestAnalysis?.estimatedDelivery);
+  const suggestedAction = getSuggestedNextLeadAction({
+    status: lead.status,
+    priority: lead.priority,
+    submissions: lead.submissions,
+    auditAnalyses: lead.auditAnalyses,
+    meetingBookings: lead.meetingBookings,
+    emailLogs: lead.emailLogs,
+    leadActions: lead.leadActions,
+  });
+  const latestSubmissionId = latestAnalysis?.submissionId ?? lead.submissions[0]?.id;
+  const executionContext = {
+    auditSummary: latestAnalysis?.internalSummary ?? latestAnalysis?.companySummary ?? null,
+    latestSubmissionId,
+    leadCompany: lead.company,
+    leadEmail: lead.email,
+    leadId: lead.id,
+    leadName: lead.name,
+    potentialEstimate: formatContractEstimate(latestContractEstimate),
+  };
 
   return (
     <div className="admin-page-grid">
@@ -130,7 +150,10 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
           <LeadActionsPanel
             actionError={query?.actionError}
             actions={lead.leadActions}
+            executionContext={executionContext}
+            executionError={query?.actionExecutionError}
             leadId={lead.id}
+            suggestedAction={suggestedAction}
           />
 
           <AdminPanel title="Nota interna" subtitle="Regista contexto comercial para a equipa.">
@@ -244,16 +267,16 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
               />
             </div>
           </AdminPanel>
-          <AdminPanel title="AI Sales Assets" subtitle="Resumo da analise mais recente.">
+          <AdminPanel title="AI Sales Assets" subtitle="Resumo da análise mais recente.">
             {latestAnalysis ? (
               <div className="admin-field-grid">
                 <AdminField
                   label="Sales Playbook"
-                  value={latestAnalysis.salesPlaybook ? 'Disponivel' : 'Nao gerado'}
+                  value={latestAnalysis.salesPlaybook ? 'Disponível' : 'Não gerado'}
                 />
                 <AdminField
                   label="Roadmap sugerido"
-                  value={latestAnalysis.implementationRoadmap ? 'Disponivel' : 'Nao gerado'}
+                  value={latestAnalysis.implementationRoadmap ? 'Disponível' : 'Não gerado'}
                 />
                 <AdminField
                   label="Detalhe completo"
@@ -262,13 +285,13 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
                       className="admin-link"
                       href={`/admin/submissions/${latestAnalysis.submissionId}`}
                     >
-                      Abrir submissao
+                      Abrir submissão
                     </Link>
                   }
                 />
               </div>
             ) : (
-              <AdminEmptyState>Sem analise IA associada.</AdminEmptyState>
+              <AdminEmptyState>Sem análise IA associada.</AdminEmptyState>
             )}
           </AdminPanel>
           <AdminPanel title="Reuniões">

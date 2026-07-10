@@ -28,6 +28,9 @@ type AdminMeetingsPageProps = {
   searchParams?: Promise<{ filter?: MeetingFilter }>;
 };
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 const meetingFilters: Array<{ value: MeetingFilter; label: string }> = [
   { value: 'ALL', label: 'Todas' },
   { value: 'CONFIRMED', label: 'Confirmadas' },

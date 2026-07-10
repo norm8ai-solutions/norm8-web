@@ -18,8 +18,27 @@ import { redirect } from 'next/navigation';
 import type { LeadActionStatus, LeadActionType, LeadPriority, LeadStatus } from '@/app/generated/prisma/client';
 import { createAuditAnalysisForSubmission } from '@/lib/audit-analysis/service';
 import { prisma } from '@/lib/db/prisma';
+import {
+  MeetingSlotUnavailableError,
+  createMeetingBooking,
+  getMeetingSlotAvailability,
+  type MeetingSlotAvailability,
+} from '@/lib/meetings/service';
 
 const ADMIN_COOKIE_NAME = 'norm8_admin_access';
+/**
+ * Loads local MeetingBooking availability for the admin meeting execution modal.
+ *
+ * @param input Selected date, duration and timezone.
+ * @returns Available and occupied slots for that day.
+ */
+export async function loadAdminMeetingSlotAvailability(input: {
+  date: string;
+  durationMinutes: number;
+  timezone?: string;
+}): Promise<MeetingSlotAvailability> {
+  return getMeetingSlotAvailability(input);
+}
 
 /**
  * Validates the temporary admin access key and stores an httpOnly cookie.
@@ -180,12 +199,17 @@ export async function createLeadAction(formData: FormData): Promise<void> {
     redirect(`/admin/leads/${leadId}?actionError=title`);
   }
 
-  if (dueAt === 'INVALID') {
+  if (dueAt === 'INVALID' || !dueAt) {
     redirect(`/admin/leads/${leadId}?actionError=dueAt`);
   }
 
   const now = new Date();
-  const status: LeadActionStatus = dueAt && dueAt < now ? 'OVERDUE' : 'PENDING';
+
+  if (dueAt < now) {
+    redirect(`/admin/leads/${leadId}?actionError=dueAtPast`);
+  }
+
+  const status: LeadActionStatus = 'PENDING';
 
   const action = await prisma.leadAction.create({
     data: {
@@ -211,9 +235,6 @@ export async function createLeadAction(formData: FormData): Promise<void> {
     },
   });
 
-  if (status === 'OVERDUE') {
-    await createOverdueActionNotification(leadId, action.title);
-  }
 
   revalidatePath('/admin');
   revalidatePath('/admin/leads');
@@ -309,6 +330,371 @@ export async function deleteLeadAction(formData: FormData): Promise<void> {
   revalidatePath(`/admin/leads/${leadId}`);
 }
 
+/**
+ * Creates a meeting from a commercial action and completes the action.
+ *
+ * @param formData Meeting execution form data.
+ * @returns Revalidates lead, overview and meetings pages.
+ */
+export async function scheduleLeadActionMeeting(formData: FormData): Promise<void> {
+  const leadId = String(formData.get('leadId') ?? '');
+  const actionId = String(formData.get('actionId') ?? '');
+  const startsAtValue = String(formData.get('startsAt') ?? '').trim();
+  const durationMinutes = parsePositiveInteger(String(formData.get('durationMinutes') ?? '45'));
+  const title = String(formData.get('title') ?? '').trim();
+  const notes = String(formData.get('notes') ?? '').trim();
+  const timezone = String(formData.get('timezone') ?? 'Europe/Lisbon').trim() || 'Europe/Lisbon';
+  const startsAt = parseOptionalDateTime(startsAtValue);
+
+  if (!leadId || !actionId) {
+    return;
+  }
+
+  if (startsAt === 'INVALID' || !startsAt || !durationMinutes) {
+    redirect(`/admin/leads/${leadId}?actionExecutionError=meeting`);
+  }
+
+  const action = await prisma.leadAction.findFirst({
+    where: { id: actionId, leadId },
+    include: {
+      lead: {
+        include: {
+          submissions: {
+            include: { meetingBooking: true },
+            orderBy: { createdAt: 'desc' },
+          },
+        },
+      },
+    },
+  });
+
+  if (!action) {
+    return;
+  }
+
+  if (!title) {
+    redirect(`/admin/leads/${leadId}?actionExecutionError=meeting`);
+  }
+
+  const availableSubmission = action.lead.submissions.find(
+    (submission) => !submission.meetingBooking,
+  );
+
+  const email = action.lead.email.trim();
+
+  if (!email) {
+    redirect(`/admin/leads/${leadId}?actionExecutionError=meetingEmail`);
+  }
+
+  const attendeeCompany = action.lead.company.trim() || 'Empresa não indicada';
+  const attendeeName = action.lead.name?.trim() || 'Contacto não indicado';
+  const endsAt = new Date(startsAt.getTime() + durationMinutes * 60_000);
+
+  let meeting;
+
+  try {
+    meeting = await createMeetingBooking({
+      leadId,
+      submissionId: availableSubmission?.id ?? null,
+      status: 'CONFIRMED',
+      requestedDate: formatDateInputValue(startsAt),
+      requestedTime: formatTimeInputValue(startsAt),
+      startsAt,
+      endsAt,
+      timezone: timezone || 'Europe/Lisbon',
+      attendeeEmail: email,
+      attendeeName,
+      attendeeCompany,
+      meetingGoal: notes || title || action.description || action.title,
+    });
+  } catch (error) {
+    if (error instanceof MeetingSlotUnavailableError) {
+      redirect(`/admin/leads/${leadId}?actionExecutionError=meetingSlot`);
+    }
+
+    throw error;
+  }
+
+  await prisma.leadAction.update({
+    where: { id: actionId },
+    data: {
+      status: 'COMPLETED',
+      completedAt: new Date(),
+    },
+  });
+
+  await prisma.leadActivity.create({
+    data: {
+      leadId,
+      type: 'MEETING_SCHEDULED',
+      message: `Reunião agendada: ${title || action.title}`,
+      metadata: {
+        actionId,
+        meetingBookingId: meeting.id,
+        title,
+        durationMinutes,
+        submissionId: availableSubmission?.id ?? null,
+        linkedToSubmission: Boolean(availableSubmission),
+        startsAt: startsAt.toISOString(),
+        endsAt: endsAt.toISOString(),
+      },
+    },
+  });
+
+  revalidateLeadActionExecutionPaths(leadId);
+  revalidatePath('/admin/meetings');
+}
+
+/**
+ * Stores an editable commercial email draft as an internal EmailLog.
+ *
+ * @param formData Email execution form data.
+ * @returns Revalidates lead, overview and email pages.
+ */
+export async function prepareLeadActionEmail(formData: FormData): Promise<void> {
+  const leadId = String(formData.get('leadId') ?? '');
+  const actionId = String(formData.get('actionId') ?? '');
+  const to = String(formData.get('to') ?? '').trim();
+  const subject = String(formData.get('subject') ?? '').trim();
+  const body = String(formData.get('body') ?? '').trim();
+
+  if (!leadId || !actionId) {
+    return;
+  }
+
+  if (!to || !subject || !body) {
+    redirect(`/admin/leads/${leadId}?actionExecutionError=email`);
+  }
+
+  const action = await prisma.leadAction.findFirst({
+    where: { id: actionId, leadId },
+  });
+
+  if (!action) {
+    return;
+  }
+
+  const emailLog = await prisma.emailLog.create({
+    data: {
+      leadId,
+      to,
+      subject,
+      type: 'COMMERCIAL_DRAFT',
+      status: 'PENDING',
+      metadata: {
+        actionId,
+        body,
+        mode: 'draft',
+      },
+    },
+  });
+
+  await prisma.leadAction.update({
+    where: { id: actionId },
+    data: {
+      status: 'IN_PROGRESS',
+      completedAt: null,
+    },
+  });
+
+  await prisma.leadActivity.create({
+    data: {
+      leadId,
+      type: 'EMAIL_DRAFT_CREATED',
+      message: `Email preparado: ${subject}`,
+      metadata: {
+        actionId,
+        emailLogId: emailLog.id,
+      },
+    },
+  });
+
+  revalidateLeadActionExecutionPaths(leadId);
+  revalidatePath('/admin/emails');
+}
+
+/**
+ * Registers a future proposal workflow without pretending a proposal was generated.
+ *
+ * @param formData Proposal placeholder form data.
+ * @returns Revalidates lead and overview pages.
+ */
+export async function registerLeadActionProposalIntent(formData: FormData): Promise<void> {
+  const leadId = String(formData.get('leadId') ?? '');
+  const actionId = String(formData.get('actionId') ?? '');
+  const notes = String(formData.get('notes') ?? '').trim();
+
+  if (!leadId || !actionId) {
+    return;
+  }
+
+  const action = await prisma.leadAction.update({
+    where: { id: actionId },
+    data: {
+      status: 'IN_PROGRESS',
+      completedAt: null,
+    },
+  });
+
+  await prisma.leadActivity.create({
+    data: {
+      leadId,
+      type: 'PROPOSAL_INTENT_CREATED',
+      message: `Intenção de proposta registada: ${action.title}`,
+      metadata: {
+        actionId,
+        notes: notes || null,
+      },
+    },
+  });
+
+  revalidateLeadActionExecutionPaths(leadId);
+}
+
+/**
+ * Registers a phone call execution and completes the action.
+ *
+ * @param formData Call registration form data.
+ * @returns Revalidates lead and overview pages.
+ */
+export async function registerLeadActionCall(formData: FormData): Promise<void> {
+  const leadId = String(formData.get('leadId') ?? '');
+  const actionId = String(formData.get('actionId') ?? '');
+  const notes = String(formData.get('notes') ?? '').trim();
+  const result = String(formData.get('result') ?? '').trim();
+  const occurredAt = parseOptionalDateTime(String(formData.get('occurredAt') ?? ''));
+
+  if (!leadId || !actionId) {
+    return;
+  }
+
+  if (occurredAt === 'INVALID') {
+    redirect(`/admin/leads/${leadId}?actionExecutionError=call`);
+  }
+
+  const action = await prisma.leadAction.update({
+    where: { id: actionId },
+    data: {
+      status: 'COMPLETED',
+      completedAt: new Date(),
+    },
+  });
+
+  await prisma.leadActivity.create({
+    data: {
+      leadId,
+      type: 'CALL_LOGGED',
+      message: `Chamada registada: ${action.title}`,
+      metadata: {
+        actionId,
+        result: result || null,
+        notes: notes || null,
+        occurredAt: occurredAt?.toISOString() ?? new Date().toISOString(),
+      },
+    },
+  });
+
+  revalidateLeadActionExecutionPaths(leadId);
+}
+
+/**
+ * Registers a generic execution note and completes the action.
+ *
+ * @param formData Generic execution form data.
+ * @returns Revalidates lead and overview pages.
+ */
+export async function registerLeadActionGenericExecution(formData: FormData): Promise<void> {
+  const leadId = String(formData.get('leadId') ?? '');
+  const actionId = String(formData.get('actionId') ?? '');
+  const notes = String(formData.get('notes') ?? '').trim();
+
+  if (!leadId || !actionId) {
+    return;
+  }
+
+  const action = await prisma.leadAction.update({
+    where: { id: actionId },
+    data: {
+      status: 'COMPLETED',
+      completedAt: new Date(),
+    },
+  });
+
+  await prisma.leadActivity.create({
+    data: {
+      leadId,
+      type: 'ACTION_EXECUTION_REGISTERED',
+      message: `Execução registada: ${action.title}`,
+      metadata: {
+        actionId,
+        actionType: action.type,
+        notes: notes || null,
+      },
+    },
+  });
+
+  revalidateLeadActionExecutionPaths(leadId);
+}
+/**
+ * Marks a lead as lost from an executable action and completes that action.
+ *
+ * @param formData Close-lost form data.
+ * @returns Revalidates lead, lead list and overview pages.
+ */
+export async function closeLeadAsLostFromAction(formData: FormData): Promise<void> {
+  const leadId = String(formData.get('leadId') ?? '');
+  const actionId = String(formData.get('actionId') ?? '');
+  const reason = String(formData.get('reason') ?? '').trim();
+
+  if (!leadId || !actionId) {
+    return;
+  }
+
+  const action = await prisma.leadAction.update({
+    where: { id: actionId },
+    data: {
+      status: 'COMPLETED',
+      completedAt: new Date(),
+    },
+  });
+
+  await prisma.lead.update({
+    where: { id: leadId },
+    data: { status: 'LOST' },
+  });
+
+  await prisma.leadActivity.create({
+    data: {
+      leadId,
+      type: 'LEAD_CLOSED_LOST',
+      message: `Lead fechada como perdida: ${action.title}`,
+      metadata: {
+        actionId,
+        reason: reason || null,
+      },
+    },
+  });
+
+  revalidateLeadActionExecutionPaths(leadId);
+}
+
+
+function formatDateInputValue(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(
+    date.getDate(),
+  ).padStart(2, '0')}`;
+}
+
+function formatTimeInputValue(date: Date): string {
+  return `${String(date.getHours()).padStart(2, '0')}:${String(
+    date.getMinutes(),
+  ).padStart(2, '0')}`;
+}
+function revalidateLeadActionExecutionPaths(leadId: string): void {
+  revalidatePath('/admin');
+  revalidatePath('/admin/leads');
+  revalidatePath(`/admin/leads/${leadId}`);
+}
 function parseOptionalDateTime(value: string): Date | 'INVALID' | null {
   const trimmed = value.trim();
 
@@ -320,17 +706,8 @@ function parseOptionalDateTime(value: string): Date | 'INVALID' | null {
 
   return Number.isNaN(date.getTime()) ? 'INVALID' : date;
 }
+function parsePositiveInteger(value: string): number | null {
+  const parsed = Number.parseInt(value, 10);
 
-async function createOverdueActionNotification(
-  leadId: string,
-  actionTitle: string,
-): Promise<void> {
-  await prisma.notification.create({
-    data: {
-      relatedLeadId: leadId,
-      type: 'ACTION_OVERDUE',
-      title: 'A\u00e7\u00e3o comercial atrasada',
-      message: `A a\u00e7\u00e3o "${actionTitle}" est\u00e1 atrasada.`,
-    },
-  });
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
 }
