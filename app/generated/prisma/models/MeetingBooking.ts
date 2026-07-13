@@ -288,6 +288,7 @@ export type MeetingBookingWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"MeetingBooking"> | Date | string
   lead?: Prisma.XOR<Prisma.LeadScalarRelationFilter, Prisma.LeadWhereInput>
   submission?: Prisma.XOR<Prisma.SubmissionNullableScalarRelationFilter, Prisma.SubmissionWhereInput> | null
+  emailLogs?: Prisma.EmailLogListRelationFilter
 }
 
 export type MeetingBookingOrderByWithRelationInput = {
@@ -311,6 +312,7 @@ export type MeetingBookingOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   lead?: Prisma.LeadOrderByWithRelationInput
   submission?: Prisma.SubmissionOrderByWithRelationInput
+  emailLogs?: Prisma.EmailLogOrderByRelationAggregateInput
 }
 
 export type MeetingBookingWhereUniqueInput = Prisma.AtLeast<{
@@ -337,6 +339,7 @@ export type MeetingBookingWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"MeetingBooking"> | Date | string
   lead?: Prisma.XOR<Prisma.LeadScalarRelationFilter, Prisma.LeadWhereInput>
   submission?: Prisma.XOR<Prisma.SubmissionNullableScalarRelationFilter, Prisma.SubmissionWhereInput> | null
+  emailLogs?: Prisma.EmailLogListRelationFilter
 }, "id" | "submissionId">
 
 export type MeetingBookingOrderByWithAggregationInput = {
@@ -406,6 +409,7 @@ export type MeetingBookingCreateInput = {
   updatedAt?: Date | string
   lead: Prisma.LeadCreateNestedOneWithoutMeetingBookingsInput
   submission?: Prisma.SubmissionCreateNestedOneWithoutMeetingBookingInput
+  emailLogs?: Prisma.EmailLogCreateNestedManyWithoutMeetingBookingInput
 }
 
 export type MeetingBookingUncheckedCreateInput = {
@@ -427,6 +431,7 @@ export type MeetingBookingUncheckedCreateInput = {
   meetingGoal?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutMeetingBookingInput
 }
 
 export type MeetingBookingUpdateInput = {
@@ -448,6 +453,7 @@ export type MeetingBookingUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lead?: Prisma.LeadUpdateOneRequiredWithoutMeetingBookingsNestedInput
   submission?: Prisma.SubmissionUpdateOneWithoutMeetingBookingNestedInput
+  emailLogs?: Prisma.EmailLogUpdateManyWithoutMeetingBookingNestedInput
 }
 
 export type MeetingBookingUncheckedUpdateInput = {
@@ -469,6 +475,7 @@ export type MeetingBookingUncheckedUpdateInput = {
   meetingGoal?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutMeetingBookingNestedInput
 }
 
 export type MeetingBookingCreateManyInput = {
@@ -684,6 +691,22 @@ export type MeetingBookingUncheckedUpdateOneWithoutSubmissionNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.MeetingBookingUpdateToOneWithWhereWithoutSubmissionInput, Prisma.MeetingBookingUpdateWithoutSubmissionInput>, Prisma.MeetingBookingUncheckedUpdateWithoutSubmissionInput>
 }
 
+export type MeetingBookingCreateNestedOneWithoutEmailLogsInput = {
+  create?: Prisma.XOR<Prisma.MeetingBookingCreateWithoutEmailLogsInput, Prisma.MeetingBookingUncheckedCreateWithoutEmailLogsInput>
+  connectOrCreate?: Prisma.MeetingBookingCreateOrConnectWithoutEmailLogsInput
+  connect?: Prisma.MeetingBookingWhereUniqueInput
+}
+
+export type MeetingBookingUpdateOneWithoutEmailLogsNestedInput = {
+  create?: Prisma.XOR<Prisma.MeetingBookingCreateWithoutEmailLogsInput, Prisma.MeetingBookingUncheckedCreateWithoutEmailLogsInput>
+  connectOrCreate?: Prisma.MeetingBookingCreateOrConnectWithoutEmailLogsInput
+  upsert?: Prisma.MeetingBookingUpsertWithoutEmailLogsInput
+  disconnect?: Prisma.MeetingBookingWhereInput | boolean
+  delete?: Prisma.MeetingBookingWhereInput | boolean
+  connect?: Prisma.MeetingBookingWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MeetingBookingUpdateToOneWithWhereWithoutEmailLogsInput, Prisma.MeetingBookingUpdateWithoutEmailLogsInput>, Prisma.MeetingBookingUncheckedUpdateWithoutEmailLogsInput>
+}
+
 export type EnumMeetingBookingStatusFieldUpdateOperationsInput = {
   set?: $Enums.MeetingBookingStatus
 }
@@ -706,6 +729,7 @@ export type MeetingBookingCreateWithoutLeadInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   submission?: Prisma.SubmissionCreateNestedOneWithoutMeetingBookingInput
+  emailLogs?: Prisma.EmailLogCreateNestedManyWithoutMeetingBookingInput
 }
 
 export type MeetingBookingUncheckedCreateWithoutLeadInput = {
@@ -726,6 +750,7 @@ export type MeetingBookingUncheckedCreateWithoutLeadInput = {
   meetingGoal?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutMeetingBookingInput
 }
 
 export type MeetingBookingCreateOrConnectWithoutLeadInput = {
@@ -796,6 +821,7 @@ export type MeetingBookingCreateWithoutSubmissionInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   lead: Prisma.LeadCreateNestedOneWithoutMeetingBookingsInput
+  emailLogs?: Prisma.EmailLogCreateNestedManyWithoutMeetingBookingInput
 }
 
 export type MeetingBookingUncheckedCreateWithoutSubmissionInput = {
@@ -816,6 +842,7 @@ export type MeetingBookingUncheckedCreateWithoutSubmissionInput = {
   meetingGoal?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutMeetingBookingInput
 }
 
 export type MeetingBookingCreateOrConnectWithoutSubmissionInput = {
@@ -852,11 +879,113 @@ export type MeetingBookingUpdateWithoutSubmissionInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lead?: Prisma.LeadUpdateOneRequiredWithoutMeetingBookingsNestedInput
+  emailLogs?: Prisma.EmailLogUpdateManyWithoutMeetingBookingNestedInput
 }
 
 export type MeetingBookingUncheckedUpdateWithoutSubmissionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   leadId?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumMeetingBookingStatusFieldUpdateOperationsInput | $Enums.MeetingBookingStatus
+  requestedDate?: Prisma.StringFieldUpdateOperationsInput | string
+  requestedTime?: Prisma.StringFieldUpdateOperationsInput | string
+  startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  googleEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleEventHtmlLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  calendarId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attendeeEmail?: Prisma.StringFieldUpdateOperationsInput | string
+  attendeeName?: Prisma.StringFieldUpdateOperationsInput | string
+  attendeeCompany?: Prisma.StringFieldUpdateOperationsInput | string
+  meetingGoal?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutMeetingBookingNestedInput
+}
+
+export type MeetingBookingCreateWithoutEmailLogsInput = {
+  id?: string
+  status?: $Enums.MeetingBookingStatus
+  requestedDate: string
+  requestedTime: string
+  startsAt: Date | string
+  endsAt: Date | string
+  timezone: string
+  googleEventId?: string | null
+  googleEventHtmlLink?: string | null
+  calendarId?: string | null
+  attendeeEmail: string
+  attendeeName: string
+  attendeeCompany: string
+  meetingGoal?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lead: Prisma.LeadCreateNestedOneWithoutMeetingBookingsInput
+  submission?: Prisma.SubmissionCreateNestedOneWithoutMeetingBookingInput
+}
+
+export type MeetingBookingUncheckedCreateWithoutEmailLogsInput = {
+  id?: string
+  leadId: string
+  submissionId?: string | null
+  status?: $Enums.MeetingBookingStatus
+  requestedDate: string
+  requestedTime: string
+  startsAt: Date | string
+  endsAt: Date | string
+  timezone: string
+  googleEventId?: string | null
+  googleEventHtmlLink?: string | null
+  calendarId?: string | null
+  attendeeEmail: string
+  attendeeName: string
+  attendeeCompany: string
+  meetingGoal?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type MeetingBookingCreateOrConnectWithoutEmailLogsInput = {
+  where: Prisma.MeetingBookingWhereUniqueInput
+  create: Prisma.XOR<Prisma.MeetingBookingCreateWithoutEmailLogsInput, Prisma.MeetingBookingUncheckedCreateWithoutEmailLogsInput>
+}
+
+export type MeetingBookingUpsertWithoutEmailLogsInput = {
+  update: Prisma.XOR<Prisma.MeetingBookingUpdateWithoutEmailLogsInput, Prisma.MeetingBookingUncheckedUpdateWithoutEmailLogsInput>
+  create: Prisma.XOR<Prisma.MeetingBookingCreateWithoutEmailLogsInput, Prisma.MeetingBookingUncheckedCreateWithoutEmailLogsInput>
+  where?: Prisma.MeetingBookingWhereInput
+}
+
+export type MeetingBookingUpdateToOneWithWhereWithoutEmailLogsInput = {
+  where?: Prisma.MeetingBookingWhereInput
+  data: Prisma.XOR<Prisma.MeetingBookingUpdateWithoutEmailLogsInput, Prisma.MeetingBookingUncheckedUpdateWithoutEmailLogsInput>
+}
+
+export type MeetingBookingUpdateWithoutEmailLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumMeetingBookingStatusFieldUpdateOperationsInput | $Enums.MeetingBookingStatus
+  requestedDate?: Prisma.StringFieldUpdateOperationsInput | string
+  requestedTime?: Prisma.StringFieldUpdateOperationsInput | string
+  startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  googleEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleEventHtmlLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  calendarId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attendeeEmail?: Prisma.StringFieldUpdateOperationsInput | string
+  attendeeName?: Prisma.StringFieldUpdateOperationsInput | string
+  attendeeCompany?: Prisma.StringFieldUpdateOperationsInput | string
+  meetingGoal?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lead?: Prisma.LeadUpdateOneRequiredWithoutMeetingBookingsNestedInput
+  submission?: Prisma.SubmissionUpdateOneWithoutMeetingBookingNestedInput
+}
+
+export type MeetingBookingUncheckedUpdateWithoutEmailLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  leadId?: Prisma.StringFieldUpdateOperationsInput | string
+  submissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumMeetingBookingStatusFieldUpdateOperationsInput | $Enums.MeetingBookingStatus
   requestedDate?: Prisma.StringFieldUpdateOperationsInput | string
   requestedTime?: Prisma.StringFieldUpdateOperationsInput | string
@@ -912,6 +1041,7 @@ export type MeetingBookingUpdateWithoutLeadInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   submission?: Prisma.SubmissionUpdateOneWithoutMeetingBookingNestedInput
+  emailLogs?: Prisma.EmailLogUpdateManyWithoutMeetingBookingNestedInput
 }
 
 export type MeetingBookingUncheckedUpdateWithoutLeadInput = {
@@ -932,6 +1062,7 @@ export type MeetingBookingUncheckedUpdateWithoutLeadInput = {
   meetingGoal?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutMeetingBookingNestedInput
 }
 
 export type MeetingBookingUncheckedUpdateManyWithoutLeadInput = {
@@ -955,6 +1086,35 @@ export type MeetingBookingUncheckedUpdateManyWithoutLeadInput = {
 }
 
 
+/**
+ * Count Type MeetingBookingCountOutputType
+ */
+
+export type MeetingBookingCountOutputType = {
+  emailLogs: number
+}
+
+export type MeetingBookingCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  emailLogs?: boolean | MeetingBookingCountOutputTypeCountEmailLogsArgs
+}
+
+/**
+ * MeetingBookingCountOutputType without action
+ */
+export type MeetingBookingCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MeetingBookingCountOutputType
+   */
+  select?: Prisma.MeetingBookingCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * MeetingBookingCountOutputType without action
+ */
+export type MeetingBookingCountOutputTypeCountEmailLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.EmailLogWhereInput
+}
+
 
 export type MeetingBookingSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -977,6 +1137,8 @@ export type MeetingBookingSelect<ExtArgs extends runtime.Types.Extensions.Intern
   updatedAt?: boolean
   lead?: boolean | Prisma.LeadDefaultArgs<ExtArgs>
   submission?: boolean | Prisma.MeetingBooking$submissionArgs<ExtArgs>
+  emailLogs?: boolean | Prisma.MeetingBooking$emailLogsArgs<ExtArgs>
+  _count?: boolean | Prisma.MeetingBookingCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["meetingBooking"]>
 
 export type MeetingBookingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1050,6 +1212,8 @@ export type MeetingBookingOmit<ExtArgs extends runtime.Types.Extensions.Internal
 export type MeetingBookingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   lead?: boolean | Prisma.LeadDefaultArgs<ExtArgs>
   submission?: boolean | Prisma.MeetingBooking$submissionArgs<ExtArgs>
+  emailLogs?: boolean | Prisma.MeetingBooking$emailLogsArgs<ExtArgs>
+  _count?: boolean | Prisma.MeetingBookingCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MeetingBookingIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   lead?: boolean | Prisma.LeadDefaultArgs<ExtArgs>
@@ -1065,6 +1229,7 @@ export type $MeetingBookingPayload<ExtArgs extends runtime.Types.Extensions.Inte
   objects: {
     lead: Prisma.$LeadPayload<ExtArgs>
     submission: Prisma.$SubmissionPayload<ExtArgs> | null
+    emailLogs: Prisma.$EmailLogPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1481,6 +1646,7 @@ export interface Prisma__MeetingBookingClient<T, Null = never, ExtArgs extends r
   readonly [Symbol.toStringTag]: "PrismaPromise"
   lead<T extends Prisma.LeadDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LeadDefaultArgs<ExtArgs>>): Prisma.Prisma__LeadClient<runtime.Types.Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   submission<T extends Prisma.MeetingBooking$submissionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MeetingBooking$submissionArgs<ExtArgs>>): Prisma.Prisma__SubmissionClient<runtime.Types.Result.GetResult<Prisma.$SubmissionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  emailLogs<T extends Prisma.MeetingBooking$emailLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MeetingBooking$emailLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EmailLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1945,6 +2111,30 @@ export type MeetingBooking$submissionArgs<ExtArgs extends runtime.Types.Extensio
    */
   include?: Prisma.SubmissionInclude<ExtArgs> | null
   where?: Prisma.SubmissionWhereInput
+}
+
+/**
+ * MeetingBooking.emailLogs
+ */
+export type MeetingBooking$emailLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the EmailLog
+   */
+  select?: Prisma.EmailLogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the EmailLog
+   */
+  omit?: Prisma.EmailLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmailLogInclude<ExtArgs> | null
+  where?: Prisma.EmailLogWhereInput
+  orderBy?: Prisma.EmailLogOrderByWithRelationInput | Prisma.EmailLogOrderByWithRelationInput[]
+  cursor?: Prisma.EmailLogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.EmailLogScalarFieldEnum | Prisma.EmailLogScalarFieldEnum[]
 }
 
 /**

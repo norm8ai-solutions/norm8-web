@@ -55,6 +55,7 @@ export const ModelName = {
   Submission: 'Submission',
   LeadActivity: 'LeadActivity',
   LeadAction: 'LeadAction',
+  Proposal: 'Proposal',
   Notification: 'Notification',
   EmailLog: 'EmailLog',
   MeetingBooking: 'MeetingBooking',
@@ -139,6 +140,31 @@ export const LeadActionScalarFieldEnum = {
 export type LeadActionScalarFieldEnum = (typeof LeadActionScalarFieldEnum)[keyof typeof LeadActionScalarFieldEnum]
 
 
+export const ProposalScalarFieldEnum = {
+  id: 'id',
+  leadId: 'leadId',
+  submissionId: 'submissionId',
+  leadActionId: 'leadActionId',
+  title: 'title',
+  companyName: 'companyName',
+  contactName: 'contactName',
+  status: 'status',
+  version: 'version',
+  estimatedValue: 'estimatedValue',
+  scope: 'scope',
+  painPoints: 'painPoints',
+  recommendedSolution: 'recommendedSolution',
+  implementationPlan: 'implementationPlan',
+  nextSteps: 'nextSteps',
+  pdfUrl: 'pdfUrl',
+  pdfPath: 'pdfPath',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProposalScalarFieldEnum = (typeof ProposalScalarFieldEnum)[keyof typeof ProposalScalarFieldEnum]
+
+
 export const NotificationScalarFieldEnum = {
   id: 'id',
   title: 'title',
@@ -158,13 +184,19 @@ export const EmailLogScalarFieldEnum = {
   id: 'id',
   leadId: 'leadId',
   submissionId: 'submissionId',
+  meetingBookingId: 'meetingBookingId',
   to: 'to',
   subject: 'subject',
   type: 'type',
   status: 'status',
   metadata: 'metadata',
+  provider: 'provider',
   providerMessageId: 'providerMessageId',
-  createdAt: 'createdAt'
+  errorMessage: 'errorMessage',
+  sentAt: 'sentAt',
+  failedAt: 'failedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
 export type EmailLogScalarFieldEnum = (typeof EmailLogScalarFieldEnum)[keyof typeof EmailLogScalarFieldEnum]

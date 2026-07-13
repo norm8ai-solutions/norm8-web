@@ -97,10 +97,10 @@ export default function MeetingRequestConfirmationEmail({
             </table>
             <EmailCard>
               <p style={{ color: '#8399B8', fontSize: 11, fontWeight: 800, margin: '0 0 5px', textTransform: 'uppercase' }}>
-                Objetivo
+                Objetivo da reunião
               </p>
               <p style={{ color: '#E8EDF8', fontSize: 14, lineHeight: 1.65, margin: 0 }}>
-                {meetingEmailContext?.clientObjective ?? meetingBooking.meetingGoal}
+                {meetingEmailContext?.clientObjective ?? 'Alinhar contexto, prioridades e oportunidades de automação para definir próximos passos claros.'}
               </p>
             </EmailCard>
           </EmailSection>

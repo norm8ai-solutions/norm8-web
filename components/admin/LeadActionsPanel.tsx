@@ -66,6 +66,8 @@ const COPY = {
   executionMeetingEmailWarning:
     'Reunião criada, mas não foi possível enviar um ou mais emails de confirmação.',
   title: 'Título',
+  executionMeetingAlreadyCompleted:
+    'Esta ação já foi executada. Atualize a página antes de tentar agendar novamente.',
   titlePlaceholder: 'Ex.: Fazer follow-up da proposta',
   titleError: 'Indique o título da ação.',
   dueAt: 'Data/hora limite',
@@ -331,6 +333,10 @@ function getActionExecutionErrorMessage(error?: string): string {
 
   if (error === 'meetingEmailWarning') {
     return COPY.executionMeetingEmailWarning;
+  }
+
+  if (error === 'meetingAlreadyCompleted') {
+    return COPY.executionMeetingAlreadyCompleted;
   }
 
   return COPY.executionError;

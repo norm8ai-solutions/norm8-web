@@ -28,37 +28,55 @@ export type EmailLogMinAggregateOutputType = {
   id: string | null
   leadId: string | null
   submissionId: string | null
+  meetingBookingId: string | null
   to: string | null
   subject: string | null
   type: string | null
   status: $Enums.EmailStatus | null
+  provider: string | null
   providerMessageId: string | null
+  errorMessage: string | null
+  sentAt: Date | null
+  failedAt: Date | null
   createdAt: Date | null
+  updatedAt: Date | null
 }
 
 export type EmailLogMaxAggregateOutputType = {
   id: string | null
   leadId: string | null
   submissionId: string | null
+  meetingBookingId: string | null
   to: string | null
   subject: string | null
   type: string | null
   status: $Enums.EmailStatus | null
+  provider: string | null
   providerMessageId: string | null
+  errorMessage: string | null
+  sentAt: Date | null
+  failedAt: Date | null
   createdAt: Date | null
+  updatedAt: Date | null
 }
 
 export type EmailLogCountAggregateOutputType = {
   id: number
   leadId: number
   submissionId: number
+  meetingBookingId: number
   to: number
   subject: number
   type: number
   status: number
   metadata: number
+  provider: number
   providerMessageId: number
+  errorMessage: number
+  sentAt: number
+  failedAt: number
   createdAt: number
+  updatedAt: number
   _all: number
 }
 
@@ -67,37 +85,55 @@ export type EmailLogMinAggregateInputType = {
   id?: true
   leadId?: true
   submissionId?: true
+  meetingBookingId?: true
   to?: true
   subject?: true
   type?: true
   status?: true
+  provider?: true
   providerMessageId?: true
+  errorMessage?: true
+  sentAt?: true
+  failedAt?: true
   createdAt?: true
+  updatedAt?: true
 }
 
 export type EmailLogMaxAggregateInputType = {
   id?: true
   leadId?: true
   submissionId?: true
+  meetingBookingId?: true
   to?: true
   subject?: true
   type?: true
   status?: true
+  provider?: true
   providerMessageId?: true
+  errorMessage?: true
+  sentAt?: true
+  failedAt?: true
   createdAt?: true
+  updatedAt?: true
 }
 
 export type EmailLogCountAggregateInputType = {
   id?: true
   leadId?: true
   submissionId?: true
+  meetingBookingId?: true
   to?: true
   subject?: true
   type?: true
   status?: true
   metadata?: true
+  provider?: true
   providerMessageId?: true
+  errorMessage?: true
+  sentAt?: true
+  failedAt?: true
   createdAt?: true
+  updatedAt?: true
   _all?: true
 }
 
@@ -177,13 +213,19 @@ export type EmailLogGroupByOutputType = {
   id: string
   leadId: string | null
   submissionId: string | null
+  meetingBookingId: string | null
   to: string
   subject: string
   type: string
   status: $Enums.EmailStatus
   metadata: runtime.JsonValue | null
+  provider: string | null
   providerMessageId: string | null
+  errorMessage: string | null
+  sentAt: Date | null
+  failedAt: Date | null
   createdAt: Date
+  updatedAt: Date
   _count: EmailLogCountAggregateOutputType | null
   _min: EmailLogMinAggregateOutputType | null
   _max: EmailLogMaxAggregateOutputType | null
@@ -211,30 +253,44 @@ export type EmailLogWhereInput = {
   id?: Prisma.StringFilter<"EmailLog"> | string
   leadId?: Prisma.StringNullableFilter<"EmailLog"> | string | null
   submissionId?: Prisma.StringNullableFilter<"EmailLog"> | string | null
+  meetingBookingId?: Prisma.StringNullableFilter<"EmailLog"> | string | null
   to?: Prisma.StringFilter<"EmailLog"> | string
   subject?: Prisma.StringFilter<"EmailLog"> | string
   type?: Prisma.StringFilter<"EmailLog"> | string
   status?: Prisma.EnumEmailStatusFilter<"EmailLog"> | $Enums.EmailStatus
   metadata?: Prisma.JsonNullableFilter<"EmailLog">
+  provider?: Prisma.StringNullableFilter<"EmailLog"> | string | null
   providerMessageId?: Prisma.StringNullableFilter<"EmailLog"> | string | null
+  errorMessage?: Prisma.StringNullableFilter<"EmailLog"> | string | null
+  sentAt?: Prisma.DateTimeNullableFilter<"EmailLog"> | Date | string | null
+  failedAt?: Prisma.DateTimeNullableFilter<"EmailLog"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"EmailLog"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"EmailLog"> | Date | string
   lead?: Prisma.XOR<Prisma.LeadNullableScalarRelationFilter, Prisma.LeadWhereInput> | null
   submission?: Prisma.XOR<Prisma.SubmissionNullableScalarRelationFilter, Prisma.SubmissionWhereInput> | null
+  meetingBooking?: Prisma.XOR<Prisma.MeetingBookingNullableScalarRelationFilter, Prisma.MeetingBookingWhereInput> | null
 }
 
 export type EmailLogOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   leadId?: Prisma.SortOrderInput | Prisma.SortOrder
   submissionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  meetingBookingId?: Prisma.SortOrderInput | Prisma.SortOrder
   to?: Prisma.SortOrder
   subject?: Prisma.SortOrder
   type?: Prisma.SortOrder
   status?: Prisma.SortOrder
   metadata?: Prisma.SortOrderInput | Prisma.SortOrder
+  provider?: Prisma.SortOrderInput | Prisma.SortOrder
   providerMessageId?: Prisma.SortOrderInput | Prisma.SortOrder
+  errorMessage?: Prisma.SortOrderInput | Prisma.SortOrder
+  sentAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  failedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   lead?: Prisma.LeadOrderByWithRelationInput
   submission?: Prisma.SubmissionOrderByWithRelationInput
+  meetingBooking?: Prisma.MeetingBookingOrderByWithRelationInput
 }
 
 export type EmailLogWhereUniqueInput = Prisma.AtLeast<{
@@ -244,28 +300,41 @@ export type EmailLogWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.EmailLogWhereInput | Prisma.EmailLogWhereInput[]
   leadId?: Prisma.StringNullableFilter<"EmailLog"> | string | null
   submissionId?: Prisma.StringNullableFilter<"EmailLog"> | string | null
+  meetingBookingId?: Prisma.StringNullableFilter<"EmailLog"> | string | null
   to?: Prisma.StringFilter<"EmailLog"> | string
   subject?: Prisma.StringFilter<"EmailLog"> | string
   type?: Prisma.StringFilter<"EmailLog"> | string
   status?: Prisma.EnumEmailStatusFilter<"EmailLog"> | $Enums.EmailStatus
   metadata?: Prisma.JsonNullableFilter<"EmailLog">
+  provider?: Prisma.StringNullableFilter<"EmailLog"> | string | null
   providerMessageId?: Prisma.StringNullableFilter<"EmailLog"> | string | null
+  errorMessage?: Prisma.StringNullableFilter<"EmailLog"> | string | null
+  sentAt?: Prisma.DateTimeNullableFilter<"EmailLog"> | Date | string | null
+  failedAt?: Prisma.DateTimeNullableFilter<"EmailLog"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"EmailLog"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"EmailLog"> | Date | string
   lead?: Prisma.XOR<Prisma.LeadNullableScalarRelationFilter, Prisma.LeadWhereInput> | null
   submission?: Prisma.XOR<Prisma.SubmissionNullableScalarRelationFilter, Prisma.SubmissionWhereInput> | null
+  meetingBooking?: Prisma.XOR<Prisma.MeetingBookingNullableScalarRelationFilter, Prisma.MeetingBookingWhereInput> | null
 }, "id">
 
 export type EmailLogOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   leadId?: Prisma.SortOrderInput | Prisma.SortOrder
   submissionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  meetingBookingId?: Prisma.SortOrderInput | Prisma.SortOrder
   to?: Prisma.SortOrder
   subject?: Prisma.SortOrder
   type?: Prisma.SortOrder
   status?: Prisma.SortOrder
   metadata?: Prisma.SortOrderInput | Prisma.SortOrder
+  provider?: Prisma.SortOrderInput | Prisma.SortOrder
   providerMessageId?: Prisma.SortOrderInput | Prisma.SortOrder
+  errorMessage?: Prisma.SortOrderInput | Prisma.SortOrder
+  sentAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  failedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   _count?: Prisma.EmailLogCountOrderByAggregateInput
   _max?: Prisma.EmailLogMaxOrderByAggregateInput
   _min?: Prisma.EmailLogMinOrderByAggregateInput
@@ -278,13 +347,19 @@ export type EmailLogScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"EmailLog"> | string
   leadId?: Prisma.StringNullableWithAggregatesFilter<"EmailLog"> | string | null
   submissionId?: Prisma.StringNullableWithAggregatesFilter<"EmailLog"> | string | null
+  meetingBookingId?: Prisma.StringNullableWithAggregatesFilter<"EmailLog"> | string | null
   to?: Prisma.StringWithAggregatesFilter<"EmailLog"> | string
   subject?: Prisma.StringWithAggregatesFilter<"EmailLog"> | string
   type?: Prisma.StringWithAggregatesFilter<"EmailLog"> | string
   status?: Prisma.EnumEmailStatusWithAggregatesFilter<"EmailLog"> | $Enums.EmailStatus
   metadata?: Prisma.JsonNullableWithAggregatesFilter<"EmailLog">
+  provider?: Prisma.StringNullableWithAggregatesFilter<"EmailLog"> | string | null
   providerMessageId?: Prisma.StringNullableWithAggregatesFilter<"EmailLog"> | string | null
+  errorMessage?: Prisma.StringNullableWithAggregatesFilter<"EmailLog"> | string | null
+  sentAt?: Prisma.DateTimeNullableWithAggregatesFilter<"EmailLog"> | Date | string | null
+  failedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"EmailLog"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"EmailLog"> | Date | string
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"EmailLog"> | Date | string
 }
 
 export type EmailLogCreateInput = {
@@ -294,23 +369,35 @@ export type EmailLogCreateInput = {
   type: string
   status?: $Enums.EmailStatus
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  provider?: string | null
   providerMessageId?: string | null
+  errorMessage?: string | null
+  sentAt?: Date | string | null
+  failedAt?: Date | string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
   lead?: Prisma.LeadCreateNestedOneWithoutEmailLogsInput
   submission?: Prisma.SubmissionCreateNestedOneWithoutEmailLogsInput
+  meetingBooking?: Prisma.MeetingBookingCreateNestedOneWithoutEmailLogsInput
 }
 
 export type EmailLogUncheckedCreateInput = {
   id?: string
   leadId?: string | null
   submissionId?: string | null
+  meetingBookingId?: string | null
   to: string
   subject: string
   type: string
   status?: $Enums.EmailStatus
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  provider?: string | null
   providerMessageId?: string | null
+  errorMessage?: string | null
+  sentAt?: Date | string | null
+  failedAt?: Date | string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type EmailLogUpdateInput = {
@@ -320,36 +407,54 @@ export type EmailLogUpdateInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumEmailStatusFieldUpdateOperationsInput | $Enums.EmailStatus
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lead?: Prisma.LeadUpdateOneWithoutEmailLogsNestedInput
   submission?: Prisma.SubmissionUpdateOneWithoutEmailLogsNestedInput
+  meetingBooking?: Prisma.MeetingBookingUpdateOneWithoutEmailLogsNestedInput
 }
 
 export type EmailLogUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   leadId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   submissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meetingBookingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   to?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumEmailStatusFieldUpdateOperationsInput | $Enums.EmailStatus
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type EmailLogCreateManyInput = {
   id?: string
   leadId?: string | null
   submissionId?: string | null
+  meetingBookingId?: string | null
   to: string
   subject: string
   type: string
   status?: $Enums.EmailStatus
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  provider?: string | null
   providerMessageId?: string | null
+  errorMessage?: string | null
+  sentAt?: Date | string | null
+  failedAt?: Date | string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type EmailLogUpdateManyMutationInput = {
@@ -359,21 +464,32 @@ export type EmailLogUpdateManyMutationInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumEmailStatusFieldUpdateOperationsInput | $Enums.EmailStatus
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type EmailLogUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   leadId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   submissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meetingBookingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   to?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumEmailStatusFieldUpdateOperationsInput | $Enums.EmailStatus
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type EmailLogListRelationFilter = {
@@ -390,37 +506,55 @@ export type EmailLogCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   leadId?: Prisma.SortOrder
   submissionId?: Prisma.SortOrder
+  meetingBookingId?: Prisma.SortOrder
   to?: Prisma.SortOrder
   subject?: Prisma.SortOrder
   type?: Prisma.SortOrder
   status?: Prisma.SortOrder
   metadata?: Prisma.SortOrder
+  provider?: Prisma.SortOrder
   providerMessageId?: Prisma.SortOrder
+  errorMessage?: Prisma.SortOrder
+  sentAt?: Prisma.SortOrder
+  failedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type EmailLogMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   leadId?: Prisma.SortOrder
   submissionId?: Prisma.SortOrder
+  meetingBookingId?: Prisma.SortOrder
   to?: Prisma.SortOrder
   subject?: Prisma.SortOrder
   type?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  provider?: Prisma.SortOrder
   providerMessageId?: Prisma.SortOrder
+  errorMessage?: Prisma.SortOrder
+  sentAt?: Prisma.SortOrder
+  failedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type EmailLogMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   leadId?: Prisma.SortOrder
   submissionId?: Prisma.SortOrder
+  meetingBookingId?: Prisma.SortOrder
   to?: Prisma.SortOrder
   subject?: Prisma.SortOrder
   type?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  provider?: Prisma.SortOrder
   providerMessageId?: Prisma.SortOrder
+  errorMessage?: Prisma.SortOrder
+  sentAt?: Prisma.SortOrder
+  failedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type EmailLogCreateNestedManyWithoutLeadInput = {
@@ -511,6 +645,48 @@ export type EnumEmailStatusFieldUpdateOperationsInput = {
   set?: $Enums.EmailStatus
 }
 
+export type EmailLogCreateNestedManyWithoutMeetingBookingInput = {
+  create?: Prisma.XOR<Prisma.EmailLogCreateWithoutMeetingBookingInput, Prisma.EmailLogUncheckedCreateWithoutMeetingBookingInput> | Prisma.EmailLogCreateWithoutMeetingBookingInput[] | Prisma.EmailLogUncheckedCreateWithoutMeetingBookingInput[]
+  connectOrCreate?: Prisma.EmailLogCreateOrConnectWithoutMeetingBookingInput | Prisma.EmailLogCreateOrConnectWithoutMeetingBookingInput[]
+  createMany?: Prisma.EmailLogCreateManyMeetingBookingInputEnvelope
+  connect?: Prisma.EmailLogWhereUniqueInput | Prisma.EmailLogWhereUniqueInput[]
+}
+
+export type EmailLogUncheckedCreateNestedManyWithoutMeetingBookingInput = {
+  create?: Prisma.XOR<Prisma.EmailLogCreateWithoutMeetingBookingInput, Prisma.EmailLogUncheckedCreateWithoutMeetingBookingInput> | Prisma.EmailLogCreateWithoutMeetingBookingInput[] | Prisma.EmailLogUncheckedCreateWithoutMeetingBookingInput[]
+  connectOrCreate?: Prisma.EmailLogCreateOrConnectWithoutMeetingBookingInput | Prisma.EmailLogCreateOrConnectWithoutMeetingBookingInput[]
+  createMany?: Prisma.EmailLogCreateManyMeetingBookingInputEnvelope
+  connect?: Prisma.EmailLogWhereUniqueInput | Prisma.EmailLogWhereUniqueInput[]
+}
+
+export type EmailLogUpdateManyWithoutMeetingBookingNestedInput = {
+  create?: Prisma.XOR<Prisma.EmailLogCreateWithoutMeetingBookingInput, Prisma.EmailLogUncheckedCreateWithoutMeetingBookingInput> | Prisma.EmailLogCreateWithoutMeetingBookingInput[] | Prisma.EmailLogUncheckedCreateWithoutMeetingBookingInput[]
+  connectOrCreate?: Prisma.EmailLogCreateOrConnectWithoutMeetingBookingInput | Prisma.EmailLogCreateOrConnectWithoutMeetingBookingInput[]
+  upsert?: Prisma.EmailLogUpsertWithWhereUniqueWithoutMeetingBookingInput | Prisma.EmailLogUpsertWithWhereUniqueWithoutMeetingBookingInput[]
+  createMany?: Prisma.EmailLogCreateManyMeetingBookingInputEnvelope
+  set?: Prisma.EmailLogWhereUniqueInput | Prisma.EmailLogWhereUniqueInput[]
+  disconnect?: Prisma.EmailLogWhereUniqueInput | Prisma.EmailLogWhereUniqueInput[]
+  delete?: Prisma.EmailLogWhereUniqueInput | Prisma.EmailLogWhereUniqueInput[]
+  connect?: Prisma.EmailLogWhereUniqueInput | Prisma.EmailLogWhereUniqueInput[]
+  update?: Prisma.EmailLogUpdateWithWhereUniqueWithoutMeetingBookingInput | Prisma.EmailLogUpdateWithWhereUniqueWithoutMeetingBookingInput[]
+  updateMany?: Prisma.EmailLogUpdateManyWithWhereWithoutMeetingBookingInput | Prisma.EmailLogUpdateManyWithWhereWithoutMeetingBookingInput[]
+  deleteMany?: Prisma.EmailLogScalarWhereInput | Prisma.EmailLogScalarWhereInput[]
+}
+
+export type EmailLogUncheckedUpdateManyWithoutMeetingBookingNestedInput = {
+  create?: Prisma.XOR<Prisma.EmailLogCreateWithoutMeetingBookingInput, Prisma.EmailLogUncheckedCreateWithoutMeetingBookingInput> | Prisma.EmailLogCreateWithoutMeetingBookingInput[] | Prisma.EmailLogUncheckedCreateWithoutMeetingBookingInput[]
+  connectOrCreate?: Prisma.EmailLogCreateOrConnectWithoutMeetingBookingInput | Prisma.EmailLogCreateOrConnectWithoutMeetingBookingInput[]
+  upsert?: Prisma.EmailLogUpsertWithWhereUniqueWithoutMeetingBookingInput | Prisma.EmailLogUpsertWithWhereUniqueWithoutMeetingBookingInput[]
+  createMany?: Prisma.EmailLogCreateManyMeetingBookingInputEnvelope
+  set?: Prisma.EmailLogWhereUniqueInput | Prisma.EmailLogWhereUniqueInput[]
+  disconnect?: Prisma.EmailLogWhereUniqueInput | Prisma.EmailLogWhereUniqueInput[]
+  delete?: Prisma.EmailLogWhereUniqueInput | Prisma.EmailLogWhereUniqueInput[]
+  connect?: Prisma.EmailLogWhereUniqueInput | Prisma.EmailLogWhereUniqueInput[]
+  update?: Prisma.EmailLogUpdateWithWhereUniqueWithoutMeetingBookingInput | Prisma.EmailLogUpdateWithWhereUniqueWithoutMeetingBookingInput[]
+  updateMany?: Prisma.EmailLogUpdateManyWithWhereWithoutMeetingBookingInput | Prisma.EmailLogUpdateManyWithWhereWithoutMeetingBookingInput[]
+  deleteMany?: Prisma.EmailLogScalarWhereInput | Prisma.EmailLogScalarWhereInput[]
+}
+
 export type EmailLogCreateWithoutLeadInput = {
   id?: string
   to: string
@@ -518,21 +694,33 @@ export type EmailLogCreateWithoutLeadInput = {
   type: string
   status?: $Enums.EmailStatus
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  provider?: string | null
   providerMessageId?: string | null
+  errorMessage?: string | null
+  sentAt?: Date | string | null
+  failedAt?: Date | string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
   submission?: Prisma.SubmissionCreateNestedOneWithoutEmailLogsInput
+  meetingBooking?: Prisma.MeetingBookingCreateNestedOneWithoutEmailLogsInput
 }
 
 export type EmailLogUncheckedCreateWithoutLeadInput = {
   id?: string
   submissionId?: string | null
+  meetingBookingId?: string | null
   to: string
   subject: string
   type: string
   status?: $Enums.EmailStatus
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  provider?: string | null
   providerMessageId?: string | null
+  errorMessage?: string | null
+  sentAt?: Date | string | null
+  failedAt?: Date | string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type EmailLogCreateOrConnectWithoutLeadInput = {
@@ -568,13 +756,19 @@ export type EmailLogScalarWhereInput = {
   id?: Prisma.StringFilter<"EmailLog"> | string
   leadId?: Prisma.StringNullableFilter<"EmailLog"> | string | null
   submissionId?: Prisma.StringNullableFilter<"EmailLog"> | string | null
+  meetingBookingId?: Prisma.StringNullableFilter<"EmailLog"> | string | null
   to?: Prisma.StringFilter<"EmailLog"> | string
   subject?: Prisma.StringFilter<"EmailLog"> | string
   type?: Prisma.StringFilter<"EmailLog"> | string
   status?: Prisma.EnumEmailStatusFilter<"EmailLog"> | $Enums.EmailStatus
   metadata?: Prisma.JsonNullableFilter<"EmailLog">
+  provider?: Prisma.StringNullableFilter<"EmailLog"> | string | null
   providerMessageId?: Prisma.StringNullableFilter<"EmailLog"> | string | null
+  errorMessage?: Prisma.StringNullableFilter<"EmailLog"> | string | null
+  sentAt?: Prisma.DateTimeNullableFilter<"EmailLog"> | Date | string | null
+  failedAt?: Prisma.DateTimeNullableFilter<"EmailLog"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"EmailLog"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"EmailLog"> | Date | string
 }
 
 export type EmailLogCreateWithoutSubmissionInput = {
@@ -584,21 +778,33 @@ export type EmailLogCreateWithoutSubmissionInput = {
   type: string
   status?: $Enums.EmailStatus
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  provider?: string | null
   providerMessageId?: string | null
+  errorMessage?: string | null
+  sentAt?: Date | string | null
+  failedAt?: Date | string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
   lead?: Prisma.LeadCreateNestedOneWithoutEmailLogsInput
+  meetingBooking?: Prisma.MeetingBookingCreateNestedOneWithoutEmailLogsInput
 }
 
 export type EmailLogUncheckedCreateWithoutSubmissionInput = {
   id?: string
   leadId?: string | null
+  meetingBookingId?: string | null
   to: string
   subject: string
   type: string
   status?: $Enums.EmailStatus
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  provider?: string | null
   providerMessageId?: string | null
+  errorMessage?: string | null
+  sentAt?: Date | string | null
+  failedAt?: Date | string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type EmailLogCreateOrConnectWithoutSubmissionInput = {
@@ -627,16 +833,84 @@ export type EmailLogUpdateManyWithWhereWithoutSubmissionInput = {
   data: Prisma.XOR<Prisma.EmailLogUpdateManyMutationInput, Prisma.EmailLogUncheckedUpdateManyWithoutSubmissionInput>
 }
 
-export type EmailLogCreateManyLeadInput = {
+export type EmailLogCreateWithoutMeetingBookingInput = {
   id?: string
+  to: string
+  subject: string
+  type: string
+  status?: $Enums.EmailStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  provider?: string | null
+  providerMessageId?: string | null
+  errorMessage?: string | null
+  sentAt?: Date | string | null
+  failedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lead?: Prisma.LeadCreateNestedOneWithoutEmailLogsInput
+  submission?: Prisma.SubmissionCreateNestedOneWithoutEmailLogsInput
+}
+
+export type EmailLogUncheckedCreateWithoutMeetingBookingInput = {
+  id?: string
+  leadId?: string | null
   submissionId?: string | null
   to: string
   subject: string
   type: string
   status?: $Enums.EmailStatus
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  provider?: string | null
   providerMessageId?: string | null
+  errorMessage?: string | null
+  sentAt?: Date | string | null
+  failedAt?: Date | string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type EmailLogCreateOrConnectWithoutMeetingBookingInput = {
+  where: Prisma.EmailLogWhereUniqueInput
+  create: Prisma.XOR<Prisma.EmailLogCreateWithoutMeetingBookingInput, Prisma.EmailLogUncheckedCreateWithoutMeetingBookingInput>
+}
+
+export type EmailLogCreateManyMeetingBookingInputEnvelope = {
+  data: Prisma.EmailLogCreateManyMeetingBookingInput | Prisma.EmailLogCreateManyMeetingBookingInput[]
+  skipDuplicates?: boolean
+}
+
+export type EmailLogUpsertWithWhereUniqueWithoutMeetingBookingInput = {
+  where: Prisma.EmailLogWhereUniqueInput
+  update: Prisma.XOR<Prisma.EmailLogUpdateWithoutMeetingBookingInput, Prisma.EmailLogUncheckedUpdateWithoutMeetingBookingInput>
+  create: Prisma.XOR<Prisma.EmailLogCreateWithoutMeetingBookingInput, Prisma.EmailLogUncheckedCreateWithoutMeetingBookingInput>
+}
+
+export type EmailLogUpdateWithWhereUniqueWithoutMeetingBookingInput = {
+  where: Prisma.EmailLogWhereUniqueInput
+  data: Prisma.XOR<Prisma.EmailLogUpdateWithoutMeetingBookingInput, Prisma.EmailLogUncheckedUpdateWithoutMeetingBookingInput>
+}
+
+export type EmailLogUpdateManyWithWhereWithoutMeetingBookingInput = {
+  where: Prisma.EmailLogScalarWhereInput
+  data: Prisma.XOR<Prisma.EmailLogUpdateManyMutationInput, Prisma.EmailLogUncheckedUpdateManyWithoutMeetingBookingInput>
+}
+
+export type EmailLogCreateManyLeadInput = {
+  id?: string
+  submissionId?: string | null
+  meetingBookingId?: string | null
+  to: string
+  subject: string
+  type: string
+  status?: $Enums.EmailStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  provider?: string | null
+  providerMessageId?: string | null
+  errorMessage?: string | null
+  sentAt?: Date | string | null
+  failedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type EmailLogUpdateWithoutLeadInput = {
@@ -646,45 +920,69 @@ export type EmailLogUpdateWithoutLeadInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumEmailStatusFieldUpdateOperationsInput | $Enums.EmailStatus
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   submission?: Prisma.SubmissionUpdateOneWithoutEmailLogsNestedInput
+  meetingBooking?: Prisma.MeetingBookingUpdateOneWithoutEmailLogsNestedInput
 }
 
 export type EmailLogUncheckedUpdateWithoutLeadInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   submissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meetingBookingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   to?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumEmailStatusFieldUpdateOperationsInput | $Enums.EmailStatus
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type EmailLogUncheckedUpdateManyWithoutLeadInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   submissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meetingBookingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   to?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumEmailStatusFieldUpdateOperationsInput | $Enums.EmailStatus
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type EmailLogCreateManySubmissionInput = {
   id?: string
   leadId?: string | null
+  meetingBookingId?: string | null
   to: string
   subject: string
   type: string
   status?: $Enums.EmailStatus
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  provider?: string | null
   providerMessageId?: string | null
+  errorMessage?: string | null
+  sentAt?: Date | string | null
+  failedAt?: Date | string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type EmailLogUpdateWithoutSubmissionInput = {
@@ -694,33 +992,123 @@ export type EmailLogUpdateWithoutSubmissionInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumEmailStatusFieldUpdateOperationsInput | $Enums.EmailStatus
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lead?: Prisma.LeadUpdateOneWithoutEmailLogsNestedInput
+  meetingBooking?: Prisma.MeetingBookingUpdateOneWithoutEmailLogsNestedInput
 }
 
 export type EmailLogUncheckedUpdateWithoutSubmissionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   leadId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meetingBookingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   to?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumEmailStatusFieldUpdateOperationsInput | $Enums.EmailStatus
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type EmailLogUncheckedUpdateManyWithoutSubmissionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   leadId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meetingBookingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   to?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumEmailStatusFieldUpdateOperationsInput | $Enums.EmailStatus
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type EmailLogCreateManyMeetingBookingInput = {
+  id?: string
+  leadId?: string | null
+  submissionId?: string | null
+  to: string
+  subject: string
+  type: string
+  status?: $Enums.EmailStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  provider?: string | null
+  providerMessageId?: string | null
+  errorMessage?: string | null
+  sentAt?: Date | string | null
+  failedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type EmailLogUpdateWithoutMeetingBookingInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  to?: Prisma.StringFieldUpdateOperationsInput | string
+  subject?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumEmailStatusFieldUpdateOperationsInput | $Enums.EmailStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  providerMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lead?: Prisma.LeadUpdateOneWithoutEmailLogsNestedInput
+  submission?: Prisma.SubmissionUpdateOneWithoutEmailLogsNestedInput
+}
+
+export type EmailLogUncheckedUpdateWithoutMeetingBookingInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  leadId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  to?: Prisma.StringFieldUpdateOperationsInput | string
+  subject?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumEmailStatusFieldUpdateOperationsInput | $Enums.EmailStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  providerMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type EmailLogUncheckedUpdateManyWithoutMeetingBookingInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  leadId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  to?: Prisma.StringFieldUpdateOperationsInput | string
+  subject?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumEmailStatusFieldUpdateOperationsInput | $Enums.EmailStatus
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  providerMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -729,72 +1117,102 @@ export type EmailLogSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   id?: boolean
   leadId?: boolean
   submissionId?: boolean
+  meetingBookingId?: boolean
   to?: boolean
   subject?: boolean
   type?: boolean
   status?: boolean
   metadata?: boolean
+  provider?: boolean
   providerMessageId?: boolean
+  errorMessage?: boolean
+  sentAt?: boolean
+  failedAt?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   lead?: boolean | Prisma.EmailLog$leadArgs<ExtArgs>
   submission?: boolean | Prisma.EmailLog$submissionArgs<ExtArgs>
+  meetingBooking?: boolean | Prisma.EmailLog$meetingBookingArgs<ExtArgs>
 }, ExtArgs["result"]["emailLog"]>
 
 export type EmailLogSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   leadId?: boolean
   submissionId?: boolean
+  meetingBookingId?: boolean
   to?: boolean
   subject?: boolean
   type?: boolean
   status?: boolean
   metadata?: boolean
+  provider?: boolean
   providerMessageId?: boolean
+  errorMessage?: boolean
+  sentAt?: boolean
+  failedAt?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   lead?: boolean | Prisma.EmailLog$leadArgs<ExtArgs>
   submission?: boolean | Prisma.EmailLog$submissionArgs<ExtArgs>
+  meetingBooking?: boolean | Prisma.EmailLog$meetingBookingArgs<ExtArgs>
 }, ExtArgs["result"]["emailLog"]>
 
 export type EmailLogSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   leadId?: boolean
   submissionId?: boolean
+  meetingBookingId?: boolean
   to?: boolean
   subject?: boolean
   type?: boolean
   status?: boolean
   metadata?: boolean
+  provider?: boolean
   providerMessageId?: boolean
+  errorMessage?: boolean
+  sentAt?: boolean
+  failedAt?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   lead?: boolean | Prisma.EmailLog$leadArgs<ExtArgs>
   submission?: boolean | Prisma.EmailLog$submissionArgs<ExtArgs>
+  meetingBooking?: boolean | Prisma.EmailLog$meetingBookingArgs<ExtArgs>
 }, ExtArgs["result"]["emailLog"]>
 
 export type EmailLogSelectScalar = {
   id?: boolean
   leadId?: boolean
   submissionId?: boolean
+  meetingBookingId?: boolean
   to?: boolean
   subject?: boolean
   type?: boolean
   status?: boolean
   metadata?: boolean
+  provider?: boolean
   providerMessageId?: boolean
+  errorMessage?: boolean
+  sentAt?: boolean
+  failedAt?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
 }
 
-export type EmailLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "leadId" | "submissionId" | "to" | "subject" | "type" | "status" | "metadata" | "providerMessageId" | "createdAt", ExtArgs["result"]["emailLog"]>
+export type EmailLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "leadId" | "submissionId" | "meetingBookingId" | "to" | "subject" | "type" | "status" | "metadata" | "provider" | "providerMessageId" | "errorMessage" | "sentAt" | "failedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["emailLog"]>
 export type EmailLogInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   lead?: boolean | Prisma.EmailLog$leadArgs<ExtArgs>
   submission?: boolean | Prisma.EmailLog$submissionArgs<ExtArgs>
+  meetingBooking?: boolean | Prisma.EmailLog$meetingBookingArgs<ExtArgs>
 }
 export type EmailLogIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   lead?: boolean | Prisma.EmailLog$leadArgs<ExtArgs>
   submission?: boolean | Prisma.EmailLog$submissionArgs<ExtArgs>
+  meetingBooking?: boolean | Prisma.EmailLog$meetingBookingArgs<ExtArgs>
 }
 export type EmailLogIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   lead?: boolean | Prisma.EmailLog$leadArgs<ExtArgs>
   submission?: boolean | Prisma.EmailLog$submissionArgs<ExtArgs>
+  meetingBooking?: boolean | Prisma.EmailLog$meetingBookingArgs<ExtArgs>
 }
 
 export type $EmailLogPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -802,18 +1220,25 @@ export type $EmailLogPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   objects: {
     lead: Prisma.$LeadPayload<ExtArgs> | null
     submission: Prisma.$SubmissionPayload<ExtArgs> | null
+    meetingBooking: Prisma.$MeetingBookingPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     leadId: string | null
     submissionId: string | null
+    meetingBookingId: string | null
     to: string
     subject: string
     type: string
     status: $Enums.EmailStatus
     metadata: runtime.JsonValue | null
+    provider: string | null
     providerMessageId: string | null
+    errorMessage: string | null
+    sentAt: Date | null
+    failedAt: Date | null
     createdAt: Date
+    updatedAt: Date
   }, ExtArgs["result"]["emailLog"]>
   composites: {}
 }
@@ -1210,6 +1635,7 @@ export interface Prisma__EmailLogClient<T, Null = never, ExtArgs extends runtime
   readonly [Symbol.toStringTag]: "PrismaPromise"
   lead<T extends Prisma.EmailLog$leadArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EmailLog$leadArgs<ExtArgs>>): Prisma.Prisma__LeadClient<runtime.Types.Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   submission<T extends Prisma.EmailLog$submissionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EmailLog$submissionArgs<ExtArgs>>): Prisma.Prisma__SubmissionClient<runtime.Types.Result.GetResult<Prisma.$SubmissionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  meetingBooking<T extends Prisma.EmailLog$meetingBookingArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EmailLog$meetingBookingArgs<ExtArgs>>): Prisma.Prisma__MeetingBookingClient<runtime.Types.Result.GetResult<Prisma.$MeetingBookingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1242,13 +1668,19 @@ export interface EmailLogFieldRefs {
   readonly id: Prisma.FieldRef<"EmailLog", 'String'>
   readonly leadId: Prisma.FieldRef<"EmailLog", 'String'>
   readonly submissionId: Prisma.FieldRef<"EmailLog", 'String'>
+  readonly meetingBookingId: Prisma.FieldRef<"EmailLog", 'String'>
   readonly to: Prisma.FieldRef<"EmailLog", 'String'>
   readonly subject: Prisma.FieldRef<"EmailLog", 'String'>
   readonly type: Prisma.FieldRef<"EmailLog", 'String'>
   readonly status: Prisma.FieldRef<"EmailLog", 'EmailStatus'>
   readonly metadata: Prisma.FieldRef<"EmailLog", 'Json'>
+  readonly provider: Prisma.FieldRef<"EmailLog", 'String'>
   readonly providerMessageId: Prisma.FieldRef<"EmailLog", 'String'>
+  readonly errorMessage: Prisma.FieldRef<"EmailLog", 'String'>
+  readonly sentAt: Prisma.FieldRef<"EmailLog", 'DateTime'>
+  readonly failedAt: Prisma.FieldRef<"EmailLog", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"EmailLog", 'DateTime'>
+  readonly updatedAt: Prisma.FieldRef<"EmailLog", 'DateTime'>
 }
     
 
@@ -1685,6 +2117,25 @@ export type EmailLog$submissionArgs<ExtArgs extends runtime.Types.Extensions.Int
    */
   include?: Prisma.SubmissionInclude<ExtArgs> | null
   where?: Prisma.SubmissionWhereInput
+}
+
+/**
+ * EmailLog.meetingBooking
+ */
+export type EmailLog$meetingBookingArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MeetingBooking
+   */
+  select?: Prisma.MeetingBookingSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MeetingBooking
+   */
+  omit?: Prisma.MeetingBookingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MeetingBookingInclude<ExtArgs> | null
+  where?: Prisma.MeetingBookingWhereInput
 }
 
 /**

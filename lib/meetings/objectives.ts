@@ -5,7 +5,7 @@ import { createGroqClient } from '@/lib/ai/groq';
 const FALLBACK_INTERNAL_OBJECTIVE =
   'Alinhar contexto, prioridades e próximos passos comerciais da oportunidade.';
 const FORBIDDEN_CLIENT_LANGUAGE =
-  /\b(lead|pipeline|funil|qualificar|qualificação|oportunidade comercial|ação pendente|potencial comercial)\b/i;
+  /\b(lead|pipeline|funil comercial|funil|qualificar|qualificação|qualificar oportunidade|oportunidade comercial|ação pendente|potencial comercial|fechar oportunidade|avançar oportunidade|estado da lead|agendar reunião|marcar reunião|entrar em contacto|avançar o processo de colaboração)\b/i;
 const MAX_CLIENT_OBJECTIVE_LENGTH = 360;
 
 export type ResolveInternalMeetingObjectiveInput = {
@@ -103,12 +103,14 @@ export function buildMeetingClientObjectivePrompt({
   companyName?: string | null;
 }): string {
   return [
-    'Transforma o seguinte objetivo interno de reunião num objetivo claro, profissional e adequado para ser enviado ao cliente.',
+    'Transforma o seguinte objetivo interno numa descrição curta e profissional do objetivo de uma reunião já confirmada com o cliente.',
     '',
     'Regras:',
     '- Escreve em Português Europeu.',
+    '- Assume que a reunião já está marcada e confirmada.',
     '- Usa uma frase ou, no máximo, duas frases curtas.',
-    '- Não uses termos internos como lead, pipeline, funil, qualificação ou oportunidade comercial.',
+    '- Não uses frases como agendar reunião, marcar reunião ou entrar em contacto.',
+    '- Não uses termos internos como lead, pipeline, funil comercial, qualificação, oportunidade comercial, ação pendente, potencial comercial, fechar oportunidade ou avançar oportunidade.',
     '- Não inventes dados nem prometas resultados.',
     '- Não menciones preços, prazos ou garantias.',
     '- Preserva o sentido útil do objetivo interno.',
@@ -124,7 +126,7 @@ export function buildMeetingClientObjectivePrompt({
 export function buildClientObjectiveFallback(companyName?: string | null): string {
   const company = clean(companyName);
   return company
-    ? `Compreender melhor os processos atuais da ${company}, identificar oportunidades de automação e definir próximos passos claros.`
+    ? `Alinhar o contexto da ${company}, perceber prioridades operacionais e identificar oportunidades de automação para definir próximos passos claros.`
     : 'Compreender melhor os processos atuais da empresa, identificar oportunidades de automação e definir próximos passos claros.';
 }
 

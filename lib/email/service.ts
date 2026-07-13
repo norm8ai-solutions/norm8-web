@@ -12,11 +12,13 @@
 
 import 'server-only';
 
-import { createElement, type ReactNode } from 'react';
+import { createElement, type ReactElement } from 'react';
+import { render } from '@react-email/render';
 import type {
   AuditAnalysis,
   MeetingBookingStatus,
   MeetingBooking,
+  Prisma,
   SubmissionType,
 } from '@/app/generated/prisma/client';
 import { prisma } from '@/lib/db/prisma';
@@ -25,7 +27,11 @@ import {
   formatSubmissionType,
   getSubmissionContactSnapshot,
 } from './formatters';
-import { EmailConfigurationError, getResendClient } from './resend';
+import {
+  EmailConfigurationError,
+  getEmailProviderConfigStatus,
+  getResendClient,
+} from './resend';
 import type {
   EmailType,
   InternalLeadNotificationEmailProps,
@@ -33,28 +39,95 @@ import type {
   SubmissionEmailLead,
   SubmissionEmailSubmission,
 } from './types';
+import { EMAIL_TYPES } from './types';
 import AuditConfirmationEmail from './templates/AuditConfirmationEmail';
+import ClientMeetingConfirmationEmail from './templates/ClientMeetingConfirmationEmail';
 import CustomAutomationConfirmationEmail from './templates/CustomAutomationConfirmationEmail';
 import ExecutiveAuditPreviewEmail from './templates/ExecutiveAuditPreviewEmail';
 import InternalLeadNotificationEmail from './templates/InternalLeadNotificationEmail';
+import InternalMeetingNotificationEmail from './templates/InternalMeetingNotificationEmail';
+import LeadActionEmail, { type LeadActionEmailContext } from './templates/LeadActionEmail';
 import MeetingRequestConfirmationEmail from './templates/MeetingRequestConfirmationEmail';
 
-const DEFAULT_EMAIL_FROM = 'Norm8 <no-reply@norm8.pt>';
-
 type EmailMetadata = Record<string, string | null>;
+
+type MeetingEmailType =
+  | typeof EMAIL_TYPES.MEETING_CLIENT_CONFIRMATION
+  | typeof EMAIL_TYPES.MEETING_INTERNAL_NOTIFICATION;
+
+type MeetingEmailAttemptResult = {
+  attempted: boolean;
+  sent: boolean;
+  emailLogId?: string;
+  error?: string;
+};
+
+type MeetingEmailLogCreateInput = {
+  leadId: string;
+  submissionId?: string | null;
+  meetingBookingId?: string | null;
+  to: string;
+  subject: string;
+  type: MeetingEmailType;
+  metadata: EmailMetadata;
+};
+
+type MeetingEmailLogCreateResult = {
+  emailLogId?: string;
+  error?: string;
+};
+
+type MeetingEmailDeliveryResult = {
+  emailLogId?: string;
+  type: MeetingEmailType;
+  sent: boolean;
+  error?: string;
+};
+
+export type MeetingEmailSendResult = {
+  allSent: boolean;
+  customerSent: boolean;
+  internalSent: boolean;
+  failedEmailTypes: MeetingEmailType[];
+  internalEmail: MeetingEmailAttemptResult;
+  clientEmail: MeetingEmailAttemptResult;
+};
+
+export type LeadActionEmailSendResult = {
+  success: boolean;
+  emailSent: boolean;
+  emailLogId?: string;
+  providerMessageId?: string;
+  error?: string;
+};
+
+type SendLeadActionEmailInput = {
+  context: LeadActionEmailContext;
+  leadId: string;
+  to: string;
+  subject: string;
+  type: typeof EMAIL_TYPES.LEAD_ACTION_EMAIL | typeof EMAIL_TYPES.LEAD_ACTION_FOLLOW_UP;
+  metadata: EmailMetadata;
+};
 
 type EmailSendJob = {
   logId: string;
   to: string;
   subject: string;
   type: EmailType;
-  react: ReactNode;
+  react: ReactElement;
   metadata?: EmailMetadata;
+};
+
+type EmailSendResult = {
+  sent: boolean;
+  providerMessageId?: string;
+  error?: string;
 };
 
 type ConfirmationConfig = {
   subject: string;
-  type: Exclude<EmailType, 'INTERNAL_NOTIFICATION'>;
+  type: Exclude<EmailType, 'INTERNAL_NOTIFICATION' | 'MEETING_INTERNAL_NOTIFICATION'>;
   template:
     | typeof AuditConfirmationEmail
     | typeof CustomAutomationConfirmationEmail
@@ -86,7 +159,8 @@ export async function sendSubmissionEmails(
           params.submission.type,
           params.submission.payload,
         ),
-        source: 'Website / Marcar Reunião',
+        serviceInterest: 'Pedido de reuniÃ£o',
+        source: 'Website / Marcar ReuniÃ£o',
       })
     : undefined;
   const emailParams = { ...params, meetingEmailContext };
@@ -112,6 +186,126 @@ export async function sendSubmissionEmails(
   await Promise.all(jobs.map((job) => sendEmailJob(job)));
 }
 
+async function createMeetingEmailLog({
+  leadId,
+  meetingBookingId,
+  metadata,
+  submissionId,
+  subject,
+  to,
+  type,
+}: MeetingEmailLogCreateInput): Promise<MeetingEmailLogCreateResult> {
+  console.info('Creating meeting email log', {
+    leadId,
+    submissionId: submissionId ?? null,
+    meetingBookingId: meetingBookingId ?? metadata.meetingBookingId ?? null,
+    type,
+    status: 'PENDING',
+  });
+
+  const data: Prisma.EmailLogCreateInput = {
+    to,
+    subject,
+    type,
+    status: 'PENDING',
+    metadata,
+    lead: {
+      connect: { id: leadId },
+    },
+    ...(submissionId
+      ? {
+          submission: {
+            connect: { id: submissionId },
+          },
+        }
+      : {}),
+    ...(meetingBookingId
+      ? {
+          meetingBooking: {
+            connect: { id: meetingBookingId },
+          },
+        }
+      : {}),
+  };
+
+  try {
+    const log = await prisma.emailLog.create({ data });
+
+    console.info('Meeting email log created', {
+      emailLogId: log.id,
+      leadId,
+      submissionId: submissionId ?? null,
+      meetingBookingId: meetingBookingId ?? null,
+      type,
+      status: log.status,
+    });
+
+    return { emailLogId: log.id };
+  } catch (error) {
+    const errorMessage = getSafeEmailErrorMessage(error);
+
+    console.error('Failed to create meeting email log', {
+      leadId,
+      submissionId: submissionId ?? null,
+      meetingBookingId: meetingBookingId ?? metadata.meetingBookingId ?? null,
+      type,
+      errorMessage,
+    });
+
+    return { error: errorMessage };
+  }
+}
+
+export async function sendLeadActionEmail({
+  context,
+  leadId,
+  metadata,
+  subject,
+  to,
+  type,
+}: SendLeadActionEmailInput): Promise<LeadActionEmailSendResult> {
+  const log = await prisma.emailLog.create({
+    data: {
+      lead: { connect: { id: leadId } },
+      to,
+      subject,
+      type,
+      status: 'PENDING',
+      metadata,
+    },
+  });
+
+  const providerConfig = getEmailProviderConfigStatus();
+
+  if (!providerConfig.configured) {
+    const error = buildEmailProviderConfigurationError(providerConfig.missing);
+    await markEmailFailed(log.id, error, metadata);
+    return {
+      success: false,
+      emailSent: false,
+      emailLogId: log.id,
+      error,
+    };
+  }
+
+  const sendResult = await sendEmailJob({
+    logId: log.id,
+    to,
+    subject,
+    type,
+    metadata,
+    react: createElement(LeadActionEmail, { context }),
+  });
+
+  return {
+    success: sendResult.sent,
+    emailSent: sendResult.sent,
+    emailLogId: log.id,
+    ...(sendResult.providerMessageId ? { providerMessageId: sendResult.providerMessageId } : {}),
+    ...(sendResult.sent ? {} : { error: sendResult.error ?? 'Não foi possível enviar o email. Tente novamente.' }),
+  };
+}
+
 export async function sendInternalScheduledMeetingEmails(params: {
   lead: SubmissionEmailLead;
   meetingBooking: MeetingBooking;
@@ -121,7 +315,7 @@ export async function sendInternalScheduledMeetingEmails(params: {
   meetingDescription?: string | null;
   leadActionDescription?: string | null;
   submissionSummary?: string | null;
-}): Promise<{ allSent: boolean }> {
+}): Promise<MeetingEmailSendResult> {
   const {
     actionId,
     lead,
@@ -139,14 +333,18 @@ export async function sendInternalScheduledMeetingEmails(params: {
     meetingDescription,
     leadActionDescription,
     submissionSummary,
-    source: 'Área Interna / Próxima Ação',
+    commercialContext: submissionSummary ?? leadActionDescription,
+    serviceInterest: title,
+    triggerActionTitle: title,
+    triggerActionDescription: leadActionDescription,
+    source: 'Ãrea Interna / PrÃ³xima AÃ§Ã£o',
   });
   const submission: SubmissionEmailSubmission = {
     id: submissionId ?? `internal-${meetingBooking.id}`,
     type: 'MEETING_REQUEST',
     createdAt: meetingBooking.createdAt,
     payload: {
-      source: 'Área Interna / Próxima Ação',
+      source: 'Ãrea Interna / PrÃ³xima AÃ§Ã£o',
       actionId,
       title,
     },
@@ -154,71 +352,172 @@ export async function sendInternalScheduledMeetingEmails(params: {
   const metadata = {
     actionId,
     calendarId: meetingBooking.calendarId,
+    companyName: lead.company,
+    contactName: lead.name ?? 'Contacto nÃ£o indicado',
+    emailContextType: 'meeting',
     googleEventId: meetingBooking.googleEventId,
+    leadId: lead.id,
     meetingBookingId: meetingBooking.id,
-    source: 'Área Interna / Próxima Ação',
+    source: 'Ãrea Interna / PrÃ³xima AÃ§Ã£o',
     internalObjective: meetingEmailContext.internalObjective,
     clientObjective: meetingEmailContext.clientObjective,
   };
-  const customerLog = await prisma.emailLog.create({
-    data: {
-      leadId: lead.id,
-      submissionId: submissionId ?? null,
-      to: lead.email,
-      subject: 'Reunião de diagnóstico confirmada — Norm8',
-      type: 'MEETING_CONFIRMATION',
-      metadata,
-    },
-  });
-  const jobs: EmailSendJob[] = [{
-    logId: customerLog.id,
+  const customerMetadata = {
+    ...metadata,
+    selectedTemplate: 'ClientMeetingConfirmationEmail',
+  };
+  const internalMetadata = {
+    ...metadata,
+    selectedTemplate: 'InternalMeetingNotificationEmail',
+  };
+  const customerLog = await createMeetingEmailLog({
+    leadId: lead.id,
+    submissionId,
+    meetingBookingId: meetingBooking.id,
     to: lead.email,
     subject: 'Reunião de diagnóstico confirmada — Norm8',
-    type: 'MEETING_CONFIRMATION',
-    metadata,
-    react: createElement(MeetingRequestConfirmationEmail, {
-      lead,
-      submission,
-      meetingBooking,
-      meetingEmailContext,
-    }),
-  }];
+    type: EMAIL_TYPES.MEETING_CLIENT_CONFIRMATION,
+    metadata: customerMetadata,
+  });
+  const jobs: EmailSendJob[] = customerLog.emailLogId
+    ? [{
+        logId: customerLog.emailLogId,
+        to: lead.email,
+        subject: 'Reunião de diagnóstico confirmada — Norm8',
+        type: EMAIL_TYPES.MEETING_CLIENT_CONFIRMATION,
+        metadata: customerMetadata,
+        react: createElement(ClientMeetingConfirmationEmail, {
+          context: meetingEmailContext,
+        }),
+      }]
+    : [];
   const internalTo = process.env.INTERNAL_NOTIFICATION_EMAIL;
-  const internalLog = await prisma.emailLog.create({
-    data: {
-      leadId: lead.id,
-      submissionId: submissionId ?? null,
-      to: internalTo || 'missing-internal-notification-email',
-      subject: `Nova reunião agendada — ${lead.company}`,
-      type: 'INTERNAL_NOTIFICATION',
-      metadata,
-    },
+  const internalLog = await createMeetingEmailLog({
+    leadId: lead.id,
+    submissionId,
+    meetingBookingId: meetingBooking.id,
+    to: internalTo || 'missing-internal-notification-email',
+    subject: `Nova reunião agendada — ${lead.company}`,
+    type: EMAIL_TYPES.MEETING_INTERNAL_NOTIFICATION,
+    metadata: internalMetadata,
   });
 
-  if (internalTo) {
+  if (internalTo && internalLog.emailLogId) {
     jobs.push({
-      logId: internalLog.id,
+      logId: internalLog.emailLogId,
       to: internalTo,
       subject: `Nova reunião agendada — ${lead.company}`,
-      type: 'INTERNAL_NOTIFICATION',
-      metadata,
-      react: createElement(
-        InternalLeadNotificationEmail,
-        buildInternalTemplateProps(
-          lead,
-          submission,
-          meetingBooking,
-          undefined,
-          meetingEmailContext,
-        ),
-      ),
+      type: EMAIL_TYPES.MEETING_INTERNAL_NOTIFICATION,
+      metadata: internalMetadata,
+      react: createElement(InternalMeetingNotificationEmail, {
+        context: meetingEmailContext,
+      }),
     });
-  } else {
-    await markEmailFailed(internalLog.id, 'INTERNAL_NOTIFICATION_EMAIL is not configured.');
+  } else if (internalLog.emailLogId) {
+    await markEmailFailed(
+      internalLog.emailLogId,
+      'INTERNAL_NOTIFICATION_EMAIL is not configured.',
+      internalMetadata,
+    );
   }
 
-  const results = await Promise.all(jobs.map((job) => sendEmailJob(job)));
-  return { allSent: Boolean(internalTo) && results.every(Boolean) };
+  const sentResults: MeetingEmailDeliveryResult[] = await Promise.all(jobs.map(async (job) => {
+    const result = await sendEmailJob(job);
+
+    return {
+      emailLogId: job.logId,
+      type: job.type as MeetingEmailType,
+      sent: result.sent,
+      ...(result.error ? { error: result.error } : {}),
+    };
+  }));
+  const logFailureResults: MeetingEmailDeliveryResult[] = [];
+
+  if (!customerLog.emailLogId) {
+    logFailureResults.push({
+      type: EMAIL_TYPES.MEETING_CLIENT_CONFIRMATION,
+      sent: false,
+      error: customerLog.error ?? 'Failed to create meeting client email log.',
+    });
+  }
+
+  if (!internalLog.emailLogId) {
+    logFailureResults.push({
+      type: EMAIL_TYPES.MEETING_INTERNAL_NOTIFICATION,
+      sent: false,
+      error: internalLog.error ?? 'Failed to create meeting internal email log.',
+    });
+  } else if (!internalTo) {
+    logFailureResults.push({
+      emailLogId: internalLog.emailLogId,
+      type: EMAIL_TYPES.MEETING_INTERNAL_NOTIFICATION,
+      sent: false,
+      error: 'INTERNAL_NOTIFICATION_EMAIL is not configured.',
+    });
+  }
+  const results = [...sentResults, ...logFailureResults];
+  const customerSent = results.some(
+    (result) => result.type === EMAIL_TYPES.MEETING_CLIENT_CONFIRMATION && result.sent,
+  );
+  const internalSent = results.some(
+    (result) => result.type === EMAIL_TYPES.MEETING_INTERNAL_NOTIFICATION && result.sent,
+  );
+  const failedEmailTypes = results
+    .filter((result) => !result.sent)
+    .map((result) => result.type)
+    .filter((type): type is MeetingEmailType => (
+      type === EMAIL_TYPES.MEETING_CLIENT_CONFIRMATION ||
+      type === EMAIL_TYPES.MEETING_INTERNAL_NOTIFICATION
+    ));
+  const clientResult = results.find(
+    (result) => result.type === EMAIL_TYPES.MEETING_CLIENT_CONFIRMATION,
+  );
+  const internalResult = results.find(
+    (result) => result.type === EMAIL_TYPES.MEETING_INTERNAL_NOTIFICATION,
+  );
+  console[customerSent ? 'info' : 'warn'](
+    customerSent ? 'Meeting client email sent' : 'Meeting client email failed',
+    {
+      emailLogId: customerLog.emailLogId,
+      leadId: lead.id,
+      meetingBookingId: meetingBooking.id,
+      type: EMAIL_TYPES.MEETING_CLIENT_CONFIRMATION,
+      status: customerSent ? 'SENT' : 'FAILED',
+    },
+  );
+  console[internalSent ? 'info' : 'warn'](
+    internalSent ? 'Meeting internal email sent' : 'Meeting internal email failed',
+    {
+      emailLogId: internalLog.emailLogId,
+      leadId: lead.id,
+      meetingBookingId: meetingBooking.id,
+      type: EMAIL_TYPES.MEETING_INTERNAL_NOTIFICATION,
+      status: internalSent ? 'SENT' : 'FAILED',
+    },
+  );
+
+  return {
+    allSent: Boolean(internalTo) && results.every((result) => result.sent),
+    customerSent,
+    internalSent,
+    failedEmailTypes,
+    clientEmail: {
+      attempted: Boolean(clientResult),
+      sent: customerSent,
+      ...(customerLog.emailLogId ? { emailLogId: customerLog.emailLogId } : {}),
+      ...(clientResult && 'error' in clientResult && clientResult.error
+        ? { error: clientResult.error }
+        : {}),
+    },
+    internalEmail: {
+      attempted: Boolean(internalTo && internalResult),
+      sent: internalSent,
+      ...(internalLog.emailLogId ? { emailLogId: internalLog.emailLogId } : {}),
+      ...(internalResult && 'error' in internalResult && internalResult.error
+        ? { error: internalResult.error }
+        : {}),
+    },
+  };
 }
 
 /**
@@ -243,6 +542,7 @@ async function buildConfirmationEmailJob({
   const metadata = buildEmailMetadata(meetingBooking, auditAnalysis, {
     clientPreviewSent: config.clientPreviewSent ?? false,
     selectedEmailTemplate: config.selectedTemplate,
+    meetingEmailContext,
   });
   const contactSnapshot = getSubmissionContactSnapshot(submission, lead);
   const recipientEmail = contactSnapshot.email;
@@ -251,8 +551,11 @@ async function buildConfirmationEmailJob({
     (
       await prisma.emailLog.create({
         data: {
-          leadId: lead.id,
-          submissionId: submission.id,
+          lead: { connect: { id: lead.id } },
+          submission: { connect: { id: submission.id } },
+          ...(meetingBooking
+            ? { meetingBooking: { connect: { id: meetingBooking.id } } }
+            : {}),
           to: recipientEmail || 'missing-lead-email',
           subject: config.subject,
           type: config.type,
@@ -268,6 +571,9 @@ async function buildConfirmationEmailJob({
     data: {
       to: recipientEmail || 'missing-lead-email',
       subject: config.subject,
+      ...(meetingBooking
+        ? { meetingBooking: { connect: { id: meetingBooking.id } } }
+        : {}),
       metadata,
     },
   });
@@ -277,19 +583,23 @@ async function buildConfirmationEmailJob({
     return null;
   }
 
+  const react = meetingEmailContext && submission.type === 'MEETING_REQUEST'
+    ? createElement(ClientMeetingConfirmationEmail, { context: meetingEmailContext })
+    : createElement(config.template, {
+        lead: contactSnapshot,
+        submission,
+        meetingBooking,
+        meetingEmailContext,
+        auditAnalysis,
+      });
+
   return {
     logId,
     to: recipientEmail,
     subject: config.subject,
     type: config.type,
     metadata,
-    react: createElement(config.template, {
-      lead: contactSnapshot,
-      submission,
-      meetingBooking,
-      meetingEmailContext,
-      auditAnalysis,
-    }),
+    react,
   };
 }
 
@@ -310,17 +620,25 @@ async function buildInternalNotificationEmailJob({
   const subject =
     submission.type === 'AUDIT_REQUEST'
       ? 'Nova Auditoria Inteligente recebida'
-      : `Nova submissão recebida no website Norm8 - ${formatSubmissionType(
+      : `Nova submissÃ£o recebida no website Norm8 - ${formatSubmissionType(
           submission.type,
         )}`;
-  const metadata = buildEmailMetadata(meetingBooking, auditAnalysis);
+  const type = meetingEmailContext && submission.type === 'MEETING_REQUEST'
+    ? EMAIL_TYPES.MEETING_INTERNAL_NOTIFICATION
+    : EMAIL_TYPES.INTERNAL_NOTIFICATION;
+  const metadata = buildEmailMetadata(meetingBooking, auditAnalysis, {
+    meetingEmailContext,
+  });
   const log = await prisma.emailLog.create({
     data: {
-      leadId: lead.id,
-      submissionId: submission.id,
+      lead: { connect: { id: lead.id } },
+      submission: { connect: { id: submission.id } },
+      ...(meetingBooking
+        ? { meetingBooking: { connect: { id: meetingBooking.id } } }
+        : {}),
       to: to || 'missing-internal-notification-email',
       subject,
-      type: 'INTERNAL_NOTIFICATION',
+      type,
       metadata,
     },
   });
@@ -330,21 +648,26 @@ async function buildInternalNotificationEmailJob({
     return null;
   }
 
-  const templateProps = buildInternalTemplateProps(
-    lead,
-    submission,
-    meetingBooking,
-    auditAnalysis,
-    meetingEmailContext,
-  );
+  const react = meetingEmailContext && submission.type === 'MEETING_REQUEST'
+    ? createElement(InternalMeetingNotificationEmail, { context: meetingEmailContext })
+    : createElement(
+        InternalLeadNotificationEmail,
+        buildInternalTemplateProps(
+          lead,
+          submission,
+          meetingBooking,
+          auditAnalysis,
+          meetingEmailContext,
+        ),
+      );
 
   return {
     logId: log.id,
     to,
     subject,
-    type: 'INTERNAL_NOTIFICATION',
+    type,
     metadata,
-    react: createElement(InternalLeadNotificationEmail, templateProps),
+    react,
   };
 }
 
@@ -354,21 +677,83 @@ async function buildInternalNotificationEmailJob({
  * @param job Fully prepared email send job.
  * @returns Promise that resolves after the EmailLog is updated.
  */
-async function sendEmailJob(job: EmailSendJob): Promise<boolean> {
+async function sendEmailJob(job: EmailSendJob): Promise<EmailSendResult> {
   try {
+    if (!isValidEmailAddress(job.to)) {
+      const error = `Invalid recipient email for ${job.type}.`;
+      await markEmailFailed(job.logId, error, job.metadata);
+      return { sent: false, error };
+    }
+
+    if (!job.subject.trim()) {
+      const error = `Email subject is empty for ${job.type}.`;
+      await markEmailFailed(job.logId, error, job.metadata);
+      return { sent: false, error };
+    }
+
+    const providerConfig = getEmailProviderConfigStatus();
+    if (!providerConfig.configured || !providerConfig.from) {
+      const error = buildEmailProviderConfigurationError(providerConfig.missing);
+      await markEmailFailed(job.logId, error, job.metadata);
+      return { sent: false, error };
+    }
+
+    const html = await renderEmailJobHtml(job);
+    const text = renderPlainTextFromHtml(html);
+
+    if (!text.trim()) {
+      const error = `Rendered email plain text is empty for ${job.type}.`;
+      await markEmailFailed(job.logId, error, job.metadata);
+      return { sent: false, error };
+    }
+
+    console.info('Sending transactional email', {
+      type: job.type,
+      fromConfigured: Boolean(providerConfig.from),
+      fromDomain: providerConfig.fromDomain,
+      toConfigured: Boolean(job.to),
+      to: maskEmailAddress(job.to),
+      subject: job.subject,
+      htmlLength: html.length,
+      textLength: text.length,
+      provider: providerConfig.provider,
+    });
+
     const resend = getResendClient();
     const response = await resend.emails.send({
-      from: process.env.EMAIL_FROM || DEFAULT_EMAIL_FROM,
+      from: providerConfig.from,
       to: job.to,
       subject: job.subject,
-      react: job.react,
+      html,
+      text,
+      ...(providerConfig.replyTo ? { replyTo: providerConfig.replyTo } : {}),
     });
 
     if (response.error) {
-      await markEmailFailed(job.logId, response.error.message, job.metadata);
+      const errorMessage = formatProviderEmailError(response.error);
+      await markEmailFailed(job.logId, errorMessage, job.metadata);
       console.error(`Failed to send ${job.type} email`, response.error);
-      return false;
+      return { sent: false, error: errorMessage };
     }
+
+    const providerMessageId = response.data?.id;
+
+    if (!providerMessageId) {
+      const error = 'Resend accepted the request without returning a message id.';
+      await markEmailFailed(job.logId, error, job.metadata);
+      return { sent: false, error };
+    }
+
+    const nextMetadata: EmailMetadata = {
+      ...(job.metadata ?? {}),
+      provider: providerConfig.provider,
+      providerMessageId,
+      deliveryStatus: 'ACCEPTED_BY_PROVIDER',
+      from: providerConfig.from,
+      fromDomain: providerConfig.fromDomain ?? null,
+      replyTo: providerConfig.replyTo ?? null,
+      to: job.to,
+    };
 
     await prisma.emailLog.update({
       where: {
@@ -376,12 +761,24 @@ async function sendEmailJob(job: EmailSendJob): Promise<boolean> {
       },
       data: {
         status: 'SENT',
-        providerMessageId: response.data?.id,
+        provider: providerConfig.provider,
+        providerMessageId,
+        sentAt: new Date(),
+        failedAt: null,
+        errorMessage: null,
         subject: job.subject,
-        metadata: job.metadata,
+        metadata: nextMetadata,
       },
     });
-    return true;
+    console.info('Transactional email accepted by provider', {
+      emailLogId: job.logId,
+      type: job.type,
+      status: 'SENT',
+      deliveryStatus: 'ACCEPTED_BY_PROVIDER',
+      provider: providerConfig.provider,
+      providerMessageId,
+    });
+    return { sent: true, providerMessageId };
   } catch (error) {
     const message =
       error instanceof EmailConfigurationError || error instanceof Error
@@ -390,8 +787,85 @@ async function sendEmailJob(job: EmailSendJob): Promise<boolean> {
 
     await markEmailFailed(job.logId, message, job.metadata);
     console.error(`Failed to send ${job.type} email`, error);
-    return false;
+    return { sent: false, error: message };
   }
+}
+async function renderEmailJobHtml(job: EmailSendJob): Promise<string> {
+  try {
+    const html = await render(job.react);
+
+    if (!html.trim()) {
+      throw new Error('Rendered email HTML is empty.');
+    }
+
+    return html;
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : 'Unknown render error.';
+    throw new Error(`Email template render failed for ${job.type}: ${reason}`);
+  }
+}
+
+function renderPlainTextFromHtml(html: string): string {
+  return html
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/p>/gi, '\n\n')
+    .replace(/<\/div>/gi, '\n')
+    .replace(/<\/li>/gi, '\n')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+function buildEmailProviderConfigurationError(missing: string[]): string {
+  if (missing.includes('VALID_EMAIL_FROM')) {
+    return 'Envio de email não configurado corretamente: remetente inválido ou domínio não verificado.';
+  }
+
+  if (missing.includes('EMAIL_FROM')) {
+    return 'Envio de email não configurado corretamente: remetente em falta.';
+  }
+
+  if (missing.includes('RESEND_API_KEY')) {
+    return 'Envio de email ainda não configurado.';
+  }
+
+  if (missing.includes('VALID_REPLY_TO')) {
+    return 'Envio de email não configurado corretamente: reply-to inválido.';
+  }
+
+  return 'Envio de email não configurado corretamente.';
+}
+
+function formatProviderEmailError(error: { message?: string; name?: string; statusCode?: number | null }): string {
+  return [
+    error.statusCode ? `Provider status ${error.statusCode}` : null,
+    error.name ? `Provider error ${error.name}` : null,
+    error.message ?? 'Unknown provider error',
+  ]
+    .filter(Boolean)
+    .join(': ');
+}
+
+function isValidEmailAddress(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
+
+function maskEmailAddress(value: string): string {
+  const [localPart, domain] = value.split('@');
+  if (!localPart || !domain) {
+    return 'invalid-email';
+  }
+
+  const visibleLocal = localPart.length <= 2 ? localPart[0] : localPart.slice(0, 2);
+  return `${visibleLocal}***@${domain}`;
 }
 
 /**
@@ -407,17 +881,34 @@ async function markEmailFailed(
   reason: string,
   metadata?: EmailMetadata,
 ): Promise<void> {
+  const nextMetadata: EmailMetadata = {
+    ...(metadata ?? {}),
+    deliveryError: sanitizeEmailError(reason),
+  };
+
   await prisma.emailLog.update({
     where: {
       id: logId,
     },
     data: {
       status: 'FAILED',
-      metadata,
+      provider: 'resend',
+      failedAt: new Date(),
+      errorMessage: sanitizeEmailError(reason),
+      metadata: nextMetadata,
     },
   });
 
   console.error(`EmailLog ${logId} marked as FAILED: ${reason}`);
+}
+
+function sanitizeEmailError(reason: string): string {
+  return reason.replace(/re_[A-Za-z0-9_-]+/g, 're_***').slice(0, 500);
+}
+
+function getSafeEmailErrorMessage(error: unknown): string {
+  const message = error instanceof Error ? error.message : 'Unknown email log error.';
+  return sanitizeEmailError(message);
 }
 
 /**
@@ -437,7 +928,7 @@ function getConfirmationConfig(
     case 'AUDIT_REQUEST':
       if (canSendExecutiveAuditPreview(auditAnalysis)) {
         return {
-          subject: 'A sua pré-análise de automação da Norm8',
+          subject: 'A sua prÃ©-anÃ¡lise de automaÃ§Ã£o da Norm8',
           type: 'AUDIT_CONFIRMATION',
           template: ExecutiveAuditPreviewEmail,
           clientPreviewSent: true,
@@ -454,7 +945,7 @@ function getConfirmationConfig(
       };
     case 'CUSTOM_AUTOMATION_REQUEST':
       return {
-        subject: 'Recebemos o seu pedido de Automação Personalizada',
+        subject: 'Recebemos o seu pedido de AutomaÃ§Ã£o Personalizada',
         type: 'CUSTOM_AUTOMATION_CONFIRMATION',
         template: CustomAutomationConfirmationEmail,
         selectedTemplate: 'CustomAutomationConfirmationEmail',
@@ -463,11 +954,11 @@ function getConfirmationConfig(
       return {
         subject:
           meetingStatus === 'CONFIRMED'
-            ? 'Reunião confirmada com a Norm8'
-            : 'Recebemos o seu pedido de reunião',
-        type: 'MEETING_CONFIRMATION',
+            ? 'ReuniÃ£o confirmada com a Norm8'
+            : 'Recebemos o seu pedido de reuniÃ£o',
+        type: EMAIL_TYPES.MEETING_CLIENT_CONFIRMATION,
         template: MeetingRequestConfirmationEmail,
-        selectedTemplate: 'MeetingRequestConfirmationEmail',
+        selectedTemplate: 'ClientMeetingConfirmationEmail',
       };
   }
 }
@@ -483,14 +974,24 @@ function getConfirmationConfig(
 function buildEmailMetadata(
   meetingBooking?: SendSubmissionEmailsParams['meetingBooking'],
   auditAnalysis?: SendSubmissionEmailsParams['auditAnalysis'],
-  options: { clientPreviewSent?: boolean; selectedEmailTemplate?: string } = {},
+  options: {
+    clientPreviewSent?: boolean;
+    selectedEmailTemplate?: string;
+    meetingEmailContext?: SendSubmissionEmailsParams['meetingEmailContext'];
+  } = {},
 ): EmailMetadata | undefined {
   const metadata: EmailMetadata = {};
 
   if (meetingBooking) {
+    metadata.meetingBookingId = meetingBooking.id;
     metadata.meetingBookingStatus = meetingBooking.status;
     metadata.googleEventId = meetingBooking.googleEventId ?? null;
     metadata.googleEventHtmlLink = meetingBooking.googleEventHtmlLink ?? null;
+  }
+
+  if (options.meetingEmailContext) {
+    metadata.internalObjective = options.meetingEmailContext.internalObjective;
+    metadata.clientObjective = options.meetingEmailContext.clientObjective;
   }
 
   if (auditAnalysis) {
@@ -614,9 +1115,9 @@ function getSubmissionSummary(
     case 'AUDIT_REQUEST':
       return `Novo pedido de Auditoria Inteligente. Resumo: ${challenge}`;
     case 'CUSTOM_AUTOMATION_REQUEST':
-      return `Novo pedido de Automação Personalizada. Resumo: ${challenge}`;
+      return `Novo pedido de AutomaÃ§Ã£o Personalizada. Resumo: ${challenge}`;
     case 'MEETING_REQUEST':
-      return `Nova marcação de reunião. Objetivo: ${challenge}`;
+      return `Nova marcaÃ§Ã£o de reuniÃ£o. Objetivo: ${challenge}`;
   }
 }
 
@@ -648,5 +1149,4 @@ function hasUsableClientPreview(auditAnalysis?: AuditAnalysis | null): boolean {
       auditAnalysis.clientPreviewOpportunities.length > 0,
   );
 }
-
 

@@ -62,6 +62,11 @@ export type LeadActivity = Prisma.LeadActivityModel
  */
 export type LeadAction = Prisma.LeadActionModel
 /**
+ * Model Proposal
+ * Commercial proposal prepared for a lead before PDF generation or sending.
+ */
+export type Proposal = Prisma.ProposalModel
+/**
  * Model Notification
  * Internal notification prepared for future back-office and sales workflows.
  */

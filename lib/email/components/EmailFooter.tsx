@@ -10,7 +10,7 @@ type EmailFooterProps = {
 };
 
 export default function EmailFooter({
-  text = 'Norm8 - Sistemas de IA para operacoes mais claras, rapidas e escalaveis.',
+  text = 'Norm8 — Sistemas de IA para operações mais claras, rápidas e escaláveis.',
 }: EmailFooterProps) {
   return (
     <div style={{ backgroundColor: '#060B14', padding: '20px 30px' }}>

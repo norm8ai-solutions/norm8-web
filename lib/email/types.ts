@@ -17,11 +17,18 @@ import type {
 } from '@/app/generated/prisma/client';
 import type { MeetingEmailContext } from '@/lib/meetings/email-context';
 
-export type EmailType =
-  | 'AUDIT_CONFIRMATION'
-  | 'CUSTOM_AUTOMATION_CONFIRMATION'
-  | 'MEETING_CONFIRMATION'
-  | 'INTERNAL_NOTIFICATION';
+export const EMAIL_TYPES = {
+  AUDIT_CONFIRMATION: 'AUDIT_CONFIRMATION',
+  CUSTOM_AUTOMATION_CONFIRMATION: 'CUSTOM_AUTOMATION_CONFIRMATION',
+  MEETING_CONFIRMATION: 'MEETING_CONFIRMATION',
+  INTERNAL_NOTIFICATION: 'INTERNAL_NOTIFICATION',
+  MEETING_INTERNAL_NOTIFICATION: 'MEETING_INTERNAL_NOTIFICATION',
+  MEETING_CLIENT_CONFIRMATION: 'MEETING_CLIENT_CONFIRMATION',
+  LEAD_ACTION_EMAIL: 'LEAD_ACTION_EMAIL',
+  LEAD_ACTION_FOLLOW_UP: 'LEAD_ACTION_FOLLOW_UP',
+} as const;
+
+export type EmailType = (typeof EMAIL_TYPES)[keyof typeof EMAIL_TYPES];
 
 export type EmailRecipient = {
   email: string;
@@ -30,7 +37,7 @@ export type EmailRecipient = {
 
 export type SubmissionEmailLead = Pick<
   Lead,
-  'id' | 'name' | 'company' | 'email' | 'phone' | 'website'
+  'id' | 'name' | 'company' | 'email' | 'phone' | 'website' | 'source' | 'status' | 'priority'
 >;
 
 export type SubmissionEmailSubmission = Pick<

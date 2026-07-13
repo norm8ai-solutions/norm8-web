@@ -261,6 +261,7 @@ export type LeadWhereInput = {
   meetingBookings?: Prisma.MeetingBookingListRelationFilter
   auditAnalyses?: Prisma.AuditAnalysisListRelationFilter
   leadActions?: Prisma.LeadActionListRelationFilter
+  proposals?: Prisma.ProposalListRelationFilter
 }
 
 export type LeadOrderByWithRelationInput = {
@@ -285,6 +286,7 @@ export type LeadOrderByWithRelationInput = {
   meetingBookings?: Prisma.MeetingBookingOrderByRelationAggregateInput
   auditAnalyses?: Prisma.AuditAnalysisOrderByRelationAggregateInput
   leadActions?: Prisma.LeadActionOrderByRelationAggregateInput
+  proposals?: Prisma.ProposalOrderByRelationAggregateInput
 }
 
 export type LeadWhereUniqueInput = Prisma.AtLeast<{
@@ -312,6 +314,7 @@ export type LeadWhereUniqueInput = Prisma.AtLeast<{
   meetingBookings?: Prisma.MeetingBookingListRelationFilter
   auditAnalyses?: Prisma.AuditAnalysisListRelationFilter
   leadActions?: Prisma.LeadActionListRelationFilter
+  proposals?: Prisma.ProposalListRelationFilter
 }, "id">
 
 export type LeadOrderByWithAggregationInput = {
@@ -376,6 +379,7 @@ export type LeadCreateInput = {
   meetingBookings?: Prisma.MeetingBookingCreateNestedManyWithoutLeadInput
   auditAnalyses?: Prisma.AuditAnalysisCreateNestedManyWithoutLeadInput
   leadActions?: Prisma.LeadActionCreateNestedManyWithoutLeadInput
+  proposals?: Prisma.ProposalCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateInput = {
@@ -400,6 +404,7 @@ export type LeadUncheckedCreateInput = {
   meetingBookings?: Prisma.MeetingBookingUncheckedCreateNestedManyWithoutLeadInput
   auditAnalyses?: Prisma.AuditAnalysisUncheckedCreateNestedManyWithoutLeadInput
   leadActions?: Prisma.LeadActionUncheckedCreateNestedManyWithoutLeadInput
+  proposals?: Prisma.ProposalUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUpdateInput = {
@@ -424,6 +429,7 @@ export type LeadUpdateInput = {
   meetingBookings?: Prisma.MeetingBookingUpdateManyWithoutLeadNestedInput
   auditAnalyses?: Prisma.AuditAnalysisUpdateManyWithoutLeadNestedInput
   leadActions?: Prisma.LeadActionUpdateManyWithoutLeadNestedInput
+  proposals?: Prisma.ProposalUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateInput = {
@@ -448,6 +454,7 @@ export type LeadUncheckedUpdateInput = {
   meetingBookings?: Prisma.MeetingBookingUncheckedUpdateManyWithoutLeadNestedInput
   auditAnalyses?: Prisma.AuditAnalysisUncheckedUpdateManyWithoutLeadNestedInput
   leadActions?: Prisma.LeadActionUncheckedUpdateManyWithoutLeadNestedInput
+  proposals?: Prisma.ProposalUncheckedUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadCreateManyInput = {
@@ -624,6 +631,20 @@ export type LeadUpdateOneRequiredWithoutLeadActionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.LeadUpdateToOneWithWhereWithoutLeadActionsInput, Prisma.LeadUpdateWithoutLeadActionsInput>, Prisma.LeadUncheckedUpdateWithoutLeadActionsInput>
 }
 
+export type LeadCreateNestedOneWithoutProposalsInput = {
+  create?: Prisma.XOR<Prisma.LeadCreateWithoutProposalsInput, Prisma.LeadUncheckedCreateWithoutProposalsInput>
+  connectOrCreate?: Prisma.LeadCreateOrConnectWithoutProposalsInput
+  connect?: Prisma.LeadWhereUniqueInput
+}
+
+export type LeadUpdateOneRequiredWithoutProposalsNestedInput = {
+  create?: Prisma.XOR<Prisma.LeadCreateWithoutProposalsInput, Prisma.LeadUncheckedCreateWithoutProposalsInput>
+  connectOrCreate?: Prisma.LeadCreateOrConnectWithoutProposalsInput
+  upsert?: Prisma.LeadUpsertWithoutProposalsInput
+  connect?: Prisma.LeadWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.LeadUpdateToOneWithWhereWithoutProposalsInput, Prisma.LeadUpdateWithoutProposalsInput>, Prisma.LeadUncheckedUpdateWithoutProposalsInput>
+}
+
 export type LeadCreateNestedOneWithoutNotificationsInput = {
   create?: Prisma.XOR<Prisma.LeadCreateWithoutNotificationsInput, Prisma.LeadUncheckedCreateWithoutNotificationsInput>
   connectOrCreate?: Prisma.LeadCreateOrConnectWithoutNotificationsInput
@@ -705,6 +726,7 @@ export type LeadCreateWithoutSubmissionsInput = {
   meetingBookings?: Prisma.MeetingBookingCreateNestedManyWithoutLeadInput
   auditAnalyses?: Prisma.AuditAnalysisCreateNestedManyWithoutLeadInput
   leadActions?: Prisma.LeadActionCreateNestedManyWithoutLeadInput
+  proposals?: Prisma.ProposalCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateWithoutSubmissionsInput = {
@@ -728,6 +750,7 @@ export type LeadUncheckedCreateWithoutSubmissionsInput = {
   meetingBookings?: Prisma.MeetingBookingUncheckedCreateNestedManyWithoutLeadInput
   auditAnalyses?: Prisma.AuditAnalysisUncheckedCreateNestedManyWithoutLeadInput
   leadActions?: Prisma.LeadActionUncheckedCreateNestedManyWithoutLeadInput
+  proposals?: Prisma.ProposalUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadCreateOrConnectWithoutSubmissionsInput = {
@@ -767,6 +790,7 @@ export type LeadUpdateWithoutSubmissionsInput = {
   meetingBookings?: Prisma.MeetingBookingUpdateManyWithoutLeadNestedInput
   auditAnalyses?: Prisma.AuditAnalysisUpdateManyWithoutLeadNestedInput
   leadActions?: Prisma.LeadActionUpdateManyWithoutLeadNestedInput
+  proposals?: Prisma.ProposalUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutSubmissionsInput = {
@@ -790,6 +814,7 @@ export type LeadUncheckedUpdateWithoutSubmissionsInput = {
   meetingBookings?: Prisma.MeetingBookingUncheckedUpdateManyWithoutLeadNestedInput
   auditAnalyses?: Prisma.AuditAnalysisUncheckedUpdateManyWithoutLeadNestedInput
   leadActions?: Prisma.LeadActionUncheckedUpdateManyWithoutLeadNestedInput
+  proposals?: Prisma.ProposalUncheckedUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadCreateWithoutActivitiesInput = {
@@ -813,6 +838,7 @@ export type LeadCreateWithoutActivitiesInput = {
   meetingBookings?: Prisma.MeetingBookingCreateNestedManyWithoutLeadInput
   auditAnalyses?: Prisma.AuditAnalysisCreateNestedManyWithoutLeadInput
   leadActions?: Prisma.LeadActionCreateNestedManyWithoutLeadInput
+  proposals?: Prisma.ProposalCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateWithoutActivitiesInput = {
@@ -836,6 +862,7 @@ export type LeadUncheckedCreateWithoutActivitiesInput = {
   meetingBookings?: Prisma.MeetingBookingUncheckedCreateNestedManyWithoutLeadInput
   auditAnalyses?: Prisma.AuditAnalysisUncheckedCreateNestedManyWithoutLeadInput
   leadActions?: Prisma.LeadActionUncheckedCreateNestedManyWithoutLeadInput
+  proposals?: Prisma.ProposalUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadCreateOrConnectWithoutActivitiesInput = {
@@ -875,6 +902,7 @@ export type LeadUpdateWithoutActivitiesInput = {
   meetingBookings?: Prisma.MeetingBookingUpdateManyWithoutLeadNestedInput
   auditAnalyses?: Prisma.AuditAnalysisUpdateManyWithoutLeadNestedInput
   leadActions?: Prisma.LeadActionUpdateManyWithoutLeadNestedInput
+  proposals?: Prisma.ProposalUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutActivitiesInput = {
@@ -898,6 +926,7 @@ export type LeadUncheckedUpdateWithoutActivitiesInput = {
   meetingBookings?: Prisma.MeetingBookingUncheckedUpdateManyWithoutLeadNestedInput
   auditAnalyses?: Prisma.AuditAnalysisUncheckedUpdateManyWithoutLeadNestedInput
   leadActions?: Prisma.LeadActionUncheckedUpdateManyWithoutLeadNestedInput
+  proposals?: Prisma.ProposalUncheckedUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadCreateWithoutLeadActionsInput = {
@@ -921,6 +950,7 @@ export type LeadCreateWithoutLeadActionsInput = {
   emailLogs?: Prisma.EmailLogCreateNestedManyWithoutLeadInput
   meetingBookings?: Prisma.MeetingBookingCreateNestedManyWithoutLeadInput
   auditAnalyses?: Prisma.AuditAnalysisCreateNestedManyWithoutLeadInput
+  proposals?: Prisma.ProposalCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateWithoutLeadActionsInput = {
@@ -944,6 +974,7 @@ export type LeadUncheckedCreateWithoutLeadActionsInput = {
   emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutLeadInput
   meetingBookings?: Prisma.MeetingBookingUncheckedCreateNestedManyWithoutLeadInput
   auditAnalyses?: Prisma.AuditAnalysisUncheckedCreateNestedManyWithoutLeadInput
+  proposals?: Prisma.ProposalUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadCreateOrConnectWithoutLeadActionsInput = {
@@ -983,6 +1014,7 @@ export type LeadUpdateWithoutLeadActionsInput = {
   emailLogs?: Prisma.EmailLogUpdateManyWithoutLeadNestedInput
   meetingBookings?: Prisma.MeetingBookingUpdateManyWithoutLeadNestedInput
   auditAnalyses?: Prisma.AuditAnalysisUpdateManyWithoutLeadNestedInput
+  proposals?: Prisma.ProposalUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutLeadActionsInput = {
@@ -1006,6 +1038,119 @@ export type LeadUncheckedUpdateWithoutLeadActionsInput = {
   emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutLeadNestedInput
   meetingBookings?: Prisma.MeetingBookingUncheckedUpdateManyWithoutLeadNestedInput
   auditAnalyses?: Prisma.AuditAnalysisUncheckedUpdateManyWithoutLeadNestedInput
+  proposals?: Prisma.ProposalUncheckedUpdateManyWithoutLeadNestedInput
+}
+
+export type LeadCreateWithoutProposalsInput = {
+  id?: string
+  name?: string | null
+  company: string
+  email: string
+  phone?: string | null
+  website?: string | null
+  normalizedCompany?: string | null
+  normalizedWebsite?: string | null
+  normalizedEmail?: string | null
+  source: string
+  status?: $Enums.LeadStatus
+  priority?: $Enums.LeadPriority
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  submissions?: Prisma.SubmissionCreateNestedManyWithoutLeadInput
+  activities?: Prisma.LeadActivityCreateNestedManyWithoutLeadInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRelatedLeadInput
+  emailLogs?: Prisma.EmailLogCreateNestedManyWithoutLeadInput
+  meetingBookings?: Prisma.MeetingBookingCreateNestedManyWithoutLeadInput
+  auditAnalyses?: Prisma.AuditAnalysisCreateNestedManyWithoutLeadInput
+  leadActions?: Prisma.LeadActionCreateNestedManyWithoutLeadInput
+}
+
+export type LeadUncheckedCreateWithoutProposalsInput = {
+  id?: string
+  name?: string | null
+  company: string
+  email: string
+  phone?: string | null
+  website?: string | null
+  normalizedCompany?: string | null
+  normalizedWebsite?: string | null
+  normalizedEmail?: string | null
+  source: string
+  status?: $Enums.LeadStatus
+  priority?: $Enums.LeadPriority
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  submissions?: Prisma.SubmissionUncheckedCreateNestedManyWithoutLeadInput
+  activities?: Prisma.LeadActivityUncheckedCreateNestedManyWithoutLeadInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRelatedLeadInput
+  emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutLeadInput
+  meetingBookings?: Prisma.MeetingBookingUncheckedCreateNestedManyWithoutLeadInput
+  auditAnalyses?: Prisma.AuditAnalysisUncheckedCreateNestedManyWithoutLeadInput
+  leadActions?: Prisma.LeadActionUncheckedCreateNestedManyWithoutLeadInput
+}
+
+export type LeadCreateOrConnectWithoutProposalsInput = {
+  where: Prisma.LeadWhereUniqueInput
+  create: Prisma.XOR<Prisma.LeadCreateWithoutProposalsInput, Prisma.LeadUncheckedCreateWithoutProposalsInput>
+}
+
+export type LeadUpsertWithoutProposalsInput = {
+  update: Prisma.XOR<Prisma.LeadUpdateWithoutProposalsInput, Prisma.LeadUncheckedUpdateWithoutProposalsInput>
+  create: Prisma.XOR<Prisma.LeadCreateWithoutProposalsInput, Prisma.LeadUncheckedCreateWithoutProposalsInput>
+  where?: Prisma.LeadWhereInput
+}
+
+export type LeadUpdateToOneWithWhereWithoutProposalsInput = {
+  where?: Prisma.LeadWhereInput
+  data: Prisma.XOR<Prisma.LeadUpdateWithoutProposalsInput, Prisma.LeadUncheckedUpdateWithoutProposalsInput>
+}
+
+export type LeadUpdateWithoutProposalsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  company?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  normalizedCompany?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  normalizedWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  normalizedEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumLeadStatusFieldUpdateOperationsInput | $Enums.LeadStatus
+  priority?: Prisma.EnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  submissions?: Prisma.SubmissionUpdateManyWithoutLeadNestedInput
+  activities?: Prisma.LeadActivityUpdateManyWithoutLeadNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRelatedLeadNestedInput
+  emailLogs?: Prisma.EmailLogUpdateManyWithoutLeadNestedInput
+  meetingBookings?: Prisma.MeetingBookingUpdateManyWithoutLeadNestedInput
+  auditAnalyses?: Prisma.AuditAnalysisUpdateManyWithoutLeadNestedInput
+  leadActions?: Prisma.LeadActionUpdateManyWithoutLeadNestedInput
+}
+
+export type LeadUncheckedUpdateWithoutProposalsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  company?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  normalizedCompany?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  normalizedWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  normalizedEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumLeadStatusFieldUpdateOperationsInput | $Enums.LeadStatus
+  priority?: Prisma.EnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  submissions?: Prisma.SubmissionUncheckedUpdateManyWithoutLeadNestedInput
+  activities?: Prisma.LeadActivityUncheckedUpdateManyWithoutLeadNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRelatedLeadNestedInput
+  emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutLeadNestedInput
+  meetingBookings?: Prisma.MeetingBookingUncheckedUpdateManyWithoutLeadNestedInput
+  auditAnalyses?: Prisma.AuditAnalysisUncheckedUpdateManyWithoutLeadNestedInput
+  leadActions?: Prisma.LeadActionUncheckedUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadCreateWithoutNotificationsInput = {
@@ -1029,6 +1174,7 @@ export type LeadCreateWithoutNotificationsInput = {
   meetingBookings?: Prisma.MeetingBookingCreateNestedManyWithoutLeadInput
   auditAnalyses?: Prisma.AuditAnalysisCreateNestedManyWithoutLeadInput
   leadActions?: Prisma.LeadActionCreateNestedManyWithoutLeadInput
+  proposals?: Prisma.ProposalCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateWithoutNotificationsInput = {
@@ -1052,6 +1198,7 @@ export type LeadUncheckedCreateWithoutNotificationsInput = {
   meetingBookings?: Prisma.MeetingBookingUncheckedCreateNestedManyWithoutLeadInput
   auditAnalyses?: Prisma.AuditAnalysisUncheckedCreateNestedManyWithoutLeadInput
   leadActions?: Prisma.LeadActionUncheckedCreateNestedManyWithoutLeadInput
+  proposals?: Prisma.ProposalUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadCreateOrConnectWithoutNotificationsInput = {
@@ -1091,6 +1238,7 @@ export type LeadUpdateWithoutNotificationsInput = {
   meetingBookings?: Prisma.MeetingBookingUpdateManyWithoutLeadNestedInput
   auditAnalyses?: Prisma.AuditAnalysisUpdateManyWithoutLeadNestedInput
   leadActions?: Prisma.LeadActionUpdateManyWithoutLeadNestedInput
+  proposals?: Prisma.ProposalUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutNotificationsInput = {
@@ -1114,6 +1262,7 @@ export type LeadUncheckedUpdateWithoutNotificationsInput = {
   meetingBookings?: Prisma.MeetingBookingUncheckedUpdateManyWithoutLeadNestedInput
   auditAnalyses?: Prisma.AuditAnalysisUncheckedUpdateManyWithoutLeadNestedInput
   leadActions?: Prisma.LeadActionUncheckedUpdateManyWithoutLeadNestedInput
+  proposals?: Prisma.ProposalUncheckedUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadCreateWithoutEmailLogsInput = {
@@ -1137,6 +1286,7 @@ export type LeadCreateWithoutEmailLogsInput = {
   meetingBookings?: Prisma.MeetingBookingCreateNestedManyWithoutLeadInput
   auditAnalyses?: Prisma.AuditAnalysisCreateNestedManyWithoutLeadInput
   leadActions?: Prisma.LeadActionCreateNestedManyWithoutLeadInput
+  proposals?: Prisma.ProposalCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateWithoutEmailLogsInput = {
@@ -1160,6 +1310,7 @@ export type LeadUncheckedCreateWithoutEmailLogsInput = {
   meetingBookings?: Prisma.MeetingBookingUncheckedCreateNestedManyWithoutLeadInput
   auditAnalyses?: Prisma.AuditAnalysisUncheckedCreateNestedManyWithoutLeadInput
   leadActions?: Prisma.LeadActionUncheckedCreateNestedManyWithoutLeadInput
+  proposals?: Prisma.ProposalUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadCreateOrConnectWithoutEmailLogsInput = {
@@ -1199,6 +1350,7 @@ export type LeadUpdateWithoutEmailLogsInput = {
   meetingBookings?: Prisma.MeetingBookingUpdateManyWithoutLeadNestedInput
   auditAnalyses?: Prisma.AuditAnalysisUpdateManyWithoutLeadNestedInput
   leadActions?: Prisma.LeadActionUpdateManyWithoutLeadNestedInput
+  proposals?: Prisma.ProposalUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutEmailLogsInput = {
@@ -1222,6 +1374,7 @@ export type LeadUncheckedUpdateWithoutEmailLogsInput = {
   meetingBookings?: Prisma.MeetingBookingUncheckedUpdateManyWithoutLeadNestedInput
   auditAnalyses?: Prisma.AuditAnalysisUncheckedUpdateManyWithoutLeadNestedInput
   leadActions?: Prisma.LeadActionUncheckedUpdateManyWithoutLeadNestedInput
+  proposals?: Prisma.ProposalUncheckedUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadCreateWithoutMeetingBookingsInput = {
@@ -1245,6 +1398,7 @@ export type LeadCreateWithoutMeetingBookingsInput = {
   emailLogs?: Prisma.EmailLogCreateNestedManyWithoutLeadInput
   auditAnalyses?: Prisma.AuditAnalysisCreateNestedManyWithoutLeadInput
   leadActions?: Prisma.LeadActionCreateNestedManyWithoutLeadInput
+  proposals?: Prisma.ProposalCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateWithoutMeetingBookingsInput = {
@@ -1268,6 +1422,7 @@ export type LeadUncheckedCreateWithoutMeetingBookingsInput = {
   emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutLeadInput
   auditAnalyses?: Prisma.AuditAnalysisUncheckedCreateNestedManyWithoutLeadInput
   leadActions?: Prisma.LeadActionUncheckedCreateNestedManyWithoutLeadInput
+  proposals?: Prisma.ProposalUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadCreateOrConnectWithoutMeetingBookingsInput = {
@@ -1307,6 +1462,7 @@ export type LeadUpdateWithoutMeetingBookingsInput = {
   emailLogs?: Prisma.EmailLogUpdateManyWithoutLeadNestedInput
   auditAnalyses?: Prisma.AuditAnalysisUpdateManyWithoutLeadNestedInput
   leadActions?: Prisma.LeadActionUpdateManyWithoutLeadNestedInput
+  proposals?: Prisma.ProposalUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutMeetingBookingsInput = {
@@ -1330,6 +1486,7 @@ export type LeadUncheckedUpdateWithoutMeetingBookingsInput = {
   emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutLeadNestedInput
   auditAnalyses?: Prisma.AuditAnalysisUncheckedUpdateManyWithoutLeadNestedInput
   leadActions?: Prisma.LeadActionUncheckedUpdateManyWithoutLeadNestedInput
+  proposals?: Prisma.ProposalUncheckedUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadCreateWithoutAuditAnalysesInput = {
@@ -1353,6 +1510,7 @@ export type LeadCreateWithoutAuditAnalysesInput = {
   emailLogs?: Prisma.EmailLogCreateNestedManyWithoutLeadInput
   meetingBookings?: Prisma.MeetingBookingCreateNestedManyWithoutLeadInput
   leadActions?: Prisma.LeadActionCreateNestedManyWithoutLeadInput
+  proposals?: Prisma.ProposalCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateWithoutAuditAnalysesInput = {
@@ -1376,6 +1534,7 @@ export type LeadUncheckedCreateWithoutAuditAnalysesInput = {
   emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutLeadInput
   meetingBookings?: Prisma.MeetingBookingUncheckedCreateNestedManyWithoutLeadInput
   leadActions?: Prisma.LeadActionUncheckedCreateNestedManyWithoutLeadInput
+  proposals?: Prisma.ProposalUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadCreateOrConnectWithoutAuditAnalysesInput = {
@@ -1415,6 +1574,7 @@ export type LeadUpdateWithoutAuditAnalysesInput = {
   emailLogs?: Prisma.EmailLogUpdateManyWithoutLeadNestedInput
   meetingBookings?: Prisma.MeetingBookingUpdateManyWithoutLeadNestedInput
   leadActions?: Prisma.LeadActionUpdateManyWithoutLeadNestedInput
+  proposals?: Prisma.ProposalUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutAuditAnalysesInput = {
@@ -1438,6 +1598,7 @@ export type LeadUncheckedUpdateWithoutAuditAnalysesInput = {
   emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutLeadNestedInput
   meetingBookings?: Prisma.MeetingBookingUncheckedUpdateManyWithoutLeadNestedInput
   leadActions?: Prisma.LeadActionUncheckedUpdateManyWithoutLeadNestedInput
+  proposals?: Prisma.ProposalUncheckedUpdateManyWithoutLeadNestedInput
 }
 
 
@@ -1453,6 +1614,7 @@ export type LeadCountOutputType = {
   meetingBookings: number
   auditAnalyses: number
   leadActions: number
+  proposals: number
 }
 
 export type LeadCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1463,6 +1625,7 @@ export type LeadCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   meetingBookings?: boolean | LeadCountOutputTypeCountMeetingBookingsArgs
   auditAnalyses?: boolean | LeadCountOutputTypeCountAuditAnalysesArgs
   leadActions?: boolean | LeadCountOutputTypeCountLeadActionsArgs
+  proposals?: boolean | LeadCountOutputTypeCountProposalsArgs
 }
 
 /**
@@ -1524,6 +1687,13 @@ export type LeadCountOutputTypeCountLeadActionsArgs<ExtArgs extends runtime.Type
   where?: Prisma.LeadActionWhereInput
 }
 
+/**
+ * LeadCountOutputType without action
+ */
+export type LeadCountOutputTypeCountProposalsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProposalWhereInput
+}
+
 
 export type LeadSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1547,6 +1717,7 @@ export type LeadSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   meetingBookings?: boolean | Prisma.Lead$meetingBookingsArgs<ExtArgs>
   auditAnalyses?: boolean | Prisma.Lead$auditAnalysesArgs<ExtArgs>
   leadActions?: boolean | Prisma.Lead$leadActionsArgs<ExtArgs>
+  proposals?: boolean | Prisma.Lead$proposalsArgs<ExtArgs>
   _count?: boolean | Prisma.LeadCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["lead"]>
 
@@ -1610,6 +1781,7 @@ export type LeadInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   meetingBookings?: boolean | Prisma.Lead$meetingBookingsArgs<ExtArgs>
   auditAnalyses?: boolean | Prisma.Lead$auditAnalysesArgs<ExtArgs>
   leadActions?: boolean | Prisma.Lead$leadActionsArgs<ExtArgs>
+  proposals?: boolean | Prisma.Lead$proposalsArgs<ExtArgs>
   _count?: boolean | Prisma.LeadCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type LeadIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1625,6 +1797,7 @@ export type $LeadPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     meetingBookings: Prisma.$MeetingBookingPayload<ExtArgs>[]
     auditAnalyses: Prisma.$AuditAnalysisPayload<ExtArgs>[]
     leadActions: Prisma.$LeadActionPayload<ExtArgs>[]
+    proposals: Prisma.$ProposalPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2042,6 +2215,7 @@ export interface Prisma__LeadClient<T, Null = never, ExtArgs extends runtime.Typ
   meetingBookings<T extends Prisma.Lead$meetingBookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Lead$meetingBookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MeetingBookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   auditAnalyses<T extends Prisma.Lead$auditAnalysesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Lead$auditAnalysesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditAnalysisPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   leadActions<T extends Prisma.Lead$leadActionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Lead$leadActionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LeadActionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  proposals<T extends Prisma.Lead$proposalsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Lead$proposalsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProposalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2643,6 +2817,30 @@ export type Lead$leadActionsArgs<ExtArgs extends runtime.Types.Extensions.Intern
   take?: number
   skip?: number
   distinct?: Prisma.LeadActionScalarFieldEnum | Prisma.LeadActionScalarFieldEnum[]
+}
+
+/**
+ * Lead.proposals
+ */
+export type Lead$proposalsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Proposal
+   */
+  select?: Prisma.ProposalSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Proposal
+   */
+  omit?: Prisma.ProposalOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProposalInclude<ExtArgs> | null
+  where?: Prisma.ProposalWhereInput
+  orderBy?: Prisma.ProposalOrderByWithRelationInput | Prisma.ProposalOrderByWithRelationInput[]
+  cursor?: Prisma.ProposalWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProposalScalarFieldEnum | Prisma.ProposalScalarFieldEnum[]
 }
 
 /**

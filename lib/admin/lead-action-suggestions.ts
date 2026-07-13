@@ -67,7 +67,7 @@ const leadActionTypePresets: Record<LeadActionType, LeadActionTypePreset> = {
       'Contactar a lead prioritária para agendar uma reunião de diagnóstico e avançar a oportunidade no funil comercial.',
   },
   SEND_EMAIL: {
-    title: 'Preparar email de seguimento',
+    title: 'Enviar email de seguimento',
     description:
       'Preparar uma mensagem personalizada para dar seguimento ao pedido submetido e propor o próximo passo.',
   },

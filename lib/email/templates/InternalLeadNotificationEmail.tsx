@@ -115,6 +115,7 @@ export default function InternalLeadNotificationEmail({
   lead,
   submission,
   meetingBooking,
+  meetingEmailContext,
   payloadFields,
   summary,
   auditAnalysis,
@@ -126,6 +127,7 @@ export default function InternalLeadNotificationEmail({
       <GenericInternalNotification
         lead={lead}
         meetingBooking={meetingBooking}
+        meetingEmailContext={meetingEmailContext}
         payloadFields={payloadFields}
         submission={submission}
         summary={summary}
@@ -156,7 +158,7 @@ export default function InternalLeadNotificationEmail({
           Nova Auditoria Inteligente
         </h1>
         <p style={{ color: '#8399B8', fontSize: 14, lineHeight: 1.6, margin: 0 }}>
-          Resumo comercial preparado para qualificacao e proximo contacto.
+          Resumo comercial preparado para qualificação e próximo contacto.
         </p>
 
         <ExecutiveSummarySection
@@ -212,16 +214,16 @@ function ExecutiveSummarySection({
     <section style={{ ...sectionStyle, marginTop: 24 }}>
       <p style={sectionTitleStyle}>Executive Summary</p>
       <div style={gridStyle}>
-        <BriefField label="Empresa" value={company ?? 'Nao indicada'} />
-        <BriefField label="Contacto" value={contact ?? 'Nao indicado'} />
-        <BriefField label="Setor" value={industry ?? 'Nao indicado'} />
+        <BriefField label="Empresa" value={company ?? 'Não indicada'} />
+        <BriefField label="Contacto" value={contact ?? 'Não indicado'} />
+        <BriefField label="Setor" value={industry ?? 'Não indicado'} />
         <BriefField label="Estado" value="Nova Lead" />
         <BriefField label="Prioridade" value={formatAuditPriority(auditAnalysis?.priority)} />
         <BriefField
           label="Audit Score"
           value={
             auditAnalysis?.score === null || auditAnalysis?.score === undefined
-              ? 'Nao atribuido'
+              ? 'Não atribuído'
               : `${auditAnalysis.score}/100`
           }
         />
@@ -246,14 +248,14 @@ function ExecutiveSummarySection({
           value={
             auditAnalysis?.closingProbability === null ||
             auditAnalysis?.closingProbability === undefined
-              ? 'Nao estimada'
+              ? 'Não estimada'
               : `${auditAnalysis.closingProbability}%`
           }
         />
       </div>
       <div style={{ marginTop: 14 }}>
         <BriefField
-          label="Proximo passo"
+          label="Próximo passo"
           value={auditAnalysis?.nextStep ?? 'Discovery Call'}
         />
       </div>
@@ -283,12 +285,12 @@ function CompanySection({
     <section style={sectionStyle}>
       <p style={sectionTitleStyle}>Empresa</p>
       <div style={gridStyle}>
-        <BriefField label="Nome" value={company ?? 'Nao indicado'} />
-        <BriefField label="Website" value={website ?? 'Nao indicado'} />
-        <BriefField label="Setor" value={industry ?? 'Nao indicado'} />
-        <BriefField label="Colaboradores" value={employees ?? 'Nao indicado'} />
-        <BriefField label="Receita" value={annualRevenue ?? 'Nao indicada'} />
-        <BriefField label="Ferramentas" value={toolsUsed ?? 'Nao indicadas'} />
+        <BriefField label="Nome" value={company ?? 'Não indicado'} />
+        <BriefField label="Website" value={website ?? 'Não indicado'} />
+        <BriefField label="Setor" value={industry ?? 'Não indicado'} />
+        <BriefField label="Colaboradores" value={employees ?? 'Não indicado'} />
+        <BriefField label="Receita" value={annualRevenue ?? 'Não indicada'} />
+        <BriefField label="Ferramentas" value={toolsUsed ?? 'Não indicadas'} />
       </div>
     </section>
   );
@@ -308,7 +310,7 @@ function AuditAnalysisSection({
     return (
       <NoticeSection
         title="AI Audit Analysis"
-        text="A analise IA ainda nao esta disponivel. Rever a submissao no Admin Dashboard."
+        text="A análise IA ainda não está disponível. Rever a submissão no Admin Dashboard."
       />
     );
   }
@@ -317,7 +319,7 @@ function AuditAnalysisSection({
     return (
       <NoticeSection
         title="AI Audit Analysis"
-        text={`A analise IA falhou e deve ser revista no Admin Dashboard.${
+        text={`A análise IA falhou e deve ser revista no Admin Dashboard.${
           auditAnalysis.errorMessage ? ` Erro: ${auditAnalysis.errorMessage}` : ''
         }`}
       />
@@ -331,11 +333,11 @@ function AuditAnalysisSection({
   return (
     <section style={sectionStyle}>
       <p style={sectionTitleStyle}>AI Audit Analysis</p>
-      <BriefParagraph label="Resumo Executivo" value={auditAnalysis.internalSummary ?? fallbackProblem ?? 'Nao disponivel'} />
+      <BriefParagraph label="Resumo Executivo" value={auditAnalysis.internalSummary ?? fallbackProblem ?? 'Não disponível'} />
       <CompactList title="Problemas encontrados" items={problems} />
       <CompactList title="Oportunidades" items={opportunities} />
-      <CompactList title="Solucoes sugeridas" items={solutions} />
-      <BriefParagraph label="Proximo passo" value={auditAnalysis.nextStep ?? 'Nao disponivel'} />
+      <CompactList title="Soluções sugeridas" items={solutions} />
+      <BriefParagraph label="Próximo passo" value={auditAnalysis.nextStep ?? 'Não disponível'} />
     </section>
   );
 }
@@ -350,7 +352,7 @@ function ClientPreviewSection({
     return (
       <NoticeSection
         title="Executive Preview enviado ao cliente"
-        text="Foi enviado o email simples de rececao ao cliente."
+        text="Foi enviado o email simples de receção ao cliente."
       />
     );
   }
@@ -369,22 +371,22 @@ function ClientPreviewSection({
   return (
     <section style={sectionStyle}>
       <p style={sectionTitleStyle}>Executive Preview enviado ao cliente</p>
-      <BriefParagraph label="Titulo enviado" value={auditAnalysis.clientPreviewTitle} />
-      <BriefParagraph label="Readiness publico" value={readiness.label} />
+      <BriefParagraph label="Título enviado" value={auditAnalysis.clientPreviewTitle} />
+      <BriefParagraph label="Readiness público" value={readiness.label} />
       <CompactStringList title="Timeline resumida" items={timeline.map((step) => `${step.title}: ${step.text}`)} />
       <BriefParagraph label="Resumo enviado" value={auditAnalysis.clientPreviewSummary} />
       <CompactList title="Oportunidades enviadas" items={opportunities} />
-      <CompactStringList title="Beneficios enviados" items={benefits} />
+      <CompactStringList title="Benefícios enviados" items={benefits} />
       <CompactStringList title="Arquitetura sugerida" items={architecture} />
       <BriefParagraph
-        label="Direcao recomendada enviada"
+        label="Direção recomendada enviada"
         value={auditAnalysis.clientPreviewRecommendedDirection}
       />
       <BriefParagraph
-        label="Proximo passo enviado"
+        label="Próximo passo enviado"
         value={auditAnalysis.clientPreviewNextStep}
       />
-      <BriefParagraph label="CTA enviado" value={`Agendar reuniao de descoberta - ${ctaUrl}`} />
+      <BriefParagraph label="CTA enviado" value={`Agendar reunião de descoberta - ${ctaUrl}`} />
     </section>
   );
 }
@@ -432,19 +434,19 @@ function SalesPlaybookEmailSection({
     <section style={sectionStyle}>
       <p style={sectionTitleStyle}>Sales Playbook</p>
       <div style={gridStyle}>
-        <BriefField label="Decisor provavel" value={playbook.likelyDecisionMaker} />
+        <BriefField label="Decisor provável" value={playbook.likelyDecisionMaker} />
         <BriefField
           label="Probabilidade de Fecho"
-          value={probability === null || probability === undefined ? 'Nao estimada' : `${probability}%`}
+          value={probability === null || probability === undefined ? 'Não estimada' : `${probability}%`}
         />
       </div>
       <CompactStringList title="3 principais dores" items={playbook.painPoints.slice(0, 3)} />
       <CompactStringList
-        title="3 objecoes provaveis"
+        title="3 objeções prováveis"
         items={playbook.likelyObjections.slice(0, 3).map((item) => item.objection)}
       />
       <CompactStringList title="3 quick wins" items={playbook.quickWins.slice(0, 3)} />
-      <BriefParagraph label="Proxima abordagem comercial" value={playbook.salesStrategy} />
+      <BriefParagraph label="Próxima abordagem comercial" value={playbook.salesStrategy} />
     </section>
   );
 }
@@ -507,15 +509,15 @@ function buildClientTimeline(
   return [
     {
       title: 'Estado atual',
-      text: shortText(summary, 'Processos com oportunidades de maior clareza, consistencia e automacao.'),
+      text: shortText(summary, 'Processos com oportunidades de maior clareza, consistência e automação.'),
     },
     {
-      title: 'Automacao proposta',
-      text: shortText(recommendedDirection, 'Fluxos operacionais estruturados com automacao e visibilidade centralizada.'),
+      title: 'Automação proposta',
+      text: shortText(recommendedDirection, 'Fluxos operacionais estruturados com automação e visibilidade centralizada.'),
     },
     {
       title: 'Estado futuro',
-      text: shortText(benefits.slice(0, 2).join(', '), 'Operacao mais previsivel, menos trabalho manual e melhor controlo operacional.'),
+      text: shortText(benefits.slice(0, 2).join(', '), 'Operação mais previsível, menos trabalho manual e melhor controlo operacional.'),
     },
   ];
 }
@@ -524,7 +526,7 @@ function buildClientTimeline(
  * Builds the architecture summary reflected in the client email.
  */
 function buildClientArchitecture(opportunities: OpportunityItem[]): string[] {
-  const middle = stringValue(opportunities[0]?.title) || 'Camada de Automacao Norm8';
+  const middle = stringValue(opportunities[0]?.title) || 'Camada de Automação Norm8';
 
   return [
     'Canais de Entrada',
@@ -639,7 +641,7 @@ function BriefParagraph({ label, value }: { label: string; value?: string | null
   return (
     <div style={{ marginBottom: 14 }}>
       <p style={fieldLabelStyle}>{label}</p>
-      <p style={{ ...fieldValueStyle, lineHeight: 1.65 }}>{value || 'Nao disponivel'}</p>
+      <p style={{ ...fieldValueStyle, lineHeight: 1.65 }}>{value || 'Não disponível'}</p>
     </div>
   );
 }
@@ -649,7 +651,7 @@ function BriefParagraph({ label, value }: { label: string; value?: string | null
  */
 function CompactList({ title, items }: { title: string; items: OpportunityItem[] }) {
   if (items.length === 0) {
-    return <BriefParagraph label={title} value="Nao disponivel" />;
+    return <BriefParagraph label={title} value="Não disponível" />;
   }
 
   return (
@@ -673,7 +675,7 @@ function CompactList({ title, items }: { title: string; items: OpportunityItem[]
  */
 function CompactStringList({ title, items }: { title: string; items: string[] }) {
   if (items.length === 0) {
-    return <BriefParagraph label={title} value="Nao disponivel" />;
+    return <BriefParagraph label={title} value="Não disponível" />;
   }
 
   return (
@@ -741,7 +743,7 @@ function normalizeDecisionMaker(value: string | undefined, fallbackDecisionMaker
 /**
  * Parses the AI Sales Playbook JSON for compact email display.
  */
-function parseSalesPlaybook(value: unknown, fallbackDecisionMaker = 'CEO / COO / Diretor de Operacoes'): SalesPlaybook | undefined {
+function parseSalesPlaybook(value: unknown, fallbackDecisionMaker = 'CEO / COO / Diretor de Operações'): SalesPlaybook | undefined {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
     return undefined;
   }
@@ -821,7 +823,7 @@ function getPayloadValue(
   const value = fields.find((field) => field.label === label)?.value;
 
   if (label === 'industry' && value === 'Outro') {
-    return 'Nao especificado';
+    return 'Não especificado';
   }
 
   return value;
@@ -893,7 +895,7 @@ function parseContractEstimate(value: unknown): ContractEstimate | undefined {
  */
 function formatContractEstimate(estimate?: ContractEstimate): string {
   if (!estimate) {
-    return 'Nao estimado';
+    return 'Não estimado';
   }
 
   return `${formatCompactEuro(estimate.minimum)}-${formatCompactEuro(estimate.maximum)}`;
@@ -937,11 +939,11 @@ function parseEstimatedDelivery(value: unknown): EstimatedDelivery | undefined {
 function formatImplementationComplexity(complexity?: string | null): string {
   const labels: Record<string, string> = {
     LOW: 'Baixa',
-    MEDIUM: 'Media',
+    MEDIUM: 'Média',
     HIGH: 'Alta',
   };
 
-  return complexity ? labels[complexity] ?? complexity : 'Nao estimada';
+  return complexity ? labels[complexity] ?? complexity : 'Não estimada';
 }
 
 /**
@@ -954,7 +956,7 @@ function getDeliveryRange(complexity?: string | null): string {
     HIGH: '8-16 semanas',
   };
 
-  return complexity ? ranges[complexity] ?? 'Nao estimado' : 'Nao estimado';
+  return complexity ? ranges[complexity] ?? 'Não estimado' : 'Não estimado';
 }
 
 /**
@@ -991,11 +993,11 @@ function formatPrioritySignal(priority?: AuditPriority | null): string {
 function formatContractConfidence(confidence?: string): string {
   const labels: Record<string, string> = {
     LOW: 'Baixa',
-    MEDIUM: 'Media',
+    MEDIUM: 'Média',
     HIGH: 'Alta',
   };
 
-  return confidence ? labels[confidence] ?? confidence : 'Nao atribuida';
+  return confidence ? labels[confidence] ?? confidence : 'Não atribuída';
 }
 
 /**
@@ -1009,7 +1011,7 @@ function formatAuditPriority(priority?: AuditPriority | null): string {
     URGENT: '5/5',
   };
 
-  return priority ? labels[priority] : 'Nao atribuida';
+  return priority ? labels[priority] : 'Não atribuída';
 }
 
 /**

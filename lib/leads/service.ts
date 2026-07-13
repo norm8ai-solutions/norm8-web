@@ -154,8 +154,8 @@ export async function createLeadSubmission<TType extends SubmissionType>(
 
       const confirmationEmailLog = await tx.emailLog.create({
         data: {
-          leadId: lead.id,
-          submissionId: submission.id,
+          lead: { connect: { id: lead.id } },
+          submission: { connect: { id: submission.id } },
           to: lead.email,
           subject: labels.emailSubject,
           type: labels.emailType,
@@ -703,7 +703,7 @@ function getSubmissionLabels(type: SubmissionType): SubmissionLabels {
         notificationTitle: 'Novo pedido de reunião',
         notificationMessage: 'Foi recebido um novo pedido de reunião.',
         emailSubject: 'Recebemos o seu pedido de reunião Norm8',
-        emailType: 'MEETING_CONFIRMATION',
+        emailType: 'MEETING_CLIENT_CONFIRMATION',
       };
   }
 }

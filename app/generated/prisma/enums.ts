@@ -64,6 +64,18 @@ export const LeadActionStatus = {
 export type LeadActionStatus = (typeof LeadActionStatus)[keyof typeof LeadActionStatus]
 
 
+export const ProposalStatus = {
+  DRAFT: 'DRAFT',
+  GENERATED: 'GENERATED',
+  SENT: 'SENT',
+  ACCEPTED: 'ACCEPTED',
+  REJECTED: 'REJECTED',
+  EXPIRED: 'EXPIRED'
+} as const
+
+export type ProposalStatus = (typeof ProposalStatus)[keyof typeof ProposalStatus]
+
+
 export const LeadPriority = {
   LOW: 'LOW',
   MEDIUM: 'MEDIUM',

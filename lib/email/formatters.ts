@@ -98,7 +98,7 @@ export function formatPayloadLabel(label: string): string {
     processToAutomate: 'Processo a automatizar',
     currentTools: 'Ferramentas atuais',
     desiredOutcome: 'Resultado pretendido',
-    estimatedBudget: 'Budget estimado',
+    estimatedBudget: 'Orçamento estimado',
     desiredTimeline: 'Timeline desejada',
   };
 
@@ -163,6 +163,9 @@ export function getSubmissionContactSnapshot(
     email: getPayloadString(submission.payload, 'email') ?? lead.email,
     phone: getPayloadString(submission.payload, 'phone') ?? lead.phone,
     website: getPayloadString(submission.payload, 'website') ?? lead.website,
+    source: lead.source,
+    status: lead.status,
+    priority: lead.priority,
     industry: getPayloadString(submission.payload, 'industry'),
   };
 }

@@ -223,6 +223,7 @@ export type LeadActionWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"LeadAction"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"LeadAction"> | Date | string
   lead?: Prisma.XOR<Prisma.LeadScalarRelationFilter, Prisma.LeadWhereInput>
+  proposal?: Prisma.XOR<Prisma.ProposalNullableScalarRelationFilter, Prisma.ProposalWhereInput> | null
 }
 
 export type LeadActionOrderByWithRelationInput = {
@@ -237,6 +238,7 @@ export type LeadActionOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   lead?: Prisma.LeadOrderByWithRelationInput
+  proposal?: Prisma.ProposalOrderByWithRelationInput
 }
 
 export type LeadActionWhereUniqueInput = Prisma.AtLeast<{
@@ -254,6 +256,7 @@ export type LeadActionWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"LeadAction"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"LeadAction"> | Date | string
   lead?: Prisma.XOR<Prisma.LeadScalarRelationFilter, Prisma.LeadWhereInput>
+  proposal?: Prisma.XOR<Prisma.ProposalNullableScalarRelationFilter, Prisma.ProposalWhereInput> | null
 }, "id">
 
 export type LeadActionOrderByWithAggregationInput = {
@@ -299,6 +302,7 @@ export type LeadActionCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   lead: Prisma.LeadCreateNestedOneWithoutLeadActionsInput
+  proposal?: Prisma.ProposalCreateNestedOneWithoutLeadActionInput
 }
 
 export type LeadActionUncheckedCreateInput = {
@@ -312,6 +316,7 @@ export type LeadActionUncheckedCreateInput = {
   completedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  proposal?: Prisma.ProposalUncheckedCreateNestedOneWithoutLeadActionInput
 }
 
 export type LeadActionUpdateInput = {
@@ -325,6 +330,7 @@ export type LeadActionUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lead?: Prisma.LeadUpdateOneRequiredWithoutLeadActionsNestedInput
+  proposal?: Prisma.ProposalUpdateOneWithoutLeadActionNestedInput
 }
 
 export type LeadActionUncheckedUpdateInput = {
@@ -338,6 +344,7 @@ export type LeadActionUncheckedUpdateInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  proposal?: Prisma.ProposalUncheckedUpdateOneWithoutLeadActionNestedInput
 }
 
 export type LeadActionCreateManyInput = {
@@ -427,6 +434,11 @@ export type LeadActionMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
+export type LeadActionNullableScalarRelationFilter = {
+  is?: Prisma.LeadActionWhereInput | null
+  isNot?: Prisma.LeadActionWhereInput | null
+}
+
 export type LeadActionCreateNestedManyWithoutLeadInput = {
   create?: Prisma.XOR<Prisma.LeadActionCreateWithoutLeadInput, Prisma.LeadActionUncheckedCreateWithoutLeadInput> | Prisma.LeadActionCreateWithoutLeadInput[] | Prisma.LeadActionUncheckedCreateWithoutLeadInput[]
   connectOrCreate?: Prisma.LeadActionCreateOrConnectWithoutLeadInput | Prisma.LeadActionCreateOrConnectWithoutLeadInput[]
@@ -481,6 +493,22 @@ export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
 }
 
+export type LeadActionCreateNestedOneWithoutProposalInput = {
+  create?: Prisma.XOR<Prisma.LeadActionCreateWithoutProposalInput, Prisma.LeadActionUncheckedCreateWithoutProposalInput>
+  connectOrCreate?: Prisma.LeadActionCreateOrConnectWithoutProposalInput
+  connect?: Prisma.LeadActionWhereUniqueInput
+}
+
+export type LeadActionUpdateOneWithoutProposalNestedInput = {
+  create?: Prisma.XOR<Prisma.LeadActionCreateWithoutProposalInput, Prisma.LeadActionUncheckedCreateWithoutProposalInput>
+  connectOrCreate?: Prisma.LeadActionCreateOrConnectWithoutProposalInput
+  upsert?: Prisma.LeadActionUpsertWithoutProposalInput
+  disconnect?: Prisma.LeadActionWhereInput | boolean
+  delete?: Prisma.LeadActionWhereInput | boolean
+  connect?: Prisma.LeadActionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.LeadActionUpdateToOneWithWhereWithoutProposalInput, Prisma.LeadActionUpdateWithoutProposalInput>, Prisma.LeadActionUncheckedUpdateWithoutProposalInput>
+}
+
 export type LeadActionCreateWithoutLeadInput = {
   id?: string
   type: $Enums.LeadActionType
@@ -491,6 +519,7 @@ export type LeadActionCreateWithoutLeadInput = {
   completedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  proposal?: Prisma.ProposalCreateNestedOneWithoutLeadActionInput
 }
 
 export type LeadActionUncheckedCreateWithoutLeadInput = {
@@ -503,6 +532,7 @@ export type LeadActionUncheckedCreateWithoutLeadInput = {
   completedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  proposal?: Prisma.ProposalUncheckedCreateNestedOneWithoutLeadActionInput
 }
 
 export type LeadActionCreateOrConnectWithoutLeadInput = {
@@ -547,6 +577,74 @@ export type LeadActionScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"LeadAction"> | Date | string
 }
 
+export type LeadActionCreateWithoutProposalInput = {
+  id?: string
+  type: $Enums.LeadActionType
+  title: string
+  description?: string | null
+  status?: $Enums.LeadActionStatus
+  dueAt?: Date | string | null
+  completedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lead: Prisma.LeadCreateNestedOneWithoutLeadActionsInput
+}
+
+export type LeadActionUncheckedCreateWithoutProposalInput = {
+  id?: string
+  leadId: string
+  type: $Enums.LeadActionType
+  title: string
+  description?: string | null
+  status?: $Enums.LeadActionStatus
+  dueAt?: Date | string | null
+  completedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type LeadActionCreateOrConnectWithoutProposalInput = {
+  where: Prisma.LeadActionWhereUniqueInput
+  create: Prisma.XOR<Prisma.LeadActionCreateWithoutProposalInput, Prisma.LeadActionUncheckedCreateWithoutProposalInput>
+}
+
+export type LeadActionUpsertWithoutProposalInput = {
+  update: Prisma.XOR<Prisma.LeadActionUpdateWithoutProposalInput, Prisma.LeadActionUncheckedUpdateWithoutProposalInput>
+  create: Prisma.XOR<Prisma.LeadActionCreateWithoutProposalInput, Prisma.LeadActionUncheckedCreateWithoutProposalInput>
+  where?: Prisma.LeadActionWhereInput
+}
+
+export type LeadActionUpdateToOneWithWhereWithoutProposalInput = {
+  where?: Prisma.LeadActionWhereInput
+  data: Prisma.XOR<Prisma.LeadActionUpdateWithoutProposalInput, Prisma.LeadActionUncheckedUpdateWithoutProposalInput>
+}
+
+export type LeadActionUpdateWithoutProposalInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumLeadActionTypeFieldUpdateOperationsInput | $Enums.LeadActionType
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumLeadActionStatusFieldUpdateOperationsInput | $Enums.LeadActionStatus
+  dueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lead?: Prisma.LeadUpdateOneRequiredWithoutLeadActionsNestedInput
+}
+
+export type LeadActionUncheckedUpdateWithoutProposalInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  leadId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumLeadActionTypeFieldUpdateOperationsInput | $Enums.LeadActionType
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumLeadActionStatusFieldUpdateOperationsInput | $Enums.LeadActionStatus
+  dueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type LeadActionCreateManyLeadInput = {
   id?: string
   type: $Enums.LeadActionType
@@ -569,6 +667,7 @@ export type LeadActionUpdateWithoutLeadInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  proposal?: Prisma.ProposalUpdateOneWithoutLeadActionNestedInput
 }
 
 export type LeadActionUncheckedUpdateWithoutLeadInput = {
@@ -581,6 +680,7 @@ export type LeadActionUncheckedUpdateWithoutLeadInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  proposal?: Prisma.ProposalUncheckedUpdateOneWithoutLeadActionNestedInput
 }
 
 export type LeadActionUncheckedUpdateManyWithoutLeadInput = {
@@ -609,6 +709,7 @@ export type LeadActionSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   createdAt?: boolean
   updatedAt?: boolean
   lead?: boolean | Prisma.LeadDefaultArgs<ExtArgs>
+  proposal?: boolean | Prisma.LeadAction$proposalArgs<ExtArgs>
 }, ExtArgs["result"]["leadAction"]>
 
 export type LeadActionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -655,6 +756,7 @@ export type LeadActionSelectScalar = {
 export type LeadActionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "leadId" | "type" | "title" | "description" | "status" | "dueAt" | "completedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["leadAction"]>
 export type LeadActionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   lead?: boolean | Prisma.LeadDefaultArgs<ExtArgs>
+  proposal?: boolean | Prisma.LeadAction$proposalArgs<ExtArgs>
 }
 export type LeadActionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   lead?: boolean | Prisma.LeadDefaultArgs<ExtArgs>
@@ -667,6 +769,7 @@ export type $LeadActionPayload<ExtArgs extends runtime.Types.Extensions.Internal
   name: "LeadAction"
   objects: {
     lead: Prisma.$LeadPayload<ExtArgs>
+    proposal: Prisma.$ProposalPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1074,6 +1177,7 @@ readonly fields: LeadActionFieldRefs;
 export interface Prisma__LeadActionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   lead<T extends Prisma.LeadDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LeadDefaultArgs<ExtArgs>>): Prisma.Prisma__LeadClient<runtime.Types.Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  proposal<T extends Prisma.LeadAction$proposalArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LeadAction$proposalArgs<ExtArgs>>): Prisma.Prisma__ProposalClient<runtime.Types.Result.GetResult<Prisma.$ProposalPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1511,6 +1615,25 @@ export type LeadActionDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.In
    * Limit how many LeadActions to delete.
    */
   limit?: number
+}
+
+/**
+ * LeadAction.proposal
+ */
+export type LeadAction$proposalArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Proposal
+   */
+  select?: Prisma.ProposalSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Proposal
+   */
+  omit?: Prisma.ProposalOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProposalInclude<ExtArgs> | null
+  where?: Prisma.ProposalWhereInput
 }
 
 /**

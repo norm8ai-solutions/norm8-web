@@ -25,14 +25,14 @@ const executionConfigByType: Record<LeadActionType, LeadActionExecutionConfig> =
   },
   SEND_EMAIL: {
     kind: 'prepareEmail',
-    label: 'Preparar email',
-    description: 'Guarda um rascunho operacional no módulo de emails.',
+    label: 'Enviar email',
+    description: 'Revê a mensagem e envia um email real à lead.',
     tone: 'primary',
   },
   FOLLOW_UP: {
     kind: 'prepareEmail',
-    label: 'Preparar follow-up',
-    description: 'Prepara um email de seguimento editável antes de contactar a lead.',
+    label: 'Enviar follow-up',
+    description: 'Revê a mensagem e envia um follow-up real à lead.',
     tone: 'primary',
   },
   REVIEW_AUDIT: {
@@ -44,7 +44,7 @@ const executionConfigByType: Record<LeadActionType, LeadActionExecutionConfig> =
   SEND_PROPOSAL: {
     kind: 'createProposal',
     label: 'Criar proposta',
-    description: 'Regista a intenção de proposta sem simular geração automática.',
+    description: 'Revê e ajusta os dados antes de gerar a proposta comercial.',
     tone: 'primary',
   },
   CALL: {

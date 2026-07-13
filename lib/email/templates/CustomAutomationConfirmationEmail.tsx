@@ -37,23 +37,23 @@ export default function CustomAutomationConfirmationEmail({
   return (
     <EmailShell>
       <EmailHeader
-        description="Recebemos o seu pedido e vamos transformar o contexto enviado num briefing tecnico e comercial para a proxima etapa."
-        label="Automacao Personalizada"
+        description="Recebemos o seu pedido e vamos transformar o contexto enviado num briefing técnico e comercial para a próxima etapa."
+        label="Automação Personalizada"
         meta={[
           { label: 'Empresa', value: lead.company },
           { label: 'Data', value: submissionDate },
         ]}
-        title="Recebemos o seu pedido de Automacao Personalizada"
+        title="Recebemos o seu pedido de Automação Personalizada"
       />
 
       <EmailSection>
         <p style={{ color: '#E8EDF8', fontSize: 15, lineHeight: 1.75, margin: 0 }}>
-          Ola{lead.name ? `, ${lead.name}` : ''}. Obrigado por partilhar o desafio
+          Olá{lead.name ? `, ${lead.name}` : ''}. Obrigado por partilhar o desafio
           da {lead.company}.
         </p>
         <p style={{ color: '#8399B8', fontSize: 14, lineHeight: 1.7, margin: '14px 0 0' }}>
-          A Norm8 vai analisar o processo, as ferramentas actuais e o resultado
-          pretendido para perceber onde a automacao pode gerar impacto real.
+          A Norm8 vai analisar o processo, as ferramentas atuais e o resultado
+          pretendido para perceber onde a automação pode gerar impacto real.
         </p>
       </EmailSection>
 
@@ -63,7 +63,7 @@ export default function CustomAutomationConfirmationEmail({
             Problema recebido
           </p>
           <p style={{ color: '#8399B8', fontSize: 14, lineHeight: 1.65, margin: 0 }}>
-            O pedido ficou registado com os detalhes enviados no formulario.
+            O pedido ficou registado com os detalhes enviados no formulário.
           </p>
         </EmailCard>
         <EmailCard compact>
@@ -71,8 +71,8 @@ export default function CustomAutomationConfirmationEmail({
             Como vamos analisar
           </p>
           <p style={{ color: '#8399B8', fontSize: 14, lineHeight: 1.65, margin: 0 }}>
-            Vamos avaliar complexidade, integracoes necessarias, ganhos esperados e
-            prioridade de implementacao.
+            Vamos avaliar complexidade, integrações necessárias, ganhos esperados e
+            prioridade de implementação.
           </p>
         </EmailCard>
         <EmailCard compact>
@@ -80,18 +80,18 @@ export default function CustomAutomationConfirmationEmail({
             O que acontece a seguir
           </p>
           <p style={{ color: '#8399B8', fontSize: 14, lineHeight: 1.65, margin: 0 }}>
-            Responderemos com uma recomendacao inicial ou com uma proposta de reuniao
+            Responderemos com uma recomendação inicial ou com uma proposta de reunião
             de descoberta para validar o fluxo em detalhe.
           </p>
         </EmailCard>
       </EmailSection>
 
-      <EmailSection align="center" title="Proximo passo recomendado">
+      <EmailSection align="center" title="Próximo passo recomendado">
         <p style={{ color: '#8399B8', fontSize: 14, lineHeight: 1.7, margin: '0 0 18px' }}>
-          Uma reuniao de descoberta de 30 minutos ajuda-nos a confirmar requisitos,
-          prioridade e potencial de automatizacao.
+          Uma reunião de descoberta de 30 minutos ajuda-nos a confirmar requisitos,
+          prioridade e potencial de automatização.
         </p>
-        <EmailButton href={meetingUrl}>Marcar reuniao</EmailButton>
+        <EmailButton href={meetingUrl}>Marcar reunião</EmailButton>
       </EmailSection>
 
       <EmailFooter />

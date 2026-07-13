@@ -349,7 +349,7 @@ export async function getLeads(filters: LeadFilters = {}) {
  * @returns Lead detail or null.
  */
 export async function getLeadById(id: string) {
-  return prisma.lead.findUnique({
+  const lead = await prisma.lead.findUnique({
     where: { id },
     include: {
       submissions: { orderBy: { createdAt: 'desc' } },
@@ -361,8 +361,27 @@ export async function getLeadById(id: string) {
       leadActions: { orderBy: [{ status: 'asc' }, { dueAt: 'asc' }, { createdAt: 'desc' }] },
     },
   });
-}
 
+  if (!lead) {
+    return null;
+  }
+
+  try {
+    const proposals = await prisma.proposal.findMany({
+      where: { leadId: id },
+      orderBy: [{ createdAt: 'desc' }, { version: 'desc' }],
+    });
+
+    return { ...lead, proposals };
+  } catch (error) {
+    console.error(
+      'Failed to load proposals for lead detail. Confirm that the add_proposals migration is applied and the dev server was restarted after prisma generate.',
+      error,
+    );
+
+    return { ...lead, proposals: [] };
+  }
+}
 /**
  * Loads all submissions with lead context.
  *
