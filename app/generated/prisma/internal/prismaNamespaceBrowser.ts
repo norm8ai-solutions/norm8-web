@@ -59,7 +59,10 @@ export const ModelName = {
   Notification: 'Notification',
   EmailLog: 'EmailLog',
   MeetingBooking: 'MeetingBooking',
-  AuditAnalysis: 'AuditAnalysis'
+  AuditAnalysis: 'AuditAnalysis',
+  AdminUser: 'AdminUser',
+  AdminSession: 'AdminSession',
+  AdminAuthLog: 'AdminAuthLog'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -260,6 +263,52 @@ export const AuditAnalysisScalarFieldEnum = {
 } as const
 
 export type AuditAnalysisScalarFieldEnum = (typeof AuditAnalysisScalarFieldEnum)[keyof typeof AuditAnalysisScalarFieldEnum]
+
+
+export const AdminUserScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  normalizedEmail: 'normalizedEmail',
+  name: 'name',
+  passwordHash: 'passwordHash',
+  role: 'role',
+  isActive: 'isActive',
+  failedAttempts: 'failedAttempts',
+  lockedUntil: 'lockedUntil',
+  lastLoginAt: 'lastLoginAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AdminUserScalarFieldEnum = (typeof AdminUserScalarFieldEnum)[keyof typeof AdminUserScalarFieldEnum]
+
+
+export const AdminSessionScalarFieldEnum = {
+  id: 'id',
+  adminUserId: 'adminUserId',
+  tokenHash: 'tokenHash',
+  userAgent: 'userAgent',
+  ipHash: 'ipHash',
+  expiresAt: 'expiresAt',
+  lastSeenAt: 'lastSeenAt',
+  createdAt: 'createdAt',
+  revokedAt: 'revokedAt'
+} as const
+
+export type AdminSessionScalarFieldEnum = (typeof AdminSessionScalarFieldEnum)[keyof typeof AdminSessionScalarFieldEnum]
+
+
+export const AdminAuthLogScalarFieldEnum = {
+  id: 'id',
+  adminUserId: 'adminUserId',
+  event: 'event',
+  email: 'email',
+  ipHash: 'ipHash',
+  userAgent: 'userAgent',
+  createdAt: 'createdAt'
+} as const
+
+export type AdminAuthLogScalarFieldEnum = (typeof AdminAuthLogScalarFieldEnum)[keyof typeof AdminAuthLogScalarFieldEnum]
 
 
 export const SortOrder = {

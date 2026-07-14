@@ -12,9 +12,9 @@
 
 'use server';
 
-import { cookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { isAdminAuthDisabledForDemo, loginAdminWithPassword, requireAdmin, sanitizeAdminRedirect } from '@/lib/admin/auth';
 import type { LeadActionStatus, LeadActionType, LeadPriority, LeadStatus } from '@/app/generated/prisma/client';
 import { createAuditAnalysisForSubmission } from '@/lib/audit-analysis/service';
 import { createMeetingCalendarEvent } from '@/lib/calendar/service';
@@ -35,7 +35,6 @@ import {
 import { createProposal, generateProposalPdf, updateProposal } from '@/lib/proposals/service';
 import { normalizePortugueseText } from '@/lib/text/normalize-portuguese';
 
-const ADMIN_COOKIE_NAME = 'norm8_admin_access';
 
 type ScheduleMeetingExecutionResult = {
  actionId: string;
@@ -106,32 +105,35 @@ export async function loadAdminMeetingSlotAvailability(input: {
  durationMinutes: number;
  timezone?: string;
 }): Promise<MeetingSlotAvailability> {
+ await requireAdmin();
  return getMeetingSlotAvailability(input);
 }
 
 /**
- * Validates the temporary admin access key and stores an httpOnly cookie.
+ * Validates admin email/password credentials and creates a secure session.
  *
  * @param formData Login form data.
- * @returns Redirects to admin overview on success.
+ * @returns Redirects to the requested admin route on success.
  */
 export async function loginAdmin(formData: FormData): Promise<void> {
- const key = String(formData.get('key') ?? '');
- const expectedKey = process.env.ADMIN_ACCESS_KEY;
+ const email = String(formData.get('email') ?? '');
+ const password = String(formData.get('password') ?? '');
+ const next = sanitizeAdminRedirect(String(formData.get('next') ?? '/admin'));
 
- if (!expectedKey || key !== expectedKey) {
- redirect('/admin/login?error=1');
+ if (isAdminAuthDisabledForDemo()) {
+ redirect(next);
  }
 
- const cookieStore = await cookies();
- cookieStore.set(ADMIN_COOKIE_NAME, key, {
- httpOnly: true,
- sameSite: 'lax',
- secure: process.env.NODE_ENV === 'production',
- path: '/admin',
- });
+ const result = await loginAdminWithPassword({ email, password });
 
- redirect('/admin');
+ if (!result.ok) {
+ const loginUrl = new URL('/admin/login', 'https://norm8.local');
+ loginUrl.searchParams.set('error', result.reason === 'DATABASE_UNAVAILABLE' ? 'unavailable' : '1');
+ loginUrl.searchParams.set('next', next);
+ redirect(`${loginUrl.pathname}${loginUrl.search}`);
+ }
+
+ redirect(next);
 }
 
 /**
@@ -141,6 +143,7 @@ export async function loginAdmin(formData: FormData): Promise<void> {
  * @returns Revalidates the lead detail page.
  */
 export async function updateLeadStatus(formData: FormData): Promise<void> {
+ await requireAdmin();
  const leadId = String(formData.get('leadId'));
  const status = String(formData.get('status')) as LeadStatus;
 
@@ -160,6 +163,7 @@ export async function updateLeadStatus(formData: FormData): Promise<void> {
  * @returns Revalidates the lead detail page.
  */
 export async function updateLeadPriority(formData: FormData): Promise<void> {
+ await requireAdmin();
  const leadId = String(formData.get('leadId'));
  const priority = String(formData.get('priority')) as LeadPriority;
 
@@ -179,6 +183,7 @@ export async function updateLeadPriority(formData: FormData): Promise<void> {
  * @returns Revalidates the lead detail page.
  */
 export async function addLeadNote(formData: FormData): Promise<void> {
+ await requireAdmin();
  const leadId = String(formData.get('leadId'));
  const message = String(formData.get('message') ?? '').trim();
 
@@ -205,6 +210,7 @@ export async function addLeadNote(formData: FormData): Promise<void> {
  * @returns Revalidates admin notification views.
  */
 export async function markNotificationAsRead(formData: FormData): Promise<void> {
+ await requireAdmin();
  const notificationId = String(formData.get('notificationId'));
 
  await prisma.notification.update({
@@ -226,6 +232,7 @@ export async function markNotificationAsRead(formData: FormData): Promise<void> 
  * @returns Revalidates the submission detail page.
  */
 export async function regenerateAuditAnalysis(formData: FormData): Promise<void> {
+ await requireAdmin();
  const submissionId = String(formData.get('submissionId') ?? '');
 
  if (!submissionId) {
@@ -254,6 +261,7 @@ export async function regenerateAuditAnalysis(formData: FormData): Promise<void>
  * @returns Revalidates the lead detail and overview pages.
  */
 export async function createLeadAction(formData: FormData): Promise<void> {
+ await requireAdmin();
  const leadId = String(formData.get('leadId') ?? '');
  const title = String(formData.get('title') ?? '').trim();
  const description = String(formData.get('description') ?? '').trim();
@@ -317,6 +325,7 @@ export async function createLeadAction(formData: FormData): Promise<void> {
  * @returns Revalidates the lead detail and overview pages.
  */
 export async function updateLeadActionStatus(formData: FormData): Promise<void> {
+ await requireAdmin();
  const leadId = String(formData.get('leadId') ?? '');
  const actionId = String(formData.get('actionId') ?? '');
  const status = String(formData.get('status') ?? 'PENDING') as LeadActionStatus;
@@ -371,6 +380,7 @@ export async function completeLeadAction(formData: FormData): Promise<void> {
  * @returns Revalidates the lead detail and overview pages.
  */
 export async function deleteLeadAction(formData: FormData): Promise<void> {
+ await requireAdmin();
  const leadId = String(formData.get('leadId') ?? '');
  const actionId = String(formData.get('actionId') ?? '');
 
@@ -406,6 +416,7 @@ export async function deleteLeadAction(formData: FormData): Promise<void> {
  * @returns Revalidates lead, overview and meetings pages.
  */
 export async function scheduleLeadActionMeeting(formData: FormData): Promise<void> {
+ await requireAdmin();
  const leadId = String(formData.get('leadId') ?? '');
  const actionId = String(formData.get('actionId') ?? '');
  const startsAtValue = String(formData.get('startsAt') ?? '').trim();
@@ -700,6 +711,7 @@ export async function sendLeadActionEmailExecution(
  _previousState: LeadActionEmailExecutionResult,
  formData: FormData,
 ): Promise<LeadActionEmailExecutionResult> {
+ await requireAdmin();
  const leadId = String(formData.get('leadId') ?? '');
  const actionId = String(formData.get('actionId') ?? '');
  const to = String(formData.get('to') ?? '').trim();
@@ -855,6 +867,7 @@ export async function registerLeadActionProposalIntent(
  _previousState: LeadActionProposalExecutionResult,
  formData: FormData,
 ): Promise<LeadActionProposalExecutionResult> {
+ await requireAdmin();
  const leadId = String(formData.get('leadId') ?? '').trim();
  const actionId = String(formData.get('actionId') ?? '').trim();
  const title = normalizeProposalText(String(formData.get('title') ?? ''));
@@ -987,6 +1000,7 @@ export async function generateProposalPdfExecution(
  _previousState: ProposalPdfGenerationResult,
  formData: FormData,
 ): Promise<ProposalPdfGenerationResult> {
+ await requireAdmin();
  const leadId = String(formData.get('leadId') ?? '').trim();
  const proposalId = String(formData.get('proposalId') ?? '').trim();
 
@@ -1095,6 +1109,7 @@ function isValidProposalValue(value: string): boolean {
  * @returns Revalidates lead and overview pages.
  */
 export async function registerLeadActionCall(formData: FormData): Promise<void> {
+ await requireAdmin();
  const leadId = String(formData.get('leadId') ?? '');
  const actionId = String(formData.get('actionId') ?? '');
  const notes = String(formData.get('notes') ?? '').trim();
@@ -1141,6 +1156,7 @@ export async function registerLeadActionCall(formData: FormData): Promise<void> 
  * @returns Revalidates lead and overview pages.
  */
 export async function registerLeadActionGenericExecution(formData: FormData): Promise<void> {
+ await requireAdmin();
  const leadId = String(formData.get('leadId') ?? '');
  const actionId = String(formData.get('actionId') ?? '');
  const notes = String(formData.get('notes') ?? '').trim();
@@ -1179,6 +1195,7 @@ export async function registerLeadActionGenericExecution(formData: FormData): Pr
  * @returns Revalidates lead, lead list and overview pages.
  */
 export async function closeLeadAsLostFromAction(formData: FormData): Promise<void> {
+ await requireAdmin();
  const leadId = String(formData.get('leadId') ?? '');
  const actionId = String(formData.get('actionId') ?? '');
  const reason = String(formData.get('reason') ?? '').trim();

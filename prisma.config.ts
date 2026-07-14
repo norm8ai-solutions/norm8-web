@@ -6,6 +6,7 @@
  * - Load environment variables from .env before Prisma resolves them.
  * - Point Prisma to the schema file used by the application.
  * - Resolve the PostgreSQL connection string from the runtime environment.
+ * - Prefer DIRECT_URL for Prisma CLI commands when it is configured.
  * ------------------------------------------------------------------
  */
 
@@ -15,6 +16,6 @@ import { defineConfig, env } from 'prisma/config';
 export default defineConfig({
   schema: 'prisma/schema.prisma',
   datasource: {
-    url: env('DATABASE_URL'),
+    url: process.env.DIRECT_URL || env('DATABASE_URL'),
   },
 });

@@ -1,63 +1,86 @@
 /**
  * ------------------------------------------------------------------
  * File: app/admin/login/page.tsx
- * Description: Temporary access page for the Norm8 admin dashboard.
+ * Description: Secure sign-in page for the Norm8 Admin dashboard.
  * Responsibilities:
- * - Accept the ADMIN_ACCESS_KEY while auth is not implemented.
- * - Store access through a server action and httpOnly cookie.
- * - Keep the route replaceable by Clerk/Auth later.
+ * - Ask for admin email and password.
+ * - Redirect already authenticated admins away from login.
+ * - Keep error messages generic and aligned with Norm8 branding.
  * ------------------------------------------------------------------
  */
 
-import { ArrowRight, ShieldCheck } from 'lucide-react';
+import { redirect } from 'next/navigation';
+import AdminLoginForm from '@/components/admin/AdminLoginForm';
 import AdminLogo from '@/components/admin/AdminLogo';
-import { loginAdmin } from '@/lib/admin/actions';
+import {
+  ADMIN_LOGIN_ERROR_MESSAGE,
+  ADMIN_LOGIN_UNAVAILABLE_MESSAGE,
+  getCurrentAdmin,
+  sanitizeAdminRedirect,
+} from '@/lib/admin/auth';
 
 type AdminLoginPageProps = {
   searchParams?: Promise<{
     error?: string;
+    next?: string;
   }>;
 };
 
+export const dynamic = 'force-dynamic';
+export const metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
+
 /**
- * Renders the temporary admin login form.
+ * Renders the secure admin login form.
  *
- * @param props Search params with optional error flag.
+ * @param props Search params with optional error and safe next route.
  * @returns Login page.
  */
 export default async function AdminLoginPage({
   searchParams,
 }: AdminLoginPageProps) {
   const params = await searchParams;
+  const next = sanitizeAdminRedirect(params?.next);
+  const admin = await getCurrentAdmin();
+
+  if (admin) {
+    redirect(next);
+  }
 
   return (
-    <div className="admin-login-page">
-      <section className="admin-login-card">
-        <AdminLogo caption="Área interna" />
-        <h2 className="admin-login-title">Acesso Admin</h2>
-        <p className="admin-login-copy">
-          Área interna Norm8 para operação de leads, submissões, reuniões e emails.
-        </p>
+    <div className="admin-shell">
+      <div className="admin-login-page">
+        <section className="admin-login-card">
+          <AdminLogo caption="Área interna" />
+          <p className="admin-topbar-eyebrow" style={{ marginTop: 24 }}>
+            NORM8 ADMIN
+          </p>
+          <h1 className="admin-login-title">Área Interna</h1>
+          <p className="admin-login-copy">
+            Acesso seguro à operação comercial da Norm8: leads, reuniões, emails,
+            propostas e auditorias inteligentes.
+          </p>
 
-        <form action={loginAdmin} style={{ display: 'grid', gap: 14, marginTop: 24 }}>
-          <input
-            className="admin-input"
-            name="key"
-            placeholder="Código de acesso"
-            type="password"
+          <AdminLoginForm
+            error={
+              params?.error === 'unavailable'
+                ? ADMIN_LOGIN_UNAVAILABLE_MESSAGE
+                : params?.error
+                  ? ADMIN_LOGIN_ERROR_MESSAGE
+                  : undefined
+            }
+            next={next}
           />
-          {params?.error && (
-            <p style={{ color: '#fca5a5', fontSize: 13, margin: 0 }}>
-              Código inválido.
-            </p>
-          )}
-          <button className="admin-button" type="submit">
-            <ShieldCheck size={15} />
-            Entrar
-            <ArrowRight size={15} />
-          </button>
-        </form>
-      </section>
+
+          <p className="admin-login-footnote">
+            Usa apenas uma conta autorizada. As tentativas de acesso são registadas por segurança.
+          </p>
+        </section>
+      </div>
     </div>
   );
 }

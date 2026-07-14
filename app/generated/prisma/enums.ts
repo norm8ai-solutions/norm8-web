@@ -86,6 +86,14 @@ export const LeadPriority = {
 export type LeadPriority = (typeof LeadPriority)[keyof typeof LeadPriority]
 
 
+export const AdminRole = {
+  ADMIN: 'ADMIN',
+  OPERATOR: 'OPERATOR'
+} as const
+
+export type AdminRole = (typeof AdminRole)[keyof typeof AdminRole]
+
+
 export const NotificationStatus = {
   UNREAD: 'UNREAD',
   READ: 'READ',

@@ -11,7 +11,7 @@
 
 'use client';
 
-import { CalendarDays, ExternalLink, ShieldCheck } from 'lucide-react';
+import { CalendarDays, ExternalLink, LogOut, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import AdminCommandBar from './AdminCommandBar';
@@ -81,7 +81,17 @@ function getTopbarCopy(pathname: string): TopbarCopy {
  *
  * @returns Route-aware admin topbar.
  */
-export default function AdminTopbar() {
+type AdminTopbarProps = {
+  adminEmail: string;
+  adminName: string | null;
+  isDemoMode?: boolean;
+};
+
+export default function AdminTopbar({
+  adminEmail,
+  adminName,
+  isDemoMode = false,
+}: AdminTopbarProps) {
   const pathname = usePathname();
   const copy = getTopbarCopy(pathname);
   const today = new Intl.DateTimeFormat('pt-PT', {
@@ -99,9 +109,14 @@ export default function AdminTopbar() {
       </div>
       <div className="admin-topbar-actions">
         <AdminCommandBar />
-        <span className="admin-pill">
+        {isDemoMode && (
+          <span className="admin-pill admin-pill-alert">
+            Modo demo — autenticação desativada
+          </span>
+        )}
+        <span className="admin-pill" title={adminEmail}>
           <ShieldCheck size={14} />
-          Internal
+          {adminName ?? adminEmail}
         </span>
         <span className="admin-pill">
           <CalendarDays size={14} />
@@ -111,6 +126,12 @@ export default function AdminTopbar() {
           <ExternalLink size={14} />
           Voltar ao site
         </Link>
+        <form action="/admin/logout" method="post">
+          <button className="admin-button admin-button-muted" type="submit">
+            <LogOut size={14} />
+            Terminar sessão
+          </button>
+        </form>
       </div>
     </header>
   );

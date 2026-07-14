@@ -9,11 +9,13 @@
  * ------------------------------------------------------------------
  */
 
+import { headers } from 'next/headers';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import AdminLogo from '@/components/admin/AdminLogo';
 import AdminNav from '@/components/admin/AdminNav';
 import AdminTopbar from '@/components/admin/AdminTopbar';
+import { isAdminAuthDisabledForDemo, requireAdmin } from '@/lib/admin/auth';
 import './admin.css';
 
 type AdminLayoutProps = {
@@ -21,6 +23,12 @@ type AdminLayoutProps = {
 };
 
 export const dynamic = 'force-dynamic';
+export const metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 /**
  * Renders the shared admin navigation shell.
@@ -28,7 +36,17 @@ export const dynamic = 'force-dynamic';
  * @param props Admin page children.
  * @returns Admin shell layout.
  */
-export default function AdminLayout({ children }: AdminLayoutProps) {
+export default async function AdminLayout({ children }: AdminLayoutProps) {
+  const headerStore = await headers();
+  const pathname = headerStore.get('x-norm8-pathname') ?? '';
+
+  if (pathname === '/admin/login') {
+    return children;
+  }
+
+  const admin = await requireAdmin();
+  const demoMode = isAdminAuthDisabledForDemo();
+
   return (
     <div className="admin-shell">
       <div className="admin-layout">
@@ -51,7 +69,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         </aside>
 
         <div className="admin-main">
-          <AdminTopbar />
+          <AdminTopbar adminEmail={admin.email} adminName={admin.name} isDemoMode={demoMode} />
           <main className="admin-content">{children}</main>
         </div>
       </div>

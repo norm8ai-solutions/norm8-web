@@ -271,6 +271,67 @@ model AuditAnalysis {
   @@index([createdAt])
 }
 
+/// Internal back-office user allowed to access the Norm8 Admin.
+model AdminUser {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  normalizedEmail String    @unique
+  name            String?
+  passwordHash    String
+  role            AdminRole @default(OPERATOR)
+  isActive        Boolean   @default(true)
+  failedAttempts  Int       @default(0)
+  lockedUntil     DateTime?
+  lastLoginAt     DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  sessions AdminSession[]
+  authLogs AdminAuthLog[]
+
+  @@index([role])
+  @@index([isActive])
+  @@index([lockedUntil])
+}
+
+/// Server-side admin session. The browser only receives the raw token in an httpOnly cookie.
+model AdminSession {
+  id          String    @id @default(cuid())
+  adminUserId String
+  tokenHash   String    @unique
+  userAgent   String?
+  ipHash      String?
+  expiresAt   DateTime
+  lastSeenAt  DateTime  @default(now())
+  createdAt   DateTime  @default(now())
+  revokedAt   DateTime?
+
+  adminUser AdminUser @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+
+  @@index([adminUserId])
+  @@index([expiresAt])
+  @@index([revokedAt])
+}
+
+/// Security audit trail for admin authentication events.
+model AdminAuthLog {
+  id          String   @id @default(cuid())
+  adminUserId String?
+  event       String
+  email       String?
+  ipHash      String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  adminUser AdminUser? @relation(fields: [adminUserId], references: [id], onDelete: SetNull)
+
+  @@index([adminUserId])
+  @@index([event])
+  @@index([email])
+  @@index([ipHash])
+  @@index([createdAt])
+}
+
 /// Supported public acquisition flows that all use the same submissions pipeline.
 enum SubmissionType {
   AUDIT_REQUEST
@@ -332,6 +393,12 @@ enum LeadPriority {
   MEDIUM
   HIGH
   URGENT
+}
+
+/// Back-office authorization roles.
+enum AdminRole {
+  ADMIN
+  OPERATOR
 }
 
 /// Read state for internal notifications.

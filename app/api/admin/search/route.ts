@@ -10,12 +10,18 @@
  */
 
 import { NextResponse } from 'next/server';
+import { getCurrentAdmin } from '@/lib/admin/auth';
 import { searchAdminGlobal } from '@/lib/admin/global-search';
 import type { AdminGlobalSearchResponse } from '@/lib/admin/search-types';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
+  const admin = await getCurrentAdmin();
+
+  if (!admin) {
+    return NextResponse.json({ error: 'N?o autorizado.' }, { status: 401 });
+  }
   const { searchParams } = new URL(request.url);
   const query = (searchParams.get('q') ?? '').trim();
 

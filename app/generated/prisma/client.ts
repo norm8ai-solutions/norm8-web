@@ -86,3 +86,18 @@ export type MeetingBooking = Prisma.MeetingBookingModel
  * AI-generated operational audit analysis for intelligent audit submissions.
  */
 export type AuditAnalysis = Prisma.AuditAnalysisModel
+/**
+ * Model AdminUser
+ * Internal back-office user allowed to access the Norm8 Admin.
+ */
+export type AdminUser = Prisma.AdminUserModel
+/**
+ * Model AdminSession
+ * Server-side admin session. The browser only receives the raw token in an httpOnly cookie.
+ */
+export type AdminSession = Prisma.AdminSessionModel
+/**
+ * Model AdminAuthLog
+ * Security audit trail for admin authentication events.
+ */
+export type AdminAuthLog = Prisma.AdminAuthLogModel
