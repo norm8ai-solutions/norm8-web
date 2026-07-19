@@ -41,6 +41,7 @@ model Lead {
   auditAnalyses   AuditAnalysis[]
   leadActions     LeadAction[]
   proposals       Proposal[]
+  contracts       Contract[]
 
   @@index([normalizedCompany])
   @@index([normalizedWebsite])
@@ -138,6 +139,7 @@ model Proposal {
   lead       Lead        @relation(fields: [leadId], references: [id], onDelete: Cascade)
   submission Submission? @relation(fields: [submissionId], references: [id], onDelete: SetNull)
   leadAction LeadAction? @relation(fields: [leadActionId], references: [id], onDelete: SetNull)
+  contracts  Contract[]
 
   @@index([leadId])
   @@index([submissionId])
@@ -222,6 +224,7 @@ model MeetingBooking {
   lead       Lead        @relation(fields: [leadId], references: [id], onDelete: Cascade)
   submission Submission? @relation(fields: [submissionId], references: [id], onDelete: SetNull)
   emailLogs  EmailLog[]
+  contracts  Contract[]
 
   @@index([leadId])
   @@index([status])
@@ -286,8 +289,13 @@ model AdminUser {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  sessions AdminSession[]
-  authLogs AdminAuthLog[]
+  sessions                  AdminSession[]
+  authLogs                  AdminAuthLog[]
+  createdContracts          Contract[]             @relation("ContractCreatedBy")
+  assignedContracts         Contract[]             @relation("ContractAssignedTo")
+  contractActivityLogs      ContractActivityLog[]
+  contractVersions          ContractVersion[]
+  companyLegalSettingsEdits CompanyLegalSettings[]
 
   @@index([role])
   @@index([isActive])
@@ -329,6 +337,280 @@ model AdminAuthLog {
   @@index([event])
   @@index([email])
   @@index([ipHash])
+  @@index([createdAt])
+}
+
+/// Internal legal identity used as the provider snapshot source for generated contracts.
+model CompanyLegalSettings {
+  id                 String   @id @default(cuid())
+  key                String   @unique @default("default")
+  legalName          String
+  tradeName          String
+  taxId              String
+  address            String
+  email              String
+  phone              String
+  website            String
+  representative     String
+  representativeRole String
+  iban               String
+  bankName           String
+  swiftBic           String?
+  internalNote       String?
+  updatedById        String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  updatedBy AdminUser? @relation(fields: [updatedById], references: [id], onDelete: SetNull)
+
+  @@index([updatedById])
+}
+
+/// Commercial services contract prepared from Lead and optional Proposal context.
+model Contract {
+  id                String               @id @default(cuid())
+  number            String               @unique
+  version           Int                  @default(1)
+  title             String
+  status            ContractStatus       @default(DRAFT)
+  leadId            String?
+  proposalId        String?
+  meetingBookingId  String?
+  templateId        String?
+  projectName       String?
+  clientSnapshot    Json
+  providerSnapshot  Json
+  projectSnapshot   Json
+  financialSnapshot Json
+  termsSnapshot     Json
+  serviceType       ContractServiceType?
+  serviceTypeOther  String?
+  plan              ContractPlan?
+  includesLaunch    Boolean              @default(true)
+  includesOperate   Boolean              @default(false)
+  includesScale     Boolean              @default(false)
+  estimatedValue    Decimal?
+  currency          String               @default("EUR")
+  issueDate         DateTime?
+  validUntil        DateTime?
+  signedAt          DateTime?
+  cancelledAt       DateTime?
+  pdfUrl            String?
+  pdfStorageKey     String?
+  pdfHash           String?
+  generatedAt       DateTime?
+  createdById       String
+  assignedToId      String?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+
+  lead              Lead?                      @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  proposal          Proposal?                  @relation(fields: [proposalId], references: [id], onDelete: SetNull)
+  meetingBooking    MeetingBooking?            @relation(fields: [meetingBookingId], references: [id], onDelete: SetNull)
+  template          ContractTemplate?          @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  createdBy         AdminUser                  @relation("ContractCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  assignedTo        AdminUser?                 @relation("ContractAssignedTo", fields: [assignedToId], references: [id], onDelete: SetNull)
+  sections          ContractSection[]
+  phases            ContractPhase[]
+  deliverables      ContractDeliverable[]
+  paymentMilestones ContractPaymentMilestone[]
+  versions          ContractVersion[]
+  activityLogs      ContractActivityLog[]
+
+  @@index([leadId])
+  @@index([proposalId])
+  @@index([meetingBookingId])
+  @@index([templateId])
+  @@index([status])
+  @@index([serviceType])
+  @@index([plan])
+  @@index([createdById])
+  @@index([assignedToId])
+  @@index([createdAt])
+  @@index([validUntil])
+}
+
+/// Reusable library template for future contract document generation.
+model ContractTemplate {
+  id           String   @id @default(cuid())
+  name         String
+  description  String?
+  version      Int      @default(1)
+  isActive     Boolean  @default(true)
+  internalNote String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  sections  ContractTemplateSection[]
+  contracts Contract[]
+
+  @@index([isActive])
+  @@index([name])
+}
+
+/// Reusable legal/document section that can be copied into a Contract.
+model ContractTemplateSection {
+  id         String                  @id @default(cuid())
+  templateId String
+  category   ContractSectionCategory
+  title      String
+  content    String
+  order      Int
+  isRequired Boolean                 @default(false)
+  version    Int                     @default(1)
+  isActive   Boolean                 @default(true)
+  variables  Json?
+  createdAt  DateTime                @default(now())
+  updatedAt  DateTime                @updatedAt
+
+  template ContractTemplate  @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  sections ContractSection[]
+
+  @@unique([templateId, order])
+  @@index([category])
+  @@index([isActive])
+}
+
+/// Contract-owned section snapshot copied from the selected template.
+model ContractSection {
+  id                String                  @id @default(cuid())
+  contractId        String
+  templateSectionId String?
+  category          ContractSectionCategory
+  title             String
+  content           String
+  order             Int
+  isRequired        Boolean                 @default(false)
+  sourceVersion     Int?
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
+
+  contract        Contract                 @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  templateSection ContractTemplateSection? @relation(fields: [templateSectionId], references: [id], onDelete: SetNull)
+
+  @@unique([contractId, order])
+  @@index([contractId])
+  @@index([templateSectionId])
+  @@index([category])
+}
+
+/// Immutable version record prepared for generated/sent contracts.
+model ContractVersion {
+  id            String         @id @default(cuid())
+  contractId    String
+  version       Int
+  title         String
+  status        ContractStatus
+  snapshot      Json
+  pdfUrl        String?
+  pdfStorageKey String?
+  pdfHash       String?
+  generatedAt   DateTime?
+  createdById   String
+  createdAt     DateTime       @default(now())
+
+  contract  Contract  @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  createdBy AdminUser @relation(fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@unique([contractId, version])
+  @@index([createdById])
+  @@index([createdAt])
+}
+
+/// Annual contract number sequence, one row per document type and year.
+model ContractNumberSequence {
+  id         String               @id @default(cuid())
+  year       Int
+  type       ContractDocumentType
+  nextNumber Int                  @default(1)
+  createdAt  DateTime             @default(now())
+  updatedAt  DateTime             @updatedAt
+
+  @@unique([year, type])
+}
+
+/// Initial operational phase structure prepared for the full editor.
+model ContractPhase {
+  id               String             @id @default(cuid())
+  contractId       String
+  name             String
+  phaseType        ContractPhaseType?
+  order            Int
+  startsAt         DateTime?
+  endsAt           DateTime?
+  duration         String?
+  description      String?
+  dependencies     String?
+  paymentMilestone String?
+  approvalCriteria String?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  contract Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  @@unique([contractId, order])
+  @@index([contractId])
+}
+
+/// Initial deliverable structure prepared for the full editor.
+model ContractDeliverable {
+  id                 String                    @id @default(cuid())
+  contractId         String
+  title              String
+  description        String?
+  phase              ContractPhaseType?
+  status             ContractDeliverableStatus @default(PLANNED)
+  order              Int?
+  estimatedDate      DateTime?
+  responsible        String?
+  acceptanceCriteria String?
+  createdAt          DateTime                  @default(now())
+  updatedAt          DateTime                  @updatedAt
+
+  contract Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  @@index([contractId])
+  @@index([status])
+}
+
+/// Initial payment milestone structure prepared for finance workflows.
+model ContractPaymentMilestone {
+  id               String                 @id @default(cuid())
+  contractId       String
+  percentage       Decimal?
+  amount           Decimal?
+  currency         String                 @default("EUR")
+  invoiceMoment    String?
+  expectedDate     DateTime?
+  description      String?
+  status           PaymentMilestoneStatus @default(PENDING)
+  billingCondition String?
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
+
+  contract Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  @@index([contractId])
+  @@index([status])
+  @@index([expectedDate])
+}
+
+/// Contract-specific audit trail for commercial and document actions.
+model ContractActivityLog {
+  id          String               @id @default(cuid())
+  contractId  String
+  adminUserId String?
+  type        ContractActivityType
+  message     String
+  metadata    Json?
+  createdAt   DateTime             @default(now())
+
+  contract  Contract   @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  adminUser AdminUser? @relation(fields: [adminUserId], references: [id], onDelete: SetNull)
+
+  @@index([contractId])
+  @@index([adminUserId])
+  @@index([type])
   @@index([createdAt])
 }
 
@@ -450,4 +732,112 @@ enum ImplementationComplexity {
   LOW
   MEDIUM
   HIGH
+}
+
+enum ContractStatus {
+  DRAFT
+  IN_REVIEW
+  READY_TO_SEND
+  SENT
+  VIEWED
+  AWAITING_SIGNATURE
+  SIGNED
+  REJECTED
+  EXPIRED
+  CANCELLED
+}
+
+enum ContractDocumentType {
+  CTR
+  SOW
+  CR
+  NDA
+  SLA
+}
+
+enum ContractServiceType {
+  WEBSITE
+  CUSTOM_SOFTWARE
+  PROCESS_AUTOMATION
+  AI_AGENTS
+  SYSTEM_INTEGRATION
+  TECHNOLOGY_CONSULTING
+  COMMERCIAL_PLATFORM
+  MAINTENANCE_EVOLUTION
+  OTHER
+}
+
+enum ContractPlan {
+  STARTER
+  PROFESSIONAL
+  BUSINESS
+  CUSTOM
+}
+
+enum ContractPhaseType {
+  LAUNCH
+  OPERATE
+  SCALE
+  OTHER
+}
+
+enum ContractDeliverableStatus {
+  PLANNED
+  IN_PROGRESS
+  DELIVERED
+  ACCEPTED
+  BLOCKED
+}
+
+enum PaymentMilestoneStatus {
+  PENDING
+  READY_TO_INVOICE
+  INVOICED
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum ContractSectionCategory {
+  OBJECT
+  SCOPE
+  RESPONSIBILITIES
+  TIMELINE
+  APPROVALS
+  SCOPE_CHANGE
+  PAYMENTS
+  DELAYS
+  SUSPENSION
+  OPERATE
+  SLA
+  WARRANTY
+  INTELLECTUAL_PROPERTY
+  CONFIDENTIALITY
+  DATA_PROTECTION
+  THIRD_PARTY_SERVICES
+  LIABILITY_LIMITATION
+  TERMINATION
+  FORCE_MAJEURE
+  COMMUNICATIONS
+  APPLICABLE_LAW
+  JURISDICTION
+  SIGNATURES
+  ANNEX
+}
+
+enum ContractActivityType {
+  CONTRACT_CREATED
+  CONTRACT_UPDATED
+  CONTRACT_STATUS_CHANGED
+  CONTRACT_VERSION_CREATED
+  CONTRACT_PDF_GENERATION_REQUESTED
+  CONTRACT_SENT
+  CONTRACT_DRAFT_UPDATED
+  CONTRACT_CLIENT_UPDATED
+  CONTRACT_SERVICE_UPDATED
+  CONTRACT_SCOPE_UPDATED
+  CONTRACT_TIMELINE_UPDATED
+  CONTRACT_FINANCIALS_UPDATED
+  CONTRACT_CLAUSES_UPDATED
+  CONTRACT_REVIEW_SAVED
 }

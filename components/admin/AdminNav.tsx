@@ -14,6 +14,7 @@
 import {
   Bell,
   CalendarClock,
+  FileSignature,
   Gauge,
   Inbox,
   Mail,
@@ -41,6 +42,7 @@ const navSections: Array<{ label?: string; items: NavItem[] }> = [
       { label: 'Sales', icon: TrendingUp, disabled: true },
       { href: '/admin/leads', label: 'Leads', icon: Users },
       { href: '/admin/submissions', label: 'Pipeline', icon: Inbox },
+      { href: '/admin/contracts', label: 'Contratos', icon: FileSignature },
     ],
   },
   {
@@ -52,7 +54,7 @@ const navSections: Array<{ label?: string; items: NavItem[] }> = [
   },
   {
     items: [
-      { label: 'Settings', icon: Settings, disabled: true },
+      { href: '/admin/settings/company/legal', label: 'Settings', icon: Settings },
       { label: 'Users', icon: UserCog, disabled: true },
       { label: 'Integrations', icon: Plug, disabled: true },
     ],
