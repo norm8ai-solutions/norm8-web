@@ -6,7 +6,7 @@ import { z } from 'zod';
 import type { ContractPlan, ContractSectionCategory, ContractServiceType } from '@/app/generated/prisma/client';
 import { requireAdmin } from '@/lib/admin/auth';
 import { ContractAdminResolutionError, createContractDraft, updateCompanyLegalSettings, updateContractFromWizard, type ContractWizardInput } from './service';
-import { getMissingContractClientLegalFields, getMissingContractProviderLegalFields, getMissingContractScopeFields, getMissingContractServiceFields, getStepMissingFields } from './wizard/validation';
+import { getMissingContractClientLegalFields, getMissingContractFinancialFields, getMissingContractProviderLegalFields, getMissingContractScopeFields, getMissingContractServiceFields, getStepMissingFields } from './wizard/validation';
 
 const contractServiceTypes: ContractServiceType[] = ['WEBSITE', 'CUSTOM_SOFTWARE', 'PROCESS_AUTOMATION', 'AI_AGENTS', 'SYSTEM_INTEGRATION', 'TECHNOLOGY_CONSULTING', 'COMMERCIAL_PLATFORM', 'MAINTENANCE_EVOLUTION', 'OTHER'];
 const contractPlans: ContractPlan[] = ['STARTER', 'PROFESSIONAL', 'BUSINESS', 'CUSTOM'];
@@ -194,6 +194,17 @@ function buildContractDraftRedirect(contractId: string, data: ContractWizardInpu
  scope: data.scope,
  deliverables: data.deliverables.map((item) => ({ ...item, estimatedDate: item.estimatedDate?.toISOString() ?? null })),
  });
+ const missingFinancialFields = getMissingContractFinancialFields({
+ financials: mapFinancialsForValidation(data.financials),
+ paymentMilestones: data.paymentMilestones.map((item) => ({
+ percentage: valueToString(item.percentage),
+ amount: valueToString(item.amount),
+ invoiceMoment: item.invoiceMoment ?? null,
+ expectedDate: item.expectedDate?.toISOString() ?? null,
+ description: item.description ?? null,
+ billingCondition: item.billingCondition ?? null,
+ })),
+ });
  const missingTimelineFields = getStepMissingFields('timeline', {
  phases: data.phases.map((item) => ({
  ...item,
@@ -207,6 +218,7 @@ function buildContractDraftRedirect(contractId: string, data: ContractWizardInpu
  ...missingServiceFields.map((field) => `Serviço: ${field}`),
  ...missingScopeFields.map((field) => `Âmbito: ${field}`),
  ...missingTimelineFields.map((field) => 'Cronograma: ' + field),
+ ...missingFinancialFields.map((field) => 'Investimento: ' + field),
  ];
 
  if (missingFields.length === 0) return `/admin/contracts/${contractId}`;
@@ -216,6 +228,15 @@ function buildContractDraftRedirect(contractId: string, data: ContractWizardInpu
  missing: missingFields.join(', '),
  });
  return `/admin/contracts/${contractId}?${params.toString()}`;
+}
+function mapFinancialsForValidation(financials: ContractWizardInput['financials']): Record<string, string | boolean | null | undefined> {
+ return Object.fromEntries(
+ Object.entries(financials).map(([key, value]) => [key, typeof value === 'boolean' || value === null || value === undefined ? value : String(value)]),
+ );
+}
+
+function valueToString(value: unknown): string | null {
+ return value === null || value === undefined ? null : String(value);
 }
 function parseWizardForm(formData: FormData, admin: { id: string; email: string }): { success: true; data: ContractWizardInput } | { success: false } {
  const rawPayload = String(formData.get('wizardPayload') ?? '');

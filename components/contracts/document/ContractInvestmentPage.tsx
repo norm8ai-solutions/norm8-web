@@ -7,7 +7,7 @@ export function ContractInvestmentPage({ contract, pageNumber }: { contract: Con
   return (
     <ContractPageFrame contract={contract} pageNumber={pageNumber} title="Investimento e pagamentos">
       <SectionHeading title="Investimento e pagamentos" lead="Valores, impostos, validade e milestones de faturação." />
-      <WarningList warnings={contract.warnings.filter((warning) => warning.includes('financeiros'))} />
+      <WarningList warnings={contract.warnings.filter((warning) => warning.includes('financeiros') || warning.includes('investimento'))} />
       <div className="contract-grid-3">
         <InfoCard label="Valor comercial" value={formatMoneyValue(f.commercialValue, f.currency)} />
         <InfoCard label="Desconto" value={f.discount ? formatMoneyValue(f.discount, f.currency) : 'Sem desconto'} />
@@ -20,9 +20,21 @@ export function ContractInvestmentPage({ contract, pageNumber }: { contract: Con
         <InfoCard label="Data limite" value={formatShortDate(f.paymentDueDate)} />
       </div>
       {contract.payments.length > 0 ? (
-        <div className="contract-table-wrap"><table className="contract-table"><thead><tr><th>%</th><th>Valor</th><th>Momento</th><th>Data</th><th>Condição</th></tr></thead><tbody>{contract.payments.map((payment) => <tr key={payment.id}><td>{payment.percentage ?? '-'}</td><td>{formatMoneyValue(payment.amount, payment.currency)}</td><td>{payment.invoiceMoment ?? 'Por definir'}</td><td>{formatShortDate(payment.expectedDate)}</td><td>{payment.billingCondition ?? payment.description ?? 'Por definir'}</td></tr>)}</tbody></table></div>
+        <div className="contract-table-wrap"><table className="contract-table"><thead><tr><th>%</th><th>Valor</th><th>Valor c/ IVA</th><th>Momento</th><th>Data</th><th>Condição</th></tr></thead><tbody>{contract.payments.map((payment) => <tr key={payment.id}><td>{payment.percentage ?? '-'}</td><td>{formatMoneyValue(payment.amount, payment.currency)}</td><td>{formatMoneyValue(calculatePaymentValueWithVat(payment.amount, f.vatRate), payment.currency)}</td><td>{payment.invoiceMoment ?? 'Por definir'}</td><td>{formatShortDate(payment.expectedDate)}</td><td>{payment.billingCondition ?? payment.description ?? 'Por definir'}</td></tr>)}</tbody></table></div>
       ) : <div className="contract-warning">Sem milestones de pagamento definidos.</div>}
       {(f.operateMonthlyFee || f.setupFee || f.thirdPartyCosts) ? <InfoCard label="Serviços recorrentes" value={`Fee mensal: ${formatMoneyValue(f.operateMonthlyFee, f.currency)}. Periodicidade: ${f.operatePeriodicity ?? 'Por definir'}. Pré-aviso: ${f.operateNoticePeriod ?? 'Por definir'}.`} /> : null}
     </ContractPageFrame>
   );
+}
+function calculatePaymentValueWithVat(amount: string | null, vatRate: string | null): string | null {
+  const parsedAmount = parseMoney(amount);
+  const parsedVat = parseMoney(vatRate) ?? 0;
+  if (parsedAmount === null) return null;
+  return String(Math.round((parsedAmount * (1 + parsedVat / 100) + Number.EPSILON) * 100) / 100);
+}
+
+function parseMoney(value: string | null): number | null {
+  if (!value) return null;
+  const parsed = Number(value.replace(',', '.'));
+  return Number.isFinite(parsed) ? parsed : null;
 }

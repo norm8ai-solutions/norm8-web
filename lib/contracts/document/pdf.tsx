@@ -8,7 +8,7 @@ import { ContractDocument } from '@/components/contracts/document/ContractDocume
 import { prisma } from '@/lib/db/prisma';
 import { getContractLogoDataUri } from '@/lib/contracts/document/assets';
 import { ContractAdminResolutionError, resolvePersistentAdminId as resolvePersistentContractAdminId } from '@/lib/contracts/service';
-import { getMissingContractScopeFields, getMissingContractServiceFields, getStepMissingFields, hasMeaningfulLegalText, isValidBasicPortugueseTaxId, isValidEmail, isValidRequiredProviderTaxId } from '@/lib/contracts/wizard/validation';
+import { getMissingContractFinancialFields, getMissingContractScopeFields, getMissingContractServiceFields, getStepMissingFields, hasMeaningfulLegalText, isValidBasicPortugueseTaxId, isValidEmail, isValidRequiredProviderTaxId } from '@/lib/contracts/wizard/validation';
 import { getContractDocumentData } from './data';
 import { slugifyFilePart } from './formatters';
 
@@ -160,6 +160,24 @@ function validateReadyForPdf(data: Awaited<ReturnType<typeof getContractDocument
     );
   }
 
+  const missingFinancialFields = getMissingContractFinancialFields({
+    financials: data.financials,
+    paymentMilestones: data.payments.map((payment) => ({
+      percentage: payment.percentage,
+      amount: payment.amount,
+      invoiceMoment: payment.invoiceMoment,
+      expectedDate: payment.expectedDate?.toISOString() ?? null,
+      description: payment.description,
+      billingCondition: payment.billingCondition,
+    })),
+  });
+  if (missingFinancialFields.length > 0) {
+    throw new ContractPdfError(
+      'missing_financials',
+      'Não é possível gerar o contrato final porque existem dados de investimento e pagamentos em falta.',
+      { missingFields: missingFinancialFields },
+    );
+  }
   if (data.sections.filter((section) => section.isRequired).length === 0) {
     throw new ContractPdfError('missing_clauses', 'Cláusulas obrigatórias em falta.');
   }

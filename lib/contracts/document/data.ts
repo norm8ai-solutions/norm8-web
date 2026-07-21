@@ -2,7 +2,7 @@ import 'server-only';
 
 import { Prisma, type ContractDeliverableStatus, type ContractPhaseType, type ContractSectionCategory, type PaymentMilestoneStatus } from '@/app/generated/prisma/client';
 import { prisma } from '@/lib/db/prisma';
-import { getMissingContractScopeFields, getMissingContractServiceFields, getStepMissingFields, hasMeaningfulLegalText, isValidEmail, isValidRequiredProviderTaxId } from '@/lib/contracts/wizard/validation';
+import { getMissingContractFinancialFields, getMissingContractScopeFields, getMissingContractServiceFields, getStepMissingFields, hasMeaningfulLegalText, isValidEmail, isValidRequiredProviderTaxId } from '@/lib/contracts/wizard/validation';
 import { asObject, textArray, textValue } from './formatters';
 import type { ContractDocumentData, ContractDocumentDeliverable, ContractDocumentParty } from './types';
 
@@ -198,6 +198,17 @@ function buildWarnings(data: ContractDocumentData): string[] {
     })),
   });
 
+  const missingFinancialFields = getMissingContractFinancialFields({
+    financials: data.financials,
+    paymentMilestones: data.payments.map((payment) => ({
+      percentage: payment.percentage,
+      amount: payment.amount,
+      invoiceMoment: payment.invoiceMoment,
+      expectedDate: payment.expectedDate?.toISOString() ?? null,
+      description: payment.description,
+      billingCondition: payment.billingCondition,
+    })),
+  });
   const missingTimelineFields = getStepMissingFields('timeline', {
     phases: data.phases.map((phase) => ({
       name: phase.name,
@@ -216,6 +227,7 @@ function buildWarnings(data: ContractDocumentData): string[] {
     missingServiceFields.length > 0 ? `Dados do serviço e plano em falta: ${missingServiceFields.join(', ')}.` : null,
     missingScopeFields.length > 0 ? `Dados de âmbito e entregáveis em falta: ${missingScopeFields.join(', ')}.` : null,
     missingTimelineFields.length > 0 ? 'Rascunho guardado. Existem dados do cronograma em falta que serão necessários antes de gerar o contrato final: ' + missingTimelineFields.join(', ') + '.' : null,
+    missingFinancialFields.length > 0 ? 'Rascunho guardado. Existem dados de investimento e pagamentos em falta que serão necessários antes de gerar o contrato final: ' + missingFinancialFields.join(', ') + '.' : null,
     data.sections.filter((section) => section.isRequired).length === 0 ? 'Sem cláusulas obrigatórias selecionadas.' : null,
     !data.financials.finalValue && !data.financials.commercialValue ? 'Valores financeiros incompletos.' : null,
   ].filter((warning): warning is string => Boolean(warning));

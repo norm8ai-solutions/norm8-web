@@ -107,6 +107,7 @@ function formatError(error: string): string {
     missing_service_plan: 'Não é possível gerar o contrato final porque existem dados do serviço e plano em falta.',
     missing_scope_deliverables: 'Não é possível gerar o contrato final porque existem entregáveis incompletos.',
     missing_timeline: 'Não é possível gerar o contrato final porque existem dados do cronograma em falta.',
+    missing_financials: 'Não é possível gerar o contrato final porque existem dados de investimento e pagamentos em falta.',
     missing_clauses: 'Cláusulas obrigatórias em falta.',
     missing_logo: 'Logótipo de contrato não encontrado em public/brand/norm8-logo-black.png.',
     storage: 'Storage de contratos não configurado.',

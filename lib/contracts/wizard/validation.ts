@@ -160,18 +160,82 @@ export function validateContractWizardStep(
  }
 
  if (stepId === 'financials') {
- if (!hasText(data.financials?.finalValue) && !hasText(data.financials?.commercialValue)) {
- addError('financials.finalValue', 'Valor final', 'Indique o valor final ou o valor comercial.');
+ const commercialValue = parsePositiveNumber(data.financials?.commercialValue);
+ const finalValue = parsePositiveNumber(data.financials?.finalValue);
+ const discount = parsePositiveNumber(data.financials?.discount);
+ const vatRate = parsePositiveNumber(data.financials?.vatRate);
+ const valueWithVat = parsePositiveNumber(data.financials?.valueWithVat);
+
+ if (!hasText(data.financials?.commercialValue)) {
+ addError('financials.commercialValue', 'Valor comercial', 'Indique o valor comercial.');
+ } else if (!commercialValue || commercialValue <= 0) {
+ addError('financials.commercialValue', 'Valor comercial', 'O valor comercial deve ser superior a zero.');
+ }
+ if (!hasText(data.financials?.finalValue)) {
+ addError('financials.finalValue', 'Valor final', 'Indique o valor final.');
+ } else if (!finalValue || finalValue <= 0) {
+ addError('financials.finalValue', 'Valor final', 'O valor final deve ser superior a zero.');
+ }
+ if (commercialValue !== null && finalValue !== null && finalValue > commercialValue) {
+ addError('financials.finalValue', 'Valor final', 'O valor final não pode ser superior ao valor comercial.');
+ }
+ if (!hasText(data.financials?.discount)) {
+ addError('financials.discount', 'Desconto', 'Confirme o desconto calculado.');
+ } else if (discount === null) {
+ addError('financials.discount', 'Desconto', 'O desconto não pode ser negativo.');
+ }
+ if (!hasText(data.financials?.vatRate)) {
+ addError('financials.vatRate', 'IVA', 'Selecione a taxa de IVA.');
+ } else if (vatRate === null) {
+ addError('financials.vatRate', 'IVA', 'Selecione uma taxa de IVA válida.');
+ }
+ if (!hasText(data.financials?.valueWithVat)) {
+ addError('financials.valueWithVat', 'Valor com IVA', 'Confirme o valor com IVA.');
+ } else if (valueWithVat === null) {
+ addError('financials.valueWithVat', 'Valor com IVA', 'Indique um valor com IVA válido.');
  }
  if (!hasText(data.financials?.currency)) addError('financials.currency', 'Moeda', 'Indique a moeda.');
  if (!hasText(data.financials?.paymentPlan)) addError('financials.paymentPlan', 'Plano de pagamento', 'Selecione o plano de pagamento.');
  if (!data.paymentMilestones || data.paymentMilestones.length === 0) {
  addError('paymentMilestones', 'Pagamentos', 'Adicione pelo menos um marco de pagamento.');
  }
- const percentages = data.paymentMilestones?.map((payment) => Number(String(payment.percentage ?? '').replace(',', '.'))).filter(Number.isFinite) ?? [];
+
+ data.paymentMilestones?.forEach((payment, index) => {
+ const label = getPaymentValidationLabel(payment, index);
+ const percentage = parsePositiveNumber(payment.percentage);
+ const amount = parsePositiveNumber(payment.amount);
+ if (!hasText(payment.description)) addError(`paymentMilestones.${index}.description`, `Título do ${label}`, 'Indique o título do pagamento.');
+ if (!hasText(payment.percentage)) {
+ addError(`paymentMilestones.${index}.percentage`, `Percentagem do ${label}`, 'Indique a percentagem do pagamento.');
+ } else if (percentage === null || percentage <= 0) {
+ addError(`paymentMilestones.${index}.percentage`, `Percentagem do ${label}`, 'Indique uma percentagem válida.');
+ }
+ if (!hasText(payment.amount)) {
+ addError(`paymentMilestones.${index}.amount`, `Valor do ${label}`, 'Indique o valor do pagamento.');
+ } else if (amount === null || amount <= 0) {
+ addError(`paymentMilestones.${index}.amount`, `Valor do ${label}`, 'Indique um valor de pagamento válido.');
+ }
+ if (!hasText(payment.invoiceMoment)) addError(`paymentMilestones.${index}.invoiceMoment`, `Momento de faturação do ${label}`, 'Selecione o momento de faturação.');
+ if (payment.invoiceMoment === 'Outro' && !hasText(payment.billingCondition)) addError(`paymentMilestones.${index}.billingCondition`, `Condição do ${label}`, 'Indique a condição de pagamento.');
+ if (!hasText(payment.expectedDate)) {
+ addError(`paymentMilestones.${index}.expectedDate`, `Data prevista do ${label}`, 'Selecione a data prevista.');
+ } else if (!parseDateOnly(payment.expectedDate)) {
+ addError(`paymentMilestones.${index}.expectedDate`, `Data prevista do ${label}`, 'Selecione uma data prevista válida.');
+ } else if (isPastDate(payment.expectedDate)) {
+ addError(`paymentMilestones.${index}.expectedDate`, `Data prevista do ${label}`, 'A data prevista não pode ser anterior à data atual.');
+ }
+ if (!hasText(payment.billingCondition)) addError(`paymentMilestones.${index}.billingCondition`, `Condição do ${label}`, 'Indique a condição de pagamento.');
+ });
+
+ const percentages = data.paymentMilestones?.map((payment) => parsePositiveNumber(payment.percentage)).filter((value): value is number => value !== null) ?? [];
  if (percentages.length > 0) {
  const total = percentages.reduce((sum, value) => sum + value, 0);
  if (Math.abs(total - 100) > 0.01) addError('paymentMilestones.percentages', 'Percentagens', 'As percentagens dos pagamentos devem somar 100%.');
+ }
+ const amounts = data.paymentMilestones?.map((payment) => parsePositiveNumber(payment.amount)).filter((value): value is number => value !== null) ?? [];
+ if (finalValue !== null && amounts.length > 0) {
+ const totalAmount = amounts.reduce((sum, value) => sum + value, 0);
+ if (Math.abs(totalAmount - finalValue) > 0.05) addError('paymentMilestones.amounts', 'Valores dos pagamentos', 'Os valores dos pagamentos devem somar o valor final.');
  }
  }
 
@@ -255,6 +319,18 @@ export const SCOPE_DRAFT_WARNING_FIELDS = new Set([
 export const TIMELINE_DRAFT_WARNING_FIELDS = new Set([
  'phases',
 ]);
+export const FINANCIALS_DRAFT_WARNING_FIELDS = new Set([
+ 'financials.commercialValue',
+ 'financials.finalValue',
+ 'financials.discount',
+ 'financials.vatRate',
+ 'financials.valueWithVat',
+ 'financials.currency',
+ 'financials.paymentPlan',
+ 'paymentMilestones',
+ 'paymentMilestones.percentages',
+ 'paymentMilestones.amounts',
+]);
 
 export function getMissingContractClientLegalFields(data: WizardValidationPayload): string[] {
  return validateContractWizardStep('client', data)
@@ -279,7 +355,11 @@ export function getMissingContractScopeFields(data: WizardValidationPayload): st
  .filter((error) => SCOPE_DRAFT_WARNING_FIELDS.has(error.field) || error.field.startsWith('deliverables.'))
  .map((error) => error.label);
 }
-export function getStepMissingFields(stepId: ContractWizardStepId, data: WizardValidationPayload): string[] {
+export function getMissingContractFinancialFields(data: WizardValidationPayload): string[] {
+ return validateContractWizardStep('financials', data)
+ .filter((error) => FINANCIALS_DRAFT_WARNING_FIELDS.has(error.field) || error.field.startsWith('paymentMilestones.'))
+ .map((error) => error.label);
+}export function getStepMissingFields(stepId: ContractWizardStepId, data: WizardValidationPayload): string[] {
  return validateContractWizardStep(stepId, data)
  .filter((error) => error.blocking)
  .map((error) => error.label);
@@ -292,6 +372,13 @@ export function formatStepValidationErrors(errors: ContractWizardValidationError
  return `Para continuar, preencha: ${labels.slice(0, -1).join(', ')} e ${labels[labels.length - 1]}.`;
 }
 
+function parsePositiveNumber(value: unknown): number | null {
+ if (typeof value !== 'string' && typeof value !== 'number') return null;
+ const normalized = String(value).trim().replace(/\s+/g, '').replace(',', '.');
+ if (!/^\d+(\.\d+)?$/.test(normalized)) return null;
+ const parsed = Number(normalized);
+ return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+}
 function hasText(value: unknown): boolean {
  return typeof value === 'string' ? value.trim().length > 0 : Boolean(value);
 }
@@ -314,6 +401,10 @@ function getDeliverableValidationLabel(deliverable: Record<string, string | null
 function getPhaseValidationLabel(phase: Record<string, string | null | undefined>, index: number): string {
   const name = typeof phase.name === 'string' ? phase.name.trim() : '';
   return name ? `fase '${name}'` : `fase ${index + 1}`;
+}
+function getPaymentValidationLabel(payment: Record<string, string | null | undefined>, index: number): string {
+  const description = typeof payment.description === 'string' ? payment.description.trim() : '';
+  return description ? `pagamento '${description}'` : `pagamento ${index + 1}`;
 }
 export function hasMeaningfulLegalText(value: unknown): boolean {
  if (typeof value !== 'string') return Boolean(value);
