@@ -9,7 +9,7 @@ const zoomOptions = [75, 100, 125] as const;
 
 type ContractPreviewPageProps = {
   params: Promise<{ id: string }>;
-  searchParams?: Promise<{ error?: string; generated?: string; zoom?: string }>;
+  searchParams?: Promise<{ error?: string; generated?: string; missing?: string; zoom?: string }>;
 };
 
 export default async function ContractPreviewPage({ params, searchParams }: ContractPreviewPageProps) {
@@ -48,7 +48,7 @@ export default async function ContractPreviewPage({ params, searchParams }: Cont
         }
       >
         {query?.generated === '1' ? <p className="admin-execution-success">PDF gerado e associado ao contrato.</p> : null}
-        {query?.error ? <p className="admin-action-execution-error">{formatError(query.error)}</p> : null}
+        {query?.error ? <p className="admin-action-execution-error">{formatError(query.error)}{query.missing ? ` Campos em falta: ${query.missing}.` : ''}</p> : null}
         {contract.warnings.length > 0 ? (
           <div className="admin-execution-summary admin-execution-summary-danger" style={{ marginBottom: 14 }}>
             <strong>Conteúdo incompleto</strong>
@@ -101,12 +101,20 @@ function formatError(error: string): string {
     not_found: 'Contrato não encontrado.',
     missing_legal: 'Dados legais da Norm8 em falta.',
     missing_client: 'Dados do cliente em falta.',
+    missing_client_tax_id: 'Não é possível gerar o contrato final sem o NIF do cliente.',
+    missing_client_legal: 'Não é possível gerar o contrato final porque existem dados legais do cliente em falta.',
+    missing_provider_legal: 'Não é possível gerar o contrato final porque existem dados legais da Norm8 em falta.',
+    missing_service_plan: 'Não é possível gerar o contrato final porque existem dados do serviço e plano em falta.',
+    missing_scope_deliverables: 'Não é possível gerar o contrato final porque existem entregáveis incompletos.',
+    missing_timeline: 'Não é possível gerar o contrato final porque existem dados do cronograma em falta.',
     missing_clauses: 'Cláusulas obrigatórias em falta.',
+    missing_logo: 'Logótipo de contrato não encontrado em public/brand/norm8-logo-black.png.',
     storage: 'Storage de contratos não configurado.',
     playwright: 'Playwright indisponível para gerar PDF.',
     write_failed: 'Não foi possível guardar o PDF.',
     hash_failed: 'Não foi possível calcular o hash do PDF.',
     locked: 'Contratos assinados não podem ser regenerados diretamente.',
+    admin_missing: 'Não existe um utilizador admin ativo para associar ao PDF.',
     unknown: 'Não foi possível gerar o PDF.',
   };
   return map[error] ?? map.unknown;

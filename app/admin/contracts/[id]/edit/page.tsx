@@ -6,6 +6,7 @@ import { AdminPanel } from '@/components/admin/AdminPrimitives';
 import { ContractWizard, type ContractWizardPayload } from '@/components/contracts/ContractWizard';
 import { updateContractWizardAction } from '@/lib/contracts/actions';
 import { getContractEditorContext } from '@/lib/contracts/queries';
+import { normalizePortugueseText } from '@/lib/text/normalize-portuguese';
 
 type ContractEditPageProps = {
   params: Promise<{ id: string }>;
@@ -28,7 +29,7 @@ export default async function ContractEditPage({ params, searchParams }: Contrac
     <div className="admin-page-grid">
       <AdminPanel
         title={`Editar ${contract.number}`}
-        subtitle="Editor wizard para rascunhos e contratos em revisao."
+        subtitle="Editor wizard para rascunhos e contratos em revisão."
         action={
           <Link className="admin-button admin-button-muted" href={`/admin/contracts/${contract.id}`}>
             <ArrowLeft size={14} />Voltar
@@ -36,10 +37,13 @@ export default async function ContractEditPage({ params, searchParams }: Contrac
         }
       >
         {query?.error === 'invalid' ? (
-          <p className="admin-action-execution-error">Confirme os campos obrigatorios antes de guardar.</p>
+          <p className="admin-action-execution-error">Confirme os campos obrigatórios antes de guardar.</p>
         ) : null}
         {query?.error === 'locked' ? (
-          <p className="admin-action-execution-error">Este contrato ja nao permite edicao direta.</p>
+          <p className="admin-action-execution-error">Este contrato já não permite edição direta.</p>
+        ) : null}
+        {query?.error === 'admin' ? (
+          <p className="admin-action-execution-error">Não foi possível guardar o contrato porque não existe um administrador ativo associado. Crie um utilizador admin ou ative o modo demo corretamente.</p>
         ) : null}
         <ContractWizard
           action={updateContractWizardAction}
@@ -50,7 +54,7 @@ export default async function ContractEditPage({ params, searchParams }: Contrac
           leads={context.leads}
           legalSettings={context.legalSettings ? mapLegalSettings(context.legalSettings) : null}
           mode="edit"
-          proposals={context.proposals.map((proposal) => ({ ...proposal, estimatedValue: proposal.estimatedValue?.toString() ?? null }))}
+          proposals={context.proposals.map((proposal) => ({ ...proposal, estimatedValue: proposal.estimatedValue?.toString() ?? null, createdAt: proposal.createdAt.toISOString(), updatedAt: proposal.updatedAt.toISOString() }))}
           templates={context.templates.map(mapTemplate)}
         />
       </AdminPanel>
@@ -191,7 +195,7 @@ function jsonObject(value: unknown): Record<string, unknown> {
 }
 
 function stringValue(value: unknown): string | null {
-  if (typeof value === 'string' && value.trim()) return value;
+  if (typeof value === 'string' && value.trim()) return normalizePortugueseText(value);
   if (typeof value === 'number' || typeof value === 'boolean') return String(value);
   return null;
 }

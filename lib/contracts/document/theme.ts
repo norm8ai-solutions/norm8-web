@@ -89,13 +89,61 @@ export const documentCss = `
 
   .contract-cover {
     background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
-    justify-content: space-between;
+    justify-content: flex-start;
+  }
+
+  .contract-cover .contract-page-content {
+    align-content: unset;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    justify-content: flex-start;
   }
 
   .contract-logo {
     display: block;
     height: auto;
-    max-width: 132px;
+    max-height: 54px;
+    max-width: 150px;
+    object-fit: contain;
+    width: 150px;
+  }
+
+  .contract-cover-logo-wrap {
+    align-items: flex-start;
+    display: flex;
+    line-height: 0;
+    margin-bottom: 16px;
+    margin-left: -20px;
+    min-height: 0;
+    padding: 0;
+  }
+
+  .contract-cover-title-block {
+    margin: 0;
+    padding: 0;
+  }
+
+  .contract-cover-title-block .contract-eyebrow {
+    margin-top: 0;
+  }
+
+  .contract-cover .contract-meta-grid {
+    margin-top: 56px;
+  }
+
+  .contract-cover-logo {
+    max-height: 76px;
+    max-width: 200px;
+    width: 200px;
+  }
+  .contract-logo-fallback {
+    color: var(--doc-text);
+    display: inline-block;
+    font-size: 24px;
+    font-weight: 850;
+    letter-spacing: 0;
+    line-height: 1;
   }
 
   .contract-eyebrow {

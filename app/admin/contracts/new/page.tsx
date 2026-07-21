@@ -13,7 +13,7 @@ export default async function NewContractPage({ searchParams }: { searchParams?:
     <div className="admin-page-grid">
       <AdminPanel
         title="Novo contrato"
-        subtitle="Wizard de criacao de rascunho com snapshots, ambito, pagamentos e clausulas."
+        subtitle="Wizard de criação de rascunho com snapshots, âmbito, pagamentos e cláusulas."
         action={
           <Link className="admin-button admin-button-muted" href="/admin/contracts">
             <ArrowLeft size={14} />Voltar
@@ -21,22 +21,26 @@ export default async function NewContractPage({ searchParams }: { searchParams?:
         }
       >
         {params?.error === 'invalid' ? (
-          <p className="admin-action-execution-error">Confirme os campos obrigatorios antes de guardar o contrato.</p>
+          <p className="admin-action-execution-error">Confirme os campos obrigatórios antes de guardar o contrato.</p>
+        ) : null}
+        {params?.error === 'admin' ? (
+          <p className="admin-action-execution-error">Não foi possível criar o contrato porque não existe um administrador ativo associado. Crie um utilizador admin ou ative o modo demo corretamente.</p>
         ) : null}
         {!context.legalSettings ? (
           <div className="admin-execution-summary admin-execution-summary-danger" style={{ marginBottom: 14 }}>
             <strong>Dados legais por configurar</strong>
-            <span>Foram usados dados temporarios. Reveja os dados legais antes de gerar versoes finais.</span>
+            <span>Foram usados dados temporários. Reveja os dados legais antes de gerar versões finais.</span>
             <Link className="admin-link" href="/admin/settings/company/legal">Abrir dados contratuais</Link>
           </div>
         ) : null}
         <ContractWizard
           action={createContractDraftAction}
           admins={context.admins}
+          currentAdminId={context.currentAdminId}
           leads={context.leads}
           legalSettings={context.legalSettings ? mapLegalSettings(context.legalSettings) : null}
           mode="create"
-          proposals={context.proposals.map((proposal) => ({ ...proposal, estimatedValue: proposal.estimatedValue?.toString() ?? null }))}
+          proposals={context.proposals.map((proposal) => ({ ...proposal, estimatedValue: proposal.estimatedValue?.toString() ?? null, createdAt: proposal.createdAt.toISOString(), updatedAt: proposal.updatedAt.toISOString() }))}
           templates={context.templates.map(mapTemplate)}
         />
       </AdminPanel>

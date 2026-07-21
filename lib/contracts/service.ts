@@ -2,6 +2,7 @@ import 'server-only';
 
 import {
   Prisma,
+  type AdminRole,
   type ContractActivityType,
   type ContractDocumentType,
   type ContractDeliverableStatus,
@@ -11,8 +12,10 @@ import {
   type ContractServiceType,
   type PaymentMilestoneStatus,
 } from '@/app/generated/prisma/client';
+import { isAdminAuthDisabledForDemo, normalizeAdminEmail } from '@/lib/admin/auth';
 import { prisma } from '@/lib/db/prisma';
 import { normalizePortugueseText } from '@/lib/text/normalize-portuguese';
+import { normalizeBasicPortugueseTaxId } from '@/lib/contracts/wizard/validation';
 
 type ContractTx = Prisma.TransactionClient;
 
@@ -152,6 +155,7 @@ export type ContractWizardInput = {
   assignedToId?: string | null;
   validUntil?: Date | null;
   adminUserId: string;
+  adminEmail?: string | null;
 };
 
 export type UpdateCompanyLegalSettingsInput = WizardProviderInput & {
@@ -182,7 +186,7 @@ export async function createContractDraft(input: ContractWizardInput) {
   const normalized = normalizeWizardInput(input);
 
   return prisma.$transaction(async (tx) => {
-    const createdById = await resolvePersistentAdminId(tx, input.adminUserId);
+    const createdById = await resolvePersistentAdminId(tx, { adminId: input.adminUserId, email: input.adminEmail });
     const assignedToId = normalized.assignedToId
       ? await resolveOptionalAdminId(tx, normalized.assignedToId)
       : null;
@@ -243,12 +247,12 @@ export async function updateContractFromWizard(contractId: string, input: Contra
   const normalized = normalizeWizardInput(input);
 
   return prisma.$transaction(async (tx) => {
-    const adminUserId = await resolvePersistentAdminId(tx, input.adminUserId);
+    const adminUserId = await resolvePersistentAdminId(tx, { adminId: input.adminUserId, email: input.adminEmail });
     const existing = await tx.contract.findUnique({ where: { id: contractId }, select: { id: true, status: true, number: true } });
 
-    if (!existing) throw new Error('Contrato nao encontrado.');
+    if (!existing) throw new Error('Contrato não encontrado.');
     if (!EDITABLE_STATUSES.includes(existing.status as (typeof EDITABLE_STATUSES)[number])) {
-      throw new Error('Este contrato ja foi enviado ou assinado e nao pode ser editado diretamente.');
+      throw new Error('Este contrato já foi enviado ou assinado e não pode ser editado diretamente.');
     }
 
     const assignedToId = normalized.assignedToId
@@ -297,12 +301,12 @@ export async function updateContractFromWizard(contractId: string, input: Contra
     const logs: Array<{ type: ContractActivityType; message: string }> = [
       { type: 'CONTRACT_DRAFT_UPDATED', message: `Rascunho atualizado: ${existing.number}` },
       { type: 'CONTRACT_CLIENT_UPDATED', message: 'Dados do cliente revistos.' },
-      { type: 'CONTRACT_SERVICE_UPDATED', message: 'Servico e plano revistos.' },
-      { type: 'CONTRACT_SCOPE_UPDATED', message: 'Ambito e entregaveis revistos.' },
+      { type: 'CONTRACT_SERVICE_UPDATED', message: 'Serviço e plano revistos.' },
+      { type: 'CONTRACT_SCOPE_UPDATED', message: 'Âmbito e entregáveis revistos.' },
       { type: 'CONTRACT_TIMELINE_UPDATED', message: 'Cronograma revisto.' },
       { type: 'CONTRACT_FINANCIALS_UPDATED', message: 'Investimento e pagamentos revistos.' },
-      { type: 'CONTRACT_CLAUSES_UPDATED', message: 'Clausulas e condicoes revistas.' },
-      { type: 'CONTRACT_REVIEW_SAVED', message: 'Revisao do contrato guardada.' },
+      { type: 'CONTRACT_CLAUSES_UPDATED', message: 'Cláusulas e condições revistas.' },
+      { type: 'CONTRACT_REVIEW_SAVED', message: 'Revisão do contrato guardada.' },
     ];
 
     await tx.contractActivityLog.createMany({
@@ -325,7 +329,7 @@ export async function updateContractFromWizard(contractId: string, input: Contra
 }
 
 export async function updateCompanyLegalSettings(input: UpdateCompanyLegalSettingsInput) {
-  const updatedById = input.updatedById ? await resolvePersistentAdminId(prisma, input.updatedById) : null;
+  const updatedById = input.updatedById ? await resolvePersistentAdminId(prisma, { adminId: input.updatedById }) : null;
   const normalized = normalizeProviderInput(input);
 
   return prisma.companyLegalSettings.upsert({
@@ -358,9 +362,9 @@ async function resolveLeadAndProposal(tx: ContractTx, leadId?: string | null, pr
       })
     : null;
 
-  if (proposalId && !proposal) throw new Error('A proposta selecionada nao existe.');
-  if (leadId && !lead) throw new Error('A lead selecionada nao existe.');
-  if (proposal && lead && proposal.leadId !== lead.id) throw new Error('A proposta selecionada nao pertence a lead escolhida.');
+  if (proposalId && !proposal) throw new Error('A proposta selecionada não existe.');
+  if (leadId && !lead) throw new Error('A lead selecionada não existe.');
+  if (proposal && lead && proposal.leadId !== lead.id) throw new Error('A proposta selecionada não pertence à lead escolhida.');
 
   return { lead, proposal };
 }
@@ -399,17 +403,17 @@ async function getOrCreateBaseContractTemplate(tx: ContractTx) {
   return tx.contractTemplate.create({
     data: {
       name: BASE_TEMPLATE_NAME,
-      description: 'Template institucional base para contratos de prestacao de servicos Norm8.',
+      description: 'Template institucional base para contratos de prestação de serviços Norm8.',
       version: 1,
       isActive: true,
       internalNote: LEGAL_TEMPLATE_NOTE,
       sections: {
         create: [
-          createTemplateSection('OBJECT', 'Objeto', 'O presente contrato define os termos da prestacao de servicos tecnologicos pela Norm8 ao Cliente, de acordo com o ambito, cronograma, investimento e condicoes comerciais registados no documento.', 1, true, ['{{client.companyName}}', '{{provider.legalName}}', '{{contract.number}}']),
-          createTemplateSection('SCOPE', 'Ambito dos servicos', 'O ambito inclui apenas os servicos, entregaveis e fases expressamente descritos no contrato e nos seus anexos. Qualquer alteracao relevante devera ser registada por escrito.', 2, true, ['{{project.name}}']),
-          createTemplateSection('PAYMENTS', 'Investimento e faturacao', 'Os valores, prazos e condicoes de faturacao serao os indicados no snapshot financeiro do contrato. A adjudicacao pode depender da confirmacao do pagamento inicial, quando aplicavel.', 3, true, ['{{financial.total}}', '{{financial.currency}}']),
-          createTemplateSection('DATA_PROTECTION', 'Protecao de dados', 'As partes comprometem-se a tratar dados pessoais apenas quando necessario para a execucao dos servicos e em conformidade com a legislacao aplicavel de protecao de dados.', 4, true, []),
-          createTemplateSection('SIGNATURES', 'Assinaturas', 'O contrato produzira efeitos apos aceitacao pelas partes, assinatura do documento e cumprimento das condicoes comerciais iniciais aplicaveis.', 5, true, ['{{contract.date}}']),
+          createTemplateSection('OBJECT', 'Objeto', 'O presente contrato define os termos da prestação de serviços tecnológicos pela Norm8 ao Cliente, de acordo com o âmbito, cronograma, investimento e condições comerciais registados no documento.', 1, true, ['{{client.companyName}}', '{{provider.legalName}}', '{{contract.number}}']),
+          createTemplateSection('SCOPE', 'Âmbito dos serviços', 'O âmbito inclui apenas os serviços, entregáveis e fases expressamente descritos no contrato e nos seus anexos. Qualquer alteração relevante deverá ser registada por escrito.', 2, true, ['{{project.name}}']),
+          createTemplateSection('PAYMENTS', 'Investimento e faturação', 'Os valores, prazos e condições de faturação serão os indicados no snapshot financeiro do contrato. A adjudicação pode depender da confirmação do pagamento inicial, quando aplicável.', 3, true, ['{{financial.total}}', '{{financial.currency}}']),
+          createTemplateSection('DATA_PROTECTION', 'Proteção de dados', 'As partes comprometem-se a tratar dados pessoais apenas quando necessário para a execução dos serviços e em conformidade com a legislação aplicável de proteção de dados.', 4, true, []),
+          createTemplateSection('SIGNATURES', 'Assinaturas', 'O contrato produzirá efeitos após aceitação pelas partes, assinatura do documento e cumprimento das condições comerciais iniciais aplicáveis.', 5, true, ['{{contract.date}}']),
         ],
       },
     },
@@ -432,7 +436,7 @@ function normalizeWizardInput(input: ContractWizardInput): ContractWizardInput &
     setupFee?: Prisma.Decimal;
   };
 } {
-  const provider = normalizeProviderInput(input.provider);
+  const provider = normalizeProviderSnapshotInput(input.provider);
   return {
     ...input,
     title: normalizeRequired(input.title, 'titulo'),
@@ -454,7 +458,9 @@ function normalizeWizardInput(input: ContractWizardInput): ContractWizardInput &
 }
 
 function normalizeClientInput(input: WizardClientInput): WizardClientInput {
-  return mapObjectStrings(input);
+  const normalized = mapObjectStrings(input);
+  const taxId = normalizeBasicPortugueseTaxId(normalized.taxId);
+  return { ...normalized, taxId: taxId || null };
 }
 
 function normalizeProviderInput(input: WizardProviderInput): WizardProviderInput {
@@ -470,6 +476,23 @@ function normalizeProviderInput(input: WizardProviderInput): WizardProviderInput
     representativeRole: normalizeRequired(input.representativeRole, 'cargo'),
     iban: normalizeRequired(input.iban, 'IBAN'),
     bankName: normalizeRequired(input.bankName, 'banco'),
+    swiftBic: normalizeOptional(input.swiftBic),
+  };
+}
+
+function normalizeProviderSnapshotInput(input: WizardProviderInput): WizardProviderInput {
+  return {
+    legalName: normalizeText(input.legalName),
+    tradeName: normalizeText(input.tradeName),
+    taxId: normalizeBasicPortugueseTaxId(input.taxId),
+    address: normalizeText(input.address),
+    email: normalizeText(input.email),
+    phone: normalizeText(input.phone),
+    website: normalizeText(input.website),
+    representative: normalizeText(input.representative),
+    representativeRole: normalizeText(input.representativeRole),
+    iban: normalizeText(input.iban),
+    bankName: normalizeText(input.bankName),
     swiftBic: normalizeOptional(input.swiftBic),
   };
 }
@@ -506,7 +529,7 @@ function normalizePaymentInput(input: WizardPaymentMilestoneInput): WizardPaymen
 function normalizeSectionInput(input: WizardSectionInput): WizardSectionInput {
   return {
     ...input,
-    title: normalizeRequired(input.title, 'titulo da clausula'),
+    title: normalizeRequired(input.title, 'título da cláusula'),
     content: sanitizePlainText(input.content),
     templateSectionId: normalizeOptional(input.templateSectionId),
   };
@@ -671,20 +694,80 @@ async function createContractLog(tx: ContractTx, input: { contractId: string; ad
   await tx.contractActivityLog.create({ data: input });
 }
 
-async function resolvePersistentAdminId(tx: Pick<ContractTx, 'adminUser'>, adminId: string | null): Promise<string> {
-  if (adminId) {
-    const existing = await tx.adminUser.findUnique({ where: { id: adminId }, select: { id: true } });
-    if (existing) return existing.id;
+export class ContractAdminResolutionError extends Error {
+  constructor(message = 'Não existe um utilizador admin ativo para associar ao contrato. Crie um administrador antes de continuar.') {
+    super(message);
+    this.name = 'ContractAdminResolutionError';
+  }
+}
+
+export async function resolvePersistentAdminId(
+  tx: Pick<ContractTx, 'adminUser'>,
+  input: { adminId?: string | null; email?: string | null },
+): Promise<string> {
+  if (input.adminId) {
+    const existing = await tx.adminUser.findUnique({ where: { id: input.adminId }, select: { id: true, isActive: true } });
+    if (existing?.isActive) return existing.id;
+  }
+
+  const normalizedEmail = input.email ? normalizeAdminEmail(input.email) : null;
+  if (normalizedEmail) {
+    const existingByEmail = await tx.adminUser.findUnique({ where: { normalizedEmail }, select: { id: true, isActive: true } });
+    if (existingByEmail?.isActive) return existingByEmail.id;
   }
 
   const fallback = await tx.adminUser.findFirst({ where: { isActive: true }, orderBy: { createdAt: 'asc' }, select: { id: true } });
-  if (!fallback) throw new Error('Nao existe um utilizador admin persistente para associar ao contrato.');
-  return fallback.id;
+  if (fallback && canUseDevelopmentAdminFallback()) return fallback.id;
+
+  if (canCreateDemoAdmin()) {
+    return getOrCreateDemoAdminUser(tx);
+  }
+
+  throw new ContractAdminResolutionError();
+}
+
+function canUseDevelopmentAdminFallback(): boolean {
+  return process.env.NODE_ENV !== 'production' || isAdminAuthDisabledForDemo();
+}
+
+function canCreateDemoAdmin(): boolean {
+  return process.env.NODE_ENV !== 'production';
+}
+
+async function getOrCreateDemoAdminUser(tx: Pick<ContractTx, 'adminUser'>): Promise<string> {
+  const email = 'demo@norm8.pt';
+  const normalizedEmail = normalizeAdminEmail(email);
+  const role: AdminRole = 'ADMIN';
+
+  const admin = await tx.adminUser.upsert({
+    where: { normalizedEmail },
+    create: {
+      email,
+      normalizedEmail,
+      name: 'Norm8 Demo Admin',
+      passwordHash: 'disabled:demo-system-user',
+      role,
+      isActive: true,
+      failedAttempts: 0,
+      lockedUntil: null,
+    },
+    update: {
+      email,
+      name: 'Norm8 Demo Admin',
+      role,
+      isActive: true,
+      failedAttempts: 0,
+      lockedUntil: null,
+    },
+    select: { id: true },
+  });
+
+  return admin.id;
 }
 
 async function resolveOptionalAdminId(tx: Pick<ContractTx, 'adminUser'>, adminId: string): Promise<string | null> {
-  const existing = await tx.adminUser.findUnique({ where: { id: adminId }, select: { id: true } });
-  return existing?.id ?? null;
+  const existing = await tx.adminUser.findUnique({ where: { id: adminId }, select: { id: true, isActive: true } });
+  return existing?.isActive ? existing.id : null;
 }
 
 type SnapshotLead = {
@@ -715,7 +798,7 @@ type SnapshotProposal = {
 
 function normalizeRequired(value: string | null | undefined, field: string): string {
   const normalized = normalizeOptional(value);
-  if (!normalized) throw new Error(`Campo obrigatorio em falta: ${field}.`);
+  if (!normalized) throw new Error(`Campo obrigatório em falta: ${field}.`);
   return normalized;
 }
 
@@ -740,7 +823,7 @@ function sanitizePlainText(value: string): string {
 function normalizeDecimal(value: string | number | Prisma.Decimal | null | undefined): Prisma.Decimal | undefined {
   if (value === undefined || value === null || value === '') return undefined;
   const decimal = new Prisma.Decimal(typeof value === 'string' ? value.replace(',', '.') : value);
-  if (!decimal.isFinite()) throw new Error('Valor numerico invalido.');
+  if (!decimal.isFinite()) throw new Error('Valor numérico inválido.');
   return decimal;
 }
 

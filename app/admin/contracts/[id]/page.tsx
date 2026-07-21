@@ -17,10 +17,12 @@ import { getContractById } from '@/lib/contracts/queries';
 
 type ContractDetailPageProps = {
   params: Promise<{ id: string }>;
+  searchParams?: Promise<{ missing?: string; warning?: string }>;
 };
 
-export default async function ContractDetailPage({ params }: ContractDetailPageProps) {
+export default async function ContractDetailPage({ params, searchParams }: ContractDetailPageProps) {
   const { id } = await params;
+  const query = await searchParams;
   const contract = await getContractById(id);
 
   if (!contract) {
@@ -32,6 +34,14 @@ export default async function ContractDetailPage({ params }: ContractDetailPageP
 
   return (
     <div className="admin-page-grid">
+      {query?.warning === 'missing_client_legal' || query?.warning === 'missing_client_tax_id' || query?.warning === 'missing_provider_legal' || query?.warning === 'missing_contract_legal' ? (
+        <div className="admin-execution-summary" style={{ marginBottom: 14 }}>
+          <strong>Rascunho guardado</strong>
+          <span>Existem campos obrigatórios em falta que serão necessários antes de gerar o contrato final.</span>
+          {query.missing ? <span>Campos em falta: {query.missing}.</span> : null}
+        </div>
+      ) : null}
+
       <AdminPanel
         title={`${contract.number} - ${contract.title}`}
         subtitle={`${clientName} - v${contract.version}`}
@@ -49,15 +59,15 @@ export default async function ContractDetailPage({ params }: ContractDetailPageP
           <SummaryItem label="Cliente" value={clientName} />
           <SummaryItem label="Plano" value={formatContractPlan(contract.plan)} />
           <SummaryItem label="Valor" value={formatContractValue(contract.estimatedValue)} />
-          <SummaryItem label="Servico" value={formatContractServiceType(contract.serviceType, contract.serviceTypeOther)} />
+          <SummaryItem label="Serviço" value={formatContractServiceType(contract.serviceType, contract.serviceTypeOther)} />
           <SummaryItem label="Data" value={formatContractDate(contract.issueDate)} />
-          <SummaryItem label="Responsavel" value={contract.assignedTo?.name ?? contract.assignedTo?.email ?? contract.createdBy.name ?? contract.createdBy.email} />
+          <SummaryItem label="Responsável" value={contract.assignedTo?.name ?? contract.assignedTo?.email ?? contract.createdBy.name ?? contract.createdBy.email} />
         </div>
       </AdminPanel>
 
       <section className="admin-grid-main-aside">
         <div className="admin-page-grid">
-          <AdminPanel title="Visao geral" subtitle="Dados principais guardados nos snapshots do contrato.">
+          <AdminPanel title="Visão geral" subtitle="Dados principais guardados nos snapshots do contrato.">
             <div className="admin-field-grid">
               <AdminField label="Projeto" value={contract.projectName} />
               <AdminField label="Lead" value={contract.lead ? <Link className="admin-link" href={`/admin/leads/${contract.lead.id}`}>{contract.lead.company}</Link> : 'Sem lead associada'} />
@@ -68,18 +78,18 @@ export default async function ContractDetailPage({ params }: ContractDetailPageP
             </div>
           </AdminPanel>
 
-          <AdminPanel title="Ambito" subtitle="Resumo comercial e tecnico do projeto.">
+          <AdminPanel title="Âmbito" subtitle="Resumo comercial e técnico do projeto.">
             <div className="admin-field-grid">
               <AdminField label="Resumo" value={getSnapshotText(contract.projectSnapshot, 'executiveSummary')} />
               <AdminField label="Objetivo" value={getSnapshotText(contract.projectSnapshot, 'projectObjective')} />
               <AdminField label="Problemas" value={getSnapshotText(contract.projectSnapshot, 'identifiedProblems')} />
-              <AdminField label="Solucao" value={getSnapshotText(contract.projectSnapshot, 'proposedSolution')} />
-              <AdminField label="Incluido" value={getSnapshotText(contract.projectSnapshot, 'includedScope')} />
-              <AdminField label="Excluido" value={getSnapshotText(contract.projectSnapshot, 'excludedScope')} />
+              <AdminField label="Solução" value={getSnapshotText(contract.projectSnapshot, 'proposedSolution')} />
+              <AdminField label="Incluído" value={getSnapshotText(contract.projectSnapshot, 'includedScope')} />
+              <AdminField label="Excluído" value={getSnapshotText(contract.projectSnapshot, 'excludedScope')} />
             </div>
           </AdminPanel>
 
-          <AdminPanel title="Entregaveis" subtitle="Itens de scope associados ao contrato.">
+          <AdminPanel title="Entregáveis" subtitle="Itens de scope associados ao contrato.">
             {contract.deliverables.length > 0 ? (
               <div className="admin-row-list">
                 {contract.deliverables.map((deliverable) => (
@@ -93,11 +103,11 @@ export default async function ContractDetailPage({ params }: ContractDetailPageP
                 ))}
               </div>
             ) : (
-              <AdminEmptyState>Sem entregaveis definidos.</AdminEmptyState>
+              <AdminEmptyState>Sem entregáveis definidos.</AdminEmptyState>
             )}
           </AdminPanel>
 
-          <AdminPanel title="Cronograma" subtitle="Fases, dependencias e criterios de aprovacao.">
+          <AdminPanel title="Cronograma" subtitle="Fases, dependências e critérios de aprovação.">
             {contract.phases.length > 0 ? (
               <div className="admin-row-list">
                 {contract.phases.map((phase) => (
@@ -106,7 +116,7 @@ export default async function ContractDetailPage({ params }: ContractDetailPageP
                     title={`${phase.order}. ${phase.name}`}
                     meta={`${phase.phaseType ?? 'Sem tipo'} - ${formatContractDate(phase.startsAt)} ate ${formatContractDate(phase.endsAt)}`}
                   >
-                    {[phase.description, phase.dependencies ? `Dependencias: ${phase.dependencies}` : null, phase.approvalCriteria ? `Aprovacao: ${phase.approvalCriteria}` : null].filter(Boolean).join(' ')}
+                    {[phase.description, phase.dependencies ? `Dependências: ${phase.dependencies}` : null, phase.approvalCriteria ? `Aprovação: ${phase.approvalCriteria}` : null].filter(Boolean).join(' ')}
                   </AdminRow>
                 ))}
               </div>
@@ -115,7 +125,7 @@ export default async function ContractDetailPage({ params }: ContractDetailPageP
             )}
           </AdminPanel>
 
-          <AdminPanel title="Pagamentos" subtitle="Milestones financeiros e condicoes de faturacao.">
+          <AdminPanel title="Pagamentos" subtitle="Milestones financeiros e condições de faturação.">
             {contract.paymentMilestones.length > 0 ? (
               <div className="admin-row-list">
                 {contract.paymentMilestones.map((payment) => (
@@ -124,7 +134,7 @@ export default async function ContractDetailPage({ params }: ContractDetailPageP
                     title={`${payment.percentage?.toString() ?? '-'}% - ${formatContractValue(payment.amount)}`}
                     meta={`${payment.invoiceMoment ?? 'Momento por definir'} - ${formatContractDate(payment.expectedDate)} - ${payment.status}`}
                   >
-                    {payment.description ?? payment.billingCondition ?? 'Sem condicao adicional.'}
+                    {payment.description ?? payment.billingCondition ?? 'Sem condição adicional.'}
                   </AdminRow>
                 ))}
               </div>
@@ -133,21 +143,21 @@ export default async function ContractDetailPage({ params }: ContractDetailPageP
             )}
           </AdminPanel>
 
-          <AdminPanel title="Clausulas" subtitle="Seccoes guardadas no snapshot editavel do contrato.">
+          <AdminPanel title="Cláusulas" subtitle="Secções guardadas no snapshot editável do contrato.">
             {contract.sections.length > 0 ? (
               <div className="admin-row-list">
                 {contract.sections.map((section) => (
                   <AdminRow
                     key={section.id}
                     title={`${section.order}. ${section.title}`}
-                    meta={`${formatContractSectionCategory(section.category)} - ${section.isRequired ? 'Obrigatoria' : 'Opcional'}`}
+                    meta={`${formatContractSectionCategory(section.category)} - ${section.isRequired ? 'Obrigatória' : 'Opcional'}`}
                   >
                     {section.content}
                   </AdminRow>
                 ))}
               </div>
             ) : (
-              <AdminEmptyState>Sem clausulas associadas ao contrato.</AdminEmptyState>
+              <AdminEmptyState>Sem cláusulas associadas ao contrato.</AdminEmptyState>
             )}
           </AdminPanel>
 
@@ -169,11 +179,11 @@ export default async function ContractDetailPage({ params }: ContractDetailPageP
         </div>
 
         <aside className="admin-page-grid">
-          <AdminPanel title="Acoes">
+          <AdminPanel title="Ações">
             <div className="admin-page-grid">
               <Link className="admin-button admin-button-muted" href={`/admin/contracts/${contract.id}/preview`}><FileText size={14} />Ver preview</Link>
               {contract.status === 'SIGNED' ? (
-                <button className="admin-button admin-button-muted" disabled type="button">Regeneracao futura por nova versao</button>
+                <button className="admin-button admin-button-muted" disabled type="button">Regeneração futura por nova versão</button>
               ) : (
                 <form action={`/api/contracts/${contract.id}/generate-pdf`} method="post">
                   <button className="admin-button admin-button-muted" type="submit"><Download size={14} />{contract.pdfUrl ? 'Regenerar PDF' : 'Gerar PDF'}</button>
@@ -192,11 +202,11 @@ export default async function ContractDetailPage({ params }: ContractDetailPageP
             <SnapshotFields value={contract.providerSnapshot} keys={['legalName', 'tradeName', 'taxId', 'email', 'representative', 'representativeRole']} />
           </AdminPanel>
 
-          <AdminPanel title="Notas tecnicas">
+          <AdminPanel title="Notas técnicas">
             <div className="admin-row-list">
               <AdminRow title="PDF" meta="Playwright HTML/CSS preparado para fase futura." />
-              <AdminRow title="Storage" meta="Vercel Blob previsto em producao; fallback local apenas em desenvolvimento." />
-              <AdminRow title="Legal" meta="Template sujeito a revisao por advogado antes de utilizacao definitiva." />
+              <AdminRow title="Storage" meta="Vercel Blob previsto em produção; fallback local apenas em desenvolvimento." />
+              <AdminRow title="Legal" meta="Template sujeito a revisão por advogado antes de utilização definitiva." />
             </div>
           </AdminPanel>
         </aside>

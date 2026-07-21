@@ -28,6 +28,7 @@ type Norm8DateTimePickerProps = {
   timeOptions?: Norm8TimeOption[];
   timeOptionsLoading?: boolean;
   emptyTimeMessage?: string;
+  mode?: 'date' | 'datetime';
 };
 
 type PopoverPosition = {
@@ -83,6 +84,7 @@ export function Norm8DateTimePicker({
   timeOptions,
   timeOptionsLoading = false,
   emptyTimeMessage = 'Sem horários disponíveis para este dia.',
+  mode = 'datetime',
 }: Norm8DateTimePickerProps) {
   const generatedId = React.useId();
   const triggerId = id ?? generatedId;
@@ -230,9 +232,20 @@ export function Norm8DateTimePicker({
       return;
     }
 
+    onDayChange?.(day);
+
+    if (mode === 'date') {
+      const selectedDay = new Date(day);
+      selectedDay.setHours(12, 0, 0, 0);
+      commitValue(selectedDay);
+      setOpen(false);
+      setStep('date');
+      setPendingDay(null);
+      return;
+    }
+
     setPendingDay(day);
     setStep('time');
-    onDayChange?.(day);
   };
 
   const handleTimeSelect = (time: string): void => {
@@ -255,7 +268,9 @@ export function Norm8DateTimePicker({
   };
 
   const displayValue = selectedDate
-    ? formatDateTimePt(selectedDate)
+    ? mode === 'date'
+      ? formatDatePt(selectedDate)
+      : formatDateTimePt(selectedDate)
     : placeholder;
 
   const popover =

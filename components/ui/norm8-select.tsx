@@ -15,6 +15,7 @@ type Norm8SelectProps = {
   value?: string;
   defaultValue?: string;
   onValueChange?: (value: string) => void;
+  onBlur?: () => void;
   placeholder?: string;
   name?: string;
   ariaRequired?: boolean;
@@ -43,6 +44,7 @@ export function Norm8Select({
   value,
   defaultValue = '',
   onValueChange,
+  onBlur,
   placeholder = 'Selecionar...',
   name,
   ariaRequired,
@@ -290,6 +292,7 @@ export function Norm8Select({
         disabled={disabled}
         id={id}
         onClick={toggleOpen}
+        onBlur={onBlur}
         onKeyDown={handleKeyDown}
         type="button"
       >

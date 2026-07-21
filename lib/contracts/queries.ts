@@ -63,7 +63,7 @@ export async function getContractsOverview() {
 }
 
 export async function getContractCreationContext() {
-  await requireAdmin();
+  const currentAdmin = await requireAdmin();
 
   const [leads, proposals, admins, legalSettings, templates] = await Promise.all([
     prisma.lead.findMany({
@@ -85,6 +85,8 @@ export async function getContractCreationContext() {
         recommendedSolution: true,
         implementationPlan: true,
         nextSteps: true,
+        createdAt: true,
+        updatedAt: true,
       },
     }),
     prisma.adminUser.findMany({
@@ -100,7 +102,10 @@ export async function getContractCreationContext() {
     }),
   ]);
 
-  return { leads, proposals, admins, legalSettings, templates };
+  const currentAdminOption = admins.find((admin) => admin.id === currentAdmin.id || admin.email.toLowerCase() === currentAdmin.email.toLowerCase()) ?? null;
+  const currentAdminId = currentAdminOption?.id ?? null;
+
+  return { leads, proposals, admins, currentAdminId, legalSettings, templates };
 }
 
 export async function getContractById(id: string) {

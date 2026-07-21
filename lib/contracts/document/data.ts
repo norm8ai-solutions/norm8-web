@@ -2,6 +2,7 @@ import 'server-only';
 
 import { Prisma, type ContractDeliverableStatus, type ContractPhaseType, type ContractSectionCategory, type PaymentMilestoneStatus } from '@/app/generated/prisma/client';
 import { prisma } from '@/lib/db/prisma';
+import { getMissingContractScopeFields, getMissingContractServiceFields, getStepMissingFields, hasMeaningfulLegalText, isValidEmail, isValidRequiredProviderTaxId } from '@/lib/contracts/wizard/validation';
 import { asObject, textArray, textValue } from './formatters';
 import type { ContractDocumentData, ContractDocumentDeliverable, ContractDocumentParty } from './types';
 
@@ -171,11 +172,77 @@ function buildProviderParty(snapshot: Record<string, unknown>): ContractDocument
 }
 
 function buildWarnings(data: ContractDocumentData): string[] {
+  const missingClientLegalFields = getMissingClientLegalFields(data.client);
+  const missingProviderLegalFields = getMissingProviderLegalFields(data.provider);
+  const missingServiceFields = getMissingContractServiceFields({
+    service: {
+      serviceType: data.serviceType,
+      serviceTypeOther: data.serviceTypeOther,
+      plan: data.plan,
+      includesLaunch: data.includesLaunch,
+      includesOperate: data.includesOperate,
+      includesScale: data.includesScale,
+      includedServices: data.includedServices,
+    },
+    validUntil: data.validUntil,
+  });
+  const missingScopeFields = getMissingContractScopeFields({
+    scope: data.context,
+    deliverables: data.deliverables.map((deliverable) => ({
+      title: deliverable.title,
+      description: deliverable.description,
+      phase: deliverable.phase,
+      estimatedDate: deliverable.estimatedDate?.toISOString() ?? null,
+      responsible: deliverable.responsible,
+      acceptanceCriteria: deliverable.acceptanceCriteria,
+    })),
+  });
+
+  const missingTimelineFields = getStepMissingFields('timeline', {
+    phases: data.phases.map((phase) => ({
+      name: phase.name,
+      description: phase.description,
+      startsAt: phase.startsAt?.toISOString() ?? null,
+      endsAt: phase.endsAt?.toISOString() ?? null,
+      duration: phase.duration,
+      dependencies: phase.dependencies,
+      paymentMilestone: phase.paymentMilestone,
+      approvalCriteria: phase.approvalCriteria,
+    })),
+  });
   return [
-    !data.provider.legalName || !data.provider.taxId || !data.provider.address ? 'Dados legais da Norm8 incompletos.' : null,
-    !data.client.legalName && !data.client.tradeName ? 'Cliente sem nome legal/comercial definido.' : null,
-    !data.client.taxId ? 'Cliente sem NIF definido.' : null,
-    data.sections.filter((section) => section.isRequired).length === 0 ? 'Sem clausulas obrigatorias selecionadas.' : null,
+    missingProviderLegalFields.length > 0 ? `Dados legais da Norm8 em falta: ${missingProviderLegalFields.join(', ')}.` : null,
+    missingClientLegalFields.length > 0 ? `Dados legais do cliente em falta: ${missingClientLegalFields.join(', ')}.` : null,
+    missingServiceFields.length > 0 ? `Dados do serviço e plano em falta: ${missingServiceFields.join(', ')}.` : null,
+    missingScopeFields.length > 0 ? `Dados de âmbito e entregáveis em falta: ${missingScopeFields.join(', ')}.` : null,
+    missingTimelineFields.length > 0 ? 'Rascunho guardado. Existem dados do cronograma em falta que serão necessários antes de gerar o contrato final: ' + missingTimelineFields.join(', ') + '.' : null,
+    data.sections.filter((section) => section.isRequired).length === 0 ? 'Sem cláusulas obrigatórias selecionadas.' : null,
     !data.financials.finalValue && !data.financials.commercialValue ? 'Valores financeiros incompletos.' : null,
   ].filter((warning): warning is string => Boolean(warning));
+}
+
+function getMissingProviderLegalFields(provider: ContractDocumentParty): string[] {
+  return [
+    !hasMeaningfulLegalText(provider.legalName) ? 'Nome legal da entidade prestadora' : null,
+    !isValidRequiredProviderTaxId(provider.taxId) ? 'NIF da entidade prestadora' : null,
+    !hasMeaningfulLegalText(provider.address) ? 'Morada fiscal' : null,
+    !isValidEmail(provider.email) ? 'Email' : null,
+    !hasMeaningfulLegalText(provider.representative) ? 'Nome do representante' : null,
+    !hasMeaningfulLegalText(provider.representativeRole) ? 'Cargo do representante' : null,
+  ].filter((field): field is string => Boolean(field));
+}
+function getMissingClientLegalFields(client: ContractDocumentParty): string[] {
+  return [
+    !client.tradeName ? 'Nome comercial' : null,
+    !client.legalName ? 'Denominação social' : null,
+    !client.taxId ? 'NIF' : null,
+    !client.address ? 'Morada fiscal' : null,
+    !client.postalCode ? 'Código postal' : null,
+    !client.city ? 'Localidade' : null,
+    !client.country ? 'País' : null,
+    !client.email ? 'Email' : null,
+    !client.representative ? 'Nome do representante' : null,
+    !client.representativeRole ? 'Cargo do representante' : null,
+    !client.representativeEmail ? 'Email do representante' : null,
+  ].filter((field): field is string => Boolean(field));
 }

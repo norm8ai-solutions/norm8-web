@@ -2,14 +2,14 @@ import { formatDocumentDate } from '@/lib/contracts/document/formatters';
 import type { ContractDocumentData } from '@/lib/contracts/document/types';
 import { ContractLogo, ContractPageFrame } from './ContractPageFrame';
 
-export function ContractCoverPage({ contract }: { contract: ContractDocumentData }) {
+export function ContractCoverPage({ contract, logoSrc }: { contract: ContractDocumentData; logoSrc?: string | null }) {
   const clientName = contract.client.legalName ?? contract.client.tradeName ?? 'Cliente por definir';
   return (
     <ContractPageFrame contract={contract} title="Capa" variant="cover">
-      <div>
-        <ContractLogo />
+      <div className="contract-cover-logo-wrap">
+        <ContractLogo src={logoSrc} variant="cover" />
       </div>
-      <div>
+      <div className="contract-cover-title-block">
         <p className="contract-eyebrow">Contrato de prestação de serviços</p>
         <h1 className="contract-title">CONTRATO DE PRESTAÇÃO DE SERVIÇOS</h1>
         <p className="contract-subtitle">Norm8 para {clientName}</p>

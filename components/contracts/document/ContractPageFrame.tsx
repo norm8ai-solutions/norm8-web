@@ -28,9 +28,13 @@ export function ContractPageFrame({ children, contract, pageNumber, title, varia
   );
 }
 
-export function ContractLogo() {
+export function ContractLogo({ src, variant = 'default' }: { src?: string | null; variant?: 'cover' | 'default' }) {
+  const logoClassName = `contract-logo ${variant === 'cover' ? 'contract-cover-logo' : ''}`.trim();
+
+  if (!src) return <span className="contract-logo-fallback">Norm8</span>;
+
   // eslint-disable-next-line @next/next/no-img-element
-  return <img alt="Norm8" className="contract-logo" src="/brand/norm8-logo.png" />;
+  return <img alt="Norm8" className={logoClassName} src={src} />;
 }
 
 export function SectionHeading({ lead, title }: { lead?: string; title: string }) {

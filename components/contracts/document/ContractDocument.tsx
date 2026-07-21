@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { CONTRACT_DOCUMENT_LOGO_PATH } from '@/lib/contracts/document/assets';
 import { documentCss } from '@/lib/contracts/document/theme';
 import type { ContractDocumentData, ContractRenderedPage } from '@/lib/contracts/document/types';
 import { ContractAnnexesPage } from './ContractAnnexesPage';
@@ -15,7 +16,7 @@ import { ContractSignaturesPage } from './ContractSignaturesPage';
 import { ContractSlaPage } from './ContractSlaPage';
 import { ContractTimelinePage } from './ContractTimelinePage';
 
-export function ContractDocument({ contract }: { contract: ContractDocumentData }) {
+export function ContractDocument({ contract, logoSrc = CONTRACT_DOCUMENT_LOGO_PATH }: { contract: ContractDocumentData; logoSrc?: string | null }) {
   const pages = getContractDocumentPages(contract);
   let pageNumber = 1;
 
@@ -23,7 +24,7 @@ export function ContractDocument({ contract }: { contract: ContractDocumentData 
     <>
       <style dangerouslySetInnerHTML={{ __html: documentCss }} />
       <div className="contract-document">
-        <ContractCoverPage contract={contract} />
+        <ContractCoverPage contract={contract} logoSrc={logoSrc} />
         <ContractIndexPage contract={contract} pages={pages} />
         {pages.filter((page) => page.id !== 'cover' && page.id !== 'index').map((page) => {
           pageNumber += 1;
