@@ -1,9 +1,9 @@
 import type { ContractDocumentData } from '@/lib/contracts/document/types';
 import { ContractPageFrame, InfoCard, SectionHeading } from './ContractPageFrame';
 
-export function ContractContextPage({ contract, pageNumber }: { contract: ContractDocumentData; pageNumber: number }) {
+export function ContractContextPage({ contract, pageNumber, totalPages }: { contract: ContractDocumentData; pageNumber: number; totalPages: number }) {
   return (
-    <ContractPageFrame contract={contract} pageNumber={pageNumber} title="Objeto e contexto">
+    <ContractPageFrame contract={contract} pageNumber={pageNumber} totalPages={totalPages} title="Objeto e contexto">
       <SectionHeading title="Objeto e contexto" lead="Contexto comercial, objetivo e solução proposta." />
       <div className="contract-grid-2">
         <InfoCard label="Projeto" value={contract.projectName} />

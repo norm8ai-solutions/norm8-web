@@ -7,10 +7,10 @@ const phases = [
   { key: 'Scale', text: 'Expansão da solução através de novas funcionalidades, integrações, automações e sistemas.' },
 ];
 
-export function ContractGrowthSystemPage({ contract, pageNumber }: { contract: ContractDocumentData; pageNumber: number }) {
+export function ContractGrowthSystemPage({ contract, pageNumber, totalPages }: { contract: ContractDocumentData; pageNumber: number; totalPages: number }) {
   const active = { Launch: contract.includesLaunch, Operate: contract.includesOperate, Scale: contract.includesScale };
   return (
-    <ContractPageFrame contract={contract} pageNumber={pageNumber} title="Norm8 Growth System">
+    <ContractPageFrame contract={contract} pageNumber={pageNumber} totalPages={totalPages} title="Norm8 Growth System">
       <SectionHeading title="Norm8 Growth System" lead="Launch → Operate → Scale" />
       <div className="contract-growth">
         {phases.map((phase) => (

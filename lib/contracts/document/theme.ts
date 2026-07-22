@@ -48,11 +48,10 @@ export const documentCss = `
     border: 1px solid rgba(16, 24, 40, 0.08);
     box-shadow: 0 16px 50px rgba(15, 23, 42, 0.12);
     color: var(--doc-text);
-    display: flex;
-    flex-direction: column;
-    min-height: 297mm;
+    height: 297mm;
+    min-height: 0;
     overflow: hidden;
-    padding: 18mm 18mm 14mm;
+    padding: 0;
     page-break-after: always;
     position: relative;
     width: 210mm;
@@ -63,28 +62,50 @@ export const documentCss = `
   .contract-page-header,
   .contract-page-footer {
     align-items: center;
-    color: var(--doc-muted);
+    color: #64748b;
     display: flex;
-    font-size: 9px;
+    font-size: 8px;
+    font-weight: 650;
     justify-content: space-between;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+    position: absolute;
+    text-transform: uppercase;
   }
 
   .contract-page-header {
-    border-bottom: 1px solid var(--doc-border);
-    margin-bottom: 18px;
-    padding-bottom: 9px;
+    border-bottom: 1px solid #e5e7eb;
+    height: 9mm;
+    left: 18mm;
+    padding-bottom: 2.5mm;
+    right: 18mm;
+    top: 12mm;
   }
 
   .contract-page-footer {
-    border-top: 1px solid var(--doc-border);
-    margin-top: auto;
-    padding-top: 9px;
+    border-top: 1px solid #e5e7eb;
+    bottom: 10mm;
+    height: 8mm;
+    left: 18mm;
+    padding-top: 2.5mm;
+    right: 18mm;
   }
 
   .contract-page-content {
+    align-content: start;
+    bottom: 23mm;
     display: grid;
-    gap: 18px;
+    gap: 14px;
+    left: 18mm;
+    overflow: hidden;
+    position: absolute;
+    right: 18mm;
+    top: 31mm;
+  }
+
+  .contract-avoid-break {
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 
   .contract-cover {
@@ -94,10 +115,12 @@ export const documentCss = `
 
   .contract-cover .contract-page-content {
     align-content: unset;
+    bottom: 24mm;
     display: flex;
     flex-direction: column;
     gap: 0;
     justify-content: flex-start;
+    top: 18mm;
   }
 
   .contract-logo {
@@ -380,7 +403,8 @@ export const documentCss = `
     .contract-document-page {
       border: 0;
       box-shadow: none;
-      min-height: 297mm;
+      height: 297mm;
+      min-height: 0;
       width: 210mm;
     }
   }

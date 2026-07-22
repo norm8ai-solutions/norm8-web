@@ -1388,5 +1388,3 @@ export type NestedEnumContractActivityTypeWithAggregatesFilter<$PrismaModel = ne
   _min?: Prisma.NestedEnumContractActivityTypeFilter<$PrismaModel>
   _max?: Prisma.NestedEnumContractActivityTypeFilter<$PrismaModel>
 }
-
-

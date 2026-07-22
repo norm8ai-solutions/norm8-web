@@ -5,7 +5,7 @@ import { ContractLogo, ContractPageFrame } from './ContractPageFrame';
 export function ContractCoverPage({ contract, logoSrc }: { contract: ContractDocumentData; logoSrc?: string | null }) {
   const clientName = contract.client.legalName ?? contract.client.tradeName ?? 'Cliente por definir';
   return (
-    <ContractPageFrame contract={contract} title="Capa" variant="cover">
+    <ContractPageFrame contract={contract} showPageNumber={false} title="Capa" variant="cover">
       <div className="contract-cover-logo-wrap">
         <ContractLogo src={logoSrc} variant="cover" />
       </div>

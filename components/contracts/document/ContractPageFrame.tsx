@@ -6,23 +6,27 @@ type ContractPageFrameProps = {
   children: ReactNode;
   contract: ContractDocumentData;
   pageNumber?: number;
+  showPageNumber?: boolean;
   title: string;
+  totalPages?: number;
   variant?: 'cover' | 'default';
 };
 
-export function ContractPageFrame({ children, contract, pageNumber, title, variant = 'default' }: ContractPageFrameProps) {
+export function ContractPageFrame({ children, contract, pageNumber, showPageNumber = Boolean(pageNumber), title, totalPages, variant = 'default' }: ContractPageFrameProps) {
+  const footerPageLabel = showPageNumber && pageNumber ? formatPageLabel(pageNumber, totalPages) : formatDocumentDate(contract.issueDate);
+
   return (
     <article className={`contract-document-page ${variant === 'cover' ? 'contract-cover' : ''}`} id={slugTitle(title)}>
       {variant === 'default' ? (
         <header className="contract-page-header">
-          <span>Norm8 - {contract.number} - v{contract.version}</span>
+          <span>Norm8 · {contract.number} · v{contract.version}</span>
           <span>{title}</span>
         </header>
       ) : null}
       <div className="contract-page-content">{children}</div>
       <footer className="contract-page-footer">
-        <span>Norm8 - Sistemas de IA para operações mais claras, rápidas e escaláveis.</span>
-        <span>{pageNumber ? `Página ${pageNumber}` : formatDocumentDate(contract.issueDate)} - norm8.pt</span>
+        <span>norm8.pt</span>
+        <span>{footerPageLabel}</span>
       </footer>
     </article>
   );
@@ -49,7 +53,7 @@ export function SectionHeading({ lead, title }: { lead?: string; title: string }
 
 export function InfoCard({ label, value }: { label: string; value?: ReactNode }) {
   return (
-    <div className="contract-card">
+    <div className="contract-card contract-avoid-break">
       <strong>{label}</strong>
       <span>{value || 'Por definir'}</span>
     </div>
@@ -59,10 +63,15 @@ export function InfoCard({ label, value }: { label: string; value?: ReactNode })
 export function WarningList({ warnings }: { warnings: string[] }) {
   if (warnings.length === 0) return null;
   return (
-    <div className="contract-warning">
+    <div className="contract-warning contract-avoid-break">
       <strong>Conteúdo a rever:</strong> {warnings.join(' ')}
     </div>
   );
+}
+
+function formatPageLabel(pageNumber: number, totalPages?: number): string {
+  if (!totalPages) return `Página ${pageNumber}`;
+  return `${String(pageNumber).padStart(2, '0')} / ${String(totalPages).padStart(2, '0')}`;
 }
 
 function slugTitle(title: string): string {

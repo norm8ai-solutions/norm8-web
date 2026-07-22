@@ -2,10 +2,10 @@ import { formatMoneyValue, formatShortDate } from '@/lib/contracts/document/form
 import type { ContractDocumentData } from '@/lib/contracts/document/types';
 import { ContractPageFrame, InfoCard, SectionHeading, WarningList } from './ContractPageFrame';
 
-export function ContractInvestmentPage({ contract, pageNumber }: { contract: ContractDocumentData; pageNumber: number }) {
+export function ContractInvestmentPage({ contract, pageNumber, totalPages }: { contract: ContractDocumentData; pageNumber: number; totalPages: number }) {
   const f = contract.financials;
   return (
-    <ContractPageFrame contract={contract} pageNumber={pageNumber} title="Investimento e pagamentos">
+    <ContractPageFrame contract={contract} pageNumber={pageNumber} totalPages={totalPages} title="Investimento e pagamentos">
       <SectionHeading title="Investimento e pagamentos" lead="Valores, impostos, validade e milestones de faturação." />
       <WarningList warnings={contract.warnings.filter((warning) => warning.includes('financeiros') || warning.includes('investimento'))} />
       <div className="contract-grid-3">

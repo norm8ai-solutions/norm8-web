@@ -141,6 +141,9 @@ export type ContractDocumentData = {
 
 export type ContractRenderedPage = {
   id: string;
+  sectionId: string;
   title: string;
-  estimatedPage: number;
+  pageNumber: number;
+  showPageNumber: boolean;
+  isContinuation?: boolean;
 };

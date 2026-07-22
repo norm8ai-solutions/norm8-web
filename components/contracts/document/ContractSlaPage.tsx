@@ -8,9 +8,9 @@ const priorities = [
   ['Prioridade baixa', 'Melhorias; pedidos de otimização; alterações cosméticas; sugestões.', 'Até 5 dias úteis.'],
 ];
 
-export function ContractSlaPage({ contract, pageNumber }: { contract: ContractDocumentData; pageNumber: number }) {
+export function ContractSlaPage({ contract, pageNumber, totalPages }: { contract: ContractDocumentData; pageNumber: number; totalPages: number }) {
   return (
-    <ContractPageFrame contract={contract} pageNumber={pageNumber} title="SLA">
+    <ContractPageFrame contract={contract} pageNumber={pageNumber} totalPages={totalPages} title="SLA">
       <SectionHeading title="SLA" lead="Tempos de resposta base aplicáveis ao suporte contratado." />
       <div className="contract-table-wrap"><table className="contract-table"><thead><tr><th>Prioridade</th><th>Critérios</th><th>Resposta inicial</th></tr></thead><tbody>{priorities.map(([name, criteria, response]) => <tr key={name}><td>{name}</td><td>{criteria}</td><td>{response}</td></tr>)}</tbody></table></div>
       <div className="contract-card"><strong>Notas</strong><span>O tempo de resposta não equivale ao tempo de resolução. O SLA aplica-se apenas durante horários úteis e pode depender do plano Operate. Falhas causadas por serviços terceiros não ficam totalmente sob controlo da Norm8. Intervenções fora de horário podem implicar custo adicional.</span></div>

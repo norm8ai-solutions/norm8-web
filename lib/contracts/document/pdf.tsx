@@ -17,6 +17,7 @@ export type ContractPdfGenerationResult = {
   pdfHash: string;
   pdfStorageKey: string;
   pdfUrl: string;
+  operation: 'generated' | 'regenerated';
   version: number;
 };
 
@@ -34,6 +35,8 @@ export async function generateContractPdf(input: { adminUserId: string; adminEma
 
   validateReadyForPdf(data);
 
+  const operation = hasExistingGeneratedPdf(data) ? 'regenerated' : 'generated';
+
   const pdf = await renderPdfBuffer(data);
   const pdfHash = hashPdf(pdf);
   const generatedAt = new Date();
@@ -41,7 +44,7 @@ export async function generateContractPdf(input: { adminUserId: string; adminEma
   const stored = await storeContractPdf(fileName, pdf);
   const adminUserId = await resolvePersistentPdfAdminId(input.adminUserId, input.adminEmail);
   const version = await getNextContractVersion(input.contractId, data.version);
-  const snapshot = JSON.parse(JSON.stringify(data)) as Prisma.JsonObject;
+  const snapshot = buildContractVersionSnapshot(data);
 
   await prisma.$transaction([
     prisma.contract.update({
@@ -55,6 +58,8 @@ export async function generateContractPdf(input: { adminUserId: string; adminEma
     }),
     prisma.contractVersion.create({
       data: {
+        // The canonical PDF integrity hash for this version is ContractVersion.pdfHash.
+        // Generated PDF fields are intentionally excluded from the snapshot below.
         contractId: input.contractId,
         version,
         title: data.title,
@@ -78,9 +83,12 @@ export async function generateContractPdf(input: { adminUserId: string; adminEma
     }),
   ]);
 
-  return { contractId: input.contractId, pdfHash, pdfStorageKey: stored.pdfStorageKey, pdfUrl: stored.pdfUrl, version };
+  return { contractId: input.contractId, operation, pdfHash, pdfStorageKey: stored.pdfStorageKey, pdfUrl: stored.pdfUrl, version };
 }
 
+function hasExistingGeneratedPdf(data: NonNullable<Awaited<ReturnType<typeof getContractDocumentData>>>): boolean {
+  return Boolean(data.pdfUrl || data.pdfStorageKey || data.pdfHash || data.generatedAt);
+}
 function validateReadyForPdf(data: Awaited<ReturnType<typeof getContractDocumentData>> extends infer T ? NonNullable<T> : never): void {
   const missingProviderLegalFields = getMissingProviderLegalFieldsForPdf(data.provider);
   if (missingProviderLegalFields.length > 0) {
@@ -254,6 +262,14 @@ async function renderContractHtml(data: NonNullable<Awaited<ReturnType<typeof ge
   return `<!doctype html><html lang="pt-PT"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>${escapeHtml(data.number)} - ${escapeHtml(data.title)}</title></head><body>${markup}</body></html>`;
 }
 
+function buildContractVersionSnapshot(data: NonNullable<Awaited<ReturnType<typeof getContractDocumentData>>>): Prisma.JsonObject {
+  const snapshot = JSON.parse(JSON.stringify(data)) as Prisma.JsonObject;
+  delete snapshot.pdfUrl;
+  delete snapshot.pdfStorageKey;
+  delete snapshot.pdfHash;
+  delete snapshot.generatedAt;
+  return snapshot;
+}
 function hashPdf(pdf: Buffer): string {
   try {
     return createHash('sha256').update(pdf).digest('hex');

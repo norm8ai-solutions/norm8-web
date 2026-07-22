@@ -2,9 +2,9 @@ import { resolveClauseVariables } from '@/lib/contracts/document/formatters';
 import type { ContractDocumentData } from '@/lib/contracts/document/types';
 import { ContractPageFrame, SectionHeading, WarningList } from './ContractPageFrame';
 
-export function ContractClausesPage({ contract, pageNumber }: { contract: ContractDocumentData; pageNumber: number }) {
+export function ContractClausesPage({ contract, pageNumber, totalPages }: { contract: ContractDocumentData; pageNumber: number; totalPages: number }) {
   return (
-    <ContractPageFrame contract={contract} pageNumber={pageNumber} title="Cláusulas contratuais">
+    <ContractPageFrame contract={contract} pageNumber={pageNumber} totalPages={totalPages} title="Cláusulas contratuais">
       <SectionHeading title="Cláusulas contratuais" lead="Condições selecionadas para este contrato." />
       <WarningList warnings={contract.warnings.filter((warning) => warning.includes('clausulas'))} />
       {contract.sections.map((section, index) => (

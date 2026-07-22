@@ -2,9 +2,9 @@ import { formatShortDate } from '@/lib/contracts/document/formatters';
 import type { ContractDocumentData } from '@/lib/contracts/document/types';
 import { ContractPageFrame, InfoCard, SectionHeading } from './ContractPageFrame';
 
-export function ContractScopePage({ contract, pageNumber }: { contract: ContractDocumentData; pageNumber: number }) {
+export function ContractScopePage({ contract, pageNumber, totalPages }: { contract: ContractDocumentData; pageNumber: number; totalPages: number }) {
   return (
-    <ContractPageFrame contract={contract} pageNumber={pageNumber} title="Âmbito e entregáveis">
+    <ContractPageFrame contract={contract} pageNumber={pageNumber} totalPages={totalPages} title="Âmbito e entregáveis">
       <SectionHeading title="Âmbito, entregáveis e critérios de aceitação" lead="O que está incluído, excluído e preparado para validação." />
       <div className="contract-grid-2">
         <InfoCard label="Âmbito incluído" value={contract.context.includedScope} />

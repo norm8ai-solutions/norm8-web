@@ -426,6 +426,7 @@ model Contract {
   @@index([plan])
   @@index([createdById])
   @@index([assignedToId])
+  @@index([pdfHash])
   @@index([createdAt])
   @@index([validUntil])
 }
@@ -514,6 +515,7 @@ model ContractVersion {
 
   @@unique([contractId, version])
   @@index([createdById])
+  @@index([pdfHash])
   @@index([createdAt])
 }
 

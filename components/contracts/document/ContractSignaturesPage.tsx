@@ -1,9 +1,9 @@
 import type { ContractDocumentData } from '@/lib/contracts/document/types';
 import { ContractPageFrame, SectionHeading } from './ContractPageFrame';
 
-export function ContractSignaturesPage({ contract, pageNumber }: { contract: ContractDocumentData; pageNumber: number }) {
+export function ContractSignaturesPage({ contract, pageNumber, totalPages }: { contract: ContractDocumentData; pageNumber: number; totalPages: number }) {
   return (
-    <ContractPageFrame contract={contract} pageNumber={pageNumber} title="Assinaturas">
+    <ContractPageFrame contract={contract} pageNumber={pageNumber} totalPages={totalPages} title="Assinaturas">
       <SectionHeading title="Assinaturas" lead="Espaço de assinatura das partes." />
       <div className="contract-signature-grid">
         <SignatureBlock company="Norm8" name={contract.provider.representative} role={contract.provider.representativeRole} />

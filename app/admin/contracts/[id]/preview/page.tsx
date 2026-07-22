@@ -1,16 +1,21 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, Download, FileText, PenLine } from 'lucide-react';
+import { ArrowLeft, PenLine } from 'lucide-react';
 import { AdminPanel } from '@/components/admin/AdminPrimitives';
+import { ContractPreviewPdfActions } from '@/components/contracts/ContractPreviewPdfActions';
 import { ContractDocument, getContractDocumentPages } from '@/components/contracts/document/ContractDocument';
 import { getContractDocumentData } from '@/lib/contracts/document/data';
+import { documentCss } from '@/lib/contracts/document/theme';
 
 const zoomOptions = [75, 100, 125] as const;
 
 type ContractPreviewPageProps = {
   params: Promise<{ id: string }>;
-  searchParams?: Promise<{ error?: string; generated?: string; missing?: string; zoom?: string }>;
+  searchParams?: Promise<{ error?: string; generated?: string; missing?: string; pdf?: string; zoom?: string }>;
 };
+
+type ContractPreviewData = NonNullable<Awaited<ReturnType<typeof getContractDocumentData>>>;
+type PdfState = 'generated' | 'regenerated' | null;
 
 export default async function ContractPreviewPage({ params, searchParams }: ContractPreviewPageProps) {
   const { id } = await params;
@@ -28,9 +33,11 @@ export default async function ContractPreviewPage({ params, searchParams }: Cont
   const pages = getContractDocumentPages(contract);
   const canEdit = contract.status === 'DRAFT' || contract.status === 'IN_REVIEW';
   const canGenerate = contract.status !== 'SIGNED';
+  const hasExistingPdf = hasExistingGeneratedPdf(contract);
 
   return (
     <div className="admin-page-grid">
+      <style dangerouslySetInnerHTML={{ __html: documentCss }} />
       <AdminPanel
         title={`Preview ${contract.number}`}
         subtitle="Pré-visualização A4 do contrato gerado a partir dos snapshots e dados estruturados."
@@ -38,39 +45,38 @@ export default async function ContractPreviewPage({ params, searchParams }: Cont
           <div className="admin-filters">
             <Link className="admin-button admin-button-muted" href={`/admin/contracts/${contract.id}`}><ArrowLeft size={14} />Voltar</Link>
             {canEdit ? <Link className="admin-button admin-button-muted" href={`/admin/contracts/${contract.id}/edit`}><PenLine size={14} />Editar</Link> : null}
-            {contract.pdfUrl ? <Link className="admin-button" href={contract.pdfUrl} target="_blank"><Download size={14} />Descarregar PDF</Link> : null}
-            {canGenerate ? (
-              <form action={`/api/contracts/${contract.id}/generate-pdf`} method="post">
-                <button className="admin-button" type="submit"><FileText size={14} />{contract.pdfUrl ? 'Regenerar PDF' : 'Gerar PDF'}</button>
-              </form>
-            ) : <span className="admin-pill">Regeneração bloqueada em contratos assinados</span>}
+            <ContractPreviewPdfActions canGenerate={canGenerate} contractId={contract.id} hasExistingPdf={hasExistingPdf} pdfUrl={contract.pdfUrl} zoom={zoom} />
           </div>
         }
       >
-        {query?.generated === '1' ? <p className="admin-execution-success">PDF gerado e associado ao contrato.</p> : null}
-        {query?.error ? <p className="admin-action-execution-error">{formatError(query.error)}{query.missing ? ` Campos em falta: ${query.missing}.` : ''}</p> : null}
-        {contract.warnings.length > 0 ? (
-          <div className="admin-execution-summary admin-execution-summary-danger" style={{ marginBottom: 14 }}>
-            <strong>Conteúdo incompleto</strong>
-            {contract.warnings.map((warning) => <span key={warning}>{warning}</span>)}
+        <div className="contract-preview-status-stack">
+          <ContractPdfStatusBanner contract={contract} error={query?.error} missing={query?.missing} pdfState={resolvePdfState(query?.pdf, query?.generated)} />
+          {contract.warnings.length > 0 ? (
+            <div className="admin-execution-summary admin-execution-summary-danger">
+              <strong>Conteúdo incompleto</strong>
+              {contract.warnings.map((warning) => <span key={warning}>{warning}</span>)}
+            </div>
+          ) : null}
+          <div className="contract-preview-toolbar">
+            <div className="contract-preview-zoom-controls">
+              <span className="contract-preview-toolbar-label">Zoom</span>
+              <div className="admin-filters">
+                {zoomOptions.map((option) => <Link className={`admin-button ${zoom === option ? '' : 'admin-button-muted'}`} href={`/admin/contracts/${contract.id}/preview?zoom=${option}`} key={option}>{option}%</Link>)}
+              </div>
+            </div>
+            <span className="contract-preview-page-count">{pages.length} páginas</span>
           </div>
-        ) : null}
-        <div className="contract-preview-toolbar">
-          <div className="admin-filters">
-            {zoomOptions.map((option) => <Link className={`admin-button ${zoom === option ? '' : 'admin-button-muted'}`} href={`/admin/contracts/${contract.id}/preview?zoom=${option}`} key={option}>{option}%</Link>)}
-          </div>
-          <span className="admin-row-meta">{pages.length} páginas estimadas</span>
         </div>
       </AdminPanel>
 
       <section className="contract-preview-layout">
         <aside className="contract-preview-sidebar">
           <p className="admin-row-title">Secções</p>
-          {pages.map((page) => <a className="contract-preview-nav-link" href={`#${slugTitle(page.title)}`} key={page.id}>{page.estimatedPage}. {page.title}</a>)}
+          {pages.filter((page) => !page.isContinuation).map((page) => <a className="contract-preview-nav-link" href={`#${slugTitle(page.title)}`} key={page.id}>{page.pageNumber}. {page.title}</a>)}
         </aside>
         <div className="contract-preview-scroll">
           <div style={{ transform: `scale(${zoom / 100})`, transformOrigin: 'top center', width: `${10000 / zoom}%` }}>
-            <ContractDocument contract={contract} />
+            <ContractDocument contract={contract} includeStyles={false} />
           </div>
         </div>
       </section>
@@ -85,6 +91,70 @@ async function loadContractSafely(id: string) {
     console.error('Failed to load contract preview', { contractId: id, error });
     return null;
   }
+}
+
+function hasExistingGeneratedPdf(contract: ContractPreviewData): boolean {
+  return Boolean(contract.pdfUrl || contract.pdfStorageKey || contract.pdfHash || contract.generatedAt);
+}
+
+function resolvePdfState(pdfState: string | undefined, legacyGenerated: string | undefined): PdfState {
+  if (pdfState === 'generated' || pdfState === 'regenerated') return pdfState;
+  return legacyGenerated === '1' ? 'generated' : null;
+}
+
+function ContractPdfStatusBanner({ contract, error, missing, pdfState }: { contract: ContractPreviewData; error?: string; missing?: string; pdfState: PdfState }) {
+  if (error) {
+    return (
+      <div className="contract-preview-status-banner contract-preview-status-banner-error">
+        <strong>{formatError(error)}</strong>
+        <span>{missing ? `Campos em falta: ${missing}.` : 'O PDF anterior foi mantido. Pode tentar novamente.'}</span>
+      </div>
+    );
+  }
+
+  if (pdfState === 'regenerated') {
+    return (
+      <div className="contract-preview-status-banner contract-preview-status-banner-success">
+        <strong>PDF regenerado com sucesso.</strong>
+        <span>Nova versão criada e associada ao contrato.{contract.generatedAt ? ` Última geração: ${formatGeneratedAt(contract.generatedAt)}.` : ''}</span>
+      </div>
+    );
+  }
+
+  if (pdfState === 'generated') {
+    return (
+      <div className="contract-preview-status-banner contract-preview-status-banner-success">
+        <strong>PDF gerado e associado ao contrato.</strong>
+        <span>{contract.generatedAt ? `Última geração: ${formatGeneratedAt(contract.generatedAt)}.` : 'O documento ficou disponível para download.'}</span>
+      </div>
+    );
+  }
+
+  if (hasExistingGeneratedPdf(contract)) {
+    return (
+      <div className="contract-preview-status-banner contract-preview-status-banner-neutral">
+        <strong>PDF disponível para download.</strong>
+        <span>{contract.generatedAt ? `Última geração: ${formatGeneratedAt(contract.generatedAt)}.` : 'O contrato já tem um PDF associado.'}</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="contract-preview-status-banner contract-preview-status-banner-neutral">
+      <strong>PDF ainda não gerado.</strong>
+      <span>Revê o preview A4 e gera o documento quando estiver pronto.</span>
+    </div>
+  );
+}
+
+function formatGeneratedAt(value: Date | string): string {
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return 'data indisponível';
+  return new Intl.DateTimeFormat('pt-PT', {
+    dateStyle: 'short',
+    timeStyle: 'short',
+    timeZone: 'Europe/Lisbon',
+  }).format(date);
 }
 
 function parseZoom(value: string | undefined): 75 | 100 | 125 {

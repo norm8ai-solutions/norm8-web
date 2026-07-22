@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ------------------------------------------------------------------
  * File: app/admin/submissions/[id]/page.tsx
  * Description: Submission detail page for the Norm8 admin dashboard.
@@ -299,7 +299,7 @@ function CommercialPotentialCard({
           value={formatContractConfidence(estimate?.confidence)}
         />
         <AdminField label="Proximo passo" value={nextStep ?? 'Discovery Call'} />
-        <AdminField label="Justifica�o" value={estimate?.rationale ?? 'N�o dispon�vel'} />
+        <AdminField label="Justificação" value={estimate?.rationale ?? 'Não disponível'} />
       </div>
     </div>
   );
@@ -340,7 +340,7 @@ function SalesPlaybookPanel({
         <AdminField label="Decisor provavel" value={playbook.likelyDecisionMaker} />
         <AdminField
           label="Probabilidade de Fecho"
-          value={probability === undefined ? 'N�o estimada' : `${probability}%`}
+          value={probability === undefined ? 'Não estimada' : `${probability}%`}
         />
       </div>
 
