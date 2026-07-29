@@ -5,17 +5,18 @@ import { AdminPanel } from '@/components/admin/AdminPrimitives';
 import { ContractPreviewPdfActions } from '@/components/contracts/ContractPreviewPdfActions';
 import { ContractDocument, getContractDocumentPages } from '@/components/contracts/document/ContractDocument';
 import { getContractDocumentData } from '@/lib/contracts/document/data';
+import { getContractEditability, hasUnpublishedChanges } from '@/lib/contracts/governance';
 import { documentCss } from '@/lib/contracts/document/theme';
 
 const zoomOptions = [75, 100, 125] as const;
 
 type ContractPreviewPageProps = {
   params: Promise<{ id: string }>;
-  searchParams?: Promise<{ error?: string; generated?: string; missing?: string; pdf?: string; zoom?: string }>;
+  searchParams?: Promise<{ error?: string; generated?: string; message?: string; missing?: string; pdf?: string; zoom?: string }>;
 };
 
 type ContractPreviewData = NonNullable<Awaited<ReturnType<typeof getContractDocumentData>>>;
-type PdfState = 'generated' | 'regenerated' | null;
+type PdfState = 'current' | 'generated' | 'regenerated' | null;
 
 export default async function ContractPreviewPage({ params, searchParams }: ContractPreviewPageProps) {
   const { id } = await params;
@@ -32,8 +33,10 @@ export default async function ContractPreviewPage({ params, searchParams }: Cont
 
   const pages = getContractDocumentPages(contract);
   const canEdit = contract.status === 'DRAFT' || contract.status === 'IN_REVIEW';
-  const canGenerate = contract.status !== 'SIGNED';
+  const editability = getContractEditability(contract);
   const hasExistingPdf = hasExistingGeneratedPdf(contract);
+  const pdfHasUnpublishedChanges = hasUnpublishedChanges(contract);
+  const canGenerate = hasExistingPdf ? editability.canRegeneratePdf && pdfHasUnpublishedChanges : editability.canGeneratePdf;
 
   return (
     <div className="admin-page-grid">
@@ -45,12 +48,12 @@ export default async function ContractPreviewPage({ params, searchParams }: Cont
           <div className="admin-filters">
             <Link className="admin-button admin-button-muted" href={`/admin/contracts/${contract.id}`}><ArrowLeft size={14} />Voltar</Link>
             {canEdit ? <Link className="admin-button admin-button-muted" href={`/admin/contracts/${contract.id}/edit`}><PenLine size={14} />Editar</Link> : null}
-            <ContractPreviewPdfActions canGenerate={canGenerate} contractId={contract.id} hasExistingPdf={hasExistingPdf} pdfUrl={contract.pdfUrl} zoom={zoom} />
+            <ContractPreviewPdfActions canGenerate={canGenerate} contractId={contract.id} hasExistingPdf={hasExistingPdf} hasUnpublishedChanges={pdfHasUnpublishedChanges} pendingChangeReason={contract.pendingChangeReason} pdfUrl={contract.pdfUrl} zoom={zoom} />
           </div>
         }
       >
         <div className="contract-preview-status-stack">
-          <ContractPdfStatusBanner contract={contract} error={query?.error} missing={query?.missing} pdfState={resolvePdfState(query?.pdf, query?.generated)} />
+          <ContractPdfStatusBanner contract={contract} error={query?.error} hasUnpublishedChanges={pdfHasUnpublishedChanges} message={query?.message} missing={query?.missing} pdfState={resolvePdfState(query?.pdf, query?.generated)} />
           {contract.warnings.length > 0 ? (
             <div className="admin-execution-summary admin-execution-summary-danger">
               <strong>Conteúdo incompleto</strong>
@@ -98,11 +101,11 @@ function hasExistingGeneratedPdf(contract: ContractPreviewData): boolean {
 }
 
 function resolvePdfState(pdfState: string | undefined, legacyGenerated: string | undefined): PdfState {
-  if (pdfState === 'generated' || pdfState === 'regenerated') return pdfState;
+  if (pdfState === 'current' || pdfState === 'generated' || pdfState === 'regenerated') return pdfState;
   return legacyGenerated === '1' ? 'generated' : null;
 }
 
-function ContractPdfStatusBanner({ contract, error, missing, pdfState }: { contract: ContractPreviewData; error?: string; missing?: string; pdfState: PdfState }) {
+function ContractPdfStatusBanner({ contract, error, hasUnpublishedChanges, message, missing, pdfState }: { contract: ContractPreviewData; error?: string; hasUnpublishedChanges: boolean; message?: string; missing?: string; pdfState: PdfState }) {
   if (error) {
     return (
       <div className="contract-preview-status-banner contract-preview-status-banner-error">
@@ -121,6 +124,14 @@ function ContractPdfStatusBanner({ contract, error, missing, pdfState }: { contr
     );
   }
 
+  if (pdfState === 'current') {
+    return (
+      <div className="contract-preview-status-banner contract-preview-status-banner-neutral">
+        <strong>PDF atualizado.</strong>
+        <span>O conteúdo gerado é idêntico ao PDF atual, por isso não foi criada uma nova versão documental.</span>
+      </div>
+    );
+  }
   if (pdfState === 'generated') {
     return (
       <div className="contract-preview-status-banner contract-preview-status-banner-success">
@@ -131,10 +142,19 @@ function ContractPdfStatusBanner({ contract, error, missing, pdfState }: { contr
   }
 
   if (hasExistingGeneratedPdf(contract)) {
+    if (hasUnpublishedChanges) {
+      return (
+        <div className="contract-preview-status-banner contract-preview-status-banner-neutral">
+          <strong>PDF precisa de regeneração.</strong>
+          <span>{contract.pendingChangeReason ? `Motivo pendente: ${contract.pendingChangeReason}` : 'O contrato foi alterado depois da última geração.'}</span>
+        </div>
+      );
+    }
+
     return (
       <div className="contract-preview-status-banner contract-preview-status-banner-neutral">
-        <strong>PDF disponível para download.</strong>
-        <span>{contract.generatedAt ? `Última geração: ${formatGeneratedAt(contract.generatedAt)}.` : 'O contrato já tem um PDF associado.'}</span>
+        <strong>PDF atualizado.</strong>
+        <span>{contract.generatedAt ? `O PDF atual corresponde à versão mais recente do contrato. Última geração: ${formatGeneratedAt(contract.generatedAt)}.` : 'O contrato já tem um PDF associado.'}</span>
       </div>
     );
   }
@@ -184,7 +204,9 @@ function formatError(error: string): string {
     playwright: 'Playwright indisponível para gerar PDF.',
     write_failed: 'Não foi possível guardar o PDF.',
     hash_failed: 'Não foi possível calcular o hash do PDF.',
-    locked: 'Contratos assinados não podem ser regenerados diretamente.',
+    locked: 'Este contrato não pode regenerar PDF no estado atual.',
+    reason_required: 'Indique o motivo da regeneração do PDF.',
+    pdf_current: 'O PDF atual já corresponde à versão mais recente do contrato.',
     admin_missing: 'Não existe um utilizador admin ativo para associar ao PDF.',
     unknown: 'Não foi possível gerar o PDF.',
   };

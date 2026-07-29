@@ -5,6 +5,7 @@ import type { ContractSectionCategory } from '@/app/generated/prisma/client';
 import { AdminPanel } from '@/components/admin/AdminPrimitives';
 import { ContractWizard, type ContractWizardPayload } from '@/components/contracts/ContractWizard';
 import { updateContractWizardAction } from '@/lib/contracts/actions';
+import { getContractEditability } from '@/lib/contracts/governance';
 import { getContractEditorContext } from '@/lib/contracts/queries';
 import { normalizePortugueseText } from '@/lib/text/normalize-portuguese';
 
@@ -23,13 +24,14 @@ export default async function ContractEditPage({ params, searchParams }: Contrac
   }
 
   const contract = context.contract;
-  const isEditable = contract.status === 'DRAFT' || contract.status === 'IN_REVIEW';
+  const editability = getContractEditability(contract);
+  const isEditable = editability.canEdit;
 
   return (
     <div className="admin-page-grid">
       <AdminPanel
         title={`Editar ${contract.number}`}
-        subtitle="Editor wizard para rascunhos e contratos em revisão."
+        subtitle="Editor wizard para contratos em rascunho e revisão controlada."
         action={
           <Link className="admin-button admin-button-muted" href={`/admin/contracts/${contract.id}`}>
             <ArrowLeft size={14} />Voltar
@@ -42,6 +44,9 @@ export default async function ContractEditPage({ params, searchParams }: Contrac
         {query?.error === 'locked' ? (
           <p className="admin-action-execution-error">Este contrato já não permite edição direta.</p>
         ) : null}
+        {query?.error === 'reason' ? (
+          <p className="admin-action-execution-error">Este contrato já tem histórico documental. Indique o motivo da alteração com pelo menos 8 caracteres antes de guardar.</p>
+        ) : null}
         {query?.error === 'admin' ? (
           <p className="admin-action-execution-error">Não foi possível guardar o contrato porque não existe um administrador ativo associado. Crie um utilizador admin ou ative o modo demo corretamente.</p>
         ) : null}
@@ -51,6 +56,8 @@ export default async function ContractEditPage({ params, searchParams }: Contrac
           contractId={contract.id}
           initialPayload={buildInitialPayload(contract)}
           isEditable={isEditable}
+          requiresChangeReason={editability.requiresChangeReason}
+          editabilityReason={editability.reason}
           leads={context.leads}
           legalSettings={context.legalSettings ? mapLegalSettings(context.legalSettings) : null}
           mode="edit"

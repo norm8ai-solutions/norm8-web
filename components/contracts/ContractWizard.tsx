@@ -1,6 +1,6 @@
 'use client';
 
-import { Children, isValidElement, useMemo, useState, type FormEvent } from 'react';
+import { Children, isValidElement, useMemo, useState, useTransition, type FormEvent } from 'react';
 import Link from 'next/link';
 import { AlertTriangle, ArrowLeft, Check, ChevronLeft, ChevronRight, Lock, Plus, Save, Trash2 } from 'lucide-react';
 import * as Dialog from '@radix-ui/react-dialog';
@@ -172,13 +172,21 @@ export type ContractWizardPayload = {
  validUntil?: string | null;
 };
 
+type ContractWizardActionResult = {
+ success: false;
+ fieldErrors?: Partial<Record<'changeReason' | 'wizardPayload', string>>;
+ message?: string;
+};
+
 type ContractWizardProps = {
- action: (formData: FormData) => void | Promise<void>;
+ action: (formData: FormData) => void | Promise<void | ContractWizardActionResult>;
  admins: AdminOption[];
  contractId?: string;
  initialPayload?: ContractWizardPayload;
  currentAdminId?: string | null;
  isEditable?: boolean;
+  requiresChangeReason?: boolean;
+  editabilityReason?: string | null;
  leads: LeadOption[];
  legalSettings: LegalSettingsOption;
  mode: 'create' | 'edit';
@@ -204,6 +212,8 @@ export function ContractWizard({
  initialPayload,
  currentAdminId,
  isEditable = true,
+  requiresChangeReason = false,
+  editabilityReason = null,
  leads,
  legalSettings,
  mode,
@@ -228,6 +238,10 @@ export function ContractWizard({
  const [proposalTouched, setProposalTouched] = useState(Boolean(initialPayload?.client.proposalId));
  const [autoProposalNote, setAutoProposalNote] = useState<string | null>(null);
  const [validationAttempted, setValidationAttempted] = useState(false);
+ const [changeReason, setChangeReason] = useState('');
+ const [isPending, startTransition] = useTransition();
+ const [submitError, setSubmitError] = useState<string | null>(null);
+ const [serverFieldErrors, setServerFieldErrors] = useState<Partial<Record<'changeReason' | 'wizardPayload', string>>>({});
  const [stepErrors, setStepErrors] = useState<Partial<Record<number, ContractWizardValidationError[]>>>({});
  const [navigationNotice, setNavigationNotice] = useState<string | null>(null);
  const [pendingTimelineOverwrite, setPendingTimelineOverwrite] = useState(false);
@@ -534,14 +548,39 @@ function goToNextStep() {
  attemptNavigateToStep(currentStep + 1);
 }
 
+function updateChangeReason(value: string) {
+ setChangeReason(value);
+ if (value.trim().length >= 8) {
+ setServerFieldErrors((current) => {
+ const { changeReason: _changeReason, ...next } = current;
+ return next;
+ });
+ }
+}
+
+function focusChangeReasonField() {
+ if (typeof document === 'undefined') return;
+ window.requestAnimationFrame(() => {
+ const container = document.querySelector('[data-contract-field="changeReason"]');
+ const input = container?.querySelector('textarea');
+ input?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+ input?.focus({ preventScroll: true });
+ });
+}
+
 function handleSubmit(event: FormEvent<HTMLFormElement>) {
+ event.preventDefault();
+ event.stopPropagation();
+
  const submitter = (event.nativeEvent as SubmitEvent).submitter;
  const isExplicitPersistence = submitter instanceof HTMLElement && submitter.dataset.contractPersist === 'true';
 
- if (!isExplicitPersistence) {
- event.preventDefault();
+ if (!isExplicitPersistence || !isEditable) {
  return;
  }
+
+ setSubmitError(null);
+ setServerFieldErrors({});
 
  const allErrorsByStepId = validateContractWizard(payload);
  const allErrors = Object.fromEntries(
@@ -550,27 +589,60 @@ function handleSubmit(event: FormEvent<HTMLFormElement>) {
  const firstInvalidStep = findFirstInvalidStep(allErrors);
 
  if (firstInvalidStep !== null) {
- event.preventDefault();
  setValidationAttempted(true);
  setStepErrors(allErrors);
  setCurrentStep(firstInvalidStep);
  focusFirstInvalidField(allErrors[firstInvalidStep] ?? []);
+ return;
  }
+
+ if (requiresChangeReason && changeReason.trim().length < 8) {
+ setValidationAttempted(true);
+ setCurrentStep(steps.length - 1);
+ setServerFieldErrors({ changeReason: 'Indique o motivo da alteracao antes de guardar. O motivo deve ter pelo menos 8 caracteres.' });
+ focusChangeReasonField();
+ return;
+ }
+
+ const formData = new FormData(event.currentTarget);
+ formData.set('wizardPayload', JSON.stringify(payload));
+ if (contractId) formData.set('contractId', contractId);
+ if (requiresChangeReason) formData.set('changeReason', changeReason.trim());
+
+ startTransition(() => {
+ void Promise.resolve(action(formData)).then((result) => {
+ if (result && typeof result === 'object' && 'success' in result && result.success === false) {
+ setValidationAttempted(true);
+ setCurrentStep(steps.length - 1);
+ setSubmitError(result.message ?? null);
+ setServerFieldErrors(result.fieldErrors ?? {});
+ if (result.fieldErrors?.changeReason) focusChangeReasonField();
+ }
+ });
+ });
 }
 
 return (
- <form action={action} className="admin-page-grid" onBlurCapture={handleFormBlur} onSubmit={handleSubmit} noValidate>
+ <form className="admin-page-grid" onBlurCapture={handleFormBlur} onSubmit={handleSubmit} noValidate>
  {contractId ? <input name="contractId" type="hidden" value={contractId} /> : null}
  <input name="wizardPayload" type="hidden" value={JSON.stringify(payload)} />
+  {requiresChangeReason ? <input name="changeReason" type="hidden" value={changeReason.trim()} /> : null}
 
- {!isEditable ? (
- <div className="admin-execution-summary admin-execution-summary-danger">
- <strong>Contrato bloqueado para edição direta</strong>
- <span>Este contrato já saiu do estado de rascunho/revisão. As alterações futuras devem usar fluxo de versão ou scope change.</span>
+ <div className="contract-edit-alert-stack">
+{isEditable && requiresChangeReason ? (
+ <div className="contract-editability-banner contract-editability-banner-info">
+ <strong>Motivo obrigatório</strong>
+ <span>{editabilityReason ?? 'Este contrato já tem um PDF gerado. Alterações relevantes podem exigir motivo e uma nova regeneração do PDF.'}</span>
  </div>
- ) : null}
-
- <div className="contract-wizard-progress">
+) : null}
+{!isEditable ? (
+ <div className="contract-editability-banner contract-editability-banner-danger">
+ <strong>Contrato bloqueado para edição direta</strong>
+ <span>{editabilityReason ?? 'Crie uma revisão com motivo para alterar os dados sem perder o histórico anterior.'}</span>
+ </div>
+) : null}
+</div>
+<div className="contract-wizard-progress">
  {steps.map((step, index) => {
  const hasErrors = stepErrors[index]?.some((error) => error.blocking) ?? false;
  const isDone = index < currentStep && !hasErrors;
@@ -781,6 +853,8 @@ return (
  {currentStep === 7 ? (
  <WizardStep title="Revisão" subtitle="Confirma o rascunho antes de guardar.">
  {reviewWarnings.length > 0 ? <div className="admin-execution-summary admin-execution-summary-danger"><strong>Pontos a rever</strong>{reviewWarnings.map((warning) => <span key={warning}>{warning}</span>)}</div> : <div className="admin-execution-summary"><strong>Pronto para guardar</strong><span>O rascunho tem os dados essenciais para a Fase 2.</span></div>}
+  {submitError ? <div className="admin-execution-summary admin-execution-summary-danger"><strong>Alteracoes nao guardadas</strong><span>{submitError}</span></div> : null}
+  {requiresChangeReason ? <TextArea description="Este contrato ja tem historico documental. Indique o motivo para manter o historico de auditoria." error={serverFieldErrors.changeReason ?? (validationAttempted && changeReason.trim().length < 8 ? "Indique o motivo da alteracao antes de guardar. O motivo deve ter pelo menos 8 caracteres." : undefined)} field="changeReason" label="Motivo da alteracao" onChange={updateChangeReason} placeholder="Ex.: Ajuste ao cronograma antes do envio ao cliente." required value={changeReason} /> : null}
  <div className="admin-kpi-grid"><ReviewItem label="Cliente" value={payload.client.legalName ?? payload.client.tradeName ?? selectedLead?.company ?? 'Por definir'} /><ReviewItem label="Projeto" value={payload.client.projectName ?? 'Por definir'} /><ReviewItem label="Plano" value={payload.service.plan ? CONTRACT_PLAN_LABELS[payload.service.plan] : 'Por definir'} /><ReviewItem label="Valor" value={formatContractValue(String(payload.financials.finalValue ?? payload.financials.commercialValue ?? selectedProposal?.estimatedValue ?? ''))} /><ReviewItem label="Entregáveis" value={String(payload.deliverables.length)} /><ReviewItem label="Cláusulas" value={String(enabledSections.length)} /></div>
  </WizardStep>
  ) : null}
@@ -788,7 +862,7 @@ return (
 
  <div className="contract-wizard-actions">
  <Link className="admin-button admin-button-muted" href={mode === 'edit' && contractId ? `/admin/contracts/${contractId}` : '/admin/contracts'}><ArrowLeft size={14} />Cancelar</Link>
- <div className="admin-filters"><button className="admin-button admin-button-muted" disabled={currentStep === 0} onClick={(event) => { event.preventDefault(); setNavigationNotice(null); setCurrentStep((step) => Math.max(0, step - 1)); }} type="button"><ChevronLeft size={14} />Anterior</button>{currentStep < steps.length - 1 ? <button className="admin-button" onClick={(event) => { event.preventDefault(); goToNextStep(); }} type="button">Seguinte<ChevronRight size={14} /></button> : <button className="admin-button" data-contract-persist="true" disabled={!isEditable} type="submit"><Save size={14} />{mode === 'edit' ? 'Guardar alterações' : 'Criar rascunho'}</button>}</div>
+ <div className="admin-filters"><button className="admin-button admin-button-muted" disabled={currentStep === 0} onClick={(event) => { event.preventDefault(); setNavigationNotice(null); setCurrentStep((step) => Math.max(0, step - 1)); }} type="button"><ChevronLeft size={14} />Anterior</button>{currentStep < steps.length - 1 ? <button className="admin-button" onClick={(event) => { event.preventDefault(); goToNextStep(); }} type="button">Seguinte<ChevronRight size={14} /></button> : <button className="admin-button" data-contract-persist="true" disabled={!isEditable || isPending} type="submit"><Save size={14} />{isPending ? 'A guardar...' : mode === 'edit' ? 'Guardar alteracoes' : 'Criar rascunho'}</button>}</div>
  </div>
  </form>
 );
@@ -862,7 +936,7 @@ function MoneyField({ error, field, label, onChange, readOnly, required, value }
  <label className="admin-form-control" data-contract-field={field}>
  <span>{label}{required ? ' *' : ''}</span>
  <div className={`admin-input ${error ? 'admin-input-error' : ''}`} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
- <span className="admin-row-meta">€</span>
+ <span className="admin-row-meta">â‚¬</span>
  <input aria-describedby={error ? errorId : undefined} aria-invalid={Boolean(error) || undefined} inputMode="decimal" onChange={(event) => onChange(event.target.value)} readOnly={readOnly} required={required} style={{ background: 'transparent', border: 0, color: 'inherit', flex: 1, minWidth: 0, outline: 'none' }} type="text" value={value} />
  </div>
  {error ? <span className="admin-field-error" id={errorId}>{error}</span> : null}
@@ -889,13 +963,13 @@ function DateField({ error, field, label, onChange, required, value }: { error?:
  </label>
  );
 }
-function TextArea({ error, field, label, onChange, required, value }: { error?: string; field?: string; label: string; onChange: (value: string) => void; required?: boolean; value: string }) {
+function TextArea({ description, error, field, label, onChange, placeholder, required, value }: { description?: string; error?: string; field?: string; label: string; onChange: (value: string) => void; placeholder?: string; required?: boolean; value: string }) {
  const errorId = field ? `contract-field-error-${field}` : undefined;
 
  return (
  <label className="admin-form-control" data-contract-field={field}>
  <span>{label}{required ? ' *' : ''}</span>
- <textarea aria-describedby={error ? errorId : undefined} aria-invalid={Boolean(error) || undefined} className={`admin-textarea ${error ? 'admin-input-error' : ''}`} onChange={(event) => onChange(event.target.value)} required={required} value={value} />
+ <textarea aria-describedby={error ? errorId : undefined} aria-invalid={Boolean(error) || undefined} className={`admin-textarea ${error ? 'admin-input-error' : ''}`} onChange={(event) => onChange(event.target.value)} placeholder={placeholder} required={required} value={value} />
  {error ? <span className="admin-field-error" id={errorId}>{error}</span> : null}
  </label>
  );

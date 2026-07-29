@@ -1,47 +1,6 @@
 import type { ContractDocumentData } from './types';
 
-const mojibakeReplacements: Array<[string, string]> = [
-  ['\u00c3\u0192\u00c2\u00a1', 'á'],
-  ['\u00c3\u0192\u00c2\u00a0', 'à'],
-  ['\u00c3\u0192\u00c2\u00a2', 'â'],
-  ['\u00c3\u0192\u00c2\u00a3', 'ã'],
-  ['\u00c3\u0192\u00c2\u00a7', 'ç'],
-  ['\u00c3\u0192\u00c2\u00a9', 'é'],
-  ['\u00c3\u0192\u00c2\u00aa', 'ê'],
-  ['\u00c3\u0192\u00c2\u00ad', 'í'],
-  ['\u00c3\u0192\u00c2\u00b3', 'ó'],
-  ['\u00c3\u0192\u00c2\u00ba', 'ú'],
-  ['\u00c3\u0192\u00c2\u00b5', 'õ'],
-  ['\u00c3\u0192\u00c5\u00a1', 'Ú'],
-  ['\u00c3\u0192\u00e2\u20ac\u00a1', 'Ç'],
-  ['\u00c3\u00a1', 'á'],
-  ['\u00c3\u00a0', 'à'],
-  ['\u00c3\u00a2', 'â'],
-  ['\u00c3\u00a3', 'ã'],
-  ['\u00c3\u00a7', 'ç'],
-  ['\u00c3\u00a9', 'é'],
-  ['\u00c3\u00aa', 'ê'],
-  ['\u00c3\u00ad', 'í'],
-  ['\u00c3\u00b3', 'ó'],
-  ['\u00c3\u00ba', 'ú'],
-  ['\u00c3\u00b5', 'õ'],
-  ['\u00c3\u008d', 'Í'],
-  ['\u00c3\u0089', 'É'],
-  ['\u00c3\u0093', 'Ó'],
-  ['\u00c3\u009a', 'Ú'],
-  ['\u00c3\u0087', 'Ç'],
-  ['\u00c2\u00b7', '·'],
-  ['\u00e2\u20ac\u201c', '-'],
-  ['\u00e2\u20ac\u201d', '-'],
-  ['\u00e2\u20ac\u02dc', "'"],
-  ['\u00e2\u20ac\u2122', "'"],
-  ['\u00e2\u20ac\u0153', '"'],
-  ['\u00e2\u20ac\u009d', '"'],
-  ['\u00e2\u20ac\u00a6', '...'],
-  ['\ufffd', ''],
-];
-
-const mojibakeDetector = /[\u00c3\u00c2\u00e2\ufffd]/;
+const mojibakeCodePoints = [0x00c3, 0x0192, 0x00e2, 0x20ac, 0x0161, 0x0153, 0x2122, 0xfffd];
 
 export function asObject(value: unknown): Record<string, unknown> {
   return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
@@ -74,8 +33,19 @@ export function sanitizePlainText(value: string): string {
 }
 
 export function repairPortugueseMojibake(value: string): string {
-  if (!mojibakeDetector.test(value)) return value;
-  return mojibakeReplacements.reduce((current, [broken, repaired]) => current.split(broken).join(repaired), value);
+  if (mojibakeScore(value) === 0) return value;
+
+  let current = value;
+  for (let index = 0; index < 4; index += 1) {
+    const currentScore = mojibakeScore(current);
+    if (currentScore === 0) break;
+    const candidate = decodeCp1252AsUtf8(current);
+    if (!candidate || candidate.includes('\uFFFD')) break;
+    const candidateScore = mojibakeScore(candidate);
+    if (candidateScore > currentScore) break;
+    current = candidate;
+  }
+  return current;
 }
 
 export function formatDocumentDate(value: Date | string | null | undefined): string {
@@ -126,4 +96,17 @@ export function slugifyFilePart(value: string): string {
     .replace(/[^a-zA-Z0-9]+/g, '_')
     .replace(/^_+|_+$/g, '')
     .slice(0, 72) || 'Cliente';
+}
+
+function mojibakeScore(value: string): number {
+  return Array.from(value).filter((char) => mojibakeCodePoints.includes(char.charCodeAt(0))).length;
+}
+
+function decodeCp1252AsUtf8(value: string): string | null {
+  try {
+    const bytes = new Uint8Array(Array.from(value, (char) => char.charCodeAt(0) & 0xff));
+    return new TextDecoder('utf-8', { fatal: false }).decode(bytes);
+  } catch {
+    return null;
+  }
 }

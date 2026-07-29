@@ -9,28 +9,39 @@ type ContractPreviewPdfActionsProps = {
   canGenerate: boolean;
   contractId: string;
   hasExistingPdf: boolean;
+  hasUnpublishedChanges: boolean;
+  pendingChangeReason?: string | null;
   pdfUrl?: string | null;
   zoom: 75 | 100 | 125;
 };
 
 type GenerationResponse = {
   success: boolean;
-  operation?: 'generated' | 'regenerated';
+  operation?: 'current' | 'generated' | 'regenerated';
   pdfUrl?: string;
   error?: string;
+  message?: string;
   missingFields?: string[];
 };
 
-export function ContractPreviewPdfActions({ canGenerate, contractId, hasExistingPdf, pdfUrl, zoom }: ContractPreviewPdfActionsProps) {
+export function ContractPreviewPdfActions({ canGenerate, contractId, hasExistingPdf, hasUnpublishedChanges, pendingChangeReason, pdfUrl, zoom }: ContractPreviewPdfActionsProps) {
   const router = useRouter();
   const [isGenerating, setIsGenerating] = useState(false);
   const [visiblePdfUrl, setVisiblePdfUrl] = useState<string | null>(pdfUrl ?? null);
+  const [changeReason, setChangeReason] = useState('');
 
   const operationLabel = hasExistingPdf || visiblePdfUrl ? 'Regenerar PDF' : 'Gerar PDF';
+  const hasPendingReason = Boolean(pendingChangeReason?.trim());
   const loadingLabel = hasExistingPdf || visiblePdfUrl ? 'A regenerar PDF...' : 'A gerar PDF...';
 
   async function handleGenerate() {
     if (isGenerating || !canGenerate) return;
+    const requiresReason = (hasExistingPdf || visiblePdfUrl) && !hasPendingReason;
+    if (requiresReason && changeReason.trim().length < 8) {
+      const params = buildPreviewParams(zoom, { error: 'reason_required' });
+      router.replace(`/admin/contracts/${contractId}/preview?${params}`);
+      return;
+    }
     setIsGenerating(true);
 
     try {
@@ -39,12 +50,15 @@ export function ContractPreviewPdfActions({ canGenerate, contractId, hasExisting
         headers: {
           Accept: 'application/json',
           'X-Requested-With': 'fetch',
+          'Content-Type': 'application/json',
         },
+        body: JSON.stringify({ changeReason: pendingChangeReason ?? (changeReason.trim() || null) }),
       });
       const result = await response.json() as GenerationResponse;
 
       if (!response.ok || !result.success || !result.operation) {
         const errorParams: Record<string, string> = { error: result.error ?? 'unknown' };
+        if (result.message) errorParams.message = result.message;
         if (result.missingFields?.length) errorParams.missing = result.missingFields.join(', ');
         const params = buildPreviewParams(zoom, errorParams);
         router.replace(`/admin/contracts/${contractId}/preview?${params}`);
@@ -66,12 +80,14 @@ export function ContractPreviewPdfActions({ canGenerate, contractId, hasExisting
   return (
     <div className="admin-filters contract-preview-header-actions">
       {visiblePdfUrl ? <Link className="admin-button" href={visiblePdfUrl} target="_blank"><Download size={14} />Descarregar PDF</Link> : null}
+      {(hasExistingPdf || visiblePdfUrl) && hasPendingReason ? <span className="admin-pill">Motivo pendente aplicado</span> : null}
+      {(hasExistingPdf || visiblePdfUrl) && hasUnpublishedChanges && !hasPendingReason ? <input aria-label="Motivo técnico da regeneração" className="admin-input" onChange={(event) => setChangeReason(event.target.value)} placeholder="Motivo técnico da regeneração" value={changeReason} /> : null}
       {canGenerate ? (
         <button className="admin-button" disabled={isGenerating} onClick={handleGenerate} type="button">
           {isGenerating ? <LoaderCircle className="contract-preview-spinner" size={14} /> : <FileText size={14} />}
           {isGenerating ? loadingLabel : operationLabel}
         </button>
-      ) : <span className="admin-pill">Regeneração bloqueada em contratos assinados</span>}
+      ) : <span className="admin-pill">{hasExistingPdf && !hasUnpublishedChanges ? 'PDF atualizado' : 'PDF bloqueado neste estado'}</span>}
     </div>
   );
 }

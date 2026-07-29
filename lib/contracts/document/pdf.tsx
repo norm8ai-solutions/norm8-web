@@ -8,6 +8,7 @@ import { ContractDocument } from '@/components/contracts/document/ContractDocume
 import { prisma } from '@/lib/db/prisma';
 import { getContractLogoDataUri } from '@/lib/contracts/document/assets';
 import { ContractAdminResolutionError, resolvePersistentAdminId as resolvePersistentContractAdminId } from '@/lib/contracts/service';
+import { assertContractCanGeneratePdf, ContractGovernanceError, normalizeChangeReason } from '@/lib/contracts/governance';
 import { getMissingContractFinancialFields, getMissingContractScopeFields, getMissingContractServiceFields, getStepMissingFields, hasMeaningfulLegalText, isValidBasicPortugueseTaxId, isValidEmail, isValidRequiredProviderTaxId } from '@/lib/contracts/wizard/validation';
 import { getContractDocumentData } from './data';
 import { slugifyFilePart } from './formatters';
@@ -17,7 +18,7 @@ export type ContractPdfGenerationResult = {
   pdfHash: string;
   pdfStorageKey: string;
   pdfUrl: string;
-  operation: 'generated' | 'regenerated';
+  operation: 'current' | 'generated' | 'regenerated';
   version: number;
 };
 
@@ -28,21 +29,49 @@ export class ContractPdfError extends Error {
   }
 }
 
-export async function generateContractPdf(input: { adminUserId: string; adminEmail?: string | null; contractId: string }): Promise<ContractPdfGenerationResult> {
+export async function generateContractPdf(input: { adminUserId: string; adminEmail?: string | null; contractId: string; changeReason?: string | null }): Promise<ContractPdfGenerationResult> {
   const data = await getContractDocumentData(input.contractId);
   if (!data) throw new ContractPdfError('not_found', 'Contrato não encontrado.');
-  if (data.status === 'SIGNED') throw new ContractPdfError('locked', 'Contratos assinados não podem ser regenerados diretamente.');
+  const pendingChangeReason = normalizeChangeReason(data.pendingChangeReason);
+  const operation = hasExistingGeneratedPdf(data) ? 'regenerated' : 'generated';
+  const changeReason = pendingChangeReason ?? normalizeChangeReason(input.changeReason) ?? (operation === 'generated' ? 'Geração inicial do PDF' : null);
+  try {
+    assertContractCanGeneratePdf(data, changeReason);
+  } catch (error) {
+    if (error instanceof ContractGovernanceError) throw new ContractPdfError(error.code, error.message);
+    throw error;
+  }
 
   validateReadyForPdf(data);
 
-  const operation = hasExistingGeneratedPdf(data) ? 'regenerated' : 'generated';
 
   const pdf = await renderPdfBuffer(data);
   const pdfHash = hashPdf(pdf);
   const generatedAt = new Date();
+  const adminUserId = await resolvePersistentPdfAdminId(input.adminUserId, input.adminEmail);
+
+  if (operation === 'regenerated' && data.pdfHash === pdfHash && data.pdfUrl && data.pdfStorageKey) {
+    await prisma.$transaction([
+      prisma.contract.update({
+        where: { id: input.contractId },
+        data: { generatedAt, pendingChangeReason: null, pendingChangeAt: null },
+      }),
+      prisma.contractActivityLog.create({
+        data: {
+          contractId: input.contractId,
+          adminUserId,
+          type: 'CONTRACT_PDF_REGENERATED',
+          message: `PDF mantido para ${data.number}; o conteúdo gerado é idêntico ao ficheiro atual.`,
+          metadata: { generatedAt: generatedAt.toISOString(), pdfHash, pdfStorageKey: data.pdfStorageKey, pdfUrl: data.pdfUrl, changeReason, skippedVersion: true },
+        },
+      }),
+    ]);
+
+    return { contractId: input.contractId, operation: 'current', pdfHash, pdfStorageKey: data.pdfStorageKey, pdfUrl: data.pdfUrl, version: data.version };
+  }
+
   const fileName = buildContractPdfFileName(data, pdfHash, generatedAt);
   const stored = await storeContractPdf(fileName, pdf);
-  const adminUserId = await resolvePersistentPdfAdminId(input.adminUserId, input.adminEmail);
   const version = await getNextContractVersion(input.contractId, data.version);
   const snapshot = buildContractVersionSnapshot(data);
 
@@ -54,6 +83,8 @@ export async function generateContractPdf(input: { adminUserId: string; adminEma
         pdfStorageKey: stored.pdfStorageKey,
         pdfHash,
         generatedAt,
+        pendingChangeReason: null,
+        pendingChangeAt: null,
       },
     }),
     prisma.contractVersion.create({
@@ -64,11 +95,14 @@ export async function generateContractPdf(input: { adminUserId: string; adminEma
         version,
         title: data.title,
         status: data.status,
+        statusAtGeneration: data.status,
+        versionLabel: 'v' + version,
         snapshot,
         pdfUrl: stored.pdfUrl,
         pdfStorageKey: stored.pdfStorageKey,
         pdfHash,
         generatedAt,
+        changeReason,
         createdById: adminUserId,
       },
     }),
@@ -76,9 +110,9 @@ export async function generateContractPdf(input: { adminUserId: string; adminEma
       data: {
         contractId: input.contractId,
         adminUserId,
-        type: 'CONTRACT_PDF_GENERATION_REQUESTED',
-        message: `PDF gerado para ${data.number} v${version}.`,
-        metadata: { fileName, generatedAt: generatedAt.toISOString(), pdfHash, pdfStorageKey: stored.pdfStorageKey, pdfUrl: stored.pdfUrl, version },
+        type: operation === 'regenerated' ? 'CONTRACT_PDF_REGENERATED' : 'CONTRACT_PDF_GENERATED',
+        message: operation === 'regenerated' ? `PDF regenerado para ${data.number} v${version}.` : `PDF gerado para ${data.number} v${version}.`,
+        metadata: { fileName, generatedAt: generatedAt.toISOString(), pdfHash, pdfStorageKey: stored.pdfStorageKey, pdfUrl: stored.pdfUrl, version, versionLabel: 'v' + version, changeReason },
       },
     }),
   ]);
@@ -268,6 +302,8 @@ function buildContractVersionSnapshot(data: NonNullable<Awaited<ReturnType<typeo
   delete snapshot.pdfStorageKey;
   delete snapshot.pdfHash;
   delete snapshot.generatedAt;
+  delete snapshot.pendingChangeReason;
+  delete snapshot.pendingChangeAt;
   return snapshot;
 }
 function hashPdf(pdf: Buffer): string {

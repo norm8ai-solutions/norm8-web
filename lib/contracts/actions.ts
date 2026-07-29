@@ -3,14 +3,16 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
-import type { ContractPlan, ContractSectionCategory, ContractServiceType } from '@/app/generated/prisma/client';
+import type { ContractPlan, ContractSectionCategory, ContractServiceType, ContractStatus } from '@/app/generated/prisma/client';
 import { requireAdmin } from '@/lib/admin/auth';
-import { ContractAdminResolutionError, createContractDraft, updateCompanyLegalSettings, updateContractFromWizard, type ContractWizardInput } from './service';
+import { ContractAdminResolutionError, createContractDraft, reopenContractForRevision, updateCompanyLegalSettings, updateContractFromWizard, updateContractStatusControlled, type ContractWizardInput } from './service';
+import { ContractGovernanceError } from './governance';
 import { getMissingContractClientLegalFields, getMissingContractFinancialFields, getMissingContractProviderLegalFields, getMissingContractScopeFields, getMissingContractServiceFields, getStepMissingFields } from './wizard/validation';
 
 const contractServiceTypes: ContractServiceType[] = ['WEBSITE', 'CUSTOM_SOFTWARE', 'PROCESS_AUTOMATION', 'AI_AGENTS', 'SYSTEM_INTEGRATION', 'TECHNOLOGY_CONSULTING', 'COMMERCIAL_PLATFORM', 'MAINTENANCE_EVOLUTION', 'OTHER'];
 const contractPlans: ContractPlan[] = ['STARTER', 'PROFESSIONAL', 'BUSINESS', 'CUSTOM'];
 const sectionCategories: ContractSectionCategory[] = ['OBJECT', 'SCOPE', 'RESPONSIBILITIES', 'TIMELINE', 'APPROVALS', 'SCOPE_CHANGE', 'PAYMENTS', 'DELAYS', 'SUSPENSION', 'OPERATE', 'SLA', 'WARRANTY', 'INTELLECTUAL_PROPERTY', 'CONFIDENTIALITY', 'DATA_PROTECTION', 'THIRD_PARTY_SERVICES', 'LIABILITY_LIMITATION', 'TERMINATION', 'FORCE_MAJEURE', 'COMMUNICATIONS', 'APPLICABLE_LAW', 'JURISDICTION', 'SIGNATURES', 'ANNEX'];
+const contractStatuses: ContractStatus[] = ['DRAFT', 'IN_REVIEW', 'READY_TO_SEND', 'SENT', 'VIEWED', 'AWAITING_SIGNATURE', 'SIGNED', 'REJECTED', 'EXPIRED', 'CANCELLED'];
 
 const providerSchema = z.object({
  legalName: z.string().trim().min(1),
@@ -118,6 +120,12 @@ const wizardPayloadSchema = z.object({
  validUntil: z.string().optional().nullable(),
 });
 
+type ContractWizardActionResult = {
+ success: false;
+ fieldErrors?: Partial<Record<'changeReason' | 'wizardPayload', string>>;
+ message?: string;
+};
+
 const companyLegalSettingsSchema = providerSchema;
 
 export async function createContractDraftAction(formData: FormData): Promise<void> {
@@ -140,20 +148,38 @@ export async function createContractDraftAction(formData: FormData): Promise<voi
  }
 }
 
-export async function updateContractWizardAction(formData: FormData): Promise<void> {
+export async function updateContractWizardAction(formData: FormData): Promise<void | ContractWizardActionResult> {
  const admin = await requireAdmin();
  const contractId = optionalFormValue(formData.get('contractId'));
  if (!contractId) redirect('/admin/contracts?error=invalid');
 
  const parsed = parseWizardForm(formData, admin);
- if (!parsed.success) redirect(`/admin/contracts/${contractId}/edit?error=invalid`);
+ if (!parsed.success) {
+ return {
+ success: false,
+ fieldErrors: { wizardPayload: 'Os dados do contrato nao passaram a validacao.' },
+ message: 'Confirme os dados do contrato antes de guardar.',
+ };
+ }
 
  try {
  await updateContractFromWizard(contractId, parsed.data);
  } catch (error) {
  console.error('Failed to update contract wizard', error);
- if (error instanceof ContractAdminResolutionError) redirect(`/admin/contracts/${contractId}/edit?error=admin`);
- redirect(`/admin/contracts/${contractId}/edit?error=locked`);
+ if (error instanceof ContractAdminResolutionError) {
+ return { success: false, message: 'Nao foi possivel associar a alteracao ao administrador atual.' };
+ }
+ if (error instanceof ContractGovernanceError) {
+ if (error.code === 'reason_required') {
+ return {
+ success: false,
+ fieldErrors: { changeReason: 'Indique o motivo da alteracao antes de guardar. O motivo deve ter pelo menos 8 caracteres.' },
+ message: 'O motivo da alteracao e obrigatorio para contratos com historico documental.',
+ };
+ }
+ return { success: false, message: error.message };
+ }
+ return { success: false, message: 'Nao foi possivel guardar as alteracoes ao contrato.' };
  }
 
  revalidatePath('/admin/contracts');
@@ -161,6 +187,59 @@ export async function updateContractWizardAction(formData: FormData): Promise<vo
  redirect(buildContractDraftRedirect(contractId, parsed.data));
 }
 
+export async function updateContractStatusAction(formData: FormData): Promise<void> {
+ const admin = await requireAdmin();
+ const contractId = optionalFormValue(formData.get('contractId'));
+ const requestedStatus = optionalFormValue(formData.get('nextStatus'));
+ if (!contractId || !requestedStatus || !contractStatuses.includes(requestedStatus as ContractStatus)) redirect('/admin/contracts?error=invalid');
+ const nextStatus = requestedStatus as ContractStatus;
+
+ try {
+ await updateContractStatusControlled({
+ contractId,
+ nextStatus,
+ adminUserId: admin.id,
+ adminEmail: admin.email,
+ changeReason: optionalFormValue(formData.get('changeReason')),
+ });
+ } catch (error) {
+ console.error('Failed to update contract status', error);
+ const params = new URLSearchParams({ error: 'locked' });
+ if (error instanceof ContractGovernanceError) {
+ params.set('error', error.code);
+ if (error.missingFields.length) params.set('missing', error.missingFields.join(', '));
+ }
+ redirect(`/admin/contracts/${contractId}?${params.toString()}`);
+ }
+
+ revalidatePath('/admin/contracts');
+ revalidatePath(`/admin/contracts/${contractId}`);
+ redirect(`/admin/contracts/${contractId}?status=updated`);
+}
+
+export async function reopenContractForRevisionAction(formData: FormData): Promise<void> {
+ const admin = await requireAdmin();
+ const contractId = optionalFormValue(formData.get('contractId'));
+ if (!contractId) redirect('/admin/contracts?error=invalid');
+
+ try {
+ await reopenContractForRevision({
+ contractId,
+ adminUserId: admin.id,
+ adminEmail: admin.email,
+ changeReason: optionalFormValue(formData.get('changeReason')),
+ });
+ } catch (error) {
+ console.error('Failed to reopen contract for revision', error);
+ const code = error instanceof ContractGovernanceError ? error.code : 'locked';
+ redirect(`/admin/contracts/${contractId}?error=${code}`);
+ }
+
+ revalidatePath('/admin/contracts');
+ revalidatePath(`/admin/contracts/${contractId}`);
+ revalidatePath(`/admin/contracts/${contractId}/edit`);
+ redirect(`/admin/contracts/${contractId}/edit?revision=created`);
+}
 export async function updateCompanyLegalSettingsAction(formData: FormData): Promise<void> {
  const admin = await requireAdmin(['ADMIN']);
  const parsed = companyLegalSettingsSchema.safeParse({
@@ -260,6 +339,7 @@ function parseWizardForm(formData: FormData, admin: { id: string; email: string 
  validUntil: parseDate(payload.validUntil),
  adminUserId: admin.id,
  adminEmail: admin.email,
+ changeReason: optionalFormValue(formData.get('changeReason')),
  },
  };
  } catch (error) {

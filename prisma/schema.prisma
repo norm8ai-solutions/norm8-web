@@ -399,6 +399,8 @@ model Contract {
   pdfStorageKey     String?
   pdfHash           String?
   generatedAt       DateTime?
+  pendingChangeReason String?
+  pendingChangeAt     DateTime?
   createdById       String
   assignedToId      String?
   createdAt         DateTime             @default(now())
@@ -497,18 +499,21 @@ model ContractSection {
 
 /// Immutable version record prepared for generated/sent contracts.
 model ContractVersion {
-  id            String         @id @default(cuid())
-  contractId    String
-  version       Int
-  title         String
-  status        ContractStatus
-  snapshot      Json
-  pdfUrl        String?
-  pdfStorageKey String?
-  pdfHash       String?
-  generatedAt   DateTime?
-  createdById   String
-  createdAt     DateTime       @default(now())
+  id                 String          @id @default(cuid())
+  contractId         String
+  version            Int
+  versionLabel       String?
+  title              String
+  status             ContractStatus
+  statusAtGeneration ContractStatus?
+  changeReason       String?
+  snapshot           Json
+  pdfUrl             String?
+  pdfStorageKey      String?
+  pdfHash            String?
+  generatedAt        DateTime?
+  createdById        String
+  createdAt          DateTime        @default(now())
 
   contract  Contract  @relation(fields: [contractId], references: [id], onDelete: Cascade)
   createdBy AdminUser @relation(fields: [createdById], references: [id], onDelete: Restrict)
@@ -833,6 +838,16 @@ enum ContractActivityType {
   CONTRACT_STATUS_CHANGED
   CONTRACT_VERSION_CREATED
   CONTRACT_PDF_GENERATION_REQUESTED
+  CONTRACT_PDF_GENERATED
+  CONTRACT_PDF_REGENERATED
+  CONTRACT_REOPENED
+  CONTRACT_REVISION_CREATED
+  CONTRACT_LOCKED
+  CONTRACT_UNLOCKED
+  CONTRACT_READY_TO_SEND
+  CONTRACT_CANCELLED
+  CONTRACT_EXPIRED
+  CONTRACT_SIGNED
   CONTRACT_SENT
   CONTRACT_DRAFT_UPDATED
   CONTRACT_CLIENT_UPDATED

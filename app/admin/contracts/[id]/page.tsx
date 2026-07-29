@@ -13,11 +13,14 @@ import {
   formatContractStatus,
   formatContractValue,
 } from '@/lib/contracts/formatters';
+import { reopenContractForRevisionAction, updateContractStatusAction } from '@/lib/contracts/actions';
+import { getContractEditability, hasUnpublishedChanges, validateContractReadyToSend } from '@/lib/contracts/governance';
 import { getContractById } from '@/lib/contracts/queries';
+import { repairPortugueseMojibake } from '@/lib/contracts/document/formatters';
 
 type ContractDetailPageProps = {
   params: Promise<{ id: string }>;
-  searchParams?: Promise<{ missing?: string; warning?: string }>;
+  searchParams?: Promise<{ error?: string; message?: string; missing?: string; status?: string; warning?: string }>;
 };
 
 export default async function ContractDetailPage({ params, searchParams }: ContractDetailPageProps) {
@@ -29,8 +32,14 @@ export default async function ContractDetailPage({ params, searchParams }: Contr
     notFound();
   }
 
-  const clientName = getSnapshotText(contract.clientSnapshot, 'companyName') ?? getSnapshotText(contract.clientSnapshot, 'legalName') ?? contract.lead?.company ?? 'Cliente por definir';
+  const clientName = getSnapshotText(contract.clientSnapshot, 'companyName') ?? getSnapshotText(contract.clientSnapshot, 'legalName') ?? displayText(contract.lead?.company) ?? 'Cliente por definir';
+  const contractTitle = displayText(contract.title) ?? contract.title;
   const enabledPhases = [contract.includesLaunch ? 'Launch' : null, contract.includesOperate ? 'Operate' : null, contract.includesScale ? 'Scale' : null].filter(Boolean).join(' / ');
+  const editability = getContractEditability(contract);
+  const readyToSend = validateContractReadyToSend(contract);
+  const hasGeneratedPdf = Boolean(contract.pdfUrl || contract.pdfStorageKey || contract.pdfHash || contract.generatedAt);
+  const pdfHasUnpublishedChanges = hasUnpublishedChanges(contract);
+  const pdfActionRequiresReason = hasGeneratedPdf && pdfHasUnpublishedChanges && !contract.pendingChangeReason;
 
   return (
     <div className="admin-page-grid">
@@ -42,14 +51,28 @@ export default async function ContractDetailPage({ params, searchParams }: Contr
         </div>
       ) : null}
 
+      {query?.status === 'updated' ? (
+        <div className="admin-execution-summary" style={{ marginBottom: 14 }}>
+          <strong>Estado atualizado</strong>
+          <span>A alteração ficou registada no histórico do contrato.</span>
+        </div>
+      ) : null}
+
+      {query?.error ? (
+        <div className="admin-execution-summary admin-execution-summary-danger" style={{ marginBottom: 14 }}>
+          <strong>{query.message ?? formatContractActionError(query.error)}</strong>
+          {query.missing ? <span>Campos em falta: {query.missing}.</span> : null}
+        </div>
+      ) : null}
+
       <AdminPanel
-        title={`${contract.number} - ${contract.title}`}
+        title={`${contract.number} - ${contractTitle}`}
         subtitle={`${clientName} - v${contract.version}`}
         action={
           <div className="admin-filters">
             <ContractStatusBadge status={contract.status} />
             <Link className="admin-button admin-button-muted" href="/admin/contracts"><ArrowLeft size={14} />Voltar</Link>
-            {contract.status === 'DRAFT' || contract.status === 'IN_REVIEW' ? (
+            {editability.canEdit ? (
               <Link className="admin-button admin-button-muted" href={`/admin/contracts/${contract.id}/edit`}><PenLine size={14} />Editar</Link>
             ) : null}
           </div>
@@ -69,12 +92,13 @@ export default async function ContractDetailPage({ params, searchParams }: Contr
         <div className="admin-page-grid">
           <AdminPanel title="Visão geral" subtitle="Dados principais guardados nos snapshots do contrato.">
             <div className="admin-field-grid">
-              <AdminField label="Projeto" value={contract.projectName} />
-              <AdminField label="Lead" value={contract.lead ? <Link className="admin-link" href={`/admin/leads/${contract.lead.id}`}>{contract.lead.company}</Link> : 'Sem lead associada'} />
-              <AdminField label="Proposta" value={contract.proposal ? contract.proposal.title : 'Sem proposta associada'} />
+              <AdminField label="Projeto" value={displayText(contract.projectName)} />
+              <AdminField label="Lead" value={contract.lead ? <Link className="admin-link" href={`/admin/leads/${contract.lead.id}`}>{displayText(contract.lead.company)}</Link> : 'Sem lead associada'} />
+              <AdminField label="Proposta" value={contract.proposal ? displayText(contract.proposal.title) : 'Sem proposta associada'} />
               <AdminField label="Validade" value={formatContractDate(contract.validUntil)} />
               <AdminField label="Fases comerciais" value={enabledPhases || 'Por definir'} />
-              <AdminField label="PDF" value={contract.pdfUrl ? <Link className="admin-link" href={contract.pdfUrl}>Descarregar</Link> : 'Geracao PDF fica para fase futura'} />
+              <AdminField label="PDF" value={contract.pdfUrl ? <Link className="admin-link" href={contract.pdfUrl}>Descarregar</Link> : 'PDF ainda não gerado'} />
+              <AdminField label="Hash PDF" value={contract.pdfHash ? formatShortHash(contract.pdfHash) : 'Por gerar'} />
             </div>
           </AdminPanel>
 
@@ -95,10 +119,10 @@ export default async function ContractDetailPage({ params, searchParams }: Contr
                 {contract.deliverables.map((deliverable) => (
                   <AdminRow
                     key={deliverable.id}
-                    title={deliverable.title}
+                    title={displayText(deliverable.title) ?? deliverable.title}
                     meta={`${deliverable.phase ?? 'Sem fase'} - ${deliverable.status} - ${formatContractDate(deliverable.estimatedDate)}`}
                   >
-                    {deliverable.description ?? deliverable.acceptanceCriteria ?? 'Sem descricao adicional.'}
+                    {displayText(deliverable.description) ?? displayText(deliverable.acceptanceCriteria) ?? 'Sem descrição adicional.'}
                   </AdminRow>
                 ))}
               </div>
@@ -113,10 +137,10 @@ export default async function ContractDetailPage({ params, searchParams }: Contr
                 {contract.phases.map((phase) => (
                   <AdminRow
                     key={phase.id}
-                    title={`${phase.order}. ${phase.name}`}
-                    meta={`${phase.phaseType ?? 'Sem tipo'} - ${formatContractDate(phase.startsAt)} ate ${formatContractDate(phase.endsAt)}`}
+                    title={`${phase.order}. ${displayText(phase.name) ?? phase.name}`}
+                    meta={`${phase.phaseType ?? 'Sem tipo'} - ${formatContractDate(phase.startsAt)} até ${formatContractDate(phase.endsAt)}`}
                   >
-                    {[phase.description, phase.dependencies ? `Dependências: ${phase.dependencies}` : null, phase.approvalCriteria ? `Aprovação: ${phase.approvalCriteria}` : null].filter(Boolean).join(' ')}
+                    {[displayText(phase.description), phase.dependencies ? `Dependências: ${displayText(phase.dependencies) ?? phase.dependencies}` : null, phase.approvalCriteria ? `Aprovação: ${displayText(phase.approvalCriteria) ?? phase.approvalCriteria}` : null].filter(Boolean).join(' ')}
                   </AdminRow>
                 ))}
               </div>
@@ -134,7 +158,7 @@ export default async function ContractDetailPage({ params, searchParams }: Contr
                     title={`${payment.percentage?.toString() ?? '-'}% - ${formatContractValue(payment.amount)}`}
                     meta={`${payment.invoiceMoment ?? 'Momento por definir'} - ${formatContractDate(payment.expectedDate)} - ${payment.status}`}
                   >
-                    {payment.description ?? payment.billingCondition ?? 'Sem condição adicional.'}
+                    {displayText(payment.description) ?? displayText(payment.billingCondition) ?? 'Sem condição adicional.'}
                   </AdminRow>
                 ))}
               </div>
@@ -149,10 +173,10 @@ export default async function ContractDetailPage({ params, searchParams }: Contr
                 {contract.sections.map((section) => (
                   <AdminRow
                     key={section.id}
-                    title={`${section.order}. ${section.title}`}
+                    title={`${section.order}. ${displayText(section.title) ?? section.title}`}
                     meta={`${formatContractSectionCategory(section.category)} - ${section.isRequired ? 'Obrigatória' : 'Opcional'}`}
                   >
-                    {section.content}
+                    {displayText(section.content)}
                   </AdminRow>
                 ))}
               </div>
@@ -161,13 +185,41 @@ export default async function ContractDetailPage({ params, searchParams }: Contr
             )}
           </AdminPanel>
 
-          <AdminPanel title="Atividade" subtitle="Historico proprio do contrato.">
+
+          <AdminPanel title="Versões do PDF" subtitle="Histórico documental com hash, estado e motivo de alteração.">
+            {contract.versions.length > 0 ? (
+              <div className="admin-row-list">
+                {contract.versions.map((version) => (
+                  <AdminRow
+                    key={version.id}
+                    title={`${version.versionLabel ?? `v${version.version}`} - ${displayText(version.title) ?? version.title}`}
+                    meta={`${formatContractStatus(version.statusAtGeneration ?? version.status)} - ${formatDatePt(version.createdAt)} - ${version.createdBy.name ?? version.createdBy.email}`}
+                  >
+                    <div className="contract-version-meta-grid">
+                      <div className="contract-version-meta-item contract-version-meta-item-hash">
+                        <span className="contract-version-meta-label">Hash</span>
+                        <span className="contract-version-meta-value">{version.pdfHash ? formatShortHash(version.pdfHash) : 'Hash indisponível'}</span>
+                      </div>
+                      <div className="contract-version-meta-item contract-version-meta-item-reason">
+                        <span className="contract-version-meta-label">Motivo</span>
+                        <span className="contract-version-meta-value">{displayText(version.changeReason) ?? (version.version === 1 ? 'Geração inicial do PDF' : 'Regeneração técnica do PDF')}</span>
+                      </div>
+                      {version.pdfUrl ? <Link className="contract-version-link" href={version.pdfUrl} rel="noreferrer" target="_blank">Abrir PDF desta versão</Link> : null}
+                    </div>
+                  </AdminRow>
+                ))}
+              </div>
+            ) : (
+              <AdminEmptyState>Sem versões de PDF registadas.</AdminEmptyState>
+            )}
+          </AdminPanel>
+          <AdminPanel title="Atividade" subtitle="Histórico próprio do contrato.">
             {contract.activityLogs.length > 0 ? (
               <div className="admin-timeline">
                 {contract.activityLogs.map((activity) => (
                   <div className="admin-timeline-item" key={activity.id}>
                     <p className="admin-row-title">{formatContractActivity(activity.type)}</p>
-                    <p className="admin-row-text">{activity.message}</p>
+                    <p className="admin-row-text">{displayText(activity.message)}</p>
                     <p className="admin-row-meta">{formatDatePt(activity.createdAt)} - {activity.adminUser?.name ?? activity.adminUser?.email ?? 'Sistema'}</p>
                   </div>
                 ))}
@@ -182,15 +234,41 @@ export default async function ContractDetailPage({ params, searchParams }: Contr
           <AdminPanel title="Ações">
             <div className="admin-page-grid">
               <Link className="admin-button admin-button-muted" href={`/admin/contracts/${contract.id}/preview`}><FileText size={14} />Ver preview</Link>
-              {contract.status === 'SIGNED' ? (
-                <button className="admin-button admin-button-muted" disabled type="button">Regeneração futura por nova versão</button>
-              ) : (
-                <form action={`/api/contracts/${contract.id}/generate-pdf`} method="post">
-                  <button className="admin-button admin-button-muted" type="submit"><Download size={14} />{contract.pdfUrl ? 'Regenerar PDF' : 'Gerar PDF'}</button>
+              {!hasGeneratedPdf && editability.canGeneratePdf ? (
+                <form action={`/api/contracts/${contract.id}/generate-pdf`} className="admin-page-grid" method="post" style={{ gap: 10 }}>
+                  <button className="admin-button admin-button-muted" type="submit"><Download size={14} />Gerar PDF</button>
                 </form>
-              )}
+              ) : null}
+              {hasGeneratedPdf && editability.canRegeneratePdf && pdfHasUnpublishedChanges ? (
+                <form action={`/api/contracts/${contract.id}/generate-pdf`} className="admin-page-grid" method="post" style={{ gap: 10 }}>
+                  {contract.pendingChangeReason ? <span className="admin-pill">Motivo pendente aplicado</span> : null}
+                  {pdfActionRequiresReason ? <input className="admin-input" minLength={8} name="changeReason" placeholder="Motivo técnico da regeneração" required /> : null}
+                  <button className="admin-button admin-button-muted" type="submit"><Download size={14} />Regenerar PDF</button>
+                </form>
+              ) : null}
+              {hasGeneratedPdf && !pdfHasUnpublishedChanges ? <span className="admin-pill">PDF atualizado</span> : null}
+              {hasGeneratedPdf && !editability.canRegeneratePdf && pdfHasUnpublishedChanges ? <button className="admin-button admin-button-muted" disabled type="button">PDF bloqueado neste estado</button> : null}
               {contract.pdfUrl ? <Link className="admin-button" href={contract.pdfUrl} target="_blank"><Download size={14} />Descarregar PDF</Link> : null}
-              <button className="admin-button admin-button-muted" disabled type="button">Assinatura futura</button>
+              {readyToSend.ok && contract.status !== 'READY_TO_SEND' && contract.status !== 'SIGNED' ? (
+                <form action={updateContractStatusAction} className="admin-page-grid" style={{ gap: 10 }}>
+                  <input name="contractId" type="hidden" value={contract.id} />
+                  <input name="nextStatus" type="hidden" value="READY_TO_SEND" />
+                  {contract.status !== 'DRAFT' ? <input className="admin-input" minLength={8} name="changeReason" placeholder="Motivo da alteração de estado" required /> : null}
+                  <button className="admin-button" type="submit">Marcar pronto para envio</button>
+                </form>
+              ) : null}
+              {!readyToSend.ok && contract.status !== 'READY_TO_SEND' && contract.status !== 'SIGNED' ? (
+                <div className="admin-execution-summary admin-execution-summary-danger"><strong>Ainda não está pronto para envio</strong>{readyToSend.missingFields.slice(0, 4).map((field) => <span key={field}>{field}</span>)}</div>
+              ) : null}
+              {editability.canCreateRevision ? (
+                <form action={reopenContractForRevisionAction} className="admin-page-grid" style={{ gap: 10 }}>
+                  <input name="contractId" type="hidden" value={contract.id} />
+                  <input className="admin-input" minLength={8} name="changeReason" placeholder="Motivo para criar revisão" required />
+                  <button className="admin-button admin-button-muted" type="submit"><PenLine size={14} />Criar revisão editável</button>
+                </form>
+              ) : null}
+              {editability.reason ? <p className="admin-row-meta">{displayText(editability.reason)}</p> : null}
+              <button className="admin-button admin-button-muted" disabled type="button">Envio e assinatura em fase futura</button>
             </div>
           </AdminPanel>
 
@@ -215,6 +293,21 @@ export default async function ContractDetailPage({ params, searchParams }: Contr
   );
 }
 
+
+function formatShortHash(hash: string): string {
+  return hash.length > 18 ? `${hash.slice(0, 12)}...${hash.slice(-6)}` : hash;
+}
+
+function formatContractActionError(error: string): string {
+  const labels: Record<string, string> = {
+    reason_required: 'Indique um motivo com pelo menos 8 caracteres.',
+    pdf_current: 'O PDF atual já corresponde à versão mais recente do contrato.',
+    ready_to_send_failed: 'O contrato ainda não está pronto para envio.',
+    locked: 'Contrato bloqueado neste estado.',
+    invalid_transition: 'Transição de estado inválida.',
+  };
+  return labels[error] ?? 'Não foi possível executar a ação.';
+}
 function SummaryItem({ label, value }: { label: string; value: string }) {
   return (
     <article className="admin-stat-card" style={{ minHeight: 92 }}>
@@ -239,13 +332,16 @@ function SnapshotFields({ value, keys }: { value: unknown; keys: string[] }) {
   );
 }
 
+function displayText(value: string | null | undefined): string | null {
+  return value ? repairPortugueseMojibake(value) : null;
+}
 function getSnapshotText(value: unknown, key: string): string | null {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
     return null;
   }
 
   const candidate = (value as Record<string, unknown>)[key];
-  return typeof candidate === 'string' && candidate.trim() ? candidate : null;
+  return typeof candidate === 'string' && candidate.trim() ? repairPortugueseMojibake(candidate.trim()) : null;
 }
 
 function formatSnapshotLabel(key: string): string {

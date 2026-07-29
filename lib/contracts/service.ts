@@ -10,12 +10,14 @@ import {
   type ContractPlan,
   type ContractSectionCategory,
   type ContractServiceType,
+  type ContractStatus,
   type PaymentMilestoneStatus,
 } from '@/app/generated/prisma/client';
 import { isAdminAuthDisabledForDemo, normalizeAdminEmail } from '@/lib/admin/auth';
 import { prisma } from '@/lib/db/prisma';
 import { normalizePortugueseText } from '@/lib/text/normalize-portuguese';
 import { normalizeBasicPortugueseTaxId } from '@/lib/contracts/wizard/validation';
+import { assertContractCanBeEdited, ContractGovernanceError, getContractEditability, normalizeChangeReason, validateContractReadyToSend } from '@/lib/contracts/governance';
 
 type ContractTx = Prisma.TransactionClient;
 
@@ -156,6 +158,7 @@ export type ContractWizardInput = {
   validUntil?: Date | null;
   adminUserId: string;
   adminEmail?: string | null;
+  changeReason?: string | null;
 };
 
 export type UpdateCompanyLegalSettingsInput = WizardProviderInput & {
@@ -248,12 +251,14 @@ export async function updateContractFromWizard(contractId: string, input: Contra
 
   return prisma.$transaction(async (tx) => {
     const adminUserId = await resolvePersistentAdminId(tx, { adminId: input.adminUserId, email: input.adminEmail });
-    const existing = await tx.contract.findUnique({ where: { id: contractId }, select: { id: true, status: true, number: true } });
+    const existing = await tx.contract.findUnique({
+      where: { id: contractId },
+      select: { id: true, status: true, number: true, pdfUrl: true, pdfStorageKey: true, pdfHash: true, generatedAt: true, updatedAt: true, pendingChangeReason: true, pendingChangeAt: true },
+    });
 
     if (!existing) throw new Error('Contrato não encontrado.');
-    if (!EDITABLE_STATUSES.includes(existing.status as (typeof EDITABLE_STATUSES)[number])) {
-      throw new Error('Este contrato já foi enviado ou assinado e não pode ser editado diretamente.');
-    }
+    const changeReason = normalizeChangeReason(input.changeReason);
+    assertContractCanBeEdited(existing, changeReason);
 
     const assignedToId = normalized.assignedToId
       ? await resolveOptionalAdminId(tx, normalized.assignedToId)
@@ -291,6 +296,8 @@ export async function updateContractFromWizard(contractId: string, input: Contra
         currency: normalized.financials.currency ?? 'EUR',
         validUntil: normalized.validUntil ?? normalized.financials.proposalValidity ?? null,
         assignedToId,
+        pendingChangeReason: changeReason,
+        pendingChangeAt: changeReason ? new Date() : null,
         sections: { create: buildSectionCreateData(normalized.sections, template.sections) },
         deliverables: { create: buildDeliverableCreateData(normalized.deliverables) },
         phases: { create: buildPhaseCreateData(normalized.phases) },
@@ -320,6 +327,8 @@ export async function updateContractFromWizard(contractId: string, input: Contra
           phases: normalized.phases.length,
           paymentMilestones: normalized.paymentMilestones.length,
           sections: normalized.sections.filter((section) => section.enabled).length,
+          hasGeneratedPdf: Boolean(existing.pdfUrl || existing.pdfStorageKey || existing.pdfHash || existing.generatedAt),
+          changeReason,
         },
       })),
     });
@@ -847,4 +856,89 @@ function parseDeliverableStatus(value?: string | null): ContractDeliverableStatu
 
 function parsePaymentStatus(value?: string | null): PaymentMilestoneStatus {
   return value === 'READY_TO_INVOICE' || value === 'INVOICED' || value === 'PAID' || value === 'OVERDUE' || value === 'CANCELLED' ? value : 'PENDING';
+}
+export async function updateContractStatusControlled(input: { contractId: string; nextStatus: ContractStatus; adminUserId: string; adminEmail?: string | null; changeReason?: string | null }) {
+  return prisma.$transaction(async (tx) => {
+    const adminUserId = await resolvePersistentAdminId(tx, { adminId: input.adminUserId, email: input.adminEmail });
+    const contract = await tx.contract.findUnique({
+      where: { id: input.contractId },
+      include: { versions: { orderBy: { version: 'desc' }, take: 1 }, paymentMilestones: true },
+    });
+    if (!contract) throw new Error('Contrato não encontrado.');
+
+    const changeReason = normalizeChangeReason(input.changeReason);
+    const requiresReason = input.nextStatus === 'DRAFT' || ['CANCELLED', 'EXPIRED', 'REJECTED'].includes(input.nextStatus) || contract.status !== 'DRAFT';
+    if (requiresReason && !changeReason) throw new ContractGovernanceError('reason_required', 'Indique o motivo da alteração de estado.');
+
+    if (input.nextStatus === 'READY_TO_SEND') {
+      const ready = validateContractReadyToSend(contract);
+      if (!ready.ok) throw new ContractGovernanceError('ready_to_send_failed', 'O contrato ainda não está pronto para envio.', ready.missingFields);
+    }
+
+    const previousStatus = contract.status;
+    if (previousStatus === input.nextStatus) return contract;
+    if (previousStatus === 'SIGNED' && input.nextStatus !== 'SIGNED') {
+      throw new ContractGovernanceError('locked', 'Este contrato já foi assinado e está bloqueado para edição.');
+    }
+
+    const updated = await tx.contract.update({
+      where: { id: input.contractId },
+      data: {
+        status: input.nextStatus,
+        cancelledAt: input.nextStatus === 'CANCELLED' ? new Date() : contract.cancelledAt,
+        signedAt: input.nextStatus === 'SIGNED' ? new Date() : contract.signedAt,
+      },
+    });
+
+    await createContractLog(tx, {
+      contractId: input.contractId,
+      adminUserId,
+      type: activityTypeForStatus(input.nextStatus),
+      message: `Estado alterado de ${previousStatus} para ${input.nextStatus}.`,
+      metadata: { previousStatus, nextStatus: input.nextStatus, changeReason },
+    });
+
+    return updated;
+  });
+}
+
+export async function reopenContractForRevision(input: { contractId: string; adminUserId: string; adminEmail?: string | null; changeReason?: string | null }) {
+  return prisma.$transaction(async (tx) => {
+    const adminUserId = await resolvePersistentAdminId(tx, { adminId: input.adminUserId, email: input.adminEmail });
+    const contract = await tx.contract.findUnique({ where: { id: input.contractId } });
+    if (!contract) throw new Error('Contrato não encontrado.');
+
+    const editability = getContractEditability(contract);
+    if (!editability.canCreateRevision && contract.status !== 'READY_TO_SEND') {
+      throw new ContractGovernanceError('locked', editability.reason ?? 'Este contrato não pode ser reaberto para edição.');
+    }
+
+    const changeReason = normalizeChangeReason(input.changeReason);
+    if (!changeReason) throw new ContractGovernanceError('reason_required', 'Indique o motivo para reabrir o contrato.');
+
+    const updated = await tx.contract.update({
+      where: { id: input.contractId },
+      data: { status: 'DRAFT', version: { increment: 1 } },
+    });
+
+    await createContractLog(tx, {
+      contractId: input.contractId,
+      adminUserId,
+      type: 'CONTRACT_REVISION_CREATED',
+      message: `Revisão v${updated.version} criada para edição.`,
+      metadata: { previousStatus: contract.status, nextStatus: 'DRAFT', previousVersion: contract.version, nextVersion: updated.version, changeReason },
+    });
+
+    return updated;
+  });
+}
+
+function activityTypeForStatus(status: ContractStatus): ContractActivityType {
+  if (status === 'READY_TO_SEND') return 'CONTRACT_READY_TO_SEND';
+  if (status === 'SENT') return 'CONTRACT_SENT';
+  if (status === 'CANCELLED') return 'CONTRACT_CANCELLED';
+  if (status === 'EXPIRED') return 'CONTRACT_EXPIRED';
+  if (status === 'SIGNED') return 'CONTRACT_SIGNED';
+  if (status === 'DRAFT') return 'CONTRACT_REOPENED';
+  return 'CONTRACT_STATUS_CHANGED';
 }

@@ -221,11 +221,19 @@ export const documentCss = `
   .contract-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
   .contract-card,
-  .contract-warning,
-  .contract-table-wrap {
+  .contract-warning {
     border: 1px solid var(--doc-border);
     border-radius: 8px;
     page-break-inside: avoid;
+  }
+
+  .contract-table-wrap {
+    background: #ffffff;
+    border: 1px solid var(--doc-border);
+    border-radius: 8px;
+    overflow: hidden;
+    page-break-inside: avoid;
+    width: 100%;
   }
 
   .contract-card {
@@ -319,14 +327,17 @@ export const documentCss = `
   }
 
   .contract-table {
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
     font-size: 10.5px;
+    table-layout: fixed;
     width: 100%;
   }
 
   .contract-table th,
   .contract-table td {
     border-bottom: 1px solid var(--doc-border);
+    border-right: 1px solid var(--doc-border);
     line-height: 1.45;
     padding: 8px;
     text-align: left;
@@ -342,7 +353,11 @@ export const documentCss = `
     text-transform: uppercase;
   }
 
-  .contract-table tr:last-child td { border-bottom: 0; }
+  .contract-table thead th:first-child { border-top-left-radius: 7px; }
+  .contract-table thead th:last-child { border-top-right-radius: 7px; }
+  .contract-table th:last-child,
+  .contract-table td:last-child { border-right: 0; }
+  .contract-table tbody tr:last-child td { border-bottom: 0; }
 
   .contract-growth {
     align-items: stretch;

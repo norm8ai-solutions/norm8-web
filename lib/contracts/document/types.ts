@@ -98,6 +98,9 @@ export type ContractDocumentData = {
   pdfStorageKey: string | null;
   pdfHash: string | null;
   generatedAt: Date | null;
+  updatedAt: Date;
+  pendingChangeReason: string | null;
+  pendingChangeAt: Date | null;
   projectName: string | null;
   serviceType: ContractServiceType | null;
   serviceTypeOther: string | null;
