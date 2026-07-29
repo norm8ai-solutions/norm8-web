@@ -2,6 +2,7 @@ import 'server-only';
 
 import { Prisma, type ContractDeliverableStatus, type ContractPhaseType, type ContractSectionCategory, type PaymentMilestoneStatus } from '@/app/generated/prisma/client';
 import { prisma } from '@/lib/db/prisma';
+import { hasUnpublishedChanges } from '@/lib/contracts/governance';
 import { getMissingContractFinancialFields, getMissingContractScopeFields, getMissingContractServiceFields, getStepMissingFields, hasMeaningfulLegalText, isValidEmail, isValidRequiredProviderTaxId } from '@/lib/contracts/wizard/validation';
 import { asObject, textArray, textValue } from './formatters';
 import type { ContractDocumentData, ContractDocumentDeliverable, ContractDocumentParty } from './types';
@@ -13,6 +14,7 @@ const contractDocumentInclude = {
   phases: { orderBy: { order: 'asc' } },
   deliverables: { orderBy: [{ order: 'asc' }, { createdAt: 'asc' }] },
   paymentMilestones: { orderBy: [{ expectedDate: 'asc' }, { createdAt: 'asc' }] },
+  versions: { orderBy: { version: 'desc' }, select: { version: true, versionLabel: true } },
 } satisfies Prisma.ContractInclude;
 
 export async function getContractDocumentData(contractId: string): Promise<ContractDocumentData | null> {
@@ -25,6 +27,9 @@ export async function getContractDocumentData(contractId: string): Promise<Contr
   const financialSnapshot = asObject(contract.financialSnapshot);
   const termsSnapshot = asObject(contract.termsSnapshot);
   const operateSnapshot = asObject(financialSnapshot.operate);
+  const latestVersion = contract.versions[0] ?? null;
+  const documentVersion = resolveDocumentVersion(contract.version, latestVersion?.version ?? null, hasUnpublishedChanges(contract));
+  const documentVersionLabel = resolveDocumentVersionLabel(documentVersion, latestVersion);
 
   const deliverables: ContractDocumentDeliverable[] = contract.deliverables.map((deliverable) => ({
     id: deliverable.id,
@@ -41,7 +46,10 @@ export async function getContractDocumentData(contractId: string): Promise<Contr
     id: contract.id,
     number: contract.number,
     title: textValue(contract.title) ?? contract.title,
-    version: contract.version,
+    version: documentVersion,
+    versionLabel: documentVersionLabel,
+    latestVersion: latestVersion?.version ?? null,
+    latestVersionLabel: latestVersion?.versionLabel ?? null,
     status: contract.status,
     issueDate: contract.issueDate,
     validUntil: contract.validUntil,
@@ -260,4 +268,14 @@ function getMissingClientLegalFields(client: ContractDocumentParty): string[] {
     !client.representativeRole ? 'Cargo do representante' : null,
     !client.representativeEmail ? 'Email do representante' : null,
   ].filter((field): field is string => Boolean(field));
+}
+
+function resolveDocumentVersion(contractVersion: number, latestVersion: number | null, hasPendingDocumentChanges: boolean): number {
+  if (!latestVersion) return contractVersion;
+  return hasPendingDocumentChanges ? latestVersion + 1 : latestVersion;
+}
+
+function resolveDocumentVersionLabel(version: number, latestVersion: { version: number; versionLabel: string | null } | null): string {
+  if (latestVersion?.version === version && latestVersion.versionLabel) return latestVersion.versionLabel;
+  return `v${version}`;
 }

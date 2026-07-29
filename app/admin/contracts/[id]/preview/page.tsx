@@ -36,7 +36,8 @@ export default async function ContractPreviewPage({ params, searchParams }: Cont
   const editability = getContractEditability(contract);
   const hasExistingPdf = hasExistingGeneratedPdf(contract);
   const pdfHasUnpublishedChanges = hasUnpublishedChanges(contract);
-  const canGenerate = hasExistingPdf ? editability.canRegeneratePdf && pdfHasUnpublishedChanges : editability.canGeneratePdf;
+  const hasPendingChangeReason = Boolean(contract.pendingChangeReason?.trim() && contract.pendingChangeReason.trim().length >= 8);
+  const canGenerate = hasExistingPdf ? editability.canRegeneratePdf && pdfHasUnpublishedChanges && hasPendingChangeReason : editability.canGeneratePdf;
 
   return (
     <div className="admin-page-grid">
@@ -207,6 +208,7 @@ function formatError(error: string): string {
     locked: 'Este contrato não pode regenerar PDF no estado atual.',
     reason_required: 'Indique o motivo da regeneração do PDF.',
     pdf_current: 'O PDF atual já corresponde à versão mais recente do contrato.',
+    missing_pending_change_reason: 'Existem alterações por publicar, mas não existe motivo de alteração registado.',
     admin_missing: 'Não existe um utilizador admin ativo para associar ao PDF.',
     unknown: 'Não foi possível gerar o PDF.',
   };

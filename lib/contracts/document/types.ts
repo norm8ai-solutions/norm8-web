@@ -91,6 +91,9 @@ export type ContractDocumentData = {
   number: string;
   title: string;
   version: number;
+  versionLabel: string;
+  latestVersion: number | null;
+  latestVersionLabel: string | null;
   status: ContractStatus;
   issueDate: Date | null;
   validUntil: Date | null;

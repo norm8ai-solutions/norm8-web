@@ -245,7 +245,7 @@ export function ContractWizard({
  const [stepErrors, setStepErrors] = useState<Partial<Record<number, ContractWizardValidationError[]>>>({});
  const [navigationNotice, setNavigationNotice] = useState<string | null>(null);
  const [pendingTimelineOverwrite, setPendingTimelineOverwrite] = useState(false);
- const [pendingPaymentOverwrite, setPendingPaymentOverwrite] = useState(false);
+ const [pendingPaymentOverwrite, setPendingPaymentOverwrite] = useState<'pricing' | 'paymentPlan' | 'paymentDates' | null>(null);
  const [payload, setPayload] = useState<ContractWizardPayload>(
  initialPayload ?? createInitialPayload(fallbackProvider, templates[0], currentAdminId),
  );
@@ -516,7 +516,7 @@ function applyFinancialSuggestions(overwrite: boolean) {
 
 function requestFinancialSuggestions() {
  if (hasFinancialValues(payload.financials) || payload.paymentMilestones.some((payment) => !isBlankPayment(payment))) {
- setPendingPaymentOverwrite(true);
+ setPendingPaymentOverwrite('pricing');
  return;
  }
  applyFinancialSuggestions(false);
@@ -532,13 +532,21 @@ function updatePaymentPlan(value: string) {
  if (nextPayload.paymentMilestones.length === 0 || nextPayload.paymentMilestones.every(isBlankPayment)) {
  return { ...nextPayload, paymentMilestones: buildPaymentsForPayload(nextPayload) };
  }
- setPendingPaymentOverwrite(true);
+ setPendingPaymentOverwrite('paymentPlan');
  return nextPayload;
  });
 }
 
 function regeneratePayments(overwrite: boolean) {
  setPayloadWithLiveValidation((current) => overwrite ? { ...recalculateFinancialPayload(current), paymentMilestones: buildPaymentsForPayload(current) } : current);
+}
+
+function updatePaymentDatesFromSchedule() {
+ setPayloadWithLiveValidation((current) => {
+ const templatePayments = buildPaymentsForPayload(current);
+ const currentPayments = current.paymentMilestones.length > 0 ? current.paymentMilestones : templatePayments;
+ return { ...current, paymentMilestones: mergePaymentDatesWithTemplate(currentPayments, templatePayments) };
+ });
 }
 
 function updatePaymentMilestones(items: ContractWizardPayload['paymentMilestones']) {
@@ -812,6 +820,7 @@ return (
  {currentStep === 5 ? (
  <WizardStep title="Investimento e pagamentos" subtitle="Valores comerciais, impostos, validade e marcos de faturação.">
  <div className="admin-execution-summary"><strong>Preenchimento financeiro inteligente</strong><span>{String(payload.financials.pricingRationale ?? 'Valores sugeridos com base no serviço, plano, entregáveis e cronograma. Pode editar todos os campos antes de criar o contrato.')}</span><button className="admin-button admin-button-muted" onClick={(event) => { event.preventDefault(); requestFinancialSuggestions(); }} type="button">Sugerir investimento e pagamentos</button></div>
+ <div className="admin-execution-summary"><strong>Datas dos pagamentos</strong><span>Recalcula as datas dos pagamentos com base no plano, cronograma e entregáveis atuais. Use para atualizar contratos existentes antes de regenerar o PDF.</span><button className="admin-button admin-button-muted" onClick={(event) => { event.preventDefault(); setPendingPaymentOverwrite('paymentDates'); }} type="button">Atualizar datas dos pagamentos</button></div>
  <div className="admin-grid-2">
  <MoneyField error={currentErrors['financials.commercialValue']} field="financials.commercialValue" label="Valor comercial" value={String(payload.financials.commercialValue ?? '')} onChange={(value) => updateMoneyField('commercialValue', value)} required />
  <MoneyField error={currentErrors['financials.finalValue']} field="financials.finalValue" label="Valor final" value={String(payload.financials.finalValue ?? '')} onChange={(value) => updateMoneyField('finalValue', value)} required />
@@ -826,16 +835,15 @@ return (
  <InlineFieldError field="paymentMilestones.percentages" message={currentErrors['paymentMilestones.percentages']} />
  <InlineFieldError field="paymentMilestones.amounts" message={currentErrors['paymentMilestones.amounts']} />
  <DynamicList addLabel="Adicionar pagamento" confirmRemoveLabel="Remover pagamento" confirmRemoveMessage="Tem a certeza de que pretende remover este pagamento?" items={payload.paymentMilestones} onAdd={() => updatePayload({ paymentMilestones: [...payload.paymentMilestones, createPayment()] })} onChange={updatePaymentMilestones} render={(item, index, update) => <div className={`admin-page-grid ${hasPaymentValidationErrors(currentErrors, index) ? 'contract-deliverable-error' : ''}`}><div className="admin-grid-2"><Field error={currentErrors[`paymentMilestones.${index}.description`]} field={`paymentMilestones.${index}.description`} label="Título do pagamento" value={item.description ?? ''} onChange={(value) => update(index, { description: value })} required /><Field error={currentErrors[`paymentMilestones.${index}.percentage`]} field={`paymentMilestones.${index}.percentage`} label="Percentagem" inputMode="decimal" value={item.percentage ?? ''} onChange={(value) => update(index, { percentage: sanitizeDecimalInput(value) })} required /><MoneyField error={currentErrors[`paymentMilestones.${index}.amount`]} field={`paymentMilestones.${index}.amount`} label="Valor sem IVA" value={item.amount ?? ''} onChange={(value) => update(index, { amount: sanitizeDecimalInput(value) })} required /><Select error={currentErrors[`paymentMilestones.${index}.invoiceMoment`]} field={`paymentMilestones.${index}.invoiceMoment`} label="Momento de faturação" value={item.invoiceMoment ?? ''} onChange={(value) => update(index, { invoiceMoment: value })} required><option value="">Por definir</option>{INVOICE_MOMENT_OPTIONS.map((option) => <option key={option} value={option}>{option}</option>)}</Select><DateField error={currentErrors[`paymentMilestones.${index}.expectedDate`]} field={`paymentMilestones.${index}.expectedDate`} label="Data prevista" value={item.expectedDate ?? ''} onChange={(value) => update(index, { expectedDate: value })} required /></div><TextArea error={currentErrors[`paymentMilestones.${index}.billingCondition`]} field={`paymentMilestones.${index}.billingCondition`} label="Condição de pagamento" value={item.billingCondition ?? ''} onChange={(value) => update(index, { billingCondition: value })} required /></div>} />
- <Dialog.Root open={pendingPaymentOverwrite} onOpenChange={setPendingPaymentOverwrite}>
+ <Dialog.Root open={Boolean(pendingPaymentOverwrite)} onOpenChange={(open) => { if (!open) setPendingPaymentOverwrite(null); }}>
  <Dialog.Portal>
  <Dialog.Overlay className="contract-dialog-overlay" />
  <Dialog.Content className="contract-dialog-content">
- <Dialog.Title className="admin-panel-title">Substituir dados financeiros?</Dialog.Title>
- <Dialog.Description className="admin-row-text">Já existem valores ou pagamentos preenchidos. Pode completar apenas campos vazios ou substituir a sugestão actual.</Dialog.Description>
+ <Dialog.Title className="admin-panel-title">{pendingPaymentOverwrite === 'paymentDates' ? 'Atualizar datas dos pagamentos?' : pendingPaymentOverwrite === 'paymentPlan' ? 'Atualizar plano de pagamento?' : 'Aplicar sugestão automática de investimento?'}</Dialog.Title>
+ <Dialog.Description className="admin-row-text">{pendingPaymentOverwrite === 'paymentDates' ? 'As datas dos pagamentos serão recalculadas com base no cronograma e nos entregáveis atuais. Alterações manuais feitas às datas dos pagamentos podem ser substituídas.' : pendingPaymentOverwrite === 'paymentPlan' ? 'Ao alterar o plano de pagamento, os pagamentos/milestones serão recalculados com base no valor final atual. Alterações manuais feitas aos pagamentos podem ser substituídas.' : 'Esta ação pode atualizar valores comerciais, desconto, IVA, valor final e pagamentos com base no serviço, plano, entregáveis e cronograma.'}</Dialog.Description>
  <div className="contract-dialog-actions">
- <Dialog.Close className="admin-button admin-button-muted" type="button">Cancelar</Dialog.Close>
- <button className="admin-button" onClick={() => { applyFinancialSuggestions(false); setPendingPaymentOverwrite(false); }} type="button">Completar campos vazios</button>
- <button className="admin-button admin-action-execute-button-danger" onClick={() => { applyFinancialSuggestions(true); setPendingPaymentOverwrite(false); regeneratePayments(true); }} type="button"><AlertTriangle size={14} />Substituir</button>
+ <Dialog.Close className="admin-button admin-button-muted" type="button">{pendingPaymentOverwrite === 'paymentDates' ? 'Manter datas atuais' : pendingPaymentOverwrite === 'paymentPlan' ? 'Manter pagamentos atuais' : 'Manter valores atuais'}</Dialog.Close>
+ <button className="admin-button admin-action-execute-button-danger" onClick={() => { if (pendingPaymentOverwrite === 'paymentDates') { updatePaymentDatesFromSchedule(); } else if (pendingPaymentOverwrite === 'paymentPlan') { regeneratePayments(true); } else { applyFinancialSuggestions(true); regeneratePayments(true); } setPendingPaymentOverwrite(null); }} type="button"><AlertTriangle size={14} />{pendingPaymentOverwrite === 'paymentDates' ? 'Atualizar datas' : pendingPaymentOverwrite === 'paymentPlan' ? 'Atualizar plano de pagamento' : 'Aplicar sugestão'}</button>
  </div>
  </Dialog.Content>
  </Dialog.Portal>
@@ -936,8 +944,8 @@ function MoneyField({ error, field, label, onChange, readOnly, required, value }
  <label className="admin-form-control" data-contract-field={field}>
  <span>{label}{required ? ' *' : ''}</span>
  <div className={`admin-input ${error ? 'admin-input-error' : ''}`} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
- <span className="admin-row-meta">â‚¬</span>
- <input aria-describedby={error ? errorId : undefined} aria-invalid={Boolean(error) || undefined} inputMode="decimal" onChange={(event) => onChange(event.target.value)} readOnly={readOnly} required={required} style={{ background: 'transparent', border: 0, color: 'inherit', flex: 1, minWidth: 0, outline: 'none' }} type="text" value={value} />
+ <span aria-hidden="true" className="admin-row-meta">{'\u20ac'}</span>
+ <input aria-describedby={error ? errorId : undefined} aria-invalid={Boolean(error) || undefined} inputMode="decimal" onChange={(event) => onChange(event.target.value)} readOnly={readOnly} required={required} style={{ background: 'transparent', border: 0, color: 'inherit', flex: 1, minWidth: 0, outline: 'none' }} type="text" value={sanitizeDecimalInput(value)} />
  </div>
  {error ? <span className="admin-field-error" id={errorId}>{error}</span> : null}
  </label>
@@ -1093,7 +1101,7 @@ function DynamicList<T>({
  <Dialog.Portal>
  <Dialog.Overlay className="contract-dialog-overlay" />
  <Dialog.Content className="contract-dialog-content">
- <Dialog.Title className="admin-panel-title">Confirmar remoção</Dialog.Title>
+ <Dialog.Title className="admin-panel-title">Remover item?</Dialog.Title>
  <Dialog.Description className="admin-row-text">{confirmRemoveMessage}</Dialog.Description>
  <div className="contract-dialog-actions">
  <Dialog.Close className="admin-button admin-button-muted" type="button">Cancelar</Dialog.Close>
@@ -1371,6 +1379,24 @@ function mergePaymentsWithTemplate(
  });
  return completed.length >= templatePayments.length ? completed : [...completed, ...templatePayments.slice(completed.length)];
 }
+function mergePaymentDatesWithTemplate(
+ currentPayments: ContractWizardPayload['paymentMilestones'],
+ templatePayments: ContractWizardPayload['paymentMilestones'],
+): ContractWizardPayload['paymentMilestones'] {
+ return currentPayments.map((current, index) => {
+ const template = templatePayments[index] ?? null;
+ if (!template) return current;
+ return {
+ ...current,
+ invoiceMoment: fillIfBlank(current.invoiceMoment, template.invoiceMoment ?? ''),
+ expectedDate: template.expectedDate ?? current.expectedDate,
+ description: fillIfBlank(current.description, template.description ?? ''),
+ status: current.status ?? template.status ?? 'PENDING',
+ billingCondition: fillIfBlank(current.billingCondition, template.billingCondition ?? ''),
+ };
+ });
+}
+
 function recalculatePaymentAmounts(payload: ContractWizardPayload): ContractWizardPayload['paymentMilestones'] {
  const finalValue = parsePositiveNumber(payload.financials.finalValue) ?? parsePositiveNumber(payload.financials.commercialValue) ?? 0;
  return payload.paymentMilestones.map((payment) => {
@@ -1386,8 +1412,9 @@ function buildPaymentsForPayload(payload: ContractWizardPayload): ContractWizard
  paymentPlan: String(payload.financials.paymentPlan ?? '50_50'),
  finalValue,
  vatRate,
- startDate: payload.financials.paymentDueDate ? String(payload.financials.paymentDueDate) : null,
+ contractDate: null,
  timeline: payload.phases,
+ deliverables: payload.deliverables,
  });
 }
 

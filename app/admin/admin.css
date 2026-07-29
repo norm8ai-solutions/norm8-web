@@ -272,6 +272,13 @@
   padding: 8px 10px;
 }
 
+.contract-detail-action-status-pill,
+.contract-detail-pdf-status-pill {
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+}
+
 .admin-button,
 .admin-filter-button,
 .admin-icon-button {
@@ -2163,7 +2170,8 @@
   align-items: stretch;
 }
 
-.contract-preview-header-actions .admin-button:disabled {
+.contract-preview-header-actions .admin-button:disabled,
+.contract-detail-pdf-action-button:disabled {
   cursor: wait;
   opacity: 0.66;
   transform: none;

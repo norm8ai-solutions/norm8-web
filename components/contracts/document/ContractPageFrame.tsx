@@ -19,7 +19,7 @@ export function ContractPageFrame({ children, contract, pageNumber, showPageNumb
     <article className={`contract-document-page ${variant === 'cover' ? 'contract-cover' : ''}`} id={slugTitle(title)}>
       {variant === 'default' ? (
         <header className="contract-page-header">
-          <span>Norm8 · {contract.number} · v{contract.version}</span>
+          <span>Norm8 · {contract.number} · {contract.versionLabel}</span>
           <span>{title}</span>
         </header>
       ) : null}

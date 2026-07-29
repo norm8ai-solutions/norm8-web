@@ -129,24 +129,23 @@ export function validateContractReadyToSend(contract: ContractGovernanceInput & 
   });
   addMissing(missingFields, !contract.pdfHash, 'PDF: hash SHA-256');
   addMissing(missingFields, !contract.versions?.length, 'PDF: versão gerada');
-  addMissing(missingFields, isPdfStale(contract), 'PDF: regenerar depois da última alteração');
+  addMissing(missingFields, hasUnpublishedChanges(contract), 'PDF: regenerar depois da última alteração');
   addMissing(missingFields, ['SIGNED', 'CANCELLED', 'EXPIRED'].includes(contract.status), 'Estado: contrato não pode ser enviado neste estado');
 
   return { ok: missingFields.length === 0, missingFields };
 }
 
-export function hasUnpublishedChanges(contract: Pick<ContractGovernanceInput, 'generatedAt' | 'updatedAt' | 'pendingChangeReason' | 'pendingChangeAt'>): boolean {
-  return Boolean(normalizeChangeReason(contract.pendingChangeReason) || isPdfStale(contract));
-}
+export function hasUnpublishedChanges(contract: Pick<ContractGovernanceInput, 'generatedAt' | 'pendingChangeReason' | 'pendingChangeAt'>): boolean {
+  if (normalizeChangeReason(contract.pendingChangeReason)) return true;
+  if (!contract.pendingChangeAt) return false;
+  if (!contract.generatedAt) return true;
 
-export function isPdfStale(contract: Pick<ContractGovernanceInput, 'generatedAt' | 'updatedAt'>): boolean {
-  if (!contract.generatedAt || !contract.updatedAt) return false;
+  const pendingChangeAt = new Date(contract.pendingChangeAt).getTime();
   const generatedAt = new Date(contract.generatedAt).getTime();
-  const updatedAt = new Date(contract.updatedAt).getTime();
-  if (Number.isNaN(generatedAt) || Number.isNaN(updatedAt)) return false;
-  return updatedAt > generatedAt + 1000;
-}
+  if (Number.isNaN(pendingChangeAt) || Number.isNaN(generatedAt)) return true;
 
+  return pendingChangeAt > generatedAt;
+}
 export class ContractGovernanceError extends Error {
   constructor(public readonly code: 'locked' | 'reason_required' | 'invalid_transition' | 'ready_to_send_failed' | 'pdf_current', message: string, public readonly missingFields: string[] = []) {
     super(message);

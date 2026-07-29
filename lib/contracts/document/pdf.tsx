@@ -8,9 +8,10 @@ import { ContractDocument } from '@/components/contracts/document/ContractDocume
 import { prisma } from '@/lib/db/prisma';
 import { getContractLogoDataUri } from '@/lib/contracts/document/assets';
 import { ContractAdminResolutionError, resolvePersistentAdminId as resolvePersistentContractAdminId } from '@/lib/contracts/service';
-import { assertContractCanGeneratePdf, ContractGovernanceError, normalizeChangeReason } from '@/lib/contracts/governance';
+import { assertContractCanGeneratePdf, ContractGovernanceError, hasUnpublishedChanges, normalizeChangeReason } from '@/lib/contracts/governance';
 import { getMissingContractFinancialFields, getMissingContractScopeFields, getMissingContractServiceFields, getStepMissingFields, hasMeaningfulLegalText, isValidBasicPortugueseTaxId, isValidEmail, isValidRequiredProviderTaxId } from '@/lib/contracts/wizard/validation';
 import { getContractDocumentData } from './data';
+import type { ContractDocumentData } from './types';
 import { slugifyFilePart } from './formatters';
 
 export type ContractPdfGenerationResult = {
@@ -20,6 +21,9 @@ export type ContractPdfGenerationResult = {
   pdfUrl: string;
   operation: 'current' | 'generated' | 'regenerated';
   version: number;
+  versionLabel: string;
+  isPdfCurrent: boolean;
+  hasUnpublishedChanges: boolean;
 };
 
 export class ContractPdfError extends Error {
@@ -29,12 +33,18 @@ export class ContractPdfError extends Error {
   }
 }
 
-export async function generateContractPdf(input: { adminUserId: string; adminEmail?: string | null; contractId: string; changeReason?: string | null }): Promise<ContractPdfGenerationResult> {
+export async function generateContractPdf(input: { adminUserId: string; adminEmail?: string | null; contractId: string }): Promise<ContractPdfGenerationResult> {
   const data = await getContractDocumentData(input.contractId);
   if (!data) throw new ContractPdfError('not_found', 'Contrato não encontrado.');
+
   const pendingChangeReason = normalizeChangeReason(data.pendingChangeReason);
   const operation = hasExistingGeneratedPdf(data) ? 'regenerated' : 'generated';
-  const changeReason = pendingChangeReason ?? normalizeChangeReason(input.changeReason) ?? (operation === 'generated' ? 'Geração inicial do PDF' : null);
+  const hasPendingDocumentChanges = hasUnpublishedChanges(data);
+  if (operation === 'regenerated' && hasPendingDocumentChanges && !pendingChangeReason) {
+    throw new ContractPdfError('missing_pending_change_reason', 'Existem alterações por publicar, mas não existe motivo de alteração registado.');
+  }
+  const changeReason = pendingChangeReason ?? (operation === 'generated' ? 'Geração inicial do PDF' : null);
+
   try {
     assertContractCanGeneratePdf(data, changeReason);
   } catch (error) {
@@ -44,36 +54,45 @@ export async function generateContractPdf(input: { adminUserId: string; adminEma
 
   validateReadyForPdf(data);
 
-
-  const pdf = await renderPdfBuffer(data);
-  const pdfHash = hashPdf(pdf);
-  const generatedAt = new Date();
   const adminUserId = await resolvePersistentPdfAdminId(input.adminUserId, input.adminEmail);
+  const generatedAt = new Date();
+  const currentVersion = data.latestVersion ?? data.version;
+  const currentVersionLabel = data.latestVersionLabel ?? `v${currentVersion}`;
+  const currentDocumentData = withDocumentVersion(data, currentVersion, currentVersionLabel);
 
-  if (operation === 'regenerated' && data.pdfHash === pdfHash && data.pdfUrl && data.pdfStorageKey) {
-    await prisma.$transaction([
-      prisma.contract.update({
-        where: { id: input.contractId },
-        data: { generatedAt, pendingChangeReason: null, pendingChangeAt: null },
-      }),
-      prisma.contractActivityLog.create({
-        data: {
-          contractId: input.contractId,
-          adminUserId,
-          type: 'CONTRACT_PDF_REGENERATED',
-          message: `PDF mantido para ${data.number}; o conteúdo gerado é idêntico ao ficheiro atual.`,
-          metadata: { generatedAt: generatedAt.toISOString(), pdfHash, pdfStorageKey: data.pdfStorageKey, pdfUrl: data.pdfUrl, changeReason, skippedVersion: true },
-        },
-      }),
-    ]);
+  if (operation === 'regenerated' && data.pdfHash && data.pdfUrl && data.pdfStorageKey) {
+    const comparisonPdf = await renderPdfBuffer(currentDocumentData);
+    const comparisonHash = hashPdf(comparisonPdf);
 
-    return { contractId: input.contractId, operation: 'current', pdfHash, pdfStorageKey: data.pdfStorageKey, pdfUrl: data.pdfUrl, version: data.version };
+    if (comparisonHash === data.pdfHash) {
+      await prisma.$transaction([
+        prisma.contract.update({
+          where: { id: input.contractId },
+          data: { generatedAt, pendingChangeReason: null, pendingChangeAt: null },
+        }),
+        prisma.contractActivityLog.create({
+          data: {
+            contractId: input.contractId,
+            adminUserId,
+            type: 'CONTRACT_PDF_REGENERATED',
+            message: `PDF mantido para ${data.number}; o conteúdo gerado é idêntico ao ficheiro atual.`,
+            metadata: { generatedAt: generatedAt.toISOString(), pdfHash: comparisonHash, pdfStorageKey: data.pdfStorageKey, pdfUrl: data.pdfUrl, version: currentVersion, versionLabel: currentVersionLabel, changeReason, skippedVersion: true },
+          },
+        }),
+      ]);
+
+      return { contractId: input.contractId, operation: 'current', pdfHash: comparisonHash, pdfStorageKey: data.pdfStorageKey, pdfUrl: data.pdfUrl, version: currentVersion, versionLabel: currentVersionLabel, isPdfCurrent: true, hasUnpublishedChanges: false };
+    }
   }
 
-  const fileName = buildContractPdfFileName(data, pdfHash, generatedAt);
+  const version = await getNextContractVersion(input.contractId, currentVersion);
+  const versionLabel = `v${version}`;
+  const documentData = withDocumentVersion(data, version, versionLabel);
+  const pdf = await renderPdfBuffer(documentData);
+  const pdfHash = hashPdf(pdf);
+  const fileName = buildContractPdfFileName(documentData, pdfHash, generatedAt);
   const stored = await storeContractPdf(fileName, pdf);
-  const version = await getNextContractVersion(input.contractId, data.version);
-  const snapshot = buildContractVersionSnapshot(data);
+  const snapshot = buildContractVersionSnapshot(documentData);
 
   await prisma.$transaction([
     prisma.contract.update({
@@ -93,10 +112,10 @@ export async function generateContractPdf(input: { adminUserId: string; adminEma
         // Generated PDF fields are intentionally excluded from the snapshot below.
         contractId: input.contractId,
         version,
-        title: data.title,
-        status: data.status,
-        statusAtGeneration: data.status,
-        versionLabel: 'v' + version,
+        title: documentData.title,
+        status: documentData.status,
+        statusAtGeneration: documentData.status,
+        versionLabel,
         snapshot,
         pdfUrl: stored.pdfUrl,
         pdfStorageKey: stored.pdfStorageKey,
@@ -111,15 +130,18 @@ export async function generateContractPdf(input: { adminUserId: string; adminEma
         contractId: input.contractId,
         adminUserId,
         type: operation === 'regenerated' ? 'CONTRACT_PDF_REGENERATED' : 'CONTRACT_PDF_GENERATED',
-        message: operation === 'regenerated' ? `PDF regenerado para ${data.number} v${version}.` : `PDF gerado para ${data.number} v${version}.`,
-        metadata: { fileName, generatedAt: generatedAt.toISOString(), pdfHash, pdfStorageKey: stored.pdfStorageKey, pdfUrl: stored.pdfUrl, version, versionLabel: 'v' + version, changeReason },
+        message: operation === 'regenerated' ? `PDF regenerado para ${data.number} ${versionLabel}.` : `PDF gerado para ${data.number} ${versionLabel}.`,
+        metadata: { fileName, generatedAt: generatedAt.toISOString(), pdfHash, pdfStorageKey: stored.pdfStorageKey, pdfUrl: stored.pdfUrl, version, versionLabel, changeReason },
       },
     }),
   ]);
 
-  return { contractId: input.contractId, operation, pdfHash, pdfStorageKey: stored.pdfStorageKey, pdfUrl: stored.pdfUrl, version };
+  return { contractId: input.contractId, operation, pdfHash, pdfStorageKey: stored.pdfStorageKey, pdfUrl: stored.pdfUrl, version, versionLabel, isPdfCurrent: true, hasUnpublishedChanges: false };
 }
 
+function withDocumentVersion(data: ContractDocumentData, version: number, versionLabel: string): ContractDocumentData {
+  return { ...data, version, versionLabel };
+}
 function hasExistingGeneratedPdf(data: NonNullable<Awaited<ReturnType<typeof getContractDocumentData>>>): boolean {
   return Boolean(data.pdfUrl || data.pdfStorageKey || data.pdfHash || data.generatedAt);
 }
@@ -251,7 +273,7 @@ function getMissingClientLegalFieldsForPdf(client: NonNullable<Awaited<ReturnTyp
     !client.representativeEmail ? 'Email do representante' : null,
   ].filter((field): field is string => Boolean(field));
 }
-async function renderPdfBuffer(data: NonNullable<Awaited<ReturnType<typeof getContractDocumentData>>>): Promise<Buffer> {
+async function renderPdfBuffer(data: ContractDocumentData): Promise<Buffer> {
   let chromium: typeof import('playwright').chromium;
   try {
     ({ chromium } = await import('playwright'));
@@ -283,7 +305,7 @@ async function renderPdfBuffer(data: NonNullable<Awaited<ReturnType<typeof getCo
   }
 }
 
-async function renderContractHtml(data: NonNullable<Awaited<ReturnType<typeof getContractDocumentData>>>): Promise<string> {
+async function renderContractHtml(data: ContractDocumentData): Promise<string> {
   const { renderToStaticMarkup } = await import('react-dom/server');
   let logoDataUri: string;
   try {
@@ -296,7 +318,7 @@ async function renderContractHtml(data: NonNullable<Awaited<ReturnType<typeof ge
   return `<!doctype html><html lang="pt-PT"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>${escapeHtml(data.number)} - ${escapeHtml(data.title)}</title></head><body>${markup}</body></html>`;
 }
 
-function buildContractVersionSnapshot(data: NonNullable<Awaited<ReturnType<typeof getContractDocumentData>>>): Prisma.JsonObject {
+function buildContractVersionSnapshot(data: ContractDocumentData): Prisma.JsonObject {
   const snapshot = JSON.parse(JSON.stringify(data)) as Prisma.JsonObject;
   delete snapshot.pdfUrl;
   delete snapshot.pdfStorageKey;
@@ -304,6 +326,8 @@ function buildContractVersionSnapshot(data: NonNullable<Awaited<ReturnType<typeo
   delete snapshot.generatedAt;
   delete snapshot.pendingChangeReason;
   delete snapshot.pendingChangeAt;
+  delete snapshot.latestVersion;
+  delete snapshot.latestVersionLabel;
   return snapshot;
 }
 function hashPdf(pdf: Buffer): string {
@@ -338,11 +362,11 @@ async function storeContractPdf(fileName: string, pdf: Buffer): Promise<{ pdfSto
   }
 }
 
-function buildContractPdfFileName(data: NonNullable<Awaited<ReturnType<typeof getContractDocumentData>>>, pdfHash: string, generatedAt: Date): string {
+function buildContractPdfFileName(data: ContractDocumentData, pdfHash: string, generatedAt: Date): string {
   const client = slugifyFilePart(data.client.tradeName ?? data.client.legalName ?? 'Cliente');
   const timestamp = generatedAt.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
   const hashPart = pdfHash.slice(0, 10);
-  return `Norm8_Contrato_${client}_${data.number}_v${data.version}_${timestamp}_${hashPart}.pdf`;
+  return `Norm8_Contrato_${client}_${data.number}_${data.versionLabel}_${timestamp}_${hashPart}.pdf`;
 }
 
 async function resolvePersistentPdfAdminId(adminUserId: string, adminEmail?: string | null): Promise<string> {

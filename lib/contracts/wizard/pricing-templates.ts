@@ -3,6 +3,8 @@ import type { ContractPlan, ContractServiceType } from '@/app/generated/prisma/c
 type PricingDeliverable = {
   title?: string | null;
   description?: string | null;
+  estimatedDate?: string | null;
+  phase?: string | null;
 };
 
 type PricingTimelinePhase = {
@@ -137,11 +139,18 @@ export function getPaymentMilestonesFromPlan(input: {
   finalValue: number;
   vatRate: number;
   timeline: PricingTimelinePhase[];
+  deliverables?: PricingDeliverable[];
+  contractDate?: string | null;
   startDate?: string | null;
 }): PaymentMilestoneSuggestion[] {
   const plan = input.paymentPlan || '50_50';
   const percentages = getPlanPercentages(plan);
-  const baseDate = parseDateInput(input.startDate) ?? startOfToday();
+  const projectDates = resolvePaymentScheduleDates({
+    timeline: input.timeline,
+    deliverables: input.deliverables ?? [],
+    contractDate: input.contractDate,
+    explicitStartDate: input.startDate,
+  });
 
   return percentages.map((percentage, index) => {
     const amount = roundMoney((input.finalValue * percentage) / 100);
@@ -149,7 +158,13 @@ export function getPaymentMilestonesFromPlan(input: {
       percentage: formatNumber(percentage),
       amount: formatNumber(amount),
       invoiceMoment: getInvoiceMoment(plan, index),
-      expectedDate: formatDateInput(getPaymentDate(baseDate, input.timeline, index)),
+      expectedDate: formatDateInput(resolvePaymentMilestoneDate({
+        billingMoment: getInvoiceMoment(plan, index),
+        plan,
+        milestoneIndex: index,
+        totalMilestones: percentages.length,
+        projectDates,
+      })),
       description: getPaymentDescription(plan, index),
       status: 'PENDING',
       billingCondition: getBillingCondition(plan, index),
@@ -201,13 +216,100 @@ function getBillingCondition(plan: string, index: number): string {
   return 'Faturação após validação dos entregáveis associados.';
 }
 
-function getPaymentDate(baseDate: Date, timeline: PricingTimelinePhase[], index: number): Date {
-  const phaseDate = parseDateInput(timeline[index]?.endsAt) ?? parseDateInput(timeline[index]?.startsAt) ?? null;
-  if (phaseDate) return phaseDate;
-  const date = new Date(baseDate);
-  date.setDate(date.getDate() + index * 14);
-  date.setHours(12, 0, 0, 0);
-  return date;
+type PaymentScheduleDates = {
+  start: Date;
+  middle: Date;
+  end: Date;
+};
+
+function resolvePaymentScheduleDates(input: {
+  timeline: PricingTimelinePhase[];
+  deliverables: PricingDeliverable[];
+  contractDate?: string | null;
+  explicitStartDate?: string | null;
+}): PaymentScheduleDates {
+  const phaseStarts = input.timeline.map((phase) => parseDateInput(phase.startsAt)).filter(isDate);
+  const phaseEnds = input.timeline.map((phase) => parseDateInput(phase.endsAt)).filter(isDate);
+  const deliverableDates = input.deliverables.map((deliverable) => parseDateInput(deliverable.estimatedDate)).filter(isDate);
+  const allProjectDates = [...phaseStarts, ...phaseEnds, ...deliverableDates];
+
+  const fallbackStart = parseDateInput(input.contractDate) ?? startOfToday();
+  const start = earliestDate(phaseStarts) ?? parseDateInput(input.explicitStartDate) ?? fallbackStart;
+  const end = latestDate(deliverableDates) ?? latestDate(phaseEnds) ?? latestDate(allProjectDates) ?? addDays(start, 30);
+  const middle = pickMiddleDate([...phaseEnds, ...deliverableDates], start, end);
+
+  return { start, middle, end };
+}
+
+function resolvePaymentMilestoneDate(input: {
+  billingMoment: string;
+  plan: string;
+  milestoneIndex: number;
+  totalMilestones: number;
+  projectDates: PaymentScheduleDates;
+}): Date {
+  const normalizedMoment = normalizeMoment(input.billingMoment);
+
+  if (normalizedMoment.includes('entrega final') || normalizedMoment.includes('final') || input.milestoneIndex === input.totalMilestones - 1 && input.totalMilestones > 1) {
+    return input.projectDates.end;
+  }
+
+  if (normalizedMoment.includes('implementacao') || normalizedMoment.includes('validacao') || normalizedMoment.includes('diagnostico') || normalizedMoment.includes('ambito')) {
+    return input.projectDates.middle;
+  }
+
+  if (normalizedMoment.includes('mensal') || input.plan === 'MONTHLY') {
+    return addMonths(input.projectDates.start, input.milestoneIndex);
+  }
+
+  if (normalizedMoment.includes('trimestral') || input.plan === 'QUARTERLY') {
+    return addMonths(input.projectDates.start, input.milestoneIndex * 3);
+  }
+
+  return input.projectDates.start;
+}
+
+function pickMiddleDate(candidates: Date[], start: Date, end: Date): Date {
+  const midpoint = start.getTime() + ((end.getTime() - start.getTime()) / 2);
+  const ordered = candidates
+    .filter((date) => date.getTime() > start.getTime() && date.getTime() < end.getTime())
+    .sort((a, b) => Math.abs(a.getTime() - midpoint) - Math.abs(b.getTime() - midpoint));
+  return ordered[0] ?? new Date(midpoint);
+}
+
+function earliestDate(dates: Date[]): Date | null {
+  if (!dates.length) return null;
+  return new Date(Math.min(...dates.map((date) => date.getTime())));
+}
+
+function latestDate(dates: Date[]): Date | null {
+  if (!dates.length) return null;
+  return new Date(Math.max(...dates.map((date) => date.getTime())));
+}
+
+function addDays(date: Date, days: number): Date {
+  const next = new Date(date);
+  next.setDate(next.getDate() + days);
+  next.setHours(12, 0, 0, 0);
+  return next;
+}
+
+function addMonths(date: Date, months: number): Date {
+  const next = new Date(date);
+  next.setMonth(next.getMonth() + months);
+  next.setHours(12, 0, 0, 0);
+  return next;
+}
+
+function normalizeMoment(value: string): string {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+}
+
+function isDate(value: Date | null): value is Date {
+  return Boolean(value);
 }
 
 function buildPricingRationale(input: PricingSuggestionInput, commercialValue: number): string {

@@ -20,7 +20,7 @@ export function ContractCoverPage({ contract, logoSrc }: { contract: ContractDoc
         <Meta label="Representante" value={contract.client.representative ?? 'Por definir'} />
         <Meta label="Data" value={formatDocumentDate(contract.issueDate)} />
         <Meta label="Número" value={contract.number} />
-        <Meta label="Versão" value={`v${contract.version}`} />
+        <Meta label="Versão" value={contract.versionLabel} />
         <Meta label="Estado" value={contract.status} />
       </div>
     </ContractPageFrame>

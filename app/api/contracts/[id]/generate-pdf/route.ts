@@ -1,3 +1,4 @@
+import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/admin/auth';
 import { ContractPdfError, generateContractPdf } from '@/lib/contracts/document/pdf';
@@ -7,10 +8,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const admin = await requireAdmin();
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
   const wantsJson = request.headers.get('accept')?.includes('application/json') || request.headers.get('x-requested-with') === 'fetch';
-  const changeReason = await readChangeReason(request);
 
   try {
-    const result = await generateContractPdf({ adminUserId: admin.id, adminEmail: admin.email, contractId: id, changeReason });
+    const result = await generateContractPdf({ adminUserId: admin.id, adminEmail: admin.email, contractId: id });
+    revalidateContractPages(id);
     if (wantsJson) {
       return NextResponse.json({ success: true, ...result });
     }
@@ -25,7 +26,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
           message: error instanceof ContractPdfError ? error.message : 'Não foi possível gerar o PDF.',
           missingFields: error instanceof ContractPdfError ? error.details?.missingFields ?? [] : [],
         },
-        { status: 400 },
+        { status: code === 'pdf_current' || code === 'missing_pending_change_reason' ? 409 : 400 },
       );
     }
 
@@ -38,21 +39,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     return NextResponse.redirect(redirectUrl, { status: 303 });
   }
 }
-
-async function readChangeReason(request: Request): Promise<string | null> {
-  const contentType = request.headers.get('content-type') ?? '';
-  try {
-    if (contentType.includes('application/json')) {
-      const body = await request.json() as { changeReason?: unknown };
-      return typeof body.changeReason === 'string' ? body.changeReason : null;
-    }
-    if (contentType.includes('application/x-www-form-urlencoded') || contentType.includes('multipart/form-data')) {
-      const formData = await request.formData();
-      const value = formData.get('changeReason');
-      return typeof value === 'string' ? value : null;
-    }
-  } catch (error) {
-    console.error('[contracts.generatePdf] Failed to parse change reason', { error });
-  }
-  return null;
+function revalidateContractPages(contractId: string): void {
+  revalidatePath('/admin/contracts');
+  revalidatePath(`/admin/contracts/${contractId}`);
+  revalidatePath(`/admin/contracts/${contractId}/preview`);
 }

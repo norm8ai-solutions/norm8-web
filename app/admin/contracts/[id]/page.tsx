@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { ArrowLeft, Download, FileText, PenLine } from 'lucide-react';
 import { AdminBadge } from '@/components/admin/AdminBadge';
 import { AdminEmptyState, AdminField, AdminPanel, AdminRow } from '@/components/admin/AdminPrimitives';
+import { ContractDetailPdfGenerateButton } from '@/components/contracts/ContractDetailPdfGenerateButton';
 import { formatDatePt } from '@/lib/admin/formatters';
 import {
   formatContractActivity,
@@ -39,7 +40,7 @@ export default async function ContractDetailPage({ params, searchParams }: Contr
   const readyToSend = validateContractReadyToSend(contract);
   const hasGeneratedPdf = Boolean(contract.pdfUrl || contract.pdfStorageKey || contract.pdfHash || contract.generatedAt);
   const pdfHasUnpublishedChanges = hasUnpublishedChanges(contract);
-  const pdfActionRequiresReason = hasGeneratedPdf && pdfHasUnpublishedChanges && !contract.pendingChangeReason;
+  const hasPendingChangeReason = Boolean(contract.pendingChangeReason?.trim() && contract.pendingChangeReason.trim().length >= 8);
 
   return (
     <div className="admin-page-grid">
@@ -234,20 +235,23 @@ export default async function ContractDetailPage({ params, searchParams }: Contr
           <AdminPanel title="Ações">
             <div className="admin-page-grid">
               <Link className="admin-button admin-button-muted" href={`/admin/contracts/${contract.id}/preview`}><FileText size={14} />Ver preview</Link>
-              {!hasGeneratedPdf && editability.canGeneratePdf ? (
-                <form action={`/api/contracts/${contract.id}/generate-pdf`} className="admin-page-grid" method="post" style={{ gap: 10 }}>
-                  <button className="admin-button admin-button-muted" type="submit"><Download size={14} />Gerar PDF</button>
-                </form>
+              {!hasGeneratedPdf && editability.canGeneratePdf ? <ContractDetailPdfGenerateButton contractId={contract.id} hasExistingPdf={false} /> : null}
+              {hasGeneratedPdf && editability.canRegeneratePdf && pdfHasUnpublishedChanges && hasPendingChangeReason ? (
+                <div className="admin-page-grid" style={{ gap: 10 }}>
+                  <span className="admin-pill contract-detail-action-status-pill">Motivo pendente aplicado</span>
+                  <p className="admin-row-meta">Este contrato tem alterações guardadas que ainda não foram refletidas no PDF. A próxima versão usará o motivo registado na edição.</p>
+                  <ContractDetailPdfGenerateButton contractId={contract.id} hasExistingPdf />
+                </div>
               ) : null}
-              {hasGeneratedPdf && editability.canRegeneratePdf && pdfHasUnpublishedChanges ? (
-                <form action={`/api/contracts/${contract.id}/generate-pdf`} className="admin-page-grid" method="post" style={{ gap: 10 }}>
-                  {contract.pendingChangeReason ? <span className="admin-pill">Motivo pendente aplicado</span> : null}
-                  {pdfActionRequiresReason ? <input className="admin-input" minLength={8} name="changeReason" placeholder="Motivo técnico da regeneração" required /> : null}
-                  <button className="admin-button admin-button-muted" type="submit"><Download size={14} />Regenerar PDF</button>
-                </form>
+              {hasGeneratedPdf && pdfHasUnpublishedChanges && !hasPendingChangeReason ? (
+                <div className="admin-execution-summary admin-execution-summary-danger">
+                  <strong>Alterações por publicar sem motivo registado</strong>
+                  <span>Volte ao editor e guarde as alterações com motivo antes de gerar uma nova versão do PDF.</span>
+                  {editability.canEdit ? <Link className="admin-button admin-button-muted" href={`/admin/contracts/${contract.id}/edit`}>Voltar ao editor</Link> : null}
+                </div>
               ) : null}
-              {hasGeneratedPdf && !pdfHasUnpublishedChanges ? <span className="admin-pill">PDF atualizado</span> : null}
-              {hasGeneratedPdf && !editability.canRegeneratePdf && pdfHasUnpublishedChanges ? <button className="admin-button admin-button-muted" disabled type="button">PDF bloqueado neste estado</button> : null}
+              {hasGeneratedPdf && !pdfHasUnpublishedChanges ? <span className="admin-pill contract-detail-action-status-pill">PDF atualizado</span> : null}
+              {hasGeneratedPdf && !editability.canRegeneratePdf && pdfHasUnpublishedChanges && hasPendingChangeReason ? <button className="admin-button admin-button-muted" disabled type="button">PDF bloqueado neste estado</button> : null}
               {contract.pdfUrl ? <Link className="admin-button" href={contract.pdfUrl} target="_blank"><Download size={14} />Descarregar PDF</Link> : null}
               {readyToSend.ok && contract.status !== 'READY_TO_SEND' && contract.status !== 'SIGNED' ? (
                 <form action={updateContractStatusAction} className="admin-page-grid" style={{ gap: 10 }}>
@@ -302,6 +306,7 @@ function formatContractActionError(error: string): string {
   const labels: Record<string, string> = {
     reason_required: 'Indique um motivo com pelo menos 8 caracteres.',
     pdf_current: 'O PDF atual já corresponde à versão mais recente do contrato.',
+    missing_pending_change_reason: 'Existem alterações por publicar, mas não existe motivo de alteração registado.',
     ready_to_send_failed: 'O contrato ainda não está pronto para envio.',
     locked: 'Contrato bloqueado neste estado.',
     invalid_transition: 'Transição de estado inválida.',
