@@ -18,7 +18,6 @@ import {
   type Lead,
   type LeadPriority,
   type MeetingBooking,
-  type SubmissionType,
 } from '@/app/generated/prisma/client';
 import { createAuditAnalysisForSubmission } from '@/lib/audit-analysis/service';
 import { createMeetingCalendarEvent } from '@/lib/calendar/service';
@@ -40,10 +39,11 @@ import type {
   CreateLeadSubmissionInput,
   LeadSubmissionPayloadByType,
   LeadSubmissionResult,
+  PublicLeadSubmissionType,
   ValidationErrors,
 } from './types';
 
-const schemaBySubmissionType = {
+const schemaBySubmissionType: Record<PublicLeadSubmissionType, typeof auditRequestSchema | typeof customAutomationRequestSchema | typeof meetingRequestSchema> = {
   AUDIT_REQUEST: auditRequestSchema,
   CUSTOM_AUTOMATION_REQUEST: customAutomationRequestSchema,
   MEETING_REQUEST: meetingRequestSchema,
@@ -62,7 +62,7 @@ const schemaBySubmissionType = {
  * @param input Submission data selected by a server action.
  * @returns A consistent success/error result safe to return to client components.
  */
-export async function createLeadSubmission<TType extends SubmissionType>(
+export async function createLeadSubmission<TType extends PublicLeadSubmissionType>(
   input: CreateLeadSubmissionInput<TType>,
 ): Promise<LeadSubmissionResult> {
   const parsedPayload = schemaBySubmissionType[input.type].safeParse(input.payload);
@@ -597,7 +597,7 @@ function normalizeWebsite(website?: string): string | undefined {
  * @param payload Validated payload for that type.
  * @returns Lead identity fields used for upsert.
  */
-function getLeadIdentity<TType extends SubmissionType>(
+function getLeadIdentity<TType extends PublicLeadSubmissionType>(
   type: TType,
   payload: LeadSubmissionPayloadByType[TType],
 ): LeadIdentity {
@@ -645,7 +645,7 @@ function getLeadIdentity<TType extends SubmissionType>(
  * @param payload Validated payload for that type.
  * @returns Initial lead priority.
  */
-function getLeadPriority<TType extends SubmissionType>(
+function getLeadPriority<TType extends PublicLeadSubmissionType>(
   type: TType,
   payload: LeadSubmissionPayloadByType[TType],
 ): LeadPriority {
@@ -678,7 +678,7 @@ type SubmissionLabels = {
  * @param type Submission type being processed.
  * @returns Labels used across activity, notification, and email log records.
  */
-function getSubmissionLabels(type: SubmissionType): SubmissionLabels {
+function getSubmissionLabels(type: PublicLeadSubmissionType): SubmissionLabels {
   switch (type) {
     case 'AUDIT_REQUEST':
       return {

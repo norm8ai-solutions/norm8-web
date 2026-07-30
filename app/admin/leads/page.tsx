@@ -12,6 +12,7 @@
 import Link from 'next/link';
 import { Filter } from 'lucide-react';
 import { Norm8Select } from '@/components/ui/norm8-select';
+import { SendPreMeetingIntakeRequestModal } from '@/components/admin/SendPreMeetingIntakeRequestModal';
 import type { LeadPriority, LeadStatus } from '@/app/generated/prisma/client';
 import {
   LeadPriorityBadge,
@@ -66,7 +67,11 @@ export default async function AdminLeadsPage({ searchParams }: AdminLeadsPagePro
 
   return (
     <div className="admin-page-grid">
-      <AdminPanel title="Leads" subtitle={`${leads.length} registos encontrados`}>
+      <AdminPanel
+        title="Leads"
+        subtitle={`${leads.length} registos encontrados`}
+        action={<SendPreMeetingIntakeRequestModal />}
+      >
         <form action="/admin/leads" className="admin-filters">
           <input
             className="admin-input"

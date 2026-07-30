@@ -9,7 +9,6 @@
  * ------------------------------------------------------------------
  */
 
-import type { SubmissionType } from '@/app/generated/prisma/enums';
 import type { z } from 'zod';
 import type {
   auditRequestSchema,
@@ -23,10 +22,12 @@ export type LeadSubmissionPayloadByType = {
   MEETING_REQUEST: z.infer<typeof meetingRequestSchema>;
 };
 
+export type PublicLeadSubmissionType = keyof LeadSubmissionPayloadByType;
+
 /**
  * Input accepted by createLeadSubmission after the caller chooses the request type.
  */
-export type CreateLeadSubmissionInput<TType extends SubmissionType = SubmissionType> = {
+export type CreateLeadSubmissionInput<TType extends PublicLeadSubmissionType = PublicLeadSubmissionType> = {
   type: TType;
   source: string;
   payload: LeadSubmissionPayloadByType[TType];

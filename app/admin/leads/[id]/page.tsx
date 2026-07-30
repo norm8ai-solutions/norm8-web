@@ -12,6 +12,7 @@
 import Link from 'next/link';
 import { LeadActionsPanel } from '@/components/admin/LeadActionsPanel';
 import { ProposalPdfActions } from '@/components/admin/ProposalPdfActions';
+import { SendPreMeetingIntakeRequestModal } from '@/components/admin/SendPreMeetingIntakeRequestModal';
 import { Norm8Select } from '@/components/ui/norm8-select';
 import { notFound } from 'next/navigation';
 import {
@@ -41,6 +42,12 @@ import {
 } from '@/lib/admin/formatters';
 import { getLeadById } from '@/lib/admin/queries';
 import { buildDefaultProposalDataFromLead } from '@/lib/proposals/service';
+import {
+ generateFinalProposalFromBaseOfferAction,
+ saveDiscoveryNotesAction,
+ updateBaseOfferAction,
+ validateBaseOfferAction,
+} from '@/lib/manual-client-intake/actions';
 
 
 
@@ -132,7 +139,15 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
  <LeadStatusBadge status={lead.status} />
  <LeadPriorityBadge priority={lead.priority} />
- </div>
+  <SendPreMeetingIntakeRequestModal
+  defaultCompanyName={lead.company}
+  defaultContactName={lead.name}
+  defaultEmail={lead.email}
+  defaultPhone={lead.phone}
+  leadId={lead.id}
+  triggerLabel="Enviar formulário pré-reunião"
+  />
+  </div>
  }
  >
  <div className="admin-filters">
@@ -178,6 +193,8 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
  leadId={lead.id}
  suggestedAction={suggestedAction}
  />
+
+  <BaseOfferPanel baseOffer={lead.baseOffers[0] ?? null} />
 
  <AdminPanel title="Nota interna" subtitle="Regista contexto comercial para a equipa.">
  <form action={addLeadNote} style={{ display: 'grid', gap: 12 }}>
@@ -408,6 +425,102 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
  );
 }
 
+type LeadBaseOffer = NonNullable<Awaited<ReturnType<typeof getLeadById>>>['baseOffers'][number];
+
+function BaseOfferPanel({ baseOffer }: { baseOffer: LeadBaseOffer | null }) {
+  if (!baseOffer) {
+    return (
+      <AdminPanel title="Oferta Base" subtitle="Criada automaticamente pelo fluxo manual pré-discovery.">
+        <AdminEmptyState>Sem Oferta Base associada a esta lead.</AdminEmptyState>
+      </AdminPanel>
+    );
+  }
+
+  const recommendedModules = formatJsonList(baseOffer.recommendedModules);
+  const opportunities = formatJsonList(baseOffer.automationOpportunities);
+  const questions = formatJsonList(baseOffer.questionsForDiscovery);
+  const risks = formatJsonList(baseOffer.risksOrMissingInfo);
+  const discoveryNotes = getDiscoveryNotes(baseOffer.metadata);
+
+  return (
+    <AdminPanel
+      title="Oferta Base"
+      subtitle="Rascunho interno para preparar discovery e proposta final."
+      action={<span className="admin-badge admin-badge-blue">{formatBaseOfferStatus(baseOffer.status)}</span>}
+    >
+      <div className="manual-intake-panel-grid">
+        <form action={updateBaseOfferAction} className="manual-intake-form">
+          <input name="baseOfferId" type="hidden" value={baseOffer.id} />
+          <label className="manual-intake-admin-field"><span>Resumo do problema</span><textarea className="admin-textarea" name="problemSummary" defaultValue={baseOffer.problemSummary ?? ''} /></label>
+          <label className="manual-intake-admin-field"><span>Processo a automatizar</span><textarea className="admin-textarea" name="processToAutomate" defaultValue={baseOffer.processToAutomate ?? ''} /></label>
+          <label className="manual-intake-admin-field"><span>Solução sugerida</span><textarea className="admin-textarea" name="suggestedSolution" defaultValue={baseOffer.suggestedSolution ?? ''} /></label>
+          <div className="manual-intake-two-cols">
+            <label className="manual-intake-admin-field"><span>Ferramentas mencionadas</span><input className="admin-input" name="toolsMentioned" defaultValue={baseOffer.toolsMentioned ?? ''} /></label>
+            <label className="manual-intake-admin-field"><span>Intervalo de preço inicial</span><input className="admin-input" name="initialPriceRange" defaultValue={baseOffer.initialPriceRange ?? ''} /></label>
+          </div>
+          <label className="manual-intake-admin-field"><span>Âmbito estimado</span><textarea className="admin-textarea" name="estimatedScope" defaultValue={baseOffer.estimatedScope ?? ''} /></label>
+          <label className="manual-intake-admin-field"><span>Racional de preço</span><textarea className="admin-textarea" name="pricingRationale" defaultValue={baseOffer.pricingRationale ?? ''} /></label>
+          <label className="manual-intake-admin-field"><span>Próximos passos</span><textarea className="admin-textarea" name="nextSteps" defaultValue={baseOffer.nextSteps ?? ''} /></label>
+          <div className="manual-intake-actions"><button className="admin-button" type="submit">Guardar Oferta Base</button></div>
+        </form>
+        <div className="manual-intake-side">
+          <div className="manual-intake-cardlet"><h3>Módulos recomendados</h3><p>{recommendedModules}</p></div>
+          <div className="manual-intake-cardlet"><h3>Oportunidades</h3><p>{opportunities}</p></div>
+          <div className="manual-intake-cardlet"><h3>Perguntas para discovery</h3><p>{questions}</p></div>
+          <div className="manual-intake-cardlet"><h3>Riscos ou informação em falta</h3><p>{risks}</p></div>
+          <div className="manual-intake-actions">
+            <form action={validateBaseOfferAction}><input name="baseOfferId" type="hidden" value={baseOffer.id} /><button className="admin-button admin-button-muted" type="submit">Marcar validada</button></form>
+            <form action={generateFinalProposalFromBaseOfferAction}><input name="baseOfferId" type="hidden" value={baseOffer.id} /><button className="admin-button" type="submit">Gerar Proposta Final</button></form>
+          </div>
+        </div>
+      </div>
+      <div className="manual-intake-discovery">
+        <h3>Preparação da Discovery</h3>
+        <form action={saveDiscoveryNotesAction} className="manual-intake-form">
+          <input name="baseOfferId" type="hidden" value={baseOffer.id} />
+          <div className="manual-intake-two-cols">
+            <DiscoveryField name="confirmedProblems" label="Problemas confirmados" notes={discoveryNotes} />
+            <DiscoveryField name="newProblems" label="Novos problemas" notes={discoveryNotes} />
+            <DiscoveryField name="currentProcess" label="Processo atual" notes={discoveryNotes} />
+            <DiscoveryField name="impact" label="Impacto" notes={discoveryNotes} />
+            <DiscoveryField name="tools" label="Ferramentas" notes={discoveryNotes} />
+            <DiscoveryField name="decisionMakers" label="Decisores" notes={discoveryNotes} />
+            <DiscoveryField name="urgency" label="Urgência" notes={discoveryNotes} />
+            <DiscoveryField name="budget" label="Orçamento" notes={discoveryNotes} />
+            <DiscoveryField name="validatedSolution" label="Solução validada" notes={discoveryNotes} />
+            <DiscoveryField name="discardedFeatures" label="Funcionalidades descartadas" notes={discoveryNotes} />
+            <DiscoveryField name="priceDiscussed" label="Preço discutido" notes={discoveryNotes} />
+            <DiscoveryField name="expectedSecondMeetingDate" label="Data esperada da segunda reunião" notes={discoveryNotes} input />
+          </div>
+          <DiscoveryField name="nextSteps" label="Próximos passos" notes={discoveryNotes} />
+          <div className="manual-intake-actions"><button className="admin-button" type="submit">Guardar preparação</button></div>
+        </form>
+      </div>
+    </AdminPanel>
+  );
+}
+
+function DiscoveryField({ label, name, notes, input = false }: { label: string; name: string; notes: Record<string, string>; input?: boolean }) {
+  return <label className="manual-intake-admin-field"><span>{label}</span>{input ? <input className="admin-input" name={name} defaultValue={notes[name] ?? ''} /> : <textarea className="admin-textarea" name={name} defaultValue={notes[name] ?? ''} />}</label>;
+}
+
+function formatBaseOfferStatus(status: string): string {
+  const labels: Record<string, string> = { INTERNAL_DRAFT: 'Rascunho interno', VALIDATED: 'Validada', CONVERTED_TO_PROPOSAL: 'Convertida em proposta', ARCHIVED: 'Arquivada' };
+  return labels[status] ?? status;
+}
+
+function formatJsonList(value: unknown): string {
+  if (Array.isArray(value)) return value.map((item) => String(item)).join(' · ');
+  if (typeof value === 'string') return value;
+  return 'Sem dados registados.';
+}
+
+function getDiscoveryNotes(metadata: unknown): Record<string, string> {
+  if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) return {};
+  const notes = (metadata as Record<string, unknown>).discoveryNotes;
+  if (!notes || typeof notes !== 'object' || Array.isArray(notes)) return {};
+  return Object.fromEntries(Object.entries(notes).filter((entry): entry is [string, string] => typeof entry[1] === 'string'));
+}
 function formatProposalStatus(status: string): string {
  switch (status) {
  case 'DRAFT':

@@ -960,6 +960,14 @@ function getConfirmationConfig(
         template: MeetingRequestConfirmationEmail,
         selectedTemplate: 'ClientMeetingConfirmationEmail',
       };
+    case 'PRE_MEETING_INTAKE':
+    case 'LEGAL_DATA_INTAKE':
+      return {
+        subject: 'Recebemos a informação enviada à Norm8',
+        type: 'CUSTOM_AUTOMATION_CONFIRMATION',
+        template: CustomAutomationConfirmationEmail,
+        selectedTemplate: 'CustomAutomationConfirmationEmail',
+      };
   }
 }
 
@@ -1115,9 +1123,13 @@ function getSubmissionSummary(
     case 'AUDIT_REQUEST':
       return `Novo pedido de Auditoria Inteligente. Resumo: ${challenge}`;
     case 'CUSTOM_AUTOMATION_REQUEST':
-      return `Novo pedido de AutomaÃ§Ã£o Personalizada. Resumo: ${challenge}`;
+      return `Novo pedido de Automação Personalizada. Resumo: ${challenge}`;
     case 'MEETING_REQUEST':
-      return `Nova marcaÃ§Ã£o de reuniÃ£o. Objetivo: ${challenge}`;
+      return `Nova marcação de reunião. Objetivo: ${challenge}`;
+    case 'PRE_MEETING_INTAKE':
+      return `Nova pré-discovery manual. Resumo: ${challenge}`;
+    case 'LEGAL_DATA_INTAKE':
+      return 'Novos dados legais recebidos para proposta, contrato ou onboarding.';
   }
 }
 

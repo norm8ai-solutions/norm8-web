@@ -389,6 +389,8 @@ export const ModelName = {
   LeadActivity: 'LeadActivity',
   LeadAction: 'LeadAction',
   Proposal: 'Proposal',
+  BaseOffer: 'BaseOffer',
+  ManualIntakeInvite: 'ManualIntakeInvite',
   Notification: 'Notification',
   EmailLog: 'EmailLog',
   MeetingBooking: 'MeetingBooking',
@@ -422,7 +424,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "lead" | "submission" | "leadActivity" | "leadAction" | "proposal" | "notification" | "emailLog" | "meetingBooking" | "auditAnalysis" | "adminUser" | "adminSession" | "adminAuthLog" | "companyLegalSettings" | "contract" | "contractTemplate" | "contractTemplateSection" | "contractSection" | "contractVersion" | "contractNumberSequence" | "contractPhase" | "contractDeliverable" | "contractPaymentMilestone" | "contractActivityLog"
+    modelProps: "lead" | "submission" | "leadActivity" | "leadAction" | "proposal" | "baseOffer" | "manualIntakeInvite" | "notification" | "emailLog" | "meetingBooking" | "auditAnalysis" | "adminUser" | "adminSession" | "adminAuthLog" | "companyLegalSettings" | "contract" | "contractTemplate" | "contractTemplateSection" | "contractSection" | "contractVersion" | "contractNumberSequence" | "contractPhase" | "contractDeliverable" | "contractPaymentMilestone" | "contractActivityLog"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -793,6 +795,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.ProposalCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.ProposalCountAggregateOutputType> | number
+        }
+      }
+    }
+    BaseOffer: {
+      payload: Prisma.$BaseOfferPayload<ExtArgs>
+      fields: Prisma.BaseOfferFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BaseOfferFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BaseOfferPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BaseOfferFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BaseOfferPayload>
+        }
+        findFirst: {
+          args: Prisma.BaseOfferFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BaseOfferPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BaseOfferFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BaseOfferPayload>
+        }
+        findMany: {
+          args: Prisma.BaseOfferFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BaseOfferPayload>[]
+        }
+        create: {
+          args: Prisma.BaseOfferCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BaseOfferPayload>
+        }
+        createMany: {
+          args: Prisma.BaseOfferCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BaseOfferCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BaseOfferPayload>[]
+        }
+        delete: {
+          args: Prisma.BaseOfferDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BaseOfferPayload>
+        }
+        update: {
+          args: Prisma.BaseOfferUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BaseOfferPayload>
+        }
+        deleteMany: {
+          args: Prisma.BaseOfferDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BaseOfferUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BaseOfferUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BaseOfferPayload>[]
+        }
+        upsert: {
+          args: Prisma.BaseOfferUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BaseOfferPayload>
+        }
+        aggregate: {
+          args: Prisma.BaseOfferAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBaseOffer>
+        }
+        groupBy: {
+          args: Prisma.BaseOfferGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BaseOfferGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BaseOfferCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BaseOfferCountAggregateOutputType> | number
+        }
+      }
+    }
+    ManualIntakeInvite: {
+      payload: Prisma.$ManualIntakeInvitePayload<ExtArgs>
+      fields: Prisma.ManualIntakeInviteFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ManualIntakeInviteFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManualIntakeInvitePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ManualIntakeInviteFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManualIntakeInvitePayload>
+        }
+        findFirst: {
+          args: Prisma.ManualIntakeInviteFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManualIntakeInvitePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ManualIntakeInviteFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManualIntakeInvitePayload>
+        }
+        findMany: {
+          args: Prisma.ManualIntakeInviteFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManualIntakeInvitePayload>[]
+        }
+        create: {
+          args: Prisma.ManualIntakeInviteCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManualIntakeInvitePayload>
+        }
+        createMany: {
+          args: Prisma.ManualIntakeInviteCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ManualIntakeInviteCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManualIntakeInvitePayload>[]
+        }
+        delete: {
+          args: Prisma.ManualIntakeInviteDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManualIntakeInvitePayload>
+        }
+        update: {
+          args: Prisma.ManualIntakeInviteUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManualIntakeInvitePayload>
+        }
+        deleteMany: {
+          args: Prisma.ManualIntakeInviteDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ManualIntakeInviteUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ManualIntakeInviteUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManualIntakeInvitePayload>[]
+        }
+        upsert: {
+          args: Prisma.ManualIntakeInviteUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManualIntakeInvitePayload>
+        }
+        aggregate: {
+          args: Prisma.ManualIntakeInviteAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateManualIntakeInvite>
+        }
+        groupBy: {
+          args: Prisma.ManualIntakeInviteGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ManualIntakeInviteGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ManualIntakeInviteCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ManualIntakeInviteCountAggregateOutputType> | number
         }
       }
     }
@@ -2254,6 +2404,54 @@ export const ProposalScalarFieldEnum = {
 export type ProposalScalarFieldEnum = (typeof ProposalScalarFieldEnum)[keyof typeof ProposalScalarFieldEnum]
 
 
+export const BaseOfferScalarFieldEnum = {
+  id: 'id',
+  leadId: 'leadId',
+  submissionId: 'submissionId',
+  status: 'status',
+  problemSummary: 'problemSummary',
+  processToAutomate: 'processToAutomate',
+  suggestedSolution: 'suggestedSolution',
+  recommendedModules: 'recommendedModules',
+  automationOpportunities: 'automationOpportunities',
+  toolsMentioned: 'toolsMentioned',
+  estimatedScope: 'estimatedScope',
+  initialPriceRange: 'initialPriceRange',
+  pricingRationale: 'pricingRationale',
+  questionsForDiscovery: 'questionsForDiscovery',
+  risksOrMissingInfo: 'risksOrMissingInfo',
+  nextSteps: 'nextSteps',
+  metadata: 'metadata',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BaseOfferScalarFieldEnum = (typeof BaseOfferScalarFieldEnum)[keyof typeof BaseOfferScalarFieldEnum]
+
+
+export const ManualIntakeInviteScalarFieldEnum = {
+  id: 'id',
+  leadId: 'leadId',
+  tokenHash: 'tokenHash',
+  email: 'email',
+  contactName: 'contactName',
+  companyName: 'companyName',
+  source: 'source',
+  note: 'note',
+  meetingAt: 'meetingAt',
+  meetingLocation: 'meetingLocation',
+  status: 'status',
+  sentAt: 'sentAt',
+  submittedAt: 'submittedAt',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ManualIntakeInviteScalarFieldEnum = (typeof ManualIntakeInviteScalarFieldEnum)[keyof typeof ManualIntakeInviteScalarFieldEnum]
+
+
 export const NotificationScalarFieldEnum = {
   id: 'id',
   title: 'title',
@@ -2838,6 +3036,34 @@ export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMo
 
 
 /**
+ * Reference to a field of type 'BaseOfferStatus'
+ */
+export type EnumBaseOfferStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BaseOfferStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'BaseOfferStatus[]'
+ */
+export type ListEnumBaseOfferStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BaseOfferStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ManualIntakeInviteStatus'
+ */
+export type EnumManualIntakeInviteStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ManualIntakeInviteStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ManualIntakeInviteStatus[]'
+ */
+export type ListEnumManualIntakeInviteStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ManualIntakeInviteStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'NotificationStatus'
  */
 export type EnumNotificationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationStatus'>
@@ -3196,6 +3422,8 @@ export type GlobalOmitConfig = {
   leadActivity?: Prisma.LeadActivityOmit
   leadAction?: Prisma.LeadActionOmit
   proposal?: Prisma.ProposalOmit
+  baseOffer?: Prisma.BaseOfferOmit
+  manualIntakeInvite?: Prisma.ManualIntakeInviteOmit
   notification?: Prisma.NotificationOmit
   emailLog?: Prisma.EmailLogOmit
   meetingBooking?: Prisma.MeetingBookingOmit

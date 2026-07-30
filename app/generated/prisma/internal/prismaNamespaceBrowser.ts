@@ -56,6 +56,8 @@ export const ModelName = {
   LeadActivity: 'LeadActivity',
   LeadAction: 'LeadAction',
   Proposal: 'Proposal',
+  BaseOffer: 'BaseOffer',
+  ManualIntakeInvite: 'ManualIntakeInvite',
   Notification: 'Notification',
   EmailLog: 'EmailLog',
   MeetingBooking: 'MeetingBooking',
@@ -177,6 +179,54 @@ export const ProposalScalarFieldEnum = {
 } as const
 
 export type ProposalScalarFieldEnum = (typeof ProposalScalarFieldEnum)[keyof typeof ProposalScalarFieldEnum]
+
+
+export const BaseOfferScalarFieldEnum = {
+  id: 'id',
+  leadId: 'leadId',
+  submissionId: 'submissionId',
+  status: 'status',
+  problemSummary: 'problemSummary',
+  processToAutomate: 'processToAutomate',
+  suggestedSolution: 'suggestedSolution',
+  recommendedModules: 'recommendedModules',
+  automationOpportunities: 'automationOpportunities',
+  toolsMentioned: 'toolsMentioned',
+  estimatedScope: 'estimatedScope',
+  initialPriceRange: 'initialPriceRange',
+  pricingRationale: 'pricingRationale',
+  questionsForDiscovery: 'questionsForDiscovery',
+  risksOrMissingInfo: 'risksOrMissingInfo',
+  nextSteps: 'nextSteps',
+  metadata: 'metadata',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BaseOfferScalarFieldEnum = (typeof BaseOfferScalarFieldEnum)[keyof typeof BaseOfferScalarFieldEnum]
+
+
+export const ManualIntakeInviteScalarFieldEnum = {
+  id: 'id',
+  leadId: 'leadId',
+  tokenHash: 'tokenHash',
+  email: 'email',
+  contactName: 'contactName',
+  companyName: 'companyName',
+  source: 'source',
+  note: 'note',
+  meetingAt: 'meetingAt',
+  meetingLocation: 'meetingLocation',
+  status: 'status',
+  sentAt: 'sentAt',
+  submittedAt: 'submittedAt',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ManualIntakeInviteScalarFieldEnum = (typeof ManualIntakeInviteScalarFieldEnum)[keyof typeof ManualIntakeInviteScalarFieldEnum]
 
 
 export const NotificationScalarFieldEnum = {

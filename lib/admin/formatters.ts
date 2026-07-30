@@ -69,6 +69,8 @@ export function formatSubmissionType(type: SubmissionType): string {
     AUDIT_REQUEST: 'Auditoria Inteligente',
     CUSTOM_AUTOMATION_REQUEST: 'Automação Personalizada',
     MEETING_REQUEST: 'Marcação de Reunião',
+    PRE_MEETING_INTAKE: 'Pré-discovery manual',
+    LEGAL_DATA_INTAKE: 'Dados legais',
   };
 
   return labels[type];

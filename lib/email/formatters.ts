@@ -32,6 +32,10 @@ export function formatSubmissionType(type: SubmissionType): string {
       return 'Automação Personalizada';
     case 'MEETING_REQUEST':
       return 'Marcação de reunião';
+    case 'PRE_MEETING_INTAKE':
+      return 'Pré-discovery manual';
+    case 'LEGAL_DATA_INTAKE':
+      return 'Dados legais';
   }
 }
 

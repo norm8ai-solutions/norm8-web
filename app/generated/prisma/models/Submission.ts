@@ -208,6 +208,7 @@ export type SubmissionWhereInput = {
   meetingBooking?: Prisma.XOR<Prisma.MeetingBookingNullableScalarRelationFilter, Prisma.MeetingBookingWhereInput> | null
   auditAnalysis?: Prisma.XOR<Prisma.AuditAnalysisNullableScalarRelationFilter, Prisma.AuditAnalysisWhereInput> | null
   proposals?: Prisma.ProposalListRelationFilter
+  baseOffers?: Prisma.BaseOfferListRelationFilter
 }
 
 export type SubmissionOrderByWithRelationInput = {
@@ -225,6 +226,7 @@ export type SubmissionOrderByWithRelationInput = {
   meetingBooking?: Prisma.MeetingBookingOrderByWithRelationInput
   auditAnalysis?: Prisma.AuditAnalysisOrderByWithRelationInput
   proposals?: Prisma.ProposalOrderByRelationAggregateInput
+  baseOffers?: Prisma.BaseOfferOrderByRelationAggregateInput
 }
 
 export type SubmissionWhereUniqueInput = Prisma.AtLeast<{
@@ -245,6 +247,7 @@ export type SubmissionWhereUniqueInput = Prisma.AtLeast<{
   meetingBooking?: Prisma.XOR<Prisma.MeetingBookingNullableScalarRelationFilter, Prisma.MeetingBookingWhereInput> | null
   auditAnalysis?: Prisma.XOR<Prisma.AuditAnalysisNullableScalarRelationFilter, Prisma.AuditAnalysisWhereInput> | null
   proposals?: Prisma.ProposalListRelationFilter
+  baseOffers?: Prisma.BaseOfferListRelationFilter
 }, "id">
 
 export type SubmissionOrderByWithAggregationInput = {
@@ -289,6 +292,7 @@ export type SubmissionCreateInput = {
   meetingBooking?: Prisma.MeetingBookingCreateNestedOneWithoutSubmissionInput
   auditAnalysis?: Prisma.AuditAnalysisCreateNestedOneWithoutSubmissionInput
   proposals?: Prisma.ProposalCreateNestedManyWithoutSubmissionInput
+  baseOffers?: Prisma.BaseOfferCreateNestedManyWithoutSubmissionInput
 }
 
 export type SubmissionUncheckedCreateInput = {
@@ -305,6 +309,7 @@ export type SubmissionUncheckedCreateInput = {
   meetingBooking?: Prisma.MeetingBookingUncheckedCreateNestedOneWithoutSubmissionInput
   auditAnalysis?: Prisma.AuditAnalysisUncheckedCreateNestedOneWithoutSubmissionInput
   proposals?: Prisma.ProposalUncheckedCreateNestedManyWithoutSubmissionInput
+  baseOffers?: Prisma.BaseOfferUncheckedCreateNestedManyWithoutSubmissionInput
 }
 
 export type SubmissionUpdateInput = {
@@ -321,6 +326,7 @@ export type SubmissionUpdateInput = {
   meetingBooking?: Prisma.MeetingBookingUpdateOneWithoutSubmissionNestedInput
   auditAnalysis?: Prisma.AuditAnalysisUpdateOneWithoutSubmissionNestedInput
   proposals?: Prisma.ProposalUpdateManyWithoutSubmissionNestedInput
+  baseOffers?: Prisma.BaseOfferUpdateManyWithoutSubmissionNestedInput
 }
 
 export type SubmissionUncheckedUpdateInput = {
@@ -337,6 +343,7 @@ export type SubmissionUncheckedUpdateInput = {
   meetingBooking?: Prisma.MeetingBookingUncheckedUpdateOneWithoutSubmissionNestedInput
   auditAnalysis?: Prisma.AuditAnalysisUncheckedUpdateOneWithoutSubmissionNestedInput
   proposals?: Prisma.ProposalUncheckedUpdateManyWithoutSubmissionNestedInput
+  baseOffers?: Prisma.BaseOfferUncheckedUpdateManyWithoutSubmissionNestedInput
 }
 
 export type SubmissionCreateManyInput = {
@@ -488,6 +495,22 @@ export type SubmissionUpdateOneWithoutProposalsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.SubmissionUpdateToOneWithWhereWithoutProposalsInput, Prisma.SubmissionUpdateWithoutProposalsInput>, Prisma.SubmissionUncheckedUpdateWithoutProposalsInput>
 }
 
+export type SubmissionCreateNestedOneWithoutBaseOffersInput = {
+  create?: Prisma.XOR<Prisma.SubmissionCreateWithoutBaseOffersInput, Prisma.SubmissionUncheckedCreateWithoutBaseOffersInput>
+  connectOrCreate?: Prisma.SubmissionCreateOrConnectWithoutBaseOffersInput
+  connect?: Prisma.SubmissionWhereUniqueInput
+}
+
+export type SubmissionUpdateOneWithoutBaseOffersNestedInput = {
+  create?: Prisma.XOR<Prisma.SubmissionCreateWithoutBaseOffersInput, Prisma.SubmissionUncheckedCreateWithoutBaseOffersInput>
+  connectOrCreate?: Prisma.SubmissionCreateOrConnectWithoutBaseOffersInput
+  upsert?: Prisma.SubmissionUpsertWithoutBaseOffersInput
+  disconnect?: Prisma.SubmissionWhereInput | boolean
+  delete?: Prisma.SubmissionWhereInput | boolean
+  connect?: Prisma.SubmissionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.SubmissionUpdateToOneWithWhereWithoutBaseOffersInput, Prisma.SubmissionUpdateWithoutBaseOffersInput>, Prisma.SubmissionUncheckedUpdateWithoutBaseOffersInput>
+}
+
 export type SubmissionCreateNestedOneWithoutNotificationsInput = {
   create?: Prisma.XOR<Prisma.SubmissionCreateWithoutNotificationsInput, Prisma.SubmissionUncheckedCreateWithoutNotificationsInput>
   connectOrCreate?: Prisma.SubmissionCreateOrConnectWithoutNotificationsInput
@@ -563,6 +586,7 @@ export type SubmissionCreateWithoutLeadInput = {
   meetingBooking?: Prisma.MeetingBookingCreateNestedOneWithoutSubmissionInput
   auditAnalysis?: Prisma.AuditAnalysisCreateNestedOneWithoutSubmissionInput
   proposals?: Prisma.ProposalCreateNestedManyWithoutSubmissionInput
+  baseOffers?: Prisma.BaseOfferCreateNestedManyWithoutSubmissionInput
 }
 
 export type SubmissionUncheckedCreateWithoutLeadInput = {
@@ -578,6 +602,7 @@ export type SubmissionUncheckedCreateWithoutLeadInput = {
   meetingBooking?: Prisma.MeetingBookingUncheckedCreateNestedOneWithoutSubmissionInput
   auditAnalysis?: Prisma.AuditAnalysisUncheckedCreateNestedOneWithoutSubmissionInput
   proposals?: Prisma.ProposalUncheckedCreateNestedManyWithoutSubmissionInput
+  baseOffers?: Prisma.BaseOfferUncheckedCreateNestedManyWithoutSubmissionInput
 }
 
 export type SubmissionCreateOrConnectWithoutLeadInput = {
@@ -633,6 +658,7 @@ export type SubmissionCreateWithoutProposalsInput = {
   emailLogs?: Prisma.EmailLogCreateNestedManyWithoutSubmissionInput
   meetingBooking?: Prisma.MeetingBookingCreateNestedOneWithoutSubmissionInput
   auditAnalysis?: Prisma.AuditAnalysisCreateNestedOneWithoutSubmissionInput
+  baseOffers?: Prisma.BaseOfferCreateNestedManyWithoutSubmissionInput
 }
 
 export type SubmissionUncheckedCreateWithoutProposalsInput = {
@@ -648,6 +674,7 @@ export type SubmissionUncheckedCreateWithoutProposalsInput = {
   emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutSubmissionInput
   meetingBooking?: Prisma.MeetingBookingUncheckedCreateNestedOneWithoutSubmissionInput
   auditAnalysis?: Prisma.AuditAnalysisUncheckedCreateNestedOneWithoutSubmissionInput
+  baseOffers?: Prisma.BaseOfferUncheckedCreateNestedManyWithoutSubmissionInput
 }
 
 export type SubmissionCreateOrConnectWithoutProposalsInput = {
@@ -679,6 +706,7 @@ export type SubmissionUpdateWithoutProposalsInput = {
   emailLogs?: Prisma.EmailLogUpdateManyWithoutSubmissionNestedInput
   meetingBooking?: Prisma.MeetingBookingUpdateOneWithoutSubmissionNestedInput
   auditAnalysis?: Prisma.AuditAnalysisUpdateOneWithoutSubmissionNestedInput
+  baseOffers?: Prisma.BaseOfferUpdateManyWithoutSubmissionNestedInput
 }
 
 export type SubmissionUncheckedUpdateWithoutProposalsInput = {
@@ -694,6 +722,87 @@ export type SubmissionUncheckedUpdateWithoutProposalsInput = {
   emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutSubmissionNestedInput
   meetingBooking?: Prisma.MeetingBookingUncheckedUpdateOneWithoutSubmissionNestedInput
   auditAnalysis?: Prisma.AuditAnalysisUncheckedUpdateOneWithoutSubmissionNestedInput
+  baseOffers?: Prisma.BaseOfferUncheckedUpdateManyWithoutSubmissionNestedInput
+}
+
+export type SubmissionCreateWithoutBaseOffersInput = {
+  id?: string
+  type: $Enums.SubmissionType
+  status?: $Enums.SubmissionStatus
+  payload: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lead: Prisma.LeadCreateNestedOneWithoutSubmissionsInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRelatedSubmissionInput
+  emailLogs?: Prisma.EmailLogCreateNestedManyWithoutSubmissionInput
+  meetingBooking?: Prisma.MeetingBookingCreateNestedOneWithoutSubmissionInput
+  auditAnalysis?: Prisma.AuditAnalysisCreateNestedOneWithoutSubmissionInput
+  proposals?: Prisma.ProposalCreateNestedManyWithoutSubmissionInput
+}
+
+export type SubmissionUncheckedCreateWithoutBaseOffersInput = {
+  id?: string
+  leadId: string
+  type: $Enums.SubmissionType
+  status?: $Enums.SubmissionStatus
+  payload: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRelatedSubmissionInput
+  emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutSubmissionInput
+  meetingBooking?: Prisma.MeetingBookingUncheckedCreateNestedOneWithoutSubmissionInput
+  auditAnalysis?: Prisma.AuditAnalysisUncheckedCreateNestedOneWithoutSubmissionInput
+  proposals?: Prisma.ProposalUncheckedCreateNestedManyWithoutSubmissionInput
+}
+
+export type SubmissionCreateOrConnectWithoutBaseOffersInput = {
+  where: Prisma.SubmissionWhereUniqueInput
+  create: Prisma.XOR<Prisma.SubmissionCreateWithoutBaseOffersInput, Prisma.SubmissionUncheckedCreateWithoutBaseOffersInput>
+}
+
+export type SubmissionUpsertWithoutBaseOffersInput = {
+  update: Prisma.XOR<Prisma.SubmissionUpdateWithoutBaseOffersInput, Prisma.SubmissionUncheckedUpdateWithoutBaseOffersInput>
+  create: Prisma.XOR<Prisma.SubmissionCreateWithoutBaseOffersInput, Prisma.SubmissionUncheckedCreateWithoutBaseOffersInput>
+  where?: Prisma.SubmissionWhereInput
+}
+
+export type SubmissionUpdateToOneWithWhereWithoutBaseOffersInput = {
+  where?: Prisma.SubmissionWhereInput
+  data: Prisma.XOR<Prisma.SubmissionUpdateWithoutBaseOffersInput, Prisma.SubmissionUncheckedUpdateWithoutBaseOffersInput>
+}
+
+export type SubmissionUpdateWithoutBaseOffersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumSubmissionTypeFieldUpdateOperationsInput | $Enums.SubmissionType
+  status?: Prisma.EnumSubmissionStatusFieldUpdateOperationsInput | $Enums.SubmissionStatus
+  payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lead?: Prisma.LeadUpdateOneRequiredWithoutSubmissionsNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRelatedSubmissionNestedInput
+  emailLogs?: Prisma.EmailLogUpdateManyWithoutSubmissionNestedInput
+  meetingBooking?: Prisma.MeetingBookingUpdateOneWithoutSubmissionNestedInput
+  auditAnalysis?: Prisma.AuditAnalysisUpdateOneWithoutSubmissionNestedInput
+  proposals?: Prisma.ProposalUpdateManyWithoutSubmissionNestedInput
+}
+
+export type SubmissionUncheckedUpdateWithoutBaseOffersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  leadId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumSubmissionTypeFieldUpdateOperationsInput | $Enums.SubmissionType
+  status?: Prisma.EnumSubmissionStatusFieldUpdateOperationsInput | $Enums.SubmissionStatus
+  payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRelatedSubmissionNestedInput
+  emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutSubmissionNestedInput
+  meetingBooking?: Prisma.MeetingBookingUncheckedUpdateOneWithoutSubmissionNestedInput
+  auditAnalysis?: Prisma.AuditAnalysisUncheckedUpdateOneWithoutSubmissionNestedInput
+  proposals?: Prisma.ProposalUncheckedUpdateManyWithoutSubmissionNestedInput
 }
 
 export type SubmissionCreateWithoutNotificationsInput = {
@@ -709,6 +818,7 @@ export type SubmissionCreateWithoutNotificationsInput = {
   meetingBooking?: Prisma.MeetingBookingCreateNestedOneWithoutSubmissionInput
   auditAnalysis?: Prisma.AuditAnalysisCreateNestedOneWithoutSubmissionInput
   proposals?: Prisma.ProposalCreateNestedManyWithoutSubmissionInput
+  baseOffers?: Prisma.BaseOfferCreateNestedManyWithoutSubmissionInput
 }
 
 export type SubmissionUncheckedCreateWithoutNotificationsInput = {
@@ -724,6 +834,7 @@ export type SubmissionUncheckedCreateWithoutNotificationsInput = {
   meetingBooking?: Prisma.MeetingBookingUncheckedCreateNestedOneWithoutSubmissionInput
   auditAnalysis?: Prisma.AuditAnalysisUncheckedCreateNestedOneWithoutSubmissionInput
   proposals?: Prisma.ProposalUncheckedCreateNestedManyWithoutSubmissionInput
+  baseOffers?: Prisma.BaseOfferUncheckedCreateNestedManyWithoutSubmissionInput
 }
 
 export type SubmissionCreateOrConnectWithoutNotificationsInput = {
@@ -755,6 +866,7 @@ export type SubmissionUpdateWithoutNotificationsInput = {
   meetingBooking?: Prisma.MeetingBookingUpdateOneWithoutSubmissionNestedInput
   auditAnalysis?: Prisma.AuditAnalysisUpdateOneWithoutSubmissionNestedInput
   proposals?: Prisma.ProposalUpdateManyWithoutSubmissionNestedInput
+  baseOffers?: Prisma.BaseOfferUpdateManyWithoutSubmissionNestedInput
 }
 
 export type SubmissionUncheckedUpdateWithoutNotificationsInput = {
@@ -770,6 +882,7 @@ export type SubmissionUncheckedUpdateWithoutNotificationsInput = {
   meetingBooking?: Prisma.MeetingBookingUncheckedUpdateOneWithoutSubmissionNestedInput
   auditAnalysis?: Prisma.AuditAnalysisUncheckedUpdateOneWithoutSubmissionNestedInput
   proposals?: Prisma.ProposalUncheckedUpdateManyWithoutSubmissionNestedInput
+  baseOffers?: Prisma.BaseOfferUncheckedUpdateManyWithoutSubmissionNestedInput
 }
 
 export type SubmissionCreateWithoutEmailLogsInput = {
@@ -785,6 +898,7 @@ export type SubmissionCreateWithoutEmailLogsInput = {
   meetingBooking?: Prisma.MeetingBookingCreateNestedOneWithoutSubmissionInput
   auditAnalysis?: Prisma.AuditAnalysisCreateNestedOneWithoutSubmissionInput
   proposals?: Prisma.ProposalCreateNestedManyWithoutSubmissionInput
+  baseOffers?: Prisma.BaseOfferCreateNestedManyWithoutSubmissionInput
 }
 
 export type SubmissionUncheckedCreateWithoutEmailLogsInput = {
@@ -800,6 +914,7 @@ export type SubmissionUncheckedCreateWithoutEmailLogsInput = {
   meetingBooking?: Prisma.MeetingBookingUncheckedCreateNestedOneWithoutSubmissionInput
   auditAnalysis?: Prisma.AuditAnalysisUncheckedCreateNestedOneWithoutSubmissionInput
   proposals?: Prisma.ProposalUncheckedCreateNestedManyWithoutSubmissionInput
+  baseOffers?: Prisma.BaseOfferUncheckedCreateNestedManyWithoutSubmissionInput
 }
 
 export type SubmissionCreateOrConnectWithoutEmailLogsInput = {
@@ -831,6 +946,7 @@ export type SubmissionUpdateWithoutEmailLogsInput = {
   meetingBooking?: Prisma.MeetingBookingUpdateOneWithoutSubmissionNestedInput
   auditAnalysis?: Prisma.AuditAnalysisUpdateOneWithoutSubmissionNestedInput
   proposals?: Prisma.ProposalUpdateManyWithoutSubmissionNestedInput
+  baseOffers?: Prisma.BaseOfferUpdateManyWithoutSubmissionNestedInput
 }
 
 export type SubmissionUncheckedUpdateWithoutEmailLogsInput = {
@@ -846,6 +962,7 @@ export type SubmissionUncheckedUpdateWithoutEmailLogsInput = {
   meetingBooking?: Prisma.MeetingBookingUncheckedUpdateOneWithoutSubmissionNestedInput
   auditAnalysis?: Prisma.AuditAnalysisUncheckedUpdateOneWithoutSubmissionNestedInput
   proposals?: Prisma.ProposalUncheckedUpdateManyWithoutSubmissionNestedInput
+  baseOffers?: Prisma.BaseOfferUncheckedUpdateManyWithoutSubmissionNestedInput
 }
 
 export type SubmissionCreateWithoutMeetingBookingInput = {
@@ -861,6 +978,7 @@ export type SubmissionCreateWithoutMeetingBookingInput = {
   emailLogs?: Prisma.EmailLogCreateNestedManyWithoutSubmissionInput
   auditAnalysis?: Prisma.AuditAnalysisCreateNestedOneWithoutSubmissionInput
   proposals?: Prisma.ProposalCreateNestedManyWithoutSubmissionInput
+  baseOffers?: Prisma.BaseOfferCreateNestedManyWithoutSubmissionInput
 }
 
 export type SubmissionUncheckedCreateWithoutMeetingBookingInput = {
@@ -876,6 +994,7 @@ export type SubmissionUncheckedCreateWithoutMeetingBookingInput = {
   emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutSubmissionInput
   auditAnalysis?: Prisma.AuditAnalysisUncheckedCreateNestedOneWithoutSubmissionInput
   proposals?: Prisma.ProposalUncheckedCreateNestedManyWithoutSubmissionInput
+  baseOffers?: Prisma.BaseOfferUncheckedCreateNestedManyWithoutSubmissionInput
 }
 
 export type SubmissionCreateOrConnectWithoutMeetingBookingInput = {
@@ -907,6 +1026,7 @@ export type SubmissionUpdateWithoutMeetingBookingInput = {
   emailLogs?: Prisma.EmailLogUpdateManyWithoutSubmissionNestedInput
   auditAnalysis?: Prisma.AuditAnalysisUpdateOneWithoutSubmissionNestedInput
   proposals?: Prisma.ProposalUpdateManyWithoutSubmissionNestedInput
+  baseOffers?: Prisma.BaseOfferUpdateManyWithoutSubmissionNestedInput
 }
 
 export type SubmissionUncheckedUpdateWithoutMeetingBookingInput = {
@@ -922,6 +1042,7 @@ export type SubmissionUncheckedUpdateWithoutMeetingBookingInput = {
   emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutSubmissionNestedInput
   auditAnalysis?: Prisma.AuditAnalysisUncheckedUpdateOneWithoutSubmissionNestedInput
   proposals?: Prisma.ProposalUncheckedUpdateManyWithoutSubmissionNestedInput
+  baseOffers?: Prisma.BaseOfferUncheckedUpdateManyWithoutSubmissionNestedInput
 }
 
 export type SubmissionCreateWithoutAuditAnalysisInput = {
@@ -937,6 +1058,7 @@ export type SubmissionCreateWithoutAuditAnalysisInput = {
   emailLogs?: Prisma.EmailLogCreateNestedManyWithoutSubmissionInput
   meetingBooking?: Prisma.MeetingBookingCreateNestedOneWithoutSubmissionInput
   proposals?: Prisma.ProposalCreateNestedManyWithoutSubmissionInput
+  baseOffers?: Prisma.BaseOfferCreateNestedManyWithoutSubmissionInput
 }
 
 export type SubmissionUncheckedCreateWithoutAuditAnalysisInput = {
@@ -952,6 +1074,7 @@ export type SubmissionUncheckedCreateWithoutAuditAnalysisInput = {
   emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutSubmissionInput
   meetingBooking?: Prisma.MeetingBookingUncheckedCreateNestedOneWithoutSubmissionInput
   proposals?: Prisma.ProposalUncheckedCreateNestedManyWithoutSubmissionInput
+  baseOffers?: Prisma.BaseOfferUncheckedCreateNestedManyWithoutSubmissionInput
 }
 
 export type SubmissionCreateOrConnectWithoutAuditAnalysisInput = {
@@ -983,6 +1106,7 @@ export type SubmissionUpdateWithoutAuditAnalysisInput = {
   emailLogs?: Prisma.EmailLogUpdateManyWithoutSubmissionNestedInput
   meetingBooking?: Prisma.MeetingBookingUpdateOneWithoutSubmissionNestedInput
   proposals?: Prisma.ProposalUpdateManyWithoutSubmissionNestedInput
+  baseOffers?: Prisma.BaseOfferUpdateManyWithoutSubmissionNestedInput
 }
 
 export type SubmissionUncheckedUpdateWithoutAuditAnalysisInput = {
@@ -998,6 +1122,7 @@ export type SubmissionUncheckedUpdateWithoutAuditAnalysisInput = {
   emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutSubmissionNestedInput
   meetingBooking?: Prisma.MeetingBookingUncheckedUpdateOneWithoutSubmissionNestedInput
   proposals?: Prisma.ProposalUncheckedUpdateManyWithoutSubmissionNestedInput
+  baseOffers?: Prisma.BaseOfferUncheckedUpdateManyWithoutSubmissionNestedInput
 }
 
 export type SubmissionCreateManyLeadInput = {
@@ -1023,6 +1148,7 @@ export type SubmissionUpdateWithoutLeadInput = {
   meetingBooking?: Prisma.MeetingBookingUpdateOneWithoutSubmissionNestedInput
   auditAnalysis?: Prisma.AuditAnalysisUpdateOneWithoutSubmissionNestedInput
   proposals?: Prisma.ProposalUpdateManyWithoutSubmissionNestedInput
+  baseOffers?: Prisma.BaseOfferUpdateManyWithoutSubmissionNestedInput
 }
 
 export type SubmissionUncheckedUpdateWithoutLeadInput = {
@@ -1038,6 +1164,7 @@ export type SubmissionUncheckedUpdateWithoutLeadInput = {
   meetingBooking?: Prisma.MeetingBookingUncheckedUpdateOneWithoutSubmissionNestedInput
   auditAnalysis?: Prisma.AuditAnalysisUncheckedUpdateOneWithoutSubmissionNestedInput
   proposals?: Prisma.ProposalUncheckedUpdateManyWithoutSubmissionNestedInput
+  baseOffers?: Prisma.BaseOfferUncheckedUpdateManyWithoutSubmissionNestedInput
 }
 
 export type SubmissionUncheckedUpdateManyWithoutLeadInput = {
@@ -1059,12 +1186,14 @@ export type SubmissionCountOutputType = {
   notifications: number
   emailLogs: number
   proposals: number
+  baseOffers: number
 }
 
 export type SubmissionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   notifications?: boolean | SubmissionCountOutputTypeCountNotificationsArgs
   emailLogs?: boolean | SubmissionCountOutputTypeCountEmailLogsArgs
   proposals?: boolean | SubmissionCountOutputTypeCountProposalsArgs
+  baseOffers?: boolean | SubmissionCountOutputTypeCountBaseOffersArgs
 }
 
 /**
@@ -1098,6 +1227,13 @@ export type SubmissionCountOutputTypeCountProposalsArgs<ExtArgs extends runtime.
   where?: Prisma.ProposalWhereInput
 }
 
+/**
+ * SubmissionCountOutputType without action
+ */
+export type SubmissionCountOutputTypeCountBaseOffersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BaseOfferWhereInput
+}
+
 
 export type SubmissionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1114,6 +1250,7 @@ export type SubmissionSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   meetingBooking?: boolean | Prisma.Submission$meetingBookingArgs<ExtArgs>
   auditAnalysis?: boolean | Prisma.Submission$auditAnalysisArgs<ExtArgs>
   proposals?: boolean | Prisma.Submission$proposalsArgs<ExtArgs>
+  baseOffers?: boolean | Prisma.Submission$baseOffersArgs<ExtArgs>
   _count?: boolean | Prisma.SubmissionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["submission"]>
 
@@ -1160,6 +1297,7 @@ export type SubmissionInclude<ExtArgs extends runtime.Types.Extensions.InternalA
   meetingBooking?: boolean | Prisma.Submission$meetingBookingArgs<ExtArgs>
   auditAnalysis?: boolean | Prisma.Submission$auditAnalysisArgs<ExtArgs>
   proposals?: boolean | Prisma.Submission$proposalsArgs<ExtArgs>
+  baseOffers?: boolean | Prisma.Submission$baseOffersArgs<ExtArgs>
   _count?: boolean | Prisma.SubmissionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type SubmissionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1178,6 +1316,7 @@ export type $SubmissionPayload<ExtArgs extends runtime.Types.Extensions.Internal
     meetingBooking: Prisma.$MeetingBookingPayload<ExtArgs> | null
     auditAnalysis: Prisma.$AuditAnalysisPayload<ExtArgs> | null
     proposals: Prisma.$ProposalPayload<ExtArgs>[]
+    baseOffers: Prisma.$BaseOfferPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1588,6 +1727,7 @@ export interface Prisma__SubmissionClient<T, Null = never, ExtArgs extends runti
   meetingBooking<T extends Prisma.Submission$meetingBookingArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Submission$meetingBookingArgs<ExtArgs>>): Prisma.Prisma__MeetingBookingClient<runtime.Types.Result.GetResult<Prisma.$MeetingBookingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   auditAnalysis<T extends Prisma.Submission$auditAnalysisArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Submission$auditAnalysisArgs<ExtArgs>>): Prisma.Prisma__AuditAnalysisClient<runtime.Types.Result.GetResult<Prisma.$AuditAnalysisPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   proposals<T extends Prisma.Submission$proposalsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Submission$proposalsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProposalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  baseOffers<T extends Prisma.Submission$baseOffersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Submission$baseOffersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BaseOfferPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2133,6 +2273,30 @@ export type Submission$proposalsArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.ProposalScalarFieldEnum | Prisma.ProposalScalarFieldEnum[]
+}
+
+/**
+ * Submission.baseOffers
+ */
+export type Submission$baseOffersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BaseOffer
+   */
+  select?: Prisma.BaseOfferSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BaseOffer
+   */
+  omit?: Prisma.BaseOfferOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BaseOfferInclude<ExtArgs> | null
+  where?: Prisma.BaseOfferWhereInput
+  orderBy?: Prisma.BaseOfferOrderByWithRelationInput | Prisma.BaseOfferOrderByWithRelationInput[]
+  cursor?: Prisma.BaseOfferWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BaseOfferScalarFieldEnum | Prisma.BaseOfferScalarFieldEnum[]
 }
 
 /**

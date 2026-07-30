@@ -156,6 +156,8 @@ export function SubmissionTypeBadge({ type }: { type: SubmissionType }) {
     AUDIT_REQUEST: 'blue',
     CUSTOM_AUTOMATION_REQUEST: 'purple',
     MEETING_REQUEST: 'cyan',
+    PRE_MEETING_INTAKE: 'blue',
+    LEGAL_DATA_INTAKE: 'green',
   };
 
   return <AdminBadge tone={toneByType[type]}>{formatSubmissionType(type)}</AdminBadge>;

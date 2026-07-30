@@ -41,6 +41,8 @@ model Lead {
   auditAnalyses   AuditAnalysis[]
   leadActions     LeadAction[]
   proposals       Proposal[]
+  baseOffers      BaseOffer[]
+  manualIntakeInvites ManualIntakeInvite[]
   contracts       Contract[]
 
   @@index([normalizedCompany])
@@ -68,6 +70,7 @@ model Submission {
   meetingBooking MeetingBooking?
   auditAnalysis  AuditAnalysis?
   proposals      Proposal[]
+  baseOffers     BaseOffer[]
 
   @@index([leadId])
   @@index([type])
@@ -146,7 +149,65 @@ model Proposal {
   @@index([status])
   @@index([createdAt])
 }
+/// Internal base offer prepared from manual commercial intake before discovery.
+model BaseOffer {
+  id                      String          @id @default(cuid())
+  leadId                  String
+  submissionId            String?
+  status                  BaseOfferStatus @default(INTERNAL_DRAFT)
+  problemSummary          String?
+  processToAutomate       String?
+  suggestedSolution       String?
+  recommendedModules      Json?
+  automationOpportunities Json?
+  toolsMentioned          String?
+  estimatedScope          String?
+  initialPriceRange       String?
+  pricingRationale        String?
+  questionsForDiscovery   Json?
+  risksOrMissingInfo      Json?
+  nextSteps               String?
+  metadata                Json?
+  createdById             String?
+  createdAt               DateTime        @default(now())
+  updatedAt               DateTime        @updatedAt
 
+  lead       Lead        @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  submission Submission? @relation(fields: [submissionId], references: [id], onDelete: SetNull)
+
+  @@index([leadId])
+  @@index([submissionId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+/// Tokenized manual request sent by Admin before a pre-meeting intake submission.
+model ManualIntakeInvite {
+  id              String                   @id @default(cuid())
+  leadId          String
+  tokenHash       String                   @unique
+  email           String
+  contactName     String
+  companyName     String?
+  source          String?
+  note            String?
+  meetingAt       DateTime?
+  meetingLocation String?
+  status          ManualIntakeInviteStatus @default(DRAFT)
+  sentAt          DateTime?
+  submittedAt     DateTime?
+  expiresAt       DateTime?
+  createdAt       DateTime                 @default(now())
+  updatedAt       DateTime                 @updatedAt
+
+  lead Lead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([leadId])
+  @@index([email])
+  @@index([status])
+  @@index([expiresAt])
+  @@index([createdAt])
+}
 /// Internal notification prepared for future back-office and sales workflows.
 model Notification {
   id                  String             @id @default(cuid())
@@ -626,6 +687,25 @@ enum SubmissionType {
   AUDIT_REQUEST
   CUSTOM_AUTOMATION_REQUEST
   MEETING_REQUEST
+  PRE_MEETING_INTAKE
+  LEGAL_DATA_INTAKE
+}
+
+/// Lifecycle for tokenized manual pre-meeting requests sent by Admin.
+enum ManualIntakeInviteStatus {
+  DRAFT
+  SENT
+  SUBMITTED
+  EXPIRED
+  CANCELLED
+}
+
+/// Lifecycle for an internal base offer generated from manual intake.
+enum BaseOfferStatus {
+  INTERNAL_DRAFT
+  VALIDATED
+  CONVERTED_TO_PROPOSAL
+  ARCHIVED
 }
 
 /// Operational lifecycle for a submitted request.

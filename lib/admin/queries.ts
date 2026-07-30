@@ -359,6 +359,7 @@ export async function getLeadById(id: string) {
       activities: { orderBy: { createdAt: 'desc' } },
       notifications: { orderBy: { createdAt: 'desc' } },
       leadActions: { orderBy: [{ status: 'asc' }, { dueAt: 'asc' }, { createdAt: 'desc' }] },
+      baseOffers: { orderBy: { createdAt: 'desc' } },
     },
   });
 

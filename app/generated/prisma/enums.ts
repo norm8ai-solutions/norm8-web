@@ -12,10 +12,33 @@
 export const SubmissionType = {
   AUDIT_REQUEST: 'AUDIT_REQUEST',
   CUSTOM_AUTOMATION_REQUEST: 'CUSTOM_AUTOMATION_REQUEST',
-  MEETING_REQUEST: 'MEETING_REQUEST'
+  MEETING_REQUEST: 'MEETING_REQUEST',
+  PRE_MEETING_INTAKE: 'PRE_MEETING_INTAKE',
+  LEGAL_DATA_INTAKE: 'LEGAL_DATA_INTAKE'
 } as const
 
 export type SubmissionType = (typeof SubmissionType)[keyof typeof SubmissionType]
+
+
+export const ManualIntakeInviteStatus = {
+  DRAFT: 'DRAFT',
+  SENT: 'SENT',
+  SUBMITTED: 'SUBMITTED',
+  EXPIRED: 'EXPIRED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type ManualIntakeInviteStatus = (typeof ManualIntakeInviteStatus)[keyof typeof ManualIntakeInviteStatus]
+
+
+export const BaseOfferStatus = {
+  INTERNAL_DRAFT: 'INTERNAL_DRAFT',
+  VALIDATED: 'VALIDATED',
+  CONVERTED_TO_PROPOSAL: 'CONVERTED_TO_PROPOSAL',
+  ARCHIVED: 'ARCHIVED'
+} as const
+
+export type BaseOfferStatus = (typeof BaseOfferStatus)[keyof typeof BaseOfferStatus]
 
 
 export const SubmissionStatus = {

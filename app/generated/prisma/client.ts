@@ -67,6 +67,16 @@ export type LeadAction = Prisma.LeadActionModel
  */
 export type Proposal = Prisma.ProposalModel
 /**
+ * Model BaseOffer
+ * Internal base offer prepared from manual commercial intake before discovery.
+ */
+export type BaseOffer = Prisma.BaseOfferModel
+/**
+ * Model ManualIntakeInvite
+ * Tokenized manual request sent by Admin before a pre-meeting intake submission.
+ */
+export type ManualIntakeInvite = Prisma.ManualIntakeInviteModel
+/**
  * Model Notification
  * Internal notification prepared for future back-office and sales workflows.
  */
