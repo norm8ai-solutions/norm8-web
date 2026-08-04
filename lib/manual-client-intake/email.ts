@@ -6,6 +6,10 @@ import { render } from '@react-email/render';
 import { Prisma } from '@/app/generated/prisma/client';
 import { prisma } from '@/lib/db/prisma';
 import { getEmailProviderConfigStatus, getResendClient } from '@/lib/email/resend';
+import PreMeetingInviteEmail, {
+  PRE_MEETING_INVITE_SUBJECT,
+  buildPreMeetingInvitePlainText,
+} from '@/lib/email/templates/PreMeetingInviteEmail';
 
 type ManualIntakeEmailKind = 'preMeeting' | 'legalData';
 
@@ -156,16 +160,6 @@ async function sendManualEmailJob(input: ManualIntakeEmailInput, job: ManualEmai
 
   try {
     const resend = getResendClient();
-    const html = await render(createElement(PreMeetingInviteEmail, {
-      contactName: input.contactName,
-      companyName: input.companyName,
-      formUrl: input.formUrl,
-    }));
-    const text = buildPreMeetingInvitePlainText({
-      contactName: input.contactName,
-      companyName: input.companyName,
-      formUrl: input.formUrl,
-    });
     const result = await resend.emails.send({
       from: providerConfig.from,
       to: job.to,

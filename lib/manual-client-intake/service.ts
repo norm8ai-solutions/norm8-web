@@ -10,6 +10,8 @@ import { sendManualIntakeEmails, sendPreMeetingInviteEmail } from './email';
 const requiredText = (label: string) => z.string().trim().min(1, `${label} é obrigatório.`);
 const optionalText = z.string().trim().optional().transform((value) => value || undefined);
 const emailSchema = z.string().trim().email('Insira um email válido.').toLowerCase();
+const invalidPhoneMessage = 'Insira um número de telefone válido.';
+const pastMeetingAtMessage = 'A data/hora combinada não pode estar no passado.';
 const websiteOrSocialSchema = z.string().trim().optional().transform((value) => value || undefined);
 const consentSchema = z.literal('on', { message: 'O consentimento é obrigatório.' });
 const honeypotSchema = z.string().trim().max(0, 'Pedido inválido.').optional().or(z.literal(''));
@@ -41,7 +43,28 @@ export const preMeetingInviteRequestSchema = z.object({
   source: requiredText('Origem'),
   note: optionalText,
   meetingAt: optionalText,
-  meetingLocation: optionalText,
+}).superRefine((value, context) => {
+  if (value.phone && !isPreMeetingInvitePhoneValid(value.phone)) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: invalidPhoneMessage,
+      path: ['phone'],
+    });
+  }
+
+  if (!value.meetingAt) {
+    return;
+  }
+
+  const meetingAt = new Date(value.meetingAt);
+
+  if (!Number.isFinite(meetingAt.getTime()) || meetingAt <= new Date()) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: pastMeetingAtMessage,
+      path: ['meetingAt'],
+    });
+  }
 });
 export const legalDataIntakeSchema = z.object({
   token: optionalText,
@@ -144,7 +167,7 @@ export async function createPreMeetingInviteRequest(input: PreMeetingInviteReque
     const token = randomBytes(32).toString('base64url');
     const tokenHash = hashToken(token);
     const expiresAt = addDays(new Date(), 30);
-    const formUrl = getPreMeetingFormUrl();
+    const formUrl = getPreMeetingFormUrl(token);
     const meetingAt = parseOptionalDate(input.meetingAt);
 
     const result = await prisma.$transaction(async (tx) => {
@@ -188,7 +211,6 @@ export async function createPreMeetingInviteRequest(input: PreMeetingInviteReque
           source: input.source,
           note: input.note,
           meetingAt,
-          meetingLocation: input.meetingLocation,
           expiresAt,
           status: 'DRAFT',
         },
@@ -203,7 +225,6 @@ export async function createPreMeetingInviteRequest(input: PreMeetingInviteReque
             inviteId: invite.id,
             source: input.source,
             meetingAt: meetingAt?.toISOString() ?? null,
-            meetingLocation: input.meetingLocation ?? null,
           },
         },
       });
@@ -853,6 +874,43 @@ function addDays(date: Date, days: number): Date {
   return next;
 }
 
+
+function isPreMeetingInvitePhoneValid(value: string): boolean {
+  const normalized = value.trim();
+
+  if (!normalized) {
+    return true;
+  }
+
+  const countries = [
+    { dialCode: '351', nationalDigits: 9 },
+    { dialCode: '34', nationalDigits: 9 },
+    { dialCode: '33', nationalDigits: 9 },
+    { dialCode: '44', nationalDigits: 10 },
+    { dialCode: '55', nationalDigits: 11 },
+    { dialCode: '1', nationalDigits: 10 },
+    { dialCode: '244', nationalDigits: 9 },
+    { dialCode: '258', nationalDigits: 9 },
+    { dialCode: '238', nationalDigits: 7 },
+    { dialCode: '245', nationalDigits: 7 },
+    { dialCode: '239', nationalDigits: 7 },
+  ];
+
+  if (!/^\+[1-9]\d{7,14}$/.test(normalized)) {
+    return false;
+  }
+
+  const digits = normalized.replace(/\D/g, '');
+  const country = countries
+    .sort((first, second) => second.dialCode.length - first.dialCode.length)
+    .find((item) => digits.startsWith(item.dialCode));
+
+  if (!country) {
+    return false;
+  }
+
+  return digits.slice(country.dialCode.length).length === country.nationalDigits;
+}
 function parseOptionalDate(value?: string): Date | undefined {
   if (!value) return undefined;
   const parsed = new Date(value);
@@ -867,15 +925,23 @@ function normalizeInviteSource(value: string): string {
   return 'MANUAL_PRE_MEETING_REQUEST';
 }
 
-function getPreMeetingFormUrl(): string {
-  return `${getAppUrl()}/clientes/pre-reuniao`;
+function getPreMeetingFormUrl(token?: string): string {
+  const url = new URL('/clientes/pre-reuniao', getAppUrl());
+  const normalizedToken = token?.trim();
+  if (normalizedToken) {
+    url.searchParams.set('token', normalizedToken);
+  }
+  return url.toString();
 }
 
 function getAppUrl(): string {
-  return (
-    process.env.NEXT_PUBLIC_APP_URL ??
+  const rawUrl =
     process.env.NEXT_PUBLIC_SITE_URL ??
-    process.env.VERCEL_PROJECT_PRODUCTION_URL?.replace(/^/, 'https://') ??
-    'http://localhost:3000'
-  ).replace(/\/$/, '');
+    process.env.PUBLIC_SITE_URL ??
+    process.env.NEXT_PUBLIC_APP_URL ??
+    process.env.VERCEL_PROJECT_PRODUCTION_URL ??
+    'http://localhost:3000';
+  const withProtocol = /^https?:\/\//i.test(rawUrl) ? rawUrl : `https://${rawUrl}`;
+
+  return withProtocol.replace(/\/$/, '');
 }

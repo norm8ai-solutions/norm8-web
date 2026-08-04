@@ -29,6 +29,8 @@ type Norm8DateTimePickerProps = {
   timeOptionsLoading?: boolean;
   emptyTimeMessage?: string;
   mode?: 'date' | 'datetime';
+  disablePast?: boolean;
+  minDateTime?: Date | string | null;
 };
 
 type PopoverPosition = {
@@ -85,6 +87,8 @@ export function Norm8DateTimePicker({
   timeOptionsLoading = false,
   emptyTimeMessage = 'Sem horários disponíveis para este dia.',
   mode = 'datetime',
+  disablePast = false,
+  minDateTime,
 }: Norm8DateTimePickerProps) {
   const generatedId = React.useId();
   const triggerId = id ?? generatedId;
@@ -103,12 +107,22 @@ export function Norm8DateTimePicker({
   const popoverRef = React.useRef<HTMLDivElement>(null);
 
   const selectedDate = isControlled ? parseDateValue(value) : internalValue;
+  const minimumDateTime = React.useMemo(() => getMinimumDateTime(disablePast, minDateTime), [disablePast, minDateTime]);
+  const minimumDay = React.useMemo(() => getStartOfDay(minimumDateTime), [minimumDateTime]);
   const normalizedTimeOptions = React.useMemo<Norm8TimeOption[]>(
     () => timeOptions ?? TIME_OPTIONS.map((time) => ({ time })),
     [timeOptions],
   );
   const selectedTime = selectedDate ? formatTimeValue(selectedDate) : '10:00';
-  const availableTimeOptions = normalizedTimeOptions.filter((option) => !option.disabled);
+  const effectiveTimeOptions = React.useMemo<Norm8TimeOption[]>(() => {
+    const day = pendingDay ?? selectedDate ?? null;
+
+    return normalizedTimeOptions.map((option) => ({
+      ...option,
+      disabled: option.disabled || isTimeOptionDisabled(option.time, day, minimumDateTime),
+    }));
+  }, [minimumDateTime, normalizedTimeOptions, pendingDay, selectedDate]);
+  const availableTimeOptions = effectiveTimeOptions.filter((option) => !option.disabled);
 
   const commitValue = React.useCallback(
     (nextValue: Date | null): void => {
@@ -228,7 +242,7 @@ export function Norm8DateTimePicker({
   };
 
   const handleDaySelect = (day?: Date): void => {
-    if (!day) {
+    if (!day || isDayDisabled(day, minimumDay)) {
       return;
     }
 
@@ -249,7 +263,7 @@ export function Norm8DateTimePicker({
   };
 
   const handleTimeSelect = (time: string): void => {
-    const option = normalizedTimeOptions.find((timeOption) => timeOption.time === time);
+    const option = effectiveTimeOptions.find((timeOption) => timeOption.time === time);
 
     if (option?.disabled) {
       return;
@@ -261,6 +275,8 @@ export function Norm8DateTimePicker({
     setStep('date');
     setPendingDay(null);
   };
+
+  const disabledDays = React.useCallback((day: Date) => isDayDisabled(day, minimumDay), [minimumDay]);
 
   const clearValue = (event: React.MouseEvent<HTMLElement>): void => {
     event.stopPropagation();
@@ -320,7 +336,7 @@ export function Norm8DateTimePicker({
                   today:
                     '[&>button]:shadow-[inset_0_0_0_1px_rgba(96,165,250,0.55)]',
                   outside: '[&>button]:text-[#536682] [&>button]:opacity-50',
-                  disabled: '[&>button]:text-[#536682] [&>button]:opacity-40',
+                  disabled: '[&>button]:cursor-not-allowed [&>button]:text-[#536682] [&>button]:opacity-35 [&>button]:hover:bg-transparent [&>button]:focus-visible:bg-transparent',
                   head_cell: cn(
                     'rounded-md text-center align-middle text-[0.75rem] font-semibold text-[#8399B8]',
                     density === 'compact' ? 'h-8 w-8' : 'h-9 w-9',
@@ -339,6 +355,7 @@ export function Norm8DateTimePicker({
                   formatCaption: formatCalendarCaptionPt,
                   formatWeekdayName: formatCalendarWeekdayPt,
                 }}
+                disabled={disabledDays}
                 locale={pt}
                 mode="single"
                 onSelect={handleDaySelect}
@@ -357,7 +374,7 @@ export function Norm8DateTimePicker({
                 {timeOptionsLoading ? <p className={'py-8 text-center text-sm text-[#8399B8]'}><LoaderCircle className={'mr-2 inline size-4 animate-spin'} />A carregar horários...</p> : null}
                 {!timeOptionsLoading && availableTimeOptions.length === 0 ? <p className={'py-8 text-center text-sm text-[#9AAAC2]'}>{emptyTimeMessage}</p> : null}
                 {!timeOptionsLoading && availableTimeOptions.length > 0 ? <div className={cn('grid w-full max-w-full min-w-0 grid-cols-3 sm:grid-cols-4', density === 'compact' ? 'gap-2' : 'gap-2.5')}>
-                  {availableTimeOptions.map((option) => {
+                  {effectiveTimeOptions.map((option) => {
                     const { disabled: optionDisabled = false, label, time } = option;
                     const selected = time === selectedTime;
 
@@ -511,3 +528,34 @@ function formatDatePt(date: Date): string {
 
 
 
+
+function getMinimumDateTime(disablePast: boolean, minDateTime?: Date | string | null): Date | null {
+  return parseDateValue(minDateTime) ?? (disablePast ? new Date() : null);
+}
+
+function getStartOfDay(date: Date | null): Date | null {
+  if (!date) {
+    return null;
+  }
+
+  const start = new Date(date);
+  start.setHours(0, 0, 0, 0);
+  return start;
+}
+
+function isDayDisabled(day: Date, minimumDay: Date | null): boolean {
+  if (!minimumDay) {
+    return false;
+  }
+
+  const dayStart = getStartOfDay(day);
+  return Boolean(dayStart && dayStart < minimumDay);
+}
+
+function isTimeOptionDisabled(time: string, day: Date | null, minimumDateTime: Date | null): boolean {
+  if (!day || !minimumDateTime) {
+    return false;
+  }
+
+  return mergeDateAndTime(day, time) <= minimumDateTime;
+}

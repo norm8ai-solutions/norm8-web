@@ -58,6 +58,61 @@ export function formatLeadActionStatus(status: LeadActionStatus): string {
 
   return labels[status];
 }
+
+/**
+ * Formats a lead activity type into a Portuguese UI label.
+ *
+ * @param type Technical LeadActivity type.
+ * @returns Human-readable activity label.
+ */
+export function formatLeadActivityType(type: string): string {
+  const labels: Record<string, string> = {
+    AUDIT_ANALYSIS_CREATED: 'Análise de auditoria criada',
+    AUDIT_ANALYSIS_FAILED: 'Análise de auditoria falhou',
+    AUDIT_REQUEST: 'Pedido de auditoria recebido',
+    BASE_OFFER_CREATED: 'Oferta Base criada',
+    BASE_OFFER_UPDATED: 'Oferta Base atualizada',
+    BASE_OFFER_VALIDATED: 'Oferta Base validada',
+    CLIENT_INTAKE_RECEIVED: 'Dados do cliente recebidos',
+    CONTRACT_PDF_GENERATED: 'PDF do contrato gerado',
+    CONTRACT_READY_TO_SEND: 'Contrato pronto para envio',
+    CONTRACT_VERSION_CREATED: 'Versão do contrato criada',
+    CUSTOM_AUTOMATION_REQUEST: 'Pedido de automação recebido',
+    DISCOVERY_PREP_UPDATED: 'Preparação da discovery atualizada',
+    EMAIL_SENT: 'Email enviado',
+    FINAL_PROPOSAL_CREATED: 'Proposta final criada',
+    FINAL_PROPOSAL_DRAFT_CREATED: 'Rascunho de proposta final criado',
+    LEGAL_DATA_INTAKE_RECEIVED: 'Dados legais recebidos',
+    LEAD_NOTE: 'Nota interna adicionada',
+    MEETING_BOOKED: 'Reunião marcada',
+    MEETING_CANCELLED: 'Reunião cancelada',
+    MEETING_COMPLETED: 'Reunião concluída',
+    MEETING_REQUEST: 'Pedido de reunião recebido',
+    PRE_MEETING_INTAKE: 'Formulário pré-reunião submetido',
+    PRE_MEETING_INTAKE_RECEIVED: 'Formulário pré-reunião recebido',
+    PRE_MEETING_INTAKE_REQUEST: 'Pedido pré-reunião preparado',
+    PRE_MEETING_INTAKE_REQUEST_CREATED: 'Pedido pré-reunião criado',
+    PRE_MEETING_INTAKE_REQUEST_SENT: 'Pedido pré-reunião enviado',
+    PRE_MEETING_INTAKE_SUBMITTED: 'Formulário pré-reunião submetido',
+    PROPOSAL_PDF_GENERATED: 'PDF da proposta gerado',
+  };
+
+  return labels[type] ?? formatTechnicalActivityType(type);
+}
+
+function formatTechnicalActivityType(type: string): string {
+  const normalized = type
+    .toLowerCase()
+    .split('_')
+    .filter(Boolean)
+    .join(' ');
+
+  if (!normalized) {
+    return 'Atividade registada';
+  }
+
+  return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+}
 /**
  * Formats a submission type into Portuguese.
  *

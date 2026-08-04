@@ -36,6 +36,7 @@ import {
 import { getSuggestedNextLeadAction } from '@/lib/admin/lead-action-suggestions';
 import {
  formatDatePt,
+ formatLeadActivityType,
  formatMeetingDate,
  formatTimeRangePt,
  getSubmissionDisplayData,
@@ -244,7 +245,7 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
  <div className="admin-timeline">
  {lead.activities.map((activity) => (
  <div className="admin-timeline-item" key={activity.id}>
- <p className="admin-row-title">{activity.type}</p>
+ <p className="admin-row-title">{formatLeadActivityType(activity.type)}</p>
  <p className="admin-row-text">{activity.message}</p>
  <p className="admin-row-meta">{formatDatePt(activity.createdAt)}</p>
  </div>
