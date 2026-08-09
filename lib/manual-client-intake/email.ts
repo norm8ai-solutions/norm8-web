@@ -6,13 +6,20 @@ import { render } from '@react-email/render';
 import { Prisma } from '@/app/generated/prisma/client';
 import { prisma } from '@/lib/db/prisma';
 import { getEmailProviderConfigStatus, getResendClient } from '@/lib/email/resend';
+import PreMeetingIntakeClientConfirmationEmail, {
+  PRE_MEETING_INTAKE_CLIENT_CONFIRMATION_SUBJECT,
+  buildPreMeetingIntakeClientConfirmationPlainText,
+} from '@/lib/email/templates/PreMeetingIntakeClientConfirmationEmail';
+import PreMeetingIntakeInternalNotificationEmail, {
+  PRE_MEETING_INTAKE_INTERNAL_NOTIFICATION_SUBJECT_PREFIX,
+  buildPreMeetingIntakeInternalNotificationPlainText,
+} from '@/lib/email/templates/PreMeetingIntakeInternalNotificationEmail';
 import PreMeetingInviteEmail, {
   PRE_MEETING_INVITE_SUBJECT,
   buildPreMeetingInvitePlainText,
 } from '@/lib/email/templates/PreMeetingInviteEmail';
 
 type ManualIntakeEmailKind = 'preMeeting' | 'legalData';
-
 
 export type PreMeetingInviteEmailInput = {
   leadId: string;
@@ -101,6 +108,7 @@ export async function sendPreMeetingInviteEmail(input: PreMeetingInviteEmailInpu
     return { success: false, emailLogId: log.id, error: message };
   }
 }
+
 type ManualIntakeEmailInput = {
   kind: ManualIntakeEmailKind;
   lead: {
@@ -118,13 +126,14 @@ type ManualEmailJob = {
   subject: string;
   type: string;
   html: string;
+  text?: string;
   metadata: Prisma.InputJsonObject;
 };
 
 export async function sendManualIntakeEmails(input: ManualIntakeEmailInput): Promise<void> {
   const internalTo = process.env.INTERNAL_NOTIFICATION_EMAIL;
-  const clientJob = buildClientJob(input);
-  const internalJob = internalTo ? buildInternalJob(input, internalTo) : null;
+  const clientJob = await buildClientJob(input);
+  const internalJob = internalTo ? await buildInternalJob(input, internalTo) : null;
   const jobs = [clientJob, internalJob].filter((job): job is ManualEmailJob => Boolean(job));
 
   if (!internalTo) {
@@ -165,6 +174,7 @@ async function sendManualEmailJob(input: ManualIntakeEmailInput, job: ManualEmai
       to: job.to,
       subject: job.subject,
       html: job.html,
+      ...(job.text ? { text: job.text } : {}),
       ...(providerConfig.replyTo ? { replyTo: providerConfig.replyTo } : {}),
     });
 
@@ -192,31 +202,83 @@ async function sendManualEmailJob(input: ManualIntakeEmailInput, job: ManualEmai
   }
 }
 
-function buildClientJob(input: ManualIntakeEmailInput): ManualEmailJob {
-  const isLegal = input.kind === 'legalData';
+async function buildClientJob(input: ManualIntakeEmailInput): Promise<ManualEmailJob> {
+  if (input.kind === 'preMeeting') {
+    const context = getPreMeetingEmailContext(input);
+
+    return {
+      to: input.lead.email,
+      subject: PRE_MEETING_INTAKE_CLIENT_CONFIRMATION_SUBJECT,
+      type: 'PRE_MEETING_INTAKE_CLIENT_CONFIRMATION',
+      metadata: { kind: input.kind, audience: 'client', submissionId: input.submissionId },
+      html: await render(createElement(PreMeetingIntakeClientConfirmationEmail, {
+        contactName: context.contactName,
+        companyName: context.companyName,
+      })),
+      text: buildPreMeetingIntakeClientConfirmationPlainText({
+        contactName: context.contactName,
+        companyName: context.companyName,
+      }),
+    };
+  }
+
   return {
     to: input.lead.email,
-    subject: isLegal ? 'Norm8: dados legais recebidos' : 'Norm8: informação recebida para preparar a reunião',
-    type: isLegal ? 'LEGAL_DATA_CLIENT_RECEIPT' : 'PRE_MEETING_CLIENT_RECEIPT',
+    subject: 'Norm8: dados legais recebidos',
+    type: 'LEGAL_DATA_CLIENT_RECEIPT',
     metadata: { kind: input.kind, audience: 'client' },
     html: renderEmailShell(
-      isLegal ? 'Dados legais recebidos' : 'Informação recebida',
-      isLegal
-        ? 'Recebemos os dados legais e de faturação. A equipa Norm8 vai validar a informação antes dos próximos passos.'
-        : 'Recebemos a informação enviada. A equipa Norm8 vai usá-la para preparar a reunião de diagnóstico.',
+      'Dados legais recebidos',
+      'Recebemos os dados legais e de faturação. A equipa Norm8 vai validar a informação antes dos próximos passos.',
       input.lead,
     ),
   };
 }
 
-function buildInternalJob(input: ManualIntakeEmailInput, to: string): ManualEmailJob {
-  const isLegal = input.kind === 'legalData';
+async function buildInternalJob(input: ManualIntakeEmailInput, to: string): Promise<ManualEmailJob> {
+  if (input.kind === 'preMeeting') {
+    const context = getPreMeetingEmailContext(input);
+    const subject = `${PRE_MEETING_INTAKE_INTERNAL_NOTIFICATION_SUBJECT_PREFIX} — ${context.companyName}`;
+
+    return {
+      to,
+      subject,
+      type: 'PRE_MEETING_INTAKE_INTERNAL_NOTIFICATION',
+      metadata: {
+        kind: input.kind,
+        audience: 'internal',
+        submissionId: input.submissionId,
+        adminLeadUrl: context.adminLeadUrl ?? null,
+      },
+      html: await render(createElement(PreMeetingIntakeInternalNotificationEmail, context)),
+      text: buildPreMeetingIntakeInternalNotificationPlainText(context),
+    };
+  }
+
   return {
     to,
-    subject: isLegal ? `Dados legais recebidos: ${input.lead.company}` : `Nova pré-discovery: ${input.lead.company}`,
-    type: isLegal ? 'LEGAL_DATA_INTERNAL_NOTIFICATION' : 'PRE_MEETING_INTERNAL_NOTIFICATION',
+    subject: `Dados legais recebidos: ${input.lead.company}`,
+    type: 'LEGAL_DATA_INTERNAL_NOTIFICATION',
     metadata: { kind: input.kind, audience: 'internal' },
-    html: renderInternalShell(isLegal ? 'Dados legais recebidos' : 'Nova pré-discovery', input),
+    html: renderInternalShell('Dados legais recebidos', input),
+  };
+}
+
+function getPreMeetingEmailContext(input: ManualIntakeEmailInput) {
+  return {
+    adminLeadUrl: buildAdminLeadUrl(input.lead.id),
+    companyName: getPayloadString(input.payload, 'companyName') || input.lead.company,
+    contactName: getPayloadString(input.payload, 'contactName') || input.lead.name,
+    email: getPayloadString(input.payload, 'email') || input.lead.email,
+    phone: getPayloadString(input.payload, 'phone'),
+    websiteOrSocials: getPayloadString(input.payload, 'websiteOrSocials'),
+    businessArea: getPayloadString(input.payload, 'businessArea') || 'Não indicado',
+    mainProblem: getPayloadString(input.payload, 'mainProblem') || 'Não indicado',
+    processToAutomate: getPayloadString(input.payload, 'processToAutomate') || 'Não indicado',
+    currentTools: getPayloadString(input.payload, 'currentTools') || 'Não indicado',
+    solutionObjective: getPayloadString(input.payload, 'solutionObjective') || 'Não indicado',
+    notes: getPayloadString(input.payload, 'notes'),
+    submittedAt: formatSubmittedAt(getPayloadString(input.payload, 'submittedAt')),
   };
 }
 
@@ -280,6 +342,60 @@ async function markEmailFailed(emailLogId: string, errorMessage: string) {
       failedAt: new Date(),
     },
   });
+}
+
+function getPayloadString(payload: Prisma.InputJsonObject, key: string): string | null {
+  const value = payload[key];
+
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    return trimmed || null;
+  }
+
+  if (value === null || value === undefined) {
+    return null;
+  }
+
+  return String(value);
+}
+
+function formatSubmittedAt(value: string | null): string {
+  const date = value ? new Date(value) : new Date();
+
+  if (!Number.isFinite(date.getTime())) {
+    return value ?? 'Não indicado';
+  }
+
+  return new Intl.DateTimeFormat('pt-PT', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    timeZone: 'Europe/Lisbon',
+  }).format(date);
+}
+
+function buildAdminLeadUrl(leadId: string): string | undefined {
+  const appUrl = getAppUrl();
+
+  if (!appUrl) {
+    return undefined;
+  }
+
+  return `${appUrl}/admin/leads/${leadId}`;
+}
+
+function getAppUrl(): string | undefined {
+  const rawUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    process.env.PUBLIC_SITE_URL ??
+    process.env.NEXT_PUBLIC_APP_URL ??
+    process.env.VERCEL_PROJECT_PRODUCTION_URL;
+
+  if (!rawUrl) {
+    return undefined;
+  }
+
+  const withProtocol = /^https?:\/\//i.test(rawUrl) ? rawUrl : `https://${rawUrl}`;
+  return withProtocol.replace(/\/$/, '');
 }
 
 function escapeHtml(value: string): string {

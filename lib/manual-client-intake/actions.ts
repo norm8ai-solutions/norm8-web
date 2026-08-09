@@ -87,7 +87,13 @@ export async function submitPreMeetingIntakeAction(
     };
   }
 
-  return toActionState(await submitPreMeetingIntake(parsed.data));
+  const result = await submitPreMeetingIntake(parsed.data);
+
+  if (result.success) {
+    redirect('/clientes/pre-reuniao/sucesso');
+  }
+
+  return toActionState(result);
 }
 
 export async function submitLegalDataIntakeAction(

@@ -22,13 +22,12 @@ export const preMeetingIntakeSchema = z.object({
   phone: requiredText('Telefone'),
   companyName: requiredText('Nome da empresa'),
   websiteOrSocials: websiteOrSocialSchema,
-  businessArea: requiredText('Área de negócio'),
+  businessArea: requiredText('Setor de atividade'),
   mainProblem: requiredText('Principal problema'),
   processToAutomate: requiredText('Processo a automatizar'),
   currentTools: requiredText('Ferramentas atuais'),
   solutionObjective: requiredText('Objetivo da solução'),
   notes: optionalText,
-  consent: consentSchema,
   companyWebsite: honeypotSchema,
   token: optionalText,
 });
@@ -650,7 +649,6 @@ function buildPreMeetingPayload(input: PreMeetingIntakeInput): Prisma.InputJsonO
     currentTools: input.currentTools,
     solutionObjective: input.solutionObjective,
     notes: input.notes ?? null,
-    consent: true,
     payloadHash: hashPayload(input),
     submittedAt: new Date().toISOString(),
   };

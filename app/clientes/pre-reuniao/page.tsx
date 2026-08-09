@@ -20,10 +20,10 @@ export default async function PreMeetingIntakePage({ searchParams }: PreMeetingI
     <main className={styles.clientIntakePage}>
       <div className={styles.clientIntakeShell}>
         <header className={styles.clientIntakeHeader}>
-          <p className={styles.clientIntakeEyebrow}>Norm8 · Pré-discovery</p>
+          <p className={styles.clientIntakeEyebrow}>Norm8 · Pré-reunião</p>
           <h1 className={styles.clientIntakeTitle}>Preparação da reunião</h1>
           <p className={styles.clientIntakeIntro}>
-            Partilhe o contexto essencial para a equipa Norm8 preparar uma primeira análise interna. Este formulário não agenda reuniões e não deve incluir passwords, credenciais ou tokens de acesso.
+            Partilhe o contexto da sua empresa para prepararmos uma reunião mais objetiva e útil.
           </p>
         </header>
         <PreMeetingIntakeForm invite={invite} />

@@ -21,7 +21,24 @@ type TopbarCopy = {
   subtitle: string;
 };
 
+const overviewCopy: TopbarCopy = {
+  title: 'Overview',
+  subtitle: 'Visão operacional do funil comercial.',
+};
+
+const internalNotFoundCopy: TopbarCopy = {
+  title: 'Página interna não encontrada',
+  subtitle: 'A rota que tentou aceder não existe na área interna da Norm8.',
+};
+
 const copyByRoute: Array<{ prefix: string; copy: TopbarCopy }> = [
+  {
+    prefix: '/admin/contracts',
+    copy: {
+      title: 'Contratos',
+      subtitle: 'Criação, revisão e gestão de contratos comerciais da Norm8.',
+    },
+  },
   {
     prefix: '/admin/leads',
     copy: {
@@ -57,6 +74,13 @@ const copyByRoute: Array<{ prefix: string; copy: TopbarCopy }> = [
       subtitle: 'Alertas internos gerados pelas submissões.',
     },
   },
+  {
+    prefix: '/admin/settings',
+    copy: {
+      title: 'Settings',
+      subtitle: 'Configuração legal e operacional da área interna.',
+    },
+  },
 ];
 
 /**
@@ -66,14 +90,13 @@ const copyByRoute: Array<{ prefix: string; copy: TopbarCopy }> = [
  * @returns Route-specific title copy.
  */
 function getTopbarCopy(pathname: string): TopbarCopy {
+  if (pathname === '/admin') {
+    return overviewCopy;
+  }
+
   const route = copyByRoute.find((item) => pathname.startsWith(item.prefix));
 
-  return (
-    route?.copy ?? {
-      title: 'Overview',
-      subtitle: 'Visão operacional do funil comercial.',
-    }
-  );
+  return route?.copy ?? internalNotFoundCopy;
 }
 
 /**

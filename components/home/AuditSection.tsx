@@ -16,6 +16,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { submitAuditRequest } from '@/app/actions/lead-submissions';
 import { FieldError } from '@/components/ui/field-error';
 import { Norm8Select } from '@/components/ui/norm8-select';
+import { activitySectorOptions } from '@/lib/forms/activity-sectors';
 import type { ValidationErrors } from '@/lib/leads/types';
 import {
   CheckCircle2,
@@ -135,31 +136,7 @@ const inputFields: InputField[] = [
   },
 ];
 
-const setores = [
-  'Serviços Profissionais',
-  'Consultoria',
-  'Imobiliário',
-  'Saúde e Clínicas',
-  'Estética e Bem-estar',
-  'Restauração',
-  'Hotelaria e Turismo',
-  'Educação e Formação',
-  'E-commerce',
-  'Retalho',
-  'Construção',
-  'Seguros',
-  'Contabilidade e Finanças',
-  'Jurídico',
-  'Tecnologia / SaaS',
-  'Marketing e Agências',
-  'Automóvel',
-  'Indústria',
-  'Logística',
-  'Outro',
-].map((setor) => ({
-  value: setor,
-  label: setor,
-}));
+const setores = activitySectorOptions;
 
 const colaboradoresOptions = [
   '1–10',
