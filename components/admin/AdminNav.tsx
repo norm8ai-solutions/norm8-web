@@ -5,7 +5,7 @@
  * Responsibilities:
  * - Render grouped admin navigation links with consistent iconography.
  * - Highlight active routes while keeping future modules visibly reserved.
- * - Keep route-awareness out of the server layout.
+ * - Support expanded and collapsed sidebar states.
  * ------------------------------------------------------------------
  */
 
@@ -33,6 +33,10 @@ type NavItem = {
   label: string;
   icon: ComponentType<{ size?: number }>;
   disabled?: boolean;
+};
+
+type AdminNavProps = {
+  isCollapsed?: boolean;
 };
 
 const navSections: Array<{ label?: string; items: NavItem[] }> = [
@@ -64,13 +68,15 @@ const navSections: Array<{ label?: string; items: NavItem[] }> = [
 /**
  * Renders route-aware admin navigation.
  *
+ * @param props Sidebar collapsed state.
  * @returns Admin sidebar nav.
  */
-export default function AdminNav() {
+export default function AdminNav({ isCollapsed = false }: AdminNavProps) {
   const pathname = usePathname();
+  const iconSize = 16;
 
   return (
-    <nav className="admin-nav">
+    <nav className="admin-nav" aria-label="Navegação principal do Admin">
       {navSections.map((section, sectionIndex) => (
         <div className="admin-nav-section" key={sectionIndex}>
           {section.items.map((item) => {
@@ -82,22 +88,34 @@ export default function AdminNav() {
 
             if (item.disabled || !item.href) {
               return (
-                <span className="admin-nav-link admin-nav-link-disabled" key={item.label}>
-                  <Icon size={16} />
-                  {item.label}
-                  <small>soon</small>
+                <span
+                  aria-label={`${item.label} — em breve`}
+                  className="admin-nav-link admin-nav-link-disabled"
+                  key={item.label}
+                  title={isCollapsed ? `${item.label} — em breve` : undefined}
+                >
+                  <Icon aria-hidden="true" size={iconSize} />
+                  <span aria-hidden={isCollapsed} className="admin-nav-label">
+                    {item.label}
+                  </span>
+                  <small aria-hidden={isCollapsed}>soon</small>
                 </span>
               );
             }
 
             return (
               <Link
-                key={item.href}
+                aria-current={active ? 'page' : undefined}
+                aria-label={item.label}
                 className={`admin-nav-link${active ? ' admin-nav-link-active' : ''}`}
                 href={item.href}
+                key={item.href}
+                title={isCollapsed ? item.label : undefined}
               >
-                <Icon size={16} />
-                {item.label}
+                <Icon aria-hidden="true" size={iconSize} />
+                <span aria-hidden={isCollapsed} className="admin-nav-label">
+                  {item.label}
+                </span>
               </Link>
             );
           })}

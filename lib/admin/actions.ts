@@ -1057,6 +1057,7 @@ export async function generateProposalPdfExecution(
  });
 
  revalidateLeadActionExecutionPaths(leadId);
+  revalidatePath(`/admin/proposals/${proposalId}`);
 
  return {
  success: true,

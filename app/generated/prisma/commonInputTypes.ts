@@ -427,6 +427,53 @@ export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
   _max?: Prisma.NestedJsonNullableFilter<$PrismaModel>
 }
 
+export type EnumDiscoverySessionStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.DiscoverySessionStatus | Prisma.EnumDiscoverySessionStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.DiscoverySessionStatus[] | Prisma.ListEnumDiscoverySessionStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DiscoverySessionStatus[] | Prisma.ListEnumDiscoverySessionStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDiscoverySessionStatusFilter<$PrismaModel> | $Enums.DiscoverySessionStatus
+}
+
+export type EnumDiscoverySessionStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DiscoverySessionStatus | Prisma.EnumDiscoverySessionStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.DiscoverySessionStatus[] | Prisma.ListEnumDiscoverySessionStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DiscoverySessionStatus[] | Prisma.ListEnumDiscoverySessionStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDiscoverySessionStatusWithAggregatesFilter<$PrismaModel> | $Enums.DiscoverySessionStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDiscoverySessionStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDiscoverySessionStatusFilter<$PrismaModel>
+}
+
+export type EnumDiscoveryQuestionCategoryFilter<$PrismaModel = never> = {
+  equals?: $Enums.DiscoveryQuestionCategory | Prisma.EnumDiscoveryQuestionCategoryFieldRefInput<$PrismaModel>
+  in?: $Enums.DiscoveryQuestionCategory[] | Prisma.ListEnumDiscoveryQuestionCategoryFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DiscoveryQuestionCategory[] | Prisma.ListEnumDiscoveryQuestionCategoryFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDiscoveryQuestionCategoryFilter<$PrismaModel> | $Enums.DiscoveryQuestionCategory
+}
+
+export type BoolFilter<$PrismaModel = never> = {
+  equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedBoolFilter<$PrismaModel> | boolean
+}
+
+export type EnumDiscoveryQuestionCategoryWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DiscoveryQuestionCategory | Prisma.EnumDiscoveryQuestionCategoryFieldRefInput<$PrismaModel>
+  in?: $Enums.DiscoveryQuestionCategory[] | Prisma.ListEnumDiscoveryQuestionCategoryFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DiscoveryQuestionCategory[] | Prisma.ListEnumDiscoveryQuestionCategoryFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDiscoveryQuestionCategoryWithAggregatesFilter<$PrismaModel> | $Enums.DiscoveryQuestionCategory
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDiscoveryQuestionCategoryFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDiscoveryQuestionCategoryFilter<$PrismaModel>
+}
+
+export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedBoolFilter<$PrismaModel>
+  _max?: Prisma.NestedBoolFilter<$PrismaModel>
+}
+
 export type EnumManualIntakeInviteStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.ManualIntakeInviteStatus | Prisma.EnumManualIntakeInviteStatusFieldRefInput<$PrismaModel>
   in?: $Enums.ManualIntakeInviteStatus[] | Prisma.ListEnumManualIntakeInviteStatusFieldRefInput<$PrismaModel>
@@ -580,11 +627,6 @@ export type EnumAdminRoleFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumAdminRoleFilter<$PrismaModel> | $Enums.AdminRole
 }
 
-export type BoolFilter<$PrismaModel = never> = {
-  equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedBoolFilter<$PrismaModel> | boolean
-}
-
 export type EnumAdminRoleWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.AdminRole | Prisma.EnumAdminRoleFieldRefInput<$PrismaModel>
   in?: $Enums.AdminRole[] | Prisma.ListEnumAdminRoleFieldRefInput<$PrismaModel>
@@ -593,14 +635,6 @@ export type EnumAdminRoleWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumAdminRoleFilter<$PrismaModel>
   _max?: Prisma.NestedEnumAdminRoleFilter<$PrismaModel>
-}
-
-export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedBoolFilter<$PrismaModel>
-  _max?: Prisma.NestedBoolFilter<$PrismaModel>
 }
 
 export type EnumContractStatusFilter<$PrismaModel = never> = {
@@ -1145,6 +1179,53 @@ export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
   not?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel> | Prisma.JsonNullValueFilter
 }
 
+export type NestedEnumDiscoverySessionStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.DiscoverySessionStatus | Prisma.EnumDiscoverySessionStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.DiscoverySessionStatus[] | Prisma.ListEnumDiscoverySessionStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DiscoverySessionStatus[] | Prisma.ListEnumDiscoverySessionStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDiscoverySessionStatusFilter<$PrismaModel> | $Enums.DiscoverySessionStatus
+}
+
+export type NestedEnumDiscoverySessionStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DiscoverySessionStatus | Prisma.EnumDiscoverySessionStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.DiscoverySessionStatus[] | Prisma.ListEnumDiscoverySessionStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DiscoverySessionStatus[] | Prisma.ListEnumDiscoverySessionStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDiscoverySessionStatusWithAggregatesFilter<$PrismaModel> | $Enums.DiscoverySessionStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDiscoverySessionStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDiscoverySessionStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumDiscoveryQuestionCategoryFilter<$PrismaModel = never> = {
+  equals?: $Enums.DiscoveryQuestionCategory | Prisma.EnumDiscoveryQuestionCategoryFieldRefInput<$PrismaModel>
+  in?: $Enums.DiscoveryQuestionCategory[] | Prisma.ListEnumDiscoveryQuestionCategoryFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DiscoveryQuestionCategory[] | Prisma.ListEnumDiscoveryQuestionCategoryFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDiscoveryQuestionCategoryFilter<$PrismaModel> | $Enums.DiscoveryQuestionCategory
+}
+
+export type NestedBoolFilter<$PrismaModel = never> = {
+  equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedBoolFilter<$PrismaModel> | boolean
+}
+
+export type NestedEnumDiscoveryQuestionCategoryWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DiscoveryQuestionCategory | Prisma.EnumDiscoveryQuestionCategoryFieldRefInput<$PrismaModel>
+  in?: $Enums.DiscoveryQuestionCategory[] | Prisma.ListEnumDiscoveryQuestionCategoryFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DiscoveryQuestionCategory[] | Prisma.ListEnumDiscoveryQuestionCategoryFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDiscoveryQuestionCategoryWithAggregatesFilter<$PrismaModel> | $Enums.DiscoveryQuestionCategory
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDiscoveryQuestionCategoryFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDiscoveryQuestionCategoryFilter<$PrismaModel>
+}
+
+export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedBoolFilter<$PrismaModel>
+  _max?: Prisma.NestedBoolFilter<$PrismaModel>
+}
+
 export type NestedEnumManualIntakeInviteStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.ManualIntakeInviteStatus | Prisma.EnumManualIntakeInviteStatusFieldRefInput<$PrismaModel>
   in?: $Enums.ManualIntakeInviteStatus[] | Prisma.ListEnumManualIntakeInviteStatusFieldRefInput<$PrismaModel>
@@ -1298,11 +1379,6 @@ export type NestedEnumAdminRoleFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumAdminRoleFilter<$PrismaModel> | $Enums.AdminRole
 }
 
-export type NestedBoolFilter<$PrismaModel = never> = {
-  equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedBoolFilter<$PrismaModel> | boolean
-}
-
 export type NestedEnumAdminRoleWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.AdminRole | Prisma.EnumAdminRoleFieldRefInput<$PrismaModel>
   in?: $Enums.AdminRole[] | Prisma.ListEnumAdminRoleFieldRefInput<$PrismaModel>
@@ -1311,14 +1387,6 @@ export type NestedEnumAdminRoleWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumAdminRoleFilter<$PrismaModel>
   _max?: Prisma.NestedEnumAdminRoleFilter<$PrismaModel>
-}
-
-export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedBoolFilter<$PrismaModel>
-  _max?: Prisma.NestedBoolFilter<$PrismaModel>
 }
 
 export type NestedEnumContractStatusFilter<$PrismaModel = never> = {

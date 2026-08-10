@@ -57,6 +57,8 @@ export const ModelName = {
   LeadAction: 'LeadAction',
   Proposal: 'Proposal',
   BaseOffer: 'BaseOffer',
+  DiscoverySession: 'DiscoverySession',
+  DiscoveryQuestion: 'DiscoveryQuestion',
   ManualIntakeInvite: 'ManualIntakeInvite',
   Notification: 'Notification',
   EmailLog: 'EmailLog',
@@ -205,6 +207,42 @@ export const BaseOfferScalarFieldEnum = {
 } as const
 
 export type BaseOfferScalarFieldEnum = (typeof BaseOfferScalarFieldEnum)[keyof typeof BaseOfferScalarFieldEnum]
+
+
+export const DiscoverySessionScalarFieldEnum = {
+  id: 'id',
+  leadId: 'leadId',
+  baseOfferId: 'baseOfferId',
+  status: 'status',
+  meetingDate: 'meetingDate',
+  summary: 'summary',
+  decisionMakers: 'decisionMakers',
+  urgency: 'urgency',
+  budgetRange: 'budgetRange',
+  technicalComplexity: 'technicalComplexity',
+  confirmedScope: 'confirmedScope',
+  nextSteps: 'nextSteps',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DiscoverySessionScalarFieldEnum = (typeof DiscoverySessionScalarFieldEnum)[keyof typeof DiscoverySessionScalarFieldEnum]
+
+
+export const DiscoveryQuestionScalarFieldEnum = {
+  id: 'id',
+  discoverySessionId: 'discoverySessionId',
+  question: 'question',
+  answer: 'answer',
+  category: 'category',
+  impactOrObservation: 'impactOrObservation',
+  isRequired: 'isRequired',
+  isAnswered: 'isAnswered',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DiscoveryQuestionScalarFieldEnum = (typeof DiscoveryQuestionScalarFieldEnum)[keyof typeof DiscoveryQuestionScalarFieldEnum]
 
 
 export const ManualIntakeInviteScalarFieldEnum = {

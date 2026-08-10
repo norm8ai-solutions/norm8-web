@@ -5,37 +5,54 @@
  * Responsibilities:
  * - Reuse the official Norm8 website logo asset without recreating it.
  * - Keep admin branding aligned with the public landing page.
- * - Provide a compact secondary label for internal product context.
+ * - Provide compact and expanded variants for the Admin sidebar.
  * ------------------------------------------------------------------
  */
 
 import Image from 'next/image';
 
-const norm8LogoUrl =
-  'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/user_6958fdca26373c9614048efe/4f99edd00_Norm8_NewPrimary_Website_NoBG.png';
+const norm8LogoUrl = '/brand/norm8-logo.png';
 
 type AdminLogoProps = {
   caption?: string;
+  compact?: boolean;
 };
 
 /**
- * Renders the official Norm8 logo with an optional internal caption.
+ * Renders the official Norm8 logo with compact and expanded variants.
  *
- * @param props Optional caption displayed below the logo.
+ * @param props Logo variant and optional caption.
  * @returns Norm8 admin brand lockup.
  */
-export default function AdminLogo({ caption = 'Internal' }: AdminLogoProps) {
+export default function AdminLogo({ caption = 'Internal', compact = false }: AdminLogoProps) {
   return (
-    <div className="admin-logo-lockup">
-      <Image
-        alt="Norm8"
-        className="admin-logo-image"
-        height={28}
-        priority
-        src={norm8LogoUrl}
-        width={118}
-      />
-      <span className="admin-logo-caption">{caption}</span>
+    <div
+      aria-label={compact ? 'Norm8' : `Norm8 ${caption}`}
+      className={`admin-logo-lockup${compact ? ' admin-logo-lockup-compact' : ''}`}
+    >
+      <span className="admin-logo-visual" aria-hidden="true">
+        <Image
+          alt=""
+          className="admin-logo-image"
+          height={28}
+          priority
+          src={norm8LogoUrl}
+          width={118}
+        />
+        <span className="admin-logo-symbol">
+          <Image
+            alt=""
+            className="admin-logo-symbol-image"
+            height={32}
+            priority
+            src={norm8LogoUrl}
+            width={124}
+          />
+        </span>
+      </span>
+      <span aria-hidden={compact} className="admin-logo-caption">
+        {caption}
+      </span>
     </div>
   );
 }

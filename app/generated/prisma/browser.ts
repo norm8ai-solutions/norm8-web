@@ -48,6 +48,16 @@ export type Proposal = Prisma.ProposalModel
  */
 export type BaseOffer = Prisma.BaseOfferModel
 /**
+ * Model DiscoverySession
+ * Structured Discovery workspace attached to a Lead and optional Base Offer.
+ */
+export type DiscoverySession = Prisma.DiscoverySessionModel
+/**
+ * Model DiscoveryQuestion
+ * Individual structured Discovery question and answer.
+ */
+export type DiscoveryQuestion = Prisma.DiscoveryQuestionModel
+/**
  * Model ManualIntakeInvite
  * Tokenized manual request sent by Admin before a pre-meeting intake submission.
  */

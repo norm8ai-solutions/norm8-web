@@ -390,6 +390,8 @@ export const ModelName = {
   LeadAction: 'LeadAction',
   Proposal: 'Proposal',
   BaseOffer: 'BaseOffer',
+  DiscoverySession: 'DiscoverySession',
+  DiscoveryQuestion: 'DiscoveryQuestion',
   ManualIntakeInvite: 'ManualIntakeInvite',
   Notification: 'Notification',
   EmailLog: 'EmailLog',
@@ -424,7 +426,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "lead" | "submission" | "leadActivity" | "leadAction" | "proposal" | "baseOffer" | "manualIntakeInvite" | "notification" | "emailLog" | "meetingBooking" | "auditAnalysis" | "adminUser" | "adminSession" | "adminAuthLog" | "companyLegalSettings" | "contract" | "contractTemplate" | "contractTemplateSection" | "contractSection" | "contractVersion" | "contractNumberSequence" | "contractPhase" | "contractDeliverable" | "contractPaymentMilestone" | "contractActivityLog"
+    modelProps: "lead" | "submission" | "leadActivity" | "leadAction" | "proposal" | "baseOffer" | "discoverySession" | "discoveryQuestion" | "manualIntakeInvite" | "notification" | "emailLog" | "meetingBooking" | "auditAnalysis" | "adminUser" | "adminSession" | "adminAuthLog" | "companyLegalSettings" | "contract" | "contractTemplate" | "contractTemplateSection" | "contractSection" | "contractVersion" | "contractNumberSequence" | "contractPhase" | "contractDeliverable" | "contractPaymentMilestone" | "contractActivityLog"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -869,6 +871,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.BaseOfferCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.BaseOfferCountAggregateOutputType> | number
+        }
+      }
+    }
+    DiscoverySession: {
+      payload: Prisma.$DiscoverySessionPayload<ExtArgs>
+      fields: Prisma.DiscoverySessionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DiscoverySessionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscoverySessionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DiscoverySessionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscoverySessionPayload>
+        }
+        findFirst: {
+          args: Prisma.DiscoverySessionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscoverySessionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DiscoverySessionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscoverySessionPayload>
+        }
+        findMany: {
+          args: Prisma.DiscoverySessionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscoverySessionPayload>[]
+        }
+        create: {
+          args: Prisma.DiscoverySessionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscoverySessionPayload>
+        }
+        createMany: {
+          args: Prisma.DiscoverySessionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DiscoverySessionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscoverySessionPayload>[]
+        }
+        delete: {
+          args: Prisma.DiscoverySessionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscoverySessionPayload>
+        }
+        update: {
+          args: Prisma.DiscoverySessionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscoverySessionPayload>
+        }
+        deleteMany: {
+          args: Prisma.DiscoverySessionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DiscoverySessionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DiscoverySessionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscoverySessionPayload>[]
+        }
+        upsert: {
+          args: Prisma.DiscoverySessionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscoverySessionPayload>
+        }
+        aggregate: {
+          args: Prisma.DiscoverySessionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDiscoverySession>
+        }
+        groupBy: {
+          args: Prisma.DiscoverySessionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DiscoverySessionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DiscoverySessionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DiscoverySessionCountAggregateOutputType> | number
+        }
+      }
+    }
+    DiscoveryQuestion: {
+      payload: Prisma.$DiscoveryQuestionPayload<ExtArgs>
+      fields: Prisma.DiscoveryQuestionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DiscoveryQuestionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscoveryQuestionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DiscoveryQuestionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscoveryQuestionPayload>
+        }
+        findFirst: {
+          args: Prisma.DiscoveryQuestionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscoveryQuestionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DiscoveryQuestionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscoveryQuestionPayload>
+        }
+        findMany: {
+          args: Prisma.DiscoveryQuestionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscoveryQuestionPayload>[]
+        }
+        create: {
+          args: Prisma.DiscoveryQuestionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscoveryQuestionPayload>
+        }
+        createMany: {
+          args: Prisma.DiscoveryQuestionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DiscoveryQuestionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscoveryQuestionPayload>[]
+        }
+        delete: {
+          args: Prisma.DiscoveryQuestionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscoveryQuestionPayload>
+        }
+        update: {
+          args: Prisma.DiscoveryQuestionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscoveryQuestionPayload>
+        }
+        deleteMany: {
+          args: Prisma.DiscoveryQuestionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DiscoveryQuestionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DiscoveryQuestionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscoveryQuestionPayload>[]
+        }
+        upsert: {
+          args: Prisma.DiscoveryQuestionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiscoveryQuestionPayload>
+        }
+        aggregate: {
+          args: Prisma.DiscoveryQuestionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDiscoveryQuestion>
+        }
+        groupBy: {
+          args: Prisma.DiscoveryQuestionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DiscoveryQuestionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DiscoveryQuestionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DiscoveryQuestionCountAggregateOutputType> | number
         }
       }
     }
@@ -2430,6 +2580,42 @@ export const BaseOfferScalarFieldEnum = {
 export type BaseOfferScalarFieldEnum = (typeof BaseOfferScalarFieldEnum)[keyof typeof BaseOfferScalarFieldEnum]
 
 
+export const DiscoverySessionScalarFieldEnum = {
+  id: 'id',
+  leadId: 'leadId',
+  baseOfferId: 'baseOfferId',
+  status: 'status',
+  meetingDate: 'meetingDate',
+  summary: 'summary',
+  decisionMakers: 'decisionMakers',
+  urgency: 'urgency',
+  budgetRange: 'budgetRange',
+  technicalComplexity: 'technicalComplexity',
+  confirmedScope: 'confirmedScope',
+  nextSteps: 'nextSteps',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DiscoverySessionScalarFieldEnum = (typeof DiscoverySessionScalarFieldEnum)[keyof typeof DiscoverySessionScalarFieldEnum]
+
+
+export const DiscoveryQuestionScalarFieldEnum = {
+  id: 'id',
+  discoverySessionId: 'discoverySessionId',
+  question: 'question',
+  answer: 'answer',
+  category: 'category',
+  impactOrObservation: 'impactOrObservation',
+  isRequired: 'isRequired',
+  isAnswered: 'isAnswered',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DiscoveryQuestionScalarFieldEnum = (typeof DiscoveryQuestionScalarFieldEnum)[keyof typeof DiscoveryQuestionScalarFieldEnum]
+
+
 export const ManualIntakeInviteScalarFieldEnum = {
   id: 'id',
   leadId: 'leadId',
@@ -3050,6 +3236,41 @@ export type ListEnumBaseOfferStatusFieldRefInput<$PrismaModel> = FieldRefInputTy
 
 
 /**
+ * Reference to a field of type 'DiscoverySessionStatus'
+ */
+export type EnumDiscoverySessionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DiscoverySessionStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'DiscoverySessionStatus[]'
+ */
+export type ListEnumDiscoverySessionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DiscoverySessionStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'DiscoveryQuestionCategory'
+ */
+export type EnumDiscoveryQuestionCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DiscoveryQuestionCategory'>
+    
+
+
+/**
+ * Reference to a field of type 'DiscoveryQuestionCategory[]'
+ */
+export type ListEnumDiscoveryQuestionCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DiscoveryQuestionCategory[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
  * Reference to a field of type 'ManualIntakeInviteStatus'
  */
 export type EnumManualIntakeInviteStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ManualIntakeInviteStatus'>
@@ -3158,13 +3379,6 @@ export type EnumAdminRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$Prisma
  * Reference to a field of type 'AdminRole[]'
  */
 export type ListEnumAdminRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AdminRole[]'>
-    
-
-
-/**
- * Reference to a field of type 'Boolean'
- */
-export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -3423,6 +3637,8 @@ export type GlobalOmitConfig = {
   leadAction?: Prisma.LeadActionOmit
   proposal?: Prisma.ProposalOmit
   baseOffer?: Prisma.BaseOfferOmit
+  discoverySession?: Prisma.DiscoverySessionOmit
+  discoveryQuestion?: Prisma.DiscoveryQuestionOmit
   manualIntakeInvite?: Prisma.ManualIntakeInviteOmit
   notification?: Prisma.NotificationOmit
   emailLog?: Prisma.EmailLogOmit

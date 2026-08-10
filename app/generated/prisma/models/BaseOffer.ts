@@ -284,6 +284,7 @@ export type BaseOfferWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"BaseOffer"> | Date | string
   lead?: Prisma.XOR<Prisma.LeadScalarRelationFilter, Prisma.LeadWhereInput>
   submission?: Prisma.XOR<Prisma.SubmissionNullableScalarRelationFilter, Prisma.SubmissionWhereInput> | null
+  discoverySessions?: Prisma.DiscoverySessionListRelationFilter
 }
 
 export type BaseOfferOrderByWithRelationInput = {
@@ -309,6 +310,7 @@ export type BaseOfferOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   lead?: Prisma.LeadOrderByWithRelationInput
   submission?: Prisma.SubmissionOrderByWithRelationInput
+  discoverySessions?: Prisma.DiscoverySessionOrderByRelationAggregateInput
 }
 
 export type BaseOfferWhereUniqueInput = Prisma.AtLeast<{
@@ -337,6 +339,7 @@ export type BaseOfferWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"BaseOffer"> | Date | string
   lead?: Prisma.XOR<Prisma.LeadScalarRelationFilter, Prisma.LeadWhereInput>
   submission?: Prisma.XOR<Prisma.SubmissionNullableScalarRelationFilter, Prisma.SubmissionWhereInput> | null
+  discoverySessions?: Prisma.DiscoverySessionListRelationFilter
 }, "id">
 
 export type BaseOfferOrderByWithAggregationInput = {
@@ -412,6 +415,7 @@ export type BaseOfferCreateInput = {
   updatedAt?: Date | string
   lead: Prisma.LeadCreateNestedOneWithoutBaseOffersInput
   submission?: Prisma.SubmissionCreateNestedOneWithoutBaseOffersInput
+  discoverySessions?: Prisma.DiscoverySessionCreateNestedManyWithoutBaseOfferInput
 }
 
 export type BaseOfferUncheckedCreateInput = {
@@ -435,6 +439,7 @@ export type BaseOfferUncheckedCreateInput = {
   createdById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  discoverySessions?: Prisma.DiscoverySessionUncheckedCreateNestedManyWithoutBaseOfferInput
 }
 
 export type BaseOfferUpdateInput = {
@@ -458,6 +463,7 @@ export type BaseOfferUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lead?: Prisma.LeadUpdateOneRequiredWithoutBaseOffersNestedInput
   submission?: Prisma.SubmissionUpdateOneWithoutBaseOffersNestedInput
+  discoverySessions?: Prisma.DiscoverySessionUpdateManyWithoutBaseOfferNestedInput
 }
 
 export type BaseOfferUncheckedUpdateInput = {
@@ -481,6 +487,7 @@ export type BaseOfferUncheckedUpdateInput = {
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  discoverySessions?: Prisma.DiscoverySessionUncheckedUpdateManyWithoutBaseOfferNestedInput
 }
 
 export type BaseOfferCreateManyInput = {
@@ -619,6 +626,11 @@ export type BaseOfferMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
+export type BaseOfferNullableScalarRelationFilter = {
+  is?: Prisma.BaseOfferWhereInput | null
+  isNot?: Prisma.BaseOfferWhereInput | null
+}
+
 export type BaseOfferCreateNestedManyWithoutLeadInput = {
   create?: Prisma.XOR<Prisma.BaseOfferCreateWithoutLeadInput, Prisma.BaseOfferUncheckedCreateWithoutLeadInput> | Prisma.BaseOfferCreateWithoutLeadInput[] | Prisma.BaseOfferUncheckedCreateWithoutLeadInput[]
   connectOrCreate?: Prisma.BaseOfferCreateOrConnectWithoutLeadInput | Prisma.BaseOfferCreateOrConnectWithoutLeadInput[]
@@ -707,6 +719,22 @@ export type EnumBaseOfferStatusFieldUpdateOperationsInput = {
   set?: $Enums.BaseOfferStatus
 }
 
+export type BaseOfferCreateNestedOneWithoutDiscoverySessionsInput = {
+  create?: Prisma.XOR<Prisma.BaseOfferCreateWithoutDiscoverySessionsInput, Prisma.BaseOfferUncheckedCreateWithoutDiscoverySessionsInput>
+  connectOrCreate?: Prisma.BaseOfferCreateOrConnectWithoutDiscoverySessionsInput
+  connect?: Prisma.BaseOfferWhereUniqueInput
+}
+
+export type BaseOfferUpdateOneWithoutDiscoverySessionsNestedInput = {
+  create?: Prisma.XOR<Prisma.BaseOfferCreateWithoutDiscoverySessionsInput, Prisma.BaseOfferUncheckedCreateWithoutDiscoverySessionsInput>
+  connectOrCreate?: Prisma.BaseOfferCreateOrConnectWithoutDiscoverySessionsInput
+  upsert?: Prisma.BaseOfferUpsertWithoutDiscoverySessionsInput
+  disconnect?: Prisma.BaseOfferWhereInput | boolean
+  delete?: Prisma.BaseOfferWhereInput | boolean
+  connect?: Prisma.BaseOfferWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BaseOfferUpdateToOneWithWhereWithoutDiscoverySessionsInput, Prisma.BaseOfferUpdateWithoutDiscoverySessionsInput>, Prisma.BaseOfferUncheckedUpdateWithoutDiscoverySessionsInput>
+}
+
 export type BaseOfferCreateWithoutLeadInput = {
   id?: string
   status?: $Enums.BaseOfferStatus
@@ -727,6 +755,7 @@ export type BaseOfferCreateWithoutLeadInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   submission?: Prisma.SubmissionCreateNestedOneWithoutBaseOffersInput
+  discoverySessions?: Prisma.DiscoverySessionCreateNestedManyWithoutBaseOfferInput
 }
 
 export type BaseOfferUncheckedCreateWithoutLeadInput = {
@@ -749,6 +778,7 @@ export type BaseOfferUncheckedCreateWithoutLeadInput = {
   createdById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  discoverySessions?: Prisma.DiscoverySessionUncheckedCreateNestedManyWithoutBaseOfferInput
 }
 
 export type BaseOfferCreateOrConnectWithoutLeadInput = {
@@ -823,6 +853,7 @@ export type BaseOfferCreateWithoutSubmissionInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   lead: Prisma.LeadCreateNestedOneWithoutBaseOffersInput
+  discoverySessions?: Prisma.DiscoverySessionCreateNestedManyWithoutBaseOfferInput
 }
 
 export type BaseOfferUncheckedCreateWithoutSubmissionInput = {
@@ -845,6 +876,7 @@ export type BaseOfferUncheckedCreateWithoutSubmissionInput = {
   createdById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  discoverySessions?: Prisma.DiscoverySessionUncheckedCreateNestedManyWithoutBaseOfferInput
 }
 
 export type BaseOfferCreateOrConnectWithoutSubmissionInput = {
@@ -871,6 +903,114 @@ export type BaseOfferUpdateWithWhereUniqueWithoutSubmissionInput = {
 export type BaseOfferUpdateManyWithWhereWithoutSubmissionInput = {
   where: Prisma.BaseOfferScalarWhereInput
   data: Prisma.XOR<Prisma.BaseOfferUpdateManyMutationInput, Prisma.BaseOfferUncheckedUpdateManyWithoutSubmissionInput>
+}
+
+export type BaseOfferCreateWithoutDiscoverySessionsInput = {
+  id?: string
+  status?: $Enums.BaseOfferStatus
+  problemSummary?: string | null
+  processToAutomate?: string | null
+  suggestedSolution?: string | null
+  recommendedModules?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  automationOpportunities?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  toolsMentioned?: string | null
+  estimatedScope?: string | null
+  initialPriceRange?: string | null
+  pricingRationale?: string | null
+  questionsForDiscovery?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  risksOrMissingInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  nextSteps?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lead: Prisma.LeadCreateNestedOneWithoutBaseOffersInput
+  submission?: Prisma.SubmissionCreateNestedOneWithoutBaseOffersInput
+}
+
+export type BaseOfferUncheckedCreateWithoutDiscoverySessionsInput = {
+  id?: string
+  leadId: string
+  submissionId?: string | null
+  status?: $Enums.BaseOfferStatus
+  problemSummary?: string | null
+  processToAutomate?: string | null
+  suggestedSolution?: string | null
+  recommendedModules?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  automationOpportunities?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  toolsMentioned?: string | null
+  estimatedScope?: string | null
+  initialPriceRange?: string | null
+  pricingRationale?: string | null
+  questionsForDiscovery?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  risksOrMissingInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  nextSteps?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type BaseOfferCreateOrConnectWithoutDiscoverySessionsInput = {
+  where: Prisma.BaseOfferWhereUniqueInput
+  create: Prisma.XOR<Prisma.BaseOfferCreateWithoutDiscoverySessionsInput, Prisma.BaseOfferUncheckedCreateWithoutDiscoverySessionsInput>
+}
+
+export type BaseOfferUpsertWithoutDiscoverySessionsInput = {
+  update: Prisma.XOR<Prisma.BaseOfferUpdateWithoutDiscoverySessionsInput, Prisma.BaseOfferUncheckedUpdateWithoutDiscoverySessionsInput>
+  create: Prisma.XOR<Prisma.BaseOfferCreateWithoutDiscoverySessionsInput, Prisma.BaseOfferUncheckedCreateWithoutDiscoverySessionsInput>
+  where?: Prisma.BaseOfferWhereInput
+}
+
+export type BaseOfferUpdateToOneWithWhereWithoutDiscoverySessionsInput = {
+  where?: Prisma.BaseOfferWhereInput
+  data: Prisma.XOR<Prisma.BaseOfferUpdateWithoutDiscoverySessionsInput, Prisma.BaseOfferUncheckedUpdateWithoutDiscoverySessionsInput>
+}
+
+export type BaseOfferUpdateWithoutDiscoverySessionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumBaseOfferStatusFieldUpdateOperationsInput | $Enums.BaseOfferStatus
+  problemSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  processToAutomate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suggestedSolution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recommendedModules?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  automationOpportunities?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  toolsMentioned?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estimatedScope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  initialPriceRange?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pricingRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  questionsForDiscovery?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  risksOrMissingInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  nextSteps?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lead?: Prisma.LeadUpdateOneRequiredWithoutBaseOffersNestedInput
+  submission?: Prisma.SubmissionUpdateOneWithoutBaseOffersNestedInput
+}
+
+export type BaseOfferUncheckedUpdateWithoutDiscoverySessionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  leadId?: Prisma.StringFieldUpdateOperationsInput | string
+  submissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumBaseOfferStatusFieldUpdateOperationsInput | $Enums.BaseOfferStatus
+  problemSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  processToAutomate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suggestedSolution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recommendedModules?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  automationOpportunities?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  toolsMentioned?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  estimatedScope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  initialPriceRange?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pricingRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  questionsForDiscovery?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  risksOrMissingInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  nextSteps?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type BaseOfferCreateManyLeadInput = {
@@ -915,6 +1055,7 @@ export type BaseOfferUpdateWithoutLeadInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   submission?: Prisma.SubmissionUpdateOneWithoutBaseOffersNestedInput
+  discoverySessions?: Prisma.DiscoverySessionUpdateManyWithoutBaseOfferNestedInput
 }
 
 export type BaseOfferUncheckedUpdateWithoutLeadInput = {
@@ -937,6 +1078,7 @@ export type BaseOfferUncheckedUpdateWithoutLeadInput = {
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  discoverySessions?: Prisma.DiscoverySessionUncheckedUpdateManyWithoutBaseOfferNestedInput
 }
 
 export type BaseOfferUncheckedUpdateManyWithoutLeadInput = {
@@ -1003,6 +1145,7 @@ export type BaseOfferUpdateWithoutSubmissionInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lead?: Prisma.LeadUpdateOneRequiredWithoutBaseOffersNestedInput
+  discoverySessions?: Prisma.DiscoverySessionUpdateManyWithoutBaseOfferNestedInput
 }
 
 export type BaseOfferUncheckedUpdateWithoutSubmissionInput = {
@@ -1025,6 +1168,7 @@ export type BaseOfferUncheckedUpdateWithoutSubmissionInput = {
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  discoverySessions?: Prisma.DiscoverySessionUncheckedUpdateManyWithoutBaseOfferNestedInput
 }
 
 export type BaseOfferUncheckedUpdateManyWithoutSubmissionInput = {
@@ -1050,6 +1194,35 @@ export type BaseOfferUncheckedUpdateManyWithoutSubmissionInput = {
 }
 
 
+/**
+ * Count Type BaseOfferCountOutputType
+ */
+
+export type BaseOfferCountOutputType = {
+  discoverySessions: number
+}
+
+export type BaseOfferCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  discoverySessions?: boolean | BaseOfferCountOutputTypeCountDiscoverySessionsArgs
+}
+
+/**
+ * BaseOfferCountOutputType without action
+ */
+export type BaseOfferCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BaseOfferCountOutputType
+   */
+  select?: Prisma.BaseOfferCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * BaseOfferCountOutputType without action
+ */
+export type BaseOfferCountOutputTypeCountDiscoverySessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DiscoverySessionWhereInput
+}
+
 
 export type BaseOfferSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1074,6 +1247,8 @@ export type BaseOfferSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   updatedAt?: boolean
   lead?: boolean | Prisma.LeadDefaultArgs<ExtArgs>
   submission?: boolean | Prisma.BaseOffer$submissionArgs<ExtArgs>
+  discoverySessions?: boolean | Prisma.BaseOffer$discoverySessionsArgs<ExtArgs>
+  _count?: boolean | Prisma.BaseOfferCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["baseOffer"]>
 
 export type BaseOfferSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1153,6 +1328,8 @@ export type BaseOfferOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs 
 export type BaseOfferInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   lead?: boolean | Prisma.LeadDefaultArgs<ExtArgs>
   submission?: boolean | Prisma.BaseOffer$submissionArgs<ExtArgs>
+  discoverySessions?: boolean | Prisma.BaseOffer$discoverySessionsArgs<ExtArgs>
+  _count?: boolean | Prisma.BaseOfferCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type BaseOfferIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   lead?: boolean | Prisma.LeadDefaultArgs<ExtArgs>
@@ -1168,6 +1345,7 @@ export type $BaseOfferPayload<ExtArgs extends runtime.Types.Extensions.InternalA
   objects: {
     lead: Prisma.$LeadPayload<ExtArgs>
     submission: Prisma.$SubmissionPayload<ExtArgs> | null
+    discoverySessions: Prisma.$DiscoverySessionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1586,6 +1764,7 @@ export interface Prisma__BaseOfferClient<T, Null = never, ExtArgs extends runtim
   readonly [Symbol.toStringTag]: "PrismaPromise"
   lead<T extends Prisma.LeadDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LeadDefaultArgs<ExtArgs>>): Prisma.Prisma__LeadClient<runtime.Types.Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   submission<T extends Prisma.BaseOffer$submissionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BaseOffer$submissionArgs<ExtArgs>>): Prisma.Prisma__SubmissionClient<runtime.Types.Result.GetResult<Prisma.$SubmissionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  discoverySessions<T extends Prisma.BaseOffer$discoverySessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BaseOffer$discoverySessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DiscoverySessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2052,6 +2231,30 @@ export type BaseOffer$submissionArgs<ExtArgs extends runtime.Types.Extensions.In
    */
   include?: Prisma.SubmissionInclude<ExtArgs> | null
   where?: Prisma.SubmissionWhereInput
+}
+
+/**
+ * BaseOffer.discoverySessions
+ */
+export type BaseOffer$discoverySessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DiscoverySession
+   */
+  select?: Prisma.DiscoverySessionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DiscoverySession
+   */
+  omit?: Prisma.DiscoverySessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DiscoverySessionInclude<ExtArgs> | null
+  where?: Prisma.DiscoverySessionWhereInput
+  orderBy?: Prisma.DiscoverySessionOrderByWithRelationInput | Prisma.DiscoverySessionOrderByWithRelationInput[]
+  cursor?: Prisma.DiscoverySessionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DiscoverySessionScalarFieldEnum | Prisma.DiscoverySessionScalarFieldEnum[]
 }
 
 /**

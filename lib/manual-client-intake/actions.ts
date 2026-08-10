@@ -9,6 +9,7 @@ import {
   parsePreMeetingInviteRequestFormData,
   parsePreMeetingFormData,
   saveDiscoveryNotesFromForm,
+  saveDiscoveryQuestionsFromForm,
   submitLegalDataIntake,
   submitPreMeetingIntake,
   updateBaseOfferFromForm,
@@ -33,6 +34,11 @@ export type PublicIntakeActionState = {
   message?: string;
   error?: string;
   validationErrors?: Record<string, string[]>;
+};
+export type DiscoveryQuestionsActionState = {
+  success: boolean;
+  message?: string;
+  error?: string;
 };
 
 const initialError = 'Verifique os campos assinalados e tente novamente.';
@@ -115,24 +121,49 @@ export async function submitLegalDataIntakeAction(
 export async function updateBaseOfferAction(formData: FormData): Promise<void> {
   const leadId = await updateBaseOfferFromForm(formData);
   revalidatePath(`/admin/leads/${leadId}`);
+  revalidatePath(`/admin/leads/${leadId}/discovery`);
 }
 
 export async function validateBaseOfferAction(formData: FormData): Promise<void> {
   const baseOfferId = String(formData.get('baseOfferId') ?? '');
   const leadId = await validateBaseOffer(baseOfferId);
   revalidatePath(`/admin/leads/${leadId}`);
+  revalidatePath(`/admin/leads/${leadId}/discovery`);
 }
 
 export async function saveDiscoveryNotesAction(formData: FormData): Promise<void> {
   const leadId = await saveDiscoveryNotesFromForm(formData);
   revalidatePath(`/admin/leads/${leadId}`);
+  revalidatePath(`/admin/leads/${leadId}/discovery`);
 }
 
+export async function saveDiscoveryQuestionsAction(
+  _previousState: DiscoveryQuestionsActionState,
+  formData: FormData,
+): Promise<DiscoveryQuestionsActionState> {
+  try {
+    const result = await saveDiscoveryQuestionsFromForm(formData);
+
+    if (!result.success) {
+      return { success: false, error: result.error };
+    }
+
+    revalidatePath(`/admin/leads/${result.leadId}`);
+    revalidatePath(`/admin/leads/${result.leadId}/discovery`);
+
+    return { success: true, message: result.message };
+  } catch (error) {
+    console.error('Failed to save discovery questions', error);
+    return { success: false, error: 'Não foi possível guardar as respostas da Discovery. Tente novamente.' };
+  }
+}
 export async function generateFinalProposalFromBaseOfferAction(formData: FormData): Promise<void> {
   const baseOfferId = String(formData.get('baseOfferId') ?? '');
   const result = await generateFinalProposalFromBaseOffer(baseOfferId);
   revalidatePath(`/admin/leads/${result.leadId}`);
-  redirect(`/admin/leads/${result.leadId}`);
+  revalidatePath(`/admin/leads/${result.leadId}/discovery`);
+  revalidatePath(`/admin/proposals/${result.proposalId}`);
+  redirect(`/admin/proposals/${result.proposalId}`);
 }
 
 function toActionState(result: ManualIntakeResult): PublicIntakeActionState {

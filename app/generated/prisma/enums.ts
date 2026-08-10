@@ -33,12 +33,39 @@ export type ManualIntakeInviteStatus = (typeof ManualIntakeInviteStatus)[keyof t
 
 export const BaseOfferStatus = {
   INTERNAL_DRAFT: 'INTERNAL_DRAFT',
+  DISCOVERY_PREPARATION: 'DISCOVERY_PREPARATION',
+  DISCOVERY_COMPLETED: 'DISCOVERY_COMPLETED',
   VALIDATED: 'VALIDATED',
   CONVERTED_TO_PROPOSAL: 'CONVERTED_TO_PROPOSAL',
   ARCHIVED: 'ARCHIVED'
 } as const
 
 export type BaseOfferStatus = (typeof BaseOfferStatus)[keyof typeof BaseOfferStatus]
+
+
+export const DiscoverySessionStatus = {
+  DRAFT: 'DRAFT',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  ARCHIVED: 'ARCHIVED'
+} as const
+
+export type DiscoverySessionStatus = (typeof DiscoverySessionStatus)[keyof typeof DiscoverySessionStatus]
+
+
+export const DiscoveryQuestionCategory = {
+  PROCESS: 'PROCESS',
+  TOOLS: 'TOOLS',
+  DECISION: 'DECISION',
+  URGENCY: 'URGENCY',
+  BUDGET: 'BUDGET',
+  INTEGRATIONS: 'INTEGRATIONS',
+  IMPACT: 'IMPACT',
+  RISKS: 'RISKS',
+  NEXT_STEPS: 'NEXT_STEPS'
+} as const
+
+export type DiscoveryQuestionCategory = (typeof DiscoveryQuestionCategory)[keyof typeof DiscoveryQuestionCategory]
 
 
 export const SubmissionStatus = {

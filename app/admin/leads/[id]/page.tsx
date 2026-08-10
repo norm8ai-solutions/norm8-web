@@ -41,14 +41,11 @@ import {
  formatTimeRangePt,
  getSubmissionDisplayData,
 } from '@/lib/admin/formatters';
+import { getBaseOfferPrimaryAction } from '@/lib/admin/commercial-next-action';
 import { getLeadById } from '@/lib/admin/queries';
 import { buildDefaultProposalDataFromLead } from '@/lib/proposals/service';
-import {
- generateFinalProposalFromBaseOfferAction,
- saveDiscoveryNotesAction,
- updateBaseOfferAction,
- validateBaseOfferAction,
-} from '@/lib/manual-client-intake/actions';
+import { generateFinalProposalFromBaseOfferAction } from '@/lib/manual-client-intake/actions';
+import { prepareDiscoveryAction } from './discovery/actions';
 
 
 
@@ -106,6 +103,8 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
  lead,
  submission: latestSubmission,
  });
+ const primaryBaseOffer = lead.baseOffers[0] ?? null;
+ const activeFinalProposal = selectActiveFinalProposal(lead.proposals, primaryBaseOffer);
  const executionContext = {
  auditSummary: latestAnalysis?.internalSummary ?? latestAnalysis?.companySummary ?? null,
  latestSubmissionId,
@@ -195,7 +194,7 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
  suggestedAction={suggestedAction}
  />
 
-  <BaseOfferPanel baseOffer={lead.baseOffers[0] ?? null} />
+  <BaseOfferPanel baseOffer={primaryBaseOffer} finalProposal={activeFinalProposal} leadId={lead.id} />
 
  <AdminPanel title="Nota interna" subtitle="Regista contexto comercial para a equipa.">
  <form action={addLeadNote} style={{ display: 'grid', gap: 12 }}>
@@ -335,33 +334,41 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
  <AdminEmptyState>Sem análise IA associada.</AdminEmptyState>
  )}
  </AdminPanel>
+ <div id="propostas">
  <AdminPanel title="Propostas" subtitle="Rascunhos e propostas comerciais associadas à lead.">
  {lead.proposals.length > 0 ? (
  <div className="admin-row-list">
  {lead.proposals.map((proposal) => (
+ <div id={`proposal-${proposal.id}`} key={proposal.id}>
  <AdminRow
- key={proposal.id}
  title={proposal.title}
- meta={`${formatProposalStatus(proposal.status)} · ${formatDatePt(proposal.createdAt)}`}
+ meta={`${formatProposalSource(proposal)} · ${formatDatePt(proposal.createdAt)} · ${formatProposalEstimatedValue(proposal.estimatedValue)}`}
  >
- <div>
- <span>
- {formatProposalEstimatedValue(proposal.estimatedValue)} ·{' '}
- {proposal.pdfUrl || proposal.pdfPath ? 'PDF disponível' : 'Sem PDF gerado'}
- </span>
+ <div className="proposal-compact-card">
+ <div className="proposal-compact-badges">
+ <span className={`admin-badge ${getProposalStatusBadgeClass(proposal.status)}`}>{formatProposalStatus(proposal.status)}</span>
+ <span className={`admin-badge ${proposal.pdfUrl || proposal.pdfPath ? 'admin-badge-green' : 'admin-badge-slate'}`}>{formatProposalPdfStatus(proposal)}</span>
+ </div>
+ <p className="proposal-compact-summary">{getProposalSummary(proposal)}</p>
+ <div className="proposal-compact-actions">
+ <Link className="admin-button" href={`/admin/proposals/${proposal.id}`}>Ver detalhe</Link>
  <ProposalPdfActions
  leadId={lead.id}
  pdfUrl={proposal.pdfUrl}
  proposalId={proposal.id}
+ showSuccessMessage={false}
  />
  </div>
+ </div>
  </AdminRow>
+ </div>
  ))}
  </div>
  ) : (
  <AdminEmptyState>Ainda não existem propostas associadas a esta lead.</AdminEmptyState>
  )}
  </AdminPanel>
+ </div>
  <AdminPanel title="Reuniões">
  {lead.meetingBookings.length > 0 ? (
  <div className="admin-row-list">
@@ -427,100 +434,214 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
 }
 
 type LeadBaseOffer = NonNullable<Awaited<ReturnType<typeof getLeadById>>>['baseOffers'][number];
+type LeadProposal = NonNullable<Awaited<ReturnType<typeof getLeadById>>>['proposals'][number];
 
-function BaseOfferPanel({ baseOffer }: { baseOffer: LeadBaseOffer | null }) {
+function BaseOfferPanel({ baseOffer, finalProposal, leadId }: { baseOffer: LeadBaseOffer | null; finalProposal: LeadProposal | null; leadId: string }) {
   if (!baseOffer) {
     return (
       <AdminPanel title="Oferta Base" subtitle="Criada automaticamente pelo fluxo manual pré-discovery.">
-        <AdminEmptyState>Sem Oferta Base associada a esta lead.</AdminEmptyState>
+        <AdminEmptyState>
+          Oferta Base ainda não criada. A Oferta Base será gerada automaticamente após a submissão do formulário pré-reunião.
+        </AdminEmptyState>
       </AdminPanel>
     );
   }
 
-  const recommendedModules = formatJsonList(baseOffer.recommendedModules);
-  const opportunities = formatJsonList(baseOffer.automationOpportunities);
-  const questions = formatJsonList(baseOffer.questionsForDiscovery);
-  const risks = formatJsonList(baseOffer.risksOrMissingInfo);
-  const discoveryNotes = getDiscoveryNotes(baseOffer.metadata);
+  const statusLabel = formatBaseOfferStatus(baseOffer.status);
 
   return (
     <AdminPanel
       title="Oferta Base"
-      subtitle="Rascunho interno para preparar discovery e proposta final."
-      action={<span className="admin-badge admin-badge-blue">{formatBaseOfferStatus(baseOffer.status)}</span>}
+      subtitle="Resumo executivo para orientar a próxima etapa comercial."
+      action={<span className="admin-badge admin-badge-blue">{statusLabel}</span>}
     >
-      <div className="manual-intake-panel-grid">
-        <form action={updateBaseOfferAction} className="manual-intake-form">
-          <input name="baseOfferId" type="hidden" value={baseOffer.id} />
-          <label className="manual-intake-admin-field"><span>Resumo do problema</span><textarea className="admin-textarea" name="problemSummary" defaultValue={baseOffer.problemSummary ?? ''} /></label>
-          <label className="manual-intake-admin-field"><span>Processo a automatizar</span><textarea className="admin-textarea" name="processToAutomate" defaultValue={baseOffer.processToAutomate ?? ''} /></label>
-          <label className="manual-intake-admin-field"><span>Solução sugerida</span><textarea className="admin-textarea" name="suggestedSolution" defaultValue={baseOffer.suggestedSolution ?? ''} /></label>
-          <div className="manual-intake-two-cols">
-            <label className="manual-intake-admin-field"><span>Ferramentas mencionadas</span><input className="admin-input" name="toolsMentioned" defaultValue={baseOffer.toolsMentioned ?? ''} /></label>
-            <label className="manual-intake-admin-field"><span>Intervalo de preço inicial</span><input className="admin-input" name="initialPriceRange" defaultValue={baseOffer.initialPriceRange ?? ''} /></label>
-          </div>
-          <label className="manual-intake-admin-field"><span>Âmbito estimado</span><textarea className="admin-textarea" name="estimatedScope" defaultValue={baseOffer.estimatedScope ?? ''} /></label>
-          <label className="manual-intake-admin-field"><span>Racional de preço</span><textarea className="admin-textarea" name="pricingRationale" defaultValue={baseOffer.pricingRationale ?? ''} /></label>
-          <label className="manual-intake-admin-field"><span>Próximos passos</span><textarea className="admin-textarea" name="nextSteps" defaultValue={baseOffer.nextSteps ?? ''} /></label>
-          <div className="manual-intake-actions"><button className="admin-button" type="submit">Guardar Oferta Base</button></div>
-        </form>
-        <div className="manual-intake-side">
-          <div className="manual-intake-cardlet"><h3>Módulos recomendados</h3><p>{recommendedModules}</p></div>
-          <div className="manual-intake-cardlet"><h3>Oportunidades</h3><p>{opportunities}</p></div>
-          <div className="manual-intake-cardlet"><h3>Perguntas para discovery</h3><p>{questions}</p></div>
-          <div className="manual-intake-cardlet"><h3>Riscos ou informação em falta</h3><p>{risks}</p></div>
-          <div className="manual-intake-actions">
-            <form action={validateBaseOfferAction}><input name="baseOfferId" type="hidden" value={baseOffer.id} /><button className="admin-button admin-button-muted" type="submit">Marcar validada</button></form>
-            <form action={generateFinalProposalFromBaseOfferAction}><input name="baseOfferId" type="hidden" value={baseOffer.id} /><button className="admin-button" type="submit">Gerar Proposta Final</button></form>
-          </div>
+      <div className="base-offer-summary-card">
+        <div className="base-offer-summary-grid">
+          <BaseOfferSummaryItem label="Estado da Oferta Base" value={statusLabel} />
+          <BaseOfferSummaryItem label="Problema principal" value={formatBaseOfferText(baseOffer.problemSummary, 'Ainda sem informação suficiente.')} />
+          <BaseOfferSummaryItem label="Processo a automatizar" value={formatBaseOfferText(baseOffer.processToAutomate)} />
+          <BaseOfferSummaryItem
+            clamp
+            label="Solução sugerida"
+            value={formatBaseOfferText(baseOffer.suggestedSolution, 'Ainda sem informação suficiente.')}
+          />
+          <BaseOfferSummaryItem label="Âmbito estimado" value={formatBaseOfferText(baseOffer.estimatedScope)} />
+          <BaseOfferSummaryItem label="Última atualização" value={formatDatePt(baseOffer.updatedAt)} />
         </div>
-      </div>
-      <div className="manual-intake-discovery">
-        <h3>Preparação da Discovery</h3>
-        <form action={saveDiscoveryNotesAction} className="manual-intake-form">
-          <input name="baseOfferId" type="hidden" value={baseOffer.id} />
-          <div className="manual-intake-two-cols">
-            <DiscoveryField name="confirmedProblems" label="Problemas confirmados" notes={discoveryNotes} />
-            <DiscoveryField name="newProblems" label="Novos problemas" notes={discoveryNotes} />
-            <DiscoveryField name="currentProcess" label="Processo atual" notes={discoveryNotes} />
-            <DiscoveryField name="impact" label="Impacto" notes={discoveryNotes} />
-            <DiscoveryField name="tools" label="Ferramentas" notes={discoveryNotes} />
-            <DiscoveryField name="decisionMakers" label="Decisores" notes={discoveryNotes} />
-            <DiscoveryField name="urgency" label="Urgência" notes={discoveryNotes} />
-            <DiscoveryField name="budget" label="Orçamento" notes={discoveryNotes} />
-            <DiscoveryField name="validatedSolution" label="Solução validada" notes={discoveryNotes} />
-            <DiscoveryField name="discardedFeatures" label="Funcionalidades descartadas" notes={discoveryNotes} />
-            <DiscoveryField name="priceDiscussed" label="Preço discutido" notes={discoveryNotes} />
-            <DiscoveryField name="expectedSecondMeetingDate" label="Data esperada da segunda reunião" notes={discoveryNotes} input />
-          </div>
-          <DiscoveryField name="nextSteps" label="Próximos passos" notes={discoveryNotes} />
-          <div className="manual-intake-actions"><button className="admin-button" type="submit">Guardar preparação</button></div>
-        </form>
+
+        <BaseOfferSummaryActions baseOfferId={baseOffer.id} finalProposal={finalProposal} leadId={leadId} status={baseOffer.status} />
       </div>
     </AdminPanel>
   );
 }
 
-function DiscoveryField({ label, name, notes, input = false }: { label: string; name: string; notes: Record<string, string>; input?: boolean }) {
-  return <label className="manual-intake-admin-field"><span>{label}</span>{input ? <input className="admin-input" name={name} defaultValue={notes[name] ?? ''} /> : <textarea className="admin-textarea" name={name} defaultValue={notes[name] ?? ''} />}</label>;
+function BaseOfferSummaryItem({ clamp = false, label, value }: { clamp?: boolean; label: string; value: string }) {
+  return (
+    <div className="base-offer-summary-item">
+      <span className="base-offer-summary-label">{label}</span>
+      <p className={clamp ? 'base-offer-summary-value base-offer-summary-value-clamped' : 'base-offer-summary-value'}>
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function BaseOfferSummaryActions({
+  baseOfferId,
+  finalProposal,
+  leadId,
+  status,
+}: {
+  baseOfferId: string;
+  finalProposal: LeadProposal | null;
+  leadId: string;
+  status: string;
+}) {
+  if (status === 'ARCHIVED') {
+    return (
+      <div className="base-offer-summary-actions">
+        <span className="admin-badge">Arquivada</span>
+      </div>
+    );
+  }
+
+  const primaryAction = getBaseOfferPrimaryAction({
+    baseOfferStatus: status,
+    finalProposalId: finalProposal?.id,
+    hasFinalProposal: Boolean(finalProposal),
+    leadId,
+  });
+
+  if (primaryAction.type === 'VIEW_FINAL_PROPOSAL') {
+    return (
+      <div className="base-offer-summary-actions">
+        {primaryAction.href ? (
+          <Link className="admin-button" href={primaryAction.href}>{primaryAction.label}</Link>
+        ) : (
+          <div className="discovery-warning">
+            <p>A Oferta Base est&aacute; marcada como convertida, mas n&atilde;o foi encontrada uma proposta associada.</p>
+          </div>
+        )}
+        <Link className="admin-button admin-button-muted" href={`/admin/leads/${leadId}/discovery`}>Ver Discovery</Link>
+      </div>
+    );
+  }
+
+  if (primaryAction.type === 'GENERATE_FINAL_PROPOSAL') {
+    return (
+      <div className="base-offer-summary-actions">
+        <form action={generateFinalProposalFromBaseOfferAction}>
+          <input name="baseOfferId" type="hidden" value={baseOfferId} />
+          <button className="admin-button" type="submit">{primaryAction.label}</button>
+        </form>
+        <Link className="admin-button admin-button-muted" href={`/admin/leads/${leadId}/discovery`}>Ver Discovery</Link>
+      </div>
+    );
+  }
+
+  if (primaryAction.href) {
+    return (
+      <div className="base-offer-summary-actions">
+        <Link className="admin-button" href={primaryAction.href}>{primaryAction.label}</Link>
+      </div>
+    );
+  }
+
+  return null;
+}
+function selectActiveFinalProposal(proposals: LeadProposal[], baseOffer: LeadBaseOffer | null): LeadProposal | null {
+  const activeProposals = proposals.filter((proposal) => ['DRAFT', 'GENERATED', 'SENT', 'ACCEPTED'].includes(proposal.status));
+  const candidates = activeProposals.length > 0 ? activeProposals : proposals;
+  const preferredSubmissionId = baseOffer?.submissionId ?? null;
+
+  return [...candidates].sort((a, b) => {
+    const submissionScoreA = preferredSubmissionId && a.submissionId === preferredSubmissionId ? 1 : 0;
+    const submissionScoreB = preferredSubmissionId && b.submissionId === preferredSubmissionId ? 1 : 0;
+    if (submissionScoreA !== submissionScoreB) return submissionScoreB - submissionScoreA;
+
+    const pdfScoreA = a.pdfUrl || a.pdfPath ? 1 : 0;
+    const pdfScoreB = b.pdfUrl || b.pdfPath ? 1 : 0;
+    if (pdfScoreA !== pdfScoreB) return pdfScoreB - pdfScoreA;
+
+    return getProposalTimestamp(b) - getProposalTimestamp(a) || b.version - a.version || b.id.localeCompare(a.id);
+  })[0] ?? null;
+}
+
+function getProposalTimestamp(proposal: LeadProposal): number {
+  const updatedAt = proposal.updatedAt?.getTime() ?? NaN;
+  const createdAt = proposal.createdAt?.getTime() ?? NaN;
+
+  return Number.isFinite(updatedAt) ? updatedAt : Number.isFinite(createdAt) ? createdAt : 0;
+}
+function formatBaseOfferText(value?: string | null, fallback = 'Por definir'): string {
+  const normalized = value?.trim();
+  return normalized || fallback;
+}
+
+function isDiscoveryCompletedBaseOffer(status: string): boolean {
+  return status === 'VALIDATED' || status === 'DISCOVERY_COMPLETED';
+}
+
+function isConvertedBaseOffer(status: string): boolean {
+  return status === 'CONVERTED_TO_PROPOSAL';
 }
 
 function formatBaseOfferStatus(status: string): string {
-  const labels: Record<string, string> = { INTERNAL_DRAFT: 'Rascunho interno', VALIDATED: 'Validada', CONVERTED_TO_PROPOSAL: 'Convertida em proposta', ARCHIVED: 'Arquivada' };
-  return labels[status] ?? status;
+  const labels: Record<string, string> = {
+    INTERNAL_DRAFT: 'Rascunho interno',
+    DISCOVERY_PREPARATION: 'Discovery em preparação',
+    DISCOVERY_COMPLETED: 'Discovery concluída',
+    VALIDATED: 'Discovery concluída',
+    CONVERTED_TO_PROPOSAL: 'Convertida em proposta',
+    ARCHIVED: 'Arquivada',
+  };
+
+  return labels[status] ?? formatUnknownBaseOfferStatus(status);
 }
 
-function formatJsonList(value: unknown): string {
-  if (Array.isArray(value)) return value.map((item) => String(item)).join(' · ');
-  if (typeof value === 'string') return value;
-  return 'Sem dados registados.';
+function formatUnknownBaseOfferStatus(status: string): string {
+  const readable = status
+    .toLowerCase()
+    .split('_')
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+
+  return readable || 'Estado desconhecido';
 }
 
-function getDiscoveryNotes(metadata: unknown): Record<string, string> {
-  if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) return {};
-  const notes = (metadata as Record<string, unknown>).discoveryNotes;
-  if (!notes || typeof notes !== 'object' || Array.isArray(notes)) return {};
-  return Object.fromEntries(Object.entries(notes).filter((entry): entry is [string, string] => typeof entry[1] === 'string'));
+function formatProposalSource(proposal: LeadProposal): string {
+  if (proposal.submissionId) return 'Discovery / Oferta Base';
+  if (proposal.leadActionId) return 'Manual';
+  return 'Manual';
+}
+
+function getProposalSummary(proposal: LeadProposal): string {
+  return (
+    proposal.recommendedSolution?.trim() ||
+    proposal.painPoints?.trim() ||
+    proposal.scope?.trim() ||
+    proposal.implementationPlan?.trim() ||
+    proposal.nextSteps?.trim() ||
+    'Sem resumo disponível.'
+  );
+}
+
+function formatProposalPdfStatus(proposal: LeadProposal): string {
+  return proposal.pdfUrl || proposal.pdfPath ? 'PDF disponível' : 'PDF pendente';
+}
+
+function getProposalStatusBadgeClass(status: string): string {
+  const tones: Record<string, string> = {
+    DRAFT: 'admin-badge-slate',
+    GENERATED: 'admin-badge-green',
+    SENT: 'admin-badge-blue',
+    ACCEPTED: 'admin-badge-green',
+    REJECTED: 'admin-badge-red',
+    EXPIRED: 'admin-badge-yellow',
+  };
+
+  return tones[status] ?? 'admin-badge-slate';
 }
 function formatProposalStatus(status: string): string {
  switch (status) {

@@ -10,10 +10,8 @@
  */
 
 import { headers } from 'next/headers';
-import Link from 'next/link';
 import type { ReactNode } from 'react';
-import AdminLogo from '@/components/admin/AdminLogo';
-import AdminNav from '@/components/admin/AdminNav';
+import AdminSidebar from '@/components/admin/AdminSidebar';
 import AdminTopbar from '@/components/admin/AdminTopbar';
 import { isAdminAuthDisabledForDemo, requireAdmin } from '@/lib/admin/auth';
 import './admin.css';
@@ -50,23 +48,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <div className="admin-shell">
       <div className="admin-layout">
-        <aside className="admin-sidebar">
-          <div className="admin-brand">
-            <AdminLogo caption="Control Center" />
-          </div>
-
-          <AdminNav />
-
-          <div className="admin-sidebar-footer">
-            <Link className="admin-secondary-link" href="/">
-              Voltar ao site
-            </Link>
-            <div className="admin-system-state">
-              <span>Internal</span>
-              <span>v0.1</span>
-            </div>
-          </div>
-        </aside>
+        <AdminSidebar />
 
         <div className="admin-main">
           <AdminTopbar adminEmail={admin.email} adminName={admin.name} isDemoMode={demoMode} />

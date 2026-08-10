@@ -42,6 +42,7 @@ model Lead {
   leadActions     LeadAction[]
   proposals       Proposal[]
   baseOffers      BaseOffer[]
+  discoverySessions DiscoverySession[]
   manualIntakeInvites ManualIntakeInvite[]
   contracts       Contract[]
 
@@ -172,8 +173,9 @@ model BaseOffer {
   createdAt               DateTime        @default(now())
   updatedAt               DateTime        @updatedAt
 
-  lead       Lead        @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  submission Submission? @relation(fields: [submissionId], references: [id], onDelete: SetNull)
+  lead              Lead               @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  submission        Submission?        @relation(fields: [submissionId], references: [id], onDelete: SetNull)
+  discoverySessions DiscoverySession[]
 
   @@index([leadId])
   @@index([submissionId])
@@ -181,6 +183,51 @@ model BaseOffer {
   @@index([createdAt])
 }
 
+/// Structured Discovery workspace attached to a Lead and optional Base Offer.
+model DiscoverySession {
+  id                  String                 @id @default(cuid())
+  leadId              String
+  baseOfferId         String?
+  status              DiscoverySessionStatus @default(DRAFT)
+  meetingDate         DateTime?
+  summary             String?
+  decisionMakers      String?
+  urgency             String?
+  budgetRange         String?
+  technicalComplexity String?
+  confirmedScope      String?
+  nextSteps           String?
+  createdAt           DateTime               @default(now())
+  updatedAt           DateTime               @updatedAt
+
+  lead      Lead                @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  baseOffer BaseOffer?          @relation(fields: [baseOfferId], references: [id], onDelete: SetNull)
+  questions DiscoveryQuestion[]
+
+  @@index([leadId])
+  @@index([baseOfferId])
+  @@index([status])
+}
+
+/// Individual structured Discovery question and answer.
+model DiscoveryQuestion {
+  id                  String                    @id @default(cuid())
+  discoverySessionId  String
+  question            String
+  answer              String?
+  category            DiscoveryQuestionCategory
+  impactOrObservation String?
+  isRequired          Boolean                   @default(false)
+  isAnswered          Boolean                   @default(false)
+  createdAt           DateTime                  @default(now())
+  updatedAt           DateTime                  @updatedAt
+
+  discoverySession DiscoverySession @relation(fields: [discoverySessionId], references: [id], onDelete: Cascade)
+
+  @@index([discoverySessionId])
+  @@index([category])
+  @@index([isAnswered])
+}
 /// Tokenized manual request sent by Admin before a pre-meeting intake submission.
 model ManualIntakeInvite {
   id              String                   @id @default(cuid())
@@ -703,11 +750,33 @@ enum ManualIntakeInviteStatus {
 /// Lifecycle for an internal base offer generated from manual intake.
 enum BaseOfferStatus {
   INTERNAL_DRAFT
+  DISCOVERY_PREPARATION
+  DISCOVERY_COMPLETED
   VALIDATED
   CONVERTED_TO_PROPOSAL
   ARCHIVED
 }
 
+/// Lifecycle for a structured Discovery workspace.
+enum DiscoverySessionStatus {
+  DRAFT
+  IN_PROGRESS
+  COMPLETED
+  ARCHIVED
+}
+
+/// Discovery question category used by the Admin workspace.
+enum DiscoveryQuestionCategory {
+  PROCESS
+  TOOLS
+  DECISION
+  URGENCY
+  BUDGET
+  INTEGRATIONS
+  IMPACT
+  RISKS
+  NEXT_STEPS
+}
 /// Operational lifecycle for a submitted request.
 enum SubmissionStatus {
   NEW

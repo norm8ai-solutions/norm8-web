@@ -566,10 +566,6 @@ export type EnumAdminRoleFieldUpdateOperationsInput = {
   set?: $Enums.AdminRole
 }
 
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
-}
-
 export type AdminUserCreateNestedOneWithoutSessionsInput = {
   create?: Prisma.XOR<Prisma.AdminUserCreateWithoutSessionsInput, Prisma.AdminUserUncheckedCreateWithoutSessionsInput>
   connectOrCreate?: Prisma.AdminUserCreateOrConnectWithoutSessionsInput

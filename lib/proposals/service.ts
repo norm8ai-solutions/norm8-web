@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ------------------------------------------------------------------
  * File: lib/proposals/service.ts
  * Description: Proposal persistence service for Norm8 commercial workflows.
@@ -147,6 +147,63 @@ export async function getLatestProposalByLeadId(leadId: string): Promise<Proposa
  return prisma.proposal.findFirst({
  where: { leadId },
  orderBy: [{ createdAt: 'desc' }, { version: 'desc' }],
+ });
+}
+
+export async function getActiveFinalProposalForLead(
+ leadId: string,
+ baseOfferId?: string | null,
+): Promise<Proposal | null> {
+ const baseOffer = baseOfferId
+ ? await prisma.baseOffer.findFirst({
+ where: { id: baseOfferId, leadId },
+ select: { submissionId: true },
+ })
+ : null;
+
+ const proposals = await prisma.proposal.findMany({
+ where: {
+ leadId,
+ status: { in: ['DRAFT', 'GENERATED', 'SENT', 'ACCEPTED'] },
+ },
+ orderBy: [{ updatedAt: 'desc' }, { createdAt: 'desc' }, { version: 'desc' }],
+ });
+
+ if (proposals.length === 0) {
+ return null;
+ }
+
+ const preferredSubmissionId = baseOffer?.submissionId ?? null;
+ return [...proposals].sort((a, b) => {
+ const submissionScoreA = preferredSubmissionId && a.submissionId === preferredSubmissionId ? 1 : 0;
+ const submissionScoreB = preferredSubmissionId && b.submissionId === preferredSubmissionId ? 1 : 0;
+ if (submissionScoreA !== submissionScoreB) return submissionScoreB - submissionScoreA;
+
+ const pdfScoreA = a.pdfUrl || a.pdfPath ? 1 : 0;
+ const pdfScoreB = b.pdfUrl || b.pdfPath ? 1 : 0;
+ if (pdfScoreA !== pdfScoreB) return pdfScoreB - pdfScoreA;
+
+ return getProposalTimestamp(b) - getProposalTimestamp(a) || b.version - a.version || b.id.localeCompare(a.id);
+ })[0] ?? null;
+}
+
+export async function getProposalDetailById(id: string) {
+ return prisma.proposal.findUnique({
+ where: { id },
+ include: {
+ lead: {
+ include: {
+ baseOffers: { orderBy: { createdAt: 'desc' } },
+ discoverySessions: {
+ orderBy: { updatedAt: 'desc' },
+ include: { questions: { orderBy: { createdAt: 'asc' } } },
+ },
+ submissions: { orderBy: { createdAt: 'desc' } },
+ },
+ },
+ submission: true,
+ leadAction: true,
+ },
  });
 }
 
@@ -510,6 +567,12 @@ export async function createDraftProposalFromLeadAction({
  return { proposal, created: true };
 }
 
+function getProposalTimestamp(proposal: Pick<Proposal, 'updatedAt' | 'createdAt'>): number {
+ const updatedAt = proposal.updatedAt?.getTime() ?? NaN;
+ const createdAt = proposal.createdAt?.getTime() ?? NaN;
+
+ return Number.isFinite(updatedAt) ? updatedAt : Number.isFinite(createdAt) ? createdAt : 0;
+}
 function normalizeRequired(value: string | null | undefined, field: string): string {
   const normalized = normalizePortugueseText(value ?? '').trim();
 

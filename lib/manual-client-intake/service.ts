@@ -4,7 +4,7 @@ import { createHash, randomBytes } from 'node:crypto';
 import { z } from 'zod';
 import { Prisma } from '@/app/generated/prisma/client';
 import { prisma } from '@/lib/db/prisma';
-import { createProposal } from '@/lib/proposals/service';
+import { getActiveFinalProposalForLead } from '@/lib/proposals/service';
 import { sendManualIntakeEmails, sendPreMeetingInviteEmail } from './email';
 
 const requiredText = (label: string) => z.string().trim().min(1, `${label} é obrigatório.`);
@@ -16,6 +16,17 @@ const websiteOrSocialSchema = z.string().trim().optional().transform((value) => 
 const consentSchema = z.literal('on', { message: 'O consentimento é obrigatório.' });
 const honeypotSchema = z.string().trim().max(0, 'Pedido inválido.').optional().or(z.literal(''));
 
+const discoveryQuestionCategories = [
+  'PROCESS',
+  'TOOLS',
+  'DECISION',
+  'URGENCY',
+  'BUDGET',
+  'INTEGRATIONS',
+  'IMPACT',
+  'RISKS',
+  'NEXT_STEPS',
+] as const;
 export const preMeetingIntakeSchema = z.object({
   contactName: requiredText('Nome do contacto'),
   email: emailSchema,
@@ -122,6 +133,12 @@ export type LegalDataIntakeInput = z.infer<typeof legalDataIntakeSchema>;
 export type ManualIntakeResult =
   | { success: true; leadId: string; submissionId: string; baseOfferId?: string; message: string }
   | { success: false; error: string; validationErrors?: Record<string, string[]> };
+
+export type DiscoveryQuestionsResult =
+  | { success: true; leadId: string; message: string }
+  | { success: false; error: string };
+
+type DiscoveryQuestionCategory = (typeof discoveryQuestionCategories)[number];
 
 export function parsePreMeetingFormData(formData: FormData) {
   return preMeetingIntakeSchema.safeParse(formDataToObject(formData));
@@ -595,7 +612,172 @@ export async function saveDiscoveryNotesFromForm(formData: FormData) {
   return current.leadId;
 }
 
+export async function saveDiscoveryQuestionsFromForm(formData: FormData): Promise<DiscoveryQuestionsResult> {
+  const baseOfferId = String(formData.get('baseOfferId') ?? '').trim();
+  const questionCount = Number(formData.get('questionCount') ?? 0);
+
+  if (!baseOfferId || !Number.isInteger(questionCount) || questionCount < 0) {
+    return { success: false, error: 'Dados das perguntas de discovery inválidos.' };
+  }
+
+  const current = await prisma.baseOffer.findUnique({ where: { id: baseOfferId } });
+  if (!current) {
+    return { success: false, error: 'Oferta Base não encontrada.' };
+  }
+
+  const savedAt = new Date().toISOString();
+  const discoveryQuestions: Prisma.InputJsonObject[] = [];
+
+  for (let index = 0; index < questionCount; index += 1) {
+    const question = String(formData.get(`question-${index}`) ?? '').trim();
+
+    if (!question) {
+      continue;
+    }
+
+    const answer = String(formData.get(`answer-${index}`) ?? '').trim();
+    const rawCategory = String(formData.get(`category-${index}`) ?? '').trim();
+    const impactOrObservation = String(formData.get(`impactOrObservation-${index}`) ?? '').trim();
+    const id = String(formData.get(`questionId-${index}`) ?? '').trim() || `question-${index + 1}`;
+    const category = isDiscoveryQuestionCategory(rawCategory) ? rawCategory : 'PROCESS';
+
+    discoveryQuestions.push({
+      id,
+      question,
+      category,
+      answer,
+      status: answer ? 'ANSWERED' : 'UNANSWERED',
+      impactOrObservation,
+      updatedAt: savedAt,
+    });
+  }
+
+  const metadata = mergeMetadata(current.metadata, {
+    discoveryQuestions,
+    discoveryQuestionsUpdatedAt: savedAt,
+  });
+
+  await prisma.baseOffer.update({
+    where: { id: baseOfferId },
+    data: { metadata },
+  });
+
+  await prisma.leadActivity.create({
+    data: {
+      leadId: current.leadId,
+      type: 'DISCOVERY_PREP_UPDATED',
+      message: 'Discovery atualizada: perguntas e respostas da discovery guardadas no Admin.',
+      metadata: { baseOfferId, questionCount: discoveryQuestions.length },
+    },
+  });
+
+  return {
+    success: true,
+    leadId: current.leadId,
+    message: 'Respostas da Discovery guardadas com sucesso.',
+  };
+}
 export async function generateFinalProposalFromBaseOffer(baseOfferId: string) {
+  const context = await buildFinalProposalContext({ baseOfferId });
+  const activeProposal = await getActiveFinalProposalForLead(context.lead.id, context.baseOfferId);
+
+  if (activeProposal) {
+    await syncBaseOfferWithFinalProposal({
+      baseOfferId: context.baseOfferId,
+      leadId: context.lead.id,
+      proposalId: activeProposal.id,
+    });
+
+    return { leadId: context.lead.id, proposalId: activeProposal.id };
+  }
+
+  const proposal = await prisma.$transaction(async (tx) => {
+    const createdProposal = await tx.proposal.create({
+      data: {
+        lead: { connect: { id: context.lead.id } },
+        ...(context.submissionId ? { submission: { connect: { id: context.submissionId } } } : {}),
+        title: context.title,
+        companyName: context.lead.companyName,
+        contactName: context.lead.contactName,
+        estimatedValue: context.estimatedValue ? new Prisma.Decimal(context.estimatedValue) : undefined,
+        scope: context.confirmedScope,
+        painPoints: context.problemValidated,
+        recommendedSolution: context.suggestedSolution,
+        implementationPlan: context.implementationPlan,
+        nextSteps: context.nextSteps,
+      },
+    });
+
+    await syncBaseOfferWithFinalProposal(
+      {
+        baseOfferId: context.baseOfferId,
+        leadId: context.lead.id,
+        proposalId: createdProposal.id,
+      },
+      tx,
+    );
+
+    await tx.leadActivity.create({
+      data: {
+        leadId: context.lead.id,
+        type: 'FINAL_PROPOSAL_DRAFT_CREATED',
+        message: context.discoveryCompleted
+          ? 'Proposta Final gerada. A Proposta Final foi criada com base na Oferta Base e nos dados validados na Discovery.'
+          : 'Proposta Final gerada. A Proposta Final foi criada antes da Discovery estar formalmente concluida.',
+        metadata: {
+          baseOfferId: context.baseOfferId,
+          proposalDataSource: context.source,
+          discoveryAnswerCount: context.discoveryAnswers.length,
+          discoverySessionId: context.discoverySessionId,
+          proposalId: createdProposal.id,
+        },
+      },
+    });
+
+    return createdProposal;
+  });
+
+  return { leadId: context.lead.id, proposalId: proposal.id };
+}
+type FinalProposalDiscoveryAnswer = {
+  question: string;
+  answer: string;
+  category: DiscoveryQuestionCategory;
+  impactOrObservation?: string;
+};
+
+type FinalProposalContext = {
+  baseOfferId: string;
+  discoverySessionId?: string;
+  discoveryCompleted: boolean;
+  discoveryAnswers: FinalProposalDiscoveryAnswer[];
+  estimatedValue?: number | null;
+  lead: {
+    id: string;
+    companyName: string;
+    contactName?: string | null;
+    email?: string | null;
+    phone?: string | null;
+  };
+  priceRange?: string | null;
+  pricingRationale?: string | null;
+  problemValidated: string;
+  recommendedModules: string;
+  confirmedScope: string;
+  source: 'DISCOVERY' | 'BASE_OFFER' | 'PRE_MEETING_SUBMISSION' | 'MANUAL';
+  submissionId?: string | null;
+  suggestedSolution: string;
+  implementationPlan: string;
+  nextSteps: string;
+  title: string;
+  toolsConfirmed: string;
+  risksIdentified: string;
+};
+
+type FinalProposalBaseOffer = Prisma.BaseOfferGetPayload<{ include: { lead: true; submission: true } }>;
+type FinalProposalDiscoverySession = Prisma.DiscoverySessionGetPayload<{ include: { questions: true } }>;
+
+export async function buildFinalProposalContext({ baseOfferId }: { baseOfferId: string }): Promise<FinalProposalContext> {
   const baseOffer = await prisma.baseOffer.findUnique({
     where: { id: baseOfferId },
     include: { lead: true, submission: true },
@@ -605,37 +787,330 @@ export async function generateFinalProposalFromBaseOffer(baseOfferId: string) {
     throw new Error('Oferta Base não encontrada.');
   }
 
-  const proposal = await createProposal({
-    leadId: baseOffer.leadId,
-    submissionId: baseOffer.submissionId,
-    title: `Proposta final Norm8 para ${baseOffer.lead.company}`,
-    companyName: baseOffer.lead.company,
-    contactName: baseOffer.lead.name,
-    estimatedValue: extractPriceNumber(baseOffer.initialPriceRange),
-    scope: baseOffer.estimatedScope,
-    painPoints: baseOffer.problemSummary,
-    recommendedSolution: baseOffer.suggestedSolution,
-    implementationPlan: baseOffer.processToAutomate,
-    nextSteps: baseOffer.nextSteps,
+  const discoverySession = await prisma.discoverySession.findFirst({
+    where: {
+      leadId: baseOffer.leadId,
+      baseOfferId: baseOffer.id,
+      status: { not: 'ARCHIVED' },
+    },
+    include: { questions: { orderBy: { createdAt: 'asc' } } },
+    orderBy: { updatedAt: 'desc' },
   });
 
-  await prisma.baseOffer.update({
-    where: { id: baseOffer.id },
+  return buildFinalProposalContextFromSources(baseOffer, discoverySession);
+}
+
+function buildFinalProposalContextFromSources(
+  baseOffer: FinalProposalBaseOffer,
+  discoverySession: FinalProposalDiscoverySession | null,
+): FinalProposalContext {
+  const submissionPayload = getJsonObject(baseOffer.submission?.payload ?? null);
+  const answeredQuestions = getAnsweredDiscoveryQuestions(discoverySession);
+  const answersByCategory = groupDiscoveryAnswersByCategory(answeredQuestions);
+  const discoveryHasContext = Boolean(
+    discoverySession &&
+      (nonEmpty(discoverySession.summary) ||
+        nonEmpty(discoverySession.confirmedScope) ||
+        nonEmpty(discoverySession.nextSteps) ||
+        nonEmpty(discoverySession.budgetRange) ||
+        answeredQuestions.length > 0),
+  );
+
+  const problemValidated = firstText(
+    discoverySession?.summary,
+    formatDiscoveryAnswers(answersByCategory.PROCESS),
+    formatDiscoveryAnswers(answersByCategory.IMPACT),
+    baseOffer.problemSummary,
+    getPayloadText(submissionPayload, 'mainProblem'),
+    'Ainda sem informação registada.',
+  );
+
+  const toolsConfirmed = firstText(
+    formatDiscoveryAnswers(answersByCategory.TOOLS),
+    baseOffer.toolsMentioned,
+    getPayloadText(submissionPayload, 'currentTools'),
+    'A validar com o cliente.',
+  );
+
+  const risksIdentified = firstText(
+    formatDiscoveryAnswers(answersByCategory.RISKS),
+    formatJsonText(baseOffer.risksOrMissingInfo),
+    'A validar com o cliente.',
+  );
+
+  const priceRange = firstOptionalText(
+    discoverySession?.budgetRange,
+    formatDiscoveryAnswers(answersByCategory.BUDGET),
+    baseOffer.initialPriceRange,
+  );
+
+  const confirmedScope = firstText(
+    discoverySession?.confirmedScope,
+    formatDiscoveryAnswers(answersByCategory.PROCESS),
+    baseOffer.estimatedScope,
+    getPayloadText(submissionPayload, 'processToAutomate'),
+    'A validar com o cliente.',
+  );
+
+  const suggestedSolution = firstText(
+    baseOffer.suggestedSolution,
+    getPayloadText(submissionPayload, 'solutionObjective'),
+    'Solução Norm8 a detalhar com base no contexto validado na Discovery.',
+  );
+
+  const integrations = formatDiscoveryAnswers(answersByCategory.INTEGRATIONS);
+  const decision = firstOptionalText(discoverySession?.decisionMakers, formatDiscoveryAnswers(answersByCategory.DECISION));
+  const urgency = firstOptionalText(discoverySession?.urgency, formatDiscoveryAnswers(answersByCategory.URGENCY));
+  const impact = formatDiscoveryAnswers(answersByCategory.IMPACT);
+
+  const implementationPlan = formatProposalSections([
+    ['Escopo confirmado', confirmedScope],
+    ['Ferramentas confirmadas', toolsConfirmed],
+    ['Integrações necessárias', integrations],
+    ['Complexidade técnica', discoverySession?.technicalComplexity],
+    ['Riscos identificados', risksIdentified],
+  ], firstText(baseOffer.processToAutomate, getPayloadText(submissionPayload, 'processToAutomate'), 'Plano de implementação a validar com o cliente.'));
+
+  const nextSteps = firstText(
+    discoverySession?.nextSteps,
+    formatDiscoveryAnswers(answersByCategory.NEXT_STEPS),
+    baseOffer.nextSteps,
+    'Confirmar prioridades, validar escopo final e alinhar calendário de implementação.',
+  );
+
+  const painPoints = formatProposalSections([
+    ['Problema validado', problemValidated],
+    ['Impacto esperado', impact],
+    ['Decisão', decision],
+    ['Urgência', urgency],
+  ], problemValidated);
+
+  const recommendedSolution = formatProposalSections([
+    ['Solução recomendada', suggestedSolution],
+    ['Módulos recomendados', formatJsonText(baseOffer.recommendedModules)],
+    ['Oportunidades de automação', formatJsonText(baseOffer.automationOpportunities)],
+    ['Racional de preço', baseOffer.pricingRationale],
+  ], suggestedSolution);
+
+  return {
+    baseOfferId: baseOffer.id,
+    discoverySessionId: discoverySession?.id,
+    discoveryCompleted: discoverySession?.status === 'COMPLETED' || baseOffer.status === 'DISCOVERY_COMPLETED' || baseOffer.status === 'VALIDATED',
+    discoveryAnswers: answeredQuestions,
+    estimatedValue: extractPriceNumber(priceRange),
+    lead: {
+      id: baseOffer.leadId,
+      companyName: firstText(baseOffer.lead.company, getPayloadText(submissionPayload, 'companyName'), 'Empresa'),
+      contactName: firstOptionalText(baseOffer.lead.name, getPayloadText(submissionPayload, 'contactName')),
+      email: baseOffer.lead.email,
+      phone: baseOffer.lead.phone,
+    },
+    priceRange,
+    pricingRationale: firstOptionalText(baseOffer.pricingRationale),
+    problemValidated: painPoints,
+    recommendedModules: formatJsonText(baseOffer.recommendedModules) ?? 'Por definir',
+    confirmedScope,
+    source: discoveryHasContext ? 'DISCOVERY' : baseOfferHasContext(baseOffer) ? 'BASE_OFFER' : baseOffer.submission ? 'PRE_MEETING_SUBMISSION' : 'MANUAL',
+    submissionId: baseOffer.submissionId,
+    suggestedSolution: recommendedSolution,
+    implementationPlan,
+    nextSteps,
+    title: `Proposta final Norm8 para ${firstText(baseOffer.lead.company, getPayloadText(submissionPayload, 'companyName'), 'Empresa')}`,
+    toolsConfirmed,
+    risksIdentified,
+  };
+}
+
+function getAnsweredDiscoveryQuestions(discoverySession: FinalProposalDiscoverySession | null): FinalProposalDiscoveryAnswer[] {
+  if (!discoverySession) {
+    return [];
+  }
+
+  return discoverySession.questions
+    .filter((question) => question.isAnswered || nonEmpty(question.answer))
+    .map((question) => ({
+      question: question.question,
+      answer: question.answer?.trim() ?? '',
+      category: question.category as DiscoveryQuestionCategory,
+      impactOrObservation: firstOptionalText(question.impactOrObservation) ?? undefined,
+    }))
+    .filter((question) => nonEmpty(question.answer));
+}
+
+function groupDiscoveryAnswersByCategory(
+  questions: FinalProposalDiscoveryAnswer[],
+): Partial<Record<DiscoveryQuestionCategory, FinalProposalDiscoveryAnswer[]>> {
+  return questions.reduce<Partial<Record<DiscoveryQuestionCategory, FinalProposalDiscoveryAnswer[]>>>((groups, question) => {
+    groups[question.category] = [...(groups[question.category] ?? []), question];
+    return groups;
+  }, {});
+}
+
+function formatDiscoveryAnswers(questions?: FinalProposalDiscoveryAnswer[]): string | null {
+  if (!questions?.length) {
+    return null;
+  }
+
+  return uniqueText(
+    questions.map((question) => {
+      const observation = firstOptionalText(question.impactOrObservation);
+      return observation ? `${question.answer} (${observation})` : question.answer;
+    }),
+  ).join('\n');
+}
+
+function formatProposalSections(sections: Array<[string, string | null | undefined]>, fallback: string): string {
+  const lines = sections
+    .map(([label, value]) => {
+      const normalized = firstOptionalText(value);
+      return normalized ? `${label}: ${normalized}` : null;
+    })
+    .filter((line): line is string => Boolean(line));
+
+  return lines.length > 0 ? lines.join('\n') : fallback;
+}
+
+function formatJsonText(value: Prisma.JsonValue | null | undefined): string | null {
+  if (typeof value === 'string') {
+    return firstOptionalText(value);
+  }
+
+  if (Array.isArray(value)) {
+    return uniqueText(value.flatMap((item) => formatJsonListItem(item))).join('\n') || null;
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.entries(value)
+      .map(([key, item]) => `${key}: ${formatJsonText(item) ?? ''}`.trim())
+      .filter(Boolean)
+      .join('\n') || null;
+  }
+
+  return null;
+}
+
+function formatJsonListItem(value: Prisma.JsonValue): string[] {
+  if (typeof value === 'string') {
+    return firstOptionalText(value) ? [value.trim()] : [];
+  }
+
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return [String(value)];
+  }
+
+  if (Array.isArray(value)) {
+    return value.flatMap((item) => formatJsonListItem(item));
+  }
+
+  if (value && typeof value === 'object') {
+    return [Object.values(value).flatMap((item) => (item === undefined ? [] : formatJsonListItem(item))).join(' ').trim()].filter(Boolean);
+  }
+
+  return [];
+}
+
+function getJsonObject(value: Prisma.JsonValue | null | undefined): Prisma.JsonObject | null {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value : null;
+}
+
+function getPayloadText(payload: Prisma.JsonObject | null, key: string): string | null {
+  const value = payload?.[key];
+  return typeof value === 'string' ? firstOptionalText(value) : null;
+}
+
+function firstText(...values: Array<string | null | undefined>): string {
+  return firstOptionalText(...values) ?? 'Por definir';
+}
+
+function firstOptionalText(...values: Array<string | null | undefined>): string | null {
+  for (const value of values) {
+    const normalized = value?.trim();
+    if (normalized) {
+      return normalized;
+    }
+  }
+
+  return null;
+}
+
+function nonEmpty(value?: string | null): boolean {
+  return Boolean(value?.trim());
+}
+
+function uniqueText(values: Array<string | null | undefined>): string[] {
+  const seen = new Set<string>();
+  const result: string[] = [];
+
+  for (const value of values) {
+    const normalized = firstOptionalText(value);
+    if (!normalized) {
+      continue;
+    }
+
+    const key = normalized.toLowerCase();
+    if (seen.has(key)) {
+      continue;
+    }
+
+    seen.add(key);
+    result.push(normalized);
+  }
+
+  return result;
+}
+
+function baseOfferHasContext(baseOffer: FinalProposalBaseOffer): boolean {
+  return Boolean(
+    nonEmpty(baseOffer.problemSummary) ||
+      nonEmpty(baseOffer.suggestedSolution) ||
+      nonEmpty(baseOffer.estimatedScope) ||
+      nonEmpty(baseOffer.nextSteps) ||
+      nonEmpty(baseOffer.toolsMentioned) ||
+      formatJsonText(baseOffer.recommendedModules) ||
+      formatJsonText(baseOffer.risksOrMissingInfo),
+  );
+}
+async function syncBaseOfferWithFinalProposal(
+  input: { baseOfferId: string; leadId: string; proposalId: string },
+  tx: Prisma.TransactionClient = prisma,
+): Promise<void> {
+  const discoverySession = await tx.discoverySession.findFirst({
+    where: {
+      leadId: input.leadId,
+      baseOfferId: input.baseOfferId,
+      status: { not: 'ARCHIVED' },
+    },
+    orderBy: { updatedAt: 'desc' },
+    select: { id: true, status: true },
+  });
+
+  await tx.baseOffer.update({
+    where: { id: input.baseOfferId },
     data: { status: 'CONVERTED_TO_PROPOSAL' },
   });
 
-  await prisma.leadActivity.create({
-    data: {
-      leadId: baseOffer.leadId,
-      type: 'FINAL_PROPOSAL_DRAFT_CREATED',
-      message: 'Proposta final criada em estado DRAFT a partir da Oferta Base.',
-      metadata: { baseOfferId, proposalId: proposal.id },
-    },
-  });
+  if (discoverySession && discoverySession.status !== 'COMPLETED') {
+    await tx.discoverySession.update({
+      where: { id: discoverySession.id },
+      data: { status: 'COMPLETED' },
+    });
 
-  return { leadId: baseOffer.leadId, proposalId: proposal.id };
+    await tx.leadActivity.create({
+      data: {
+        leadId: input.leadId,
+        type: 'DISCOVERY_COMPLETED',
+        message: 'Discovery marcada como concluída automaticamente após a criação da Proposta Final.',
+        metadata: {
+          baseOfferId: input.baseOfferId,
+          discoverySessionId: discoverySession.id,
+          previousDiscoveryStatus: discoverySession.status,
+          proposalId: input.proposalId,
+          source: 'final-proposal-generation',
+        },
+      },
+    });
+  }
 }
-
 function buildPreMeetingPayload(input: PreMeetingIntakeInput): Prisma.InputJsonObject {
   return {
     contactName: input.contactName,
@@ -793,6 +1268,9 @@ async function findLeadForLegalData(tx: Prisma.TransactionClient, input: LegalDa
   });
 }
 
+function isDiscoveryQuestionCategory(value: string): value is DiscoveryQuestionCategory {
+  return discoveryQuestionCategories.includes(value as DiscoveryQuestionCategory);
+}
 function mergeMetadata(current: Prisma.JsonValue | null, patch: Prisma.InputJsonObject): Prisma.InputJsonObject {
   const base = current && typeof current === 'object' && !Array.isArray(current) ? current : {};
   return { ...(base as Prisma.JsonObject), ...patch };
