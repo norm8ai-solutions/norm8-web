@@ -2728,6 +2728,13 @@
   gap: 12px;
 }
 
+.proposal-readiness-count {
+  align-self: flex-start;
+  justify-content: center;
+  min-width: 44px;
+  padding: 6px 10px;
+  white-space: nowrap;
+}
 .proposal-readiness-progress {
   background: rgba(148, 163, 184, 0.12);
   border-radius: 999px;
@@ -2772,14 +2779,6 @@
   color: #bbf7d0;
 }
 
-.proposal-readiness-warning {
-  display: grid;
-  gap: 6px;
-}
-
-.proposal-readiness-warning p {
-  margin: 0;
-}
 .discovery-question-card {
   align-items: start;
   background: rgba(15, 23, 42, 0.34);
@@ -2893,6 +2892,28 @@
   display: grid;
   gap: 18px;
 }
+.base-offer-flow-state {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(15, 23, 42, 0.44));
+  border: 1px solid rgba(96, 165, 250, 0.16);
+  border-radius: 8px;
+  display: grid;
+  gap: 6px;
+  padding: 14px 16px;
+}
+
+.base-offer-flow-state strong {
+  color: var(--admin-text, #eef4ff);
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
+.base-offer-flow-state p {
+  color: var(--admin-soft, #c7d2fe);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
 
 .base-offer-summary-grid {
   display: grid;

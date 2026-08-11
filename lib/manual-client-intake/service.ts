@@ -397,7 +397,7 @@ export async function submitPreMeetingIntake(input: PreMeetingIntakeInput): Prom
           {
             leadId: lead.id,
             type: 'BASE_OFFER_CREATED',
-            message: 'Oferta Base interna criada automaticamente a partir do questionário pré-discovery.',
+            message: 'Foi criada uma Oferta Base interna para preparar a discovery e a proposta final.',
             metadata: { submissionId: submission.id, baseOfferId: baseOffer.id, inviteId: invite?.id ?? null },
           },
         ],
@@ -552,7 +552,7 @@ export async function updateBaseOfferFromForm(formData: FormData) {
     data: {
       leadId: baseOffer.leadId,
       type: 'BASE_OFFER_UPDATED',
-      message: 'Oferta Base atualizada manualmente no admin.',
+      message: 'Oferta Base atualizada manualmente no Admin.',
       metadata: { baseOfferId },
     },
   });
@@ -603,8 +603,8 @@ export async function saveDiscoveryNotesFromForm(formData: FormData) {
   await prisma.leadActivity.create({
     data: {
       leadId: current.leadId,
-      type: 'DISCOVERY_PREP_UPDATED',
-      message: 'Preparação da discovery atualizada na Oferta Base.',
+      type: 'DISCOVERY_UPDATED',
+      message: 'Notas, respostas e dados comerciais da discovery foram guardados no Admin.',
       metadata: { baseOfferId },
     },
   });
@@ -665,8 +665,8 @@ export async function saveDiscoveryQuestionsFromForm(formData: FormData): Promis
   await prisma.leadActivity.create({
     data: {
       leadId: current.leadId,
-      type: 'DISCOVERY_PREP_UPDATED',
-      message: 'Discovery atualizada: perguntas e respostas da discovery guardadas no Admin.',
+      type: 'DISCOVERY_UPDATED',
+      message: 'Notas, respostas e dados comerciais da discovery foram guardados no Admin.',
       metadata: { baseOfferId, questionCount: discoveryQuestions.length },
     },
   });
@@ -720,10 +720,10 @@ export async function generateFinalProposalFromBaseOffer(baseOfferId: string) {
     await tx.leadActivity.create({
       data: {
         leadId: context.lead.id,
-        type: 'FINAL_PROPOSAL_DRAFT_CREATED',
+        type: 'FINAL_PROPOSAL_GENERATED',
         message: context.discoveryCompleted
-          ? 'Proposta Final gerada. A Proposta Final foi criada com base na Oferta Base e nos dados validados na Discovery.'
-          : 'Proposta Final gerada. A Proposta Final foi criada antes da Discovery estar formalmente concluida.',
+          ? 'A Proposta Final foi criada com base na Oferta Base e nos dados validados na Discovery.'
+          : 'A Proposta Final foi criada antes da Discovery estar formalmente concluída.',
         metadata: {
           baseOfferId: context.baseOfferId,
           proposalDataSource: context.source,

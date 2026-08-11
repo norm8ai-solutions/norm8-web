@@ -223,7 +223,7 @@ export async function saveDiscoverySessionFromForm(formData: FormData): Promise<
       data: {
         leadId: current.leadId,
         type: 'DISCOVERY_UPDATED',
-        message: 'Discovery atualizada: notas da reunião guardadas no Admin.',
+        message: 'Notas, respostas e dados comerciais da discovery foram guardados no Admin.',
         metadata: { discoverySessionId, baseOfferId: current.baseOfferId },
       },
     }),
@@ -281,7 +281,7 @@ export async function saveDiscoveryQuestionsFromForm(formData: FormData): Promis
       data: {
         leadId: current.leadId,
         type: 'DISCOVERY_UPDATED',
-        message: 'Discovery atualizada: perguntas, respostas e notas da discovery guardadas no Admin.',
+        message: 'Notas, respostas e dados comerciais da discovery foram guardados no Admin.',
         metadata: {
           discoverySessionId,
           baseOfferId: current.baseOfferId,
@@ -404,7 +404,7 @@ export async function saveDiscoveryWorkspaceFromForm(formData: FormData): Promis
       data: {
         leadId,
         type: 'DISCOVERY_UPDATED',
-        message: 'Notas e respostas da discovery guardadas no Admin.',
+        message: 'Notas, respostas e dados comerciais da discovery foram guardados no Admin.',
         metadata: {
           discoverySessionId,
           baseOfferId: baseOfferId || session.baseOfferId,

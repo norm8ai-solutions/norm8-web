@@ -34,7 +34,7 @@ import {
   type DiscoveryWorkspaceSession,
 } from '@/lib/admin/discovery';
 import { getBaseOfferPrimaryAction } from '@/lib/admin/commercial-next-action';
-import { formatDatePt, formatLeadActivityType } from '@/lib/admin/formatters';
+import { formatDatePt, formatLeadActivity } from '@/lib/admin/formatters';
 import { getLeadById } from '@/lib/admin/queries';
 
 type DiscoveryPageProps = {
@@ -81,7 +81,6 @@ export default async function LeadDiscoveryPage({ params }: DiscoveryPageProps) 
     ? { ...baseOffer, status: 'DISCOVERY_PREPARATION' as LeadBaseOffer['status'] }
     : baseOffer;
   const preMeetingSubmission = getPreMeetingSubmission(lead.submissions, displayBaseOffer);
-  const checklist = buildDiscoveryChecklist(displayBaseOffer, preMeetingSubmission, discoverySession);
   const completionChecklist = buildDiscoveryCompletionChecklist(displayBaseOffer, discoverySession);
   const proposalReadiness = buildProposalReadinessChecklist({
     baseOffer: displayBaseOffer,
@@ -137,7 +136,6 @@ export default async function LeadDiscoveryPage({ params }: DiscoveryPageProps) 
         <aside className="admin-page-grid discovery-workspace-aside">
           <DiscoveryStatePanel baseOffer={displayBaseOffer} checklist={completionChecklist} discoverySession={discoverySession} finalProposal={finalProposal} hasFinalProposal={hasFinalProposal} leadId={lead.id} />
           <ProposalReadinessPanel checklist={proposalReadiness} />
-          <DiscoveryChecklistPanel items={checklist} />
           <DiscoveryActivityPanel activities={lead.activities.slice(0, 5)} />
         </aside>
       </section>
@@ -433,7 +431,7 @@ function ProposalReadinessPanel({ checklist }: { checklist: ProposalReadinessChe
     <AdminPanel
       title="Prontidão para proposta"
       subtitle="Confirme se a informação essencial já está validada antes de avançar para a Proposta Final."
-      action={<span className="admin-badge admin-badge-blue">{checklist.completedCount}/{checklist.totalCount}</span>}
+      action={<span className="admin-badge admin-badge-blue proposal-readiness-count">{checklist.completedCount}/{checklist.totalCount}</span>}
     >
       <div className="proposal-readiness">
         <div className="proposal-readiness-progress" aria-label={`${checklist.percentage}% pronto para proposta`}>
@@ -460,12 +458,7 @@ function ProposalReadinessPanel({ checklist }: { checklist: ProposalReadinessChe
           <div className="proposal-readiness-message proposal-readiness-message-ready">
             A Discovery tem informação suficiente para preparar uma Proposta Final mais completa.
           </div>
-        ) : (
-          <div className="discovery-warning proposal-readiness-warning">
-            <p>Ainda existem dados importantes por validar antes de gerar a Proposta Final.</p>
-            <p>Pode avançar mesmo assim, mas a proposta será mais forte se completar os pontos em falta.</p>
-          </div>
-        )}
+        ) : null}
       </div>
     </AdminPanel>
   );
@@ -481,31 +474,20 @@ function formatReadinessSource(source: ProposalReadinessSource): string {
 
   return labels[source];
 }
-function DiscoveryChecklistPanel({ items }: { items: Array<{ label: string; done: boolean }> }) {
-  return (
-    <AdminPanel title="Checklist da Discovery" subtitle="Calculada a partir da Oferta Base e submissão.">
-      <div className="discovery-checklist">
-        {items.map((item) => (
-          <div className={item.done ? 'discovery-checklist-item discovery-checklist-item-done' : 'discovery-checklist-item'} key={item.label}>
-            <span aria-hidden="true">{item.done ? '✓' : '·'}</span>
-            <p>{item.label}</p>
-          </div>
-        ))}
-      </div>
-    </AdminPanel>
-  );
-}
-
 function DiscoveryActivityPanel({ activities }: { activities: LeadDetail['activities'] }) {
   return (
     <AdminPanel title="Atividade recente" subtitle="Últimos eventos desta Lead.">
       {activities.length > 0 ? (
         <div className="admin-row-list">
-          {activities.map((activity) => (
-            <AdminRow key={activity.id} title={formatLeadActivityType(activity.type)} meta={formatDatePt(activity.createdAt)}>
-              {activity.message}
-            </AdminRow>
-          ))}
+          {activities.map((activity) => {
+            const activityDisplay = formatLeadActivity(activity);
+
+            return (
+              <AdminRow key={activity.id} title={activityDisplay.title} meta={formatDatePt(activity.createdAt)}>
+                {activityDisplay.description}
+              </AdminRow>
+            );
+          })}
         </div>
       ) : (
         <AdminEmptyState>Sem atividade recente.</AdminEmptyState>
@@ -680,23 +662,6 @@ function buildDiscoveryCompletionChecklist(
 
   return { completed, missing, hasMissingRequiredInfo: missing.length > 0 };
 }
-function buildDiscoveryChecklist(
-  baseOffer: LeadBaseOffer | null,
-  submission: LeadSubmission | null,
-  discoverySession: DiscoveryWorkspaceSession | null,
-) {
-  const payload = submission ? toRecord(submission.payload) : {};
-
-  return [
-    { label: 'Problema identificado', done: hasMeaningfulText(baseOffer?.problemSummary) || hasMeaningfulText(payloadString(payload, 'mainProblem', '')) },
-    { label: 'Processo a automatizar identificado', done: hasMeaningfulText(baseOffer?.processToAutomate) || hasMeaningfulText(payloadString(payload, 'processToAutomate', '')) },
-    { label: 'Ferramentas atuais identificadas', done: hasMeaningfulText(baseOffer?.toolsMentioned) || hasMeaningfulText(payloadString(payload, 'currentTools', '')) },
-    { label: 'Solução sugerida criada', done: hasMeaningfulText(baseOffer?.suggestedSolution) },
-    { label: 'Perguntas de discovery disponíveis', done: Boolean((discoverySession?.questions.length ?? 0) > 0 || formatJsonList(baseOffer?.questionsForDiscovery).length > 0) },
-    { label: 'Próximos passos definidos', done: hasMeaningfulText(discoverySession?.nextSteps) || hasMeaningfulNextStepsText(baseOffer?.nextSteps) },
-  ];
-}
-
 function formatJsonList(value: unknown): string[] {
   if (Array.isArray(value)) {
     return value.map((item) => stringifyValue(item)).filter(Boolean);

@@ -360,6 +360,7 @@ export async function getLeadById(id: string) {
       notifications: { orderBy: { createdAt: 'desc' } },
       leadActions: { orderBy: [{ status: 'asc' }, { dueAt: 'asc' }, { createdAt: 'desc' }] },
       baseOffers: { orderBy: { createdAt: 'desc' } },
+      discoverySessions: { orderBy: { updatedAt: 'desc' } },
     },
   });
 
@@ -461,5 +462,3 @@ export async function getNotifications(filter: NotificationFilter = 'ALL') {
     include: { relatedLead: true, relatedSubmission: true },
   });
 }
-
-

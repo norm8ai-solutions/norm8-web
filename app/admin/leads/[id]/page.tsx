@@ -36,16 +36,19 @@ import {
 import { getSuggestedNextLeadAction } from '@/lib/admin/lead-action-suggestions';
 import {
  formatDatePt,
- formatLeadActivityType,
+ formatLeadActivity,
  formatMeetingDate,
  formatTimeRangePt,
  getSubmissionDisplayData,
 } from '@/lib/admin/formatters';
-import { getBaseOfferPrimaryAction } from '@/lib/admin/commercial-next-action';
+import {
+  getLeadCommercialFlowState,
+  type LeadCommercialFlowAction,
+  type LeadCommercialFlowState,
+} from '@/lib/admin/commercial-next-action';
 import { getLeadById } from '@/lib/admin/queries';
 import { buildDefaultProposalDataFromLead } from '@/lib/proposals/service';
 import { generateFinalProposalFromBaseOfferAction } from '@/lib/manual-client-intake/actions';
-import { prepareDiscoveryAction } from './discovery/actions';
 
 
 
@@ -104,7 +107,15 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
  submission: latestSubmission,
  });
  const primaryBaseOffer = lead.baseOffers[0] ?? null;
+ const primaryDiscoverySession = selectPrimaryDiscoverySession(lead.discoverySessions, primaryBaseOffer);
  const activeFinalProposal = selectActiveFinalProposal(lead.proposals, primaryBaseOffer);
+ const commercialFlowState = getLeadCommercialFlowState({
+ baseOfferStatus: primaryBaseOffer?.status,
+ discoverySessionStatus: primaryDiscoverySession?.status,
+ finalProposalId: activeFinalProposal?.id,
+ finalProposalPdfHref: activeFinalProposal ? getProposalPdfHref(activeFinalProposal) : null,
+ leadId: lead.id,
+ });
  const executionContext = {
  auditSummary: latestAnalysis?.internalSummary ?? latestAnalysis?.companySummary ?? null,
  latestSubmissionId,
@@ -139,14 +150,7 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
  <LeadStatusBadge status={lead.status} />
  <LeadPriorityBadge priority={lead.priority} />
-  <SendPreMeetingIntakeRequestModal
-  defaultCompanyName={lead.company}
-  defaultContactName={lead.name}
-  defaultEmail={lead.email}
-  defaultPhone={lead.phone}
-  leadId={lead.id}
-  triggerLabel="Enviar formulário pré-reunião"
-  />
+
   </div>
  }
  >
@@ -194,7 +198,7 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
  suggestedAction={suggestedAction}
  />
 
-  <BaseOfferPanel baseOffer={primaryBaseOffer} finalProposal={activeFinalProposal} leadId={lead.id} />
+  <BaseOfferPanel baseOffer={primaryBaseOffer} flowState={commercialFlowState} lead={lead} />
 
  <AdminPanel title="Nota interna" subtitle="Regista contexto comercial para a equipa.">
  <form action={addLeadNote} style={{ display: 'grid', gap: 12 }}>
@@ -242,13 +246,17 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
  <AdminPanel title="Timeline de atividades" subtitle="Histórico operacional do lead.">
  {lead.activities.length > 0 ? (
  <div className="admin-timeline">
- {lead.activities.map((activity) => (
+ {lead.activities.map((activity) => {
+ const activityDisplay = formatLeadActivity(activity);
+
+ return (
  <div className="admin-timeline-item" key={activity.id}>
- <p className="admin-row-title">{formatLeadActivityType(activity.type)}</p>
- <p className="admin-row-text">{activity.message}</p>
+ <p className="admin-row-title">{activityDisplay.title}</p>
+ <p className="admin-row-text">{activityDisplay.description}</p>
  <p className="admin-row-meta">{formatDatePt(activity.createdAt)}</p>
  </div>
- ))}
+ );
+ })}
  </div>
  ) : (
  <AdminEmptyState>Sem atividades registadas.</AdminEmptyState>
@@ -347,11 +355,12 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
  <div className="proposal-compact-card">
  <div className="proposal-compact-badges">
  <span className={`admin-badge ${getProposalStatusBadgeClass(proposal.status)}`}>{formatProposalStatus(proposal.status)}</span>
+ {proposal.id === activeFinalProposal?.id ? <span className="admin-badge admin-badge-blue">Proposta ativa</span> : null}
  <span className={`admin-badge ${proposal.pdfUrl || proposal.pdfPath ? 'admin-badge-green' : 'admin-badge-slate'}`}>{formatProposalPdfStatus(proposal)}</span>
  </div>
  <p className="proposal-compact-summary">{getProposalSummary(proposal)}</p>
  <div className="proposal-compact-actions">
- <Link className="admin-button" href={`/admin/proposals/${proposal.id}`}>Ver detalhe</Link>
+ <Link className="admin-button" href={`/admin/proposals/${proposal.id}`}>Ver Proposta Final</Link>
  <ProposalPdfActions
  leadId={lead.id}
  pdfUrl={proposal.pdfUrl}
@@ -433,29 +442,49 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
  );
 }
 
-type LeadBaseOffer = NonNullable<Awaited<ReturnType<typeof getLeadById>>>['baseOffers'][number];
+type LeadDetail = NonNullable<Awaited<ReturnType<typeof getLeadById>>>;
+type LeadBaseOffer = LeadDetail['baseOffers'][number];
 type LeadProposal = NonNullable<Awaited<ReturnType<typeof getLeadById>>>['proposals'][number];
+type LeadDiscoverySession = NonNullable<Awaited<ReturnType<typeof getLeadById>>>['discoverySessions'][number];
 
-function BaseOfferPanel({ baseOffer, finalProposal, leadId }: { baseOffer: LeadBaseOffer | null; finalProposal: LeadProposal | null; leadId: string }) {
+function BaseOfferPanel({
+  baseOffer,
+  flowState,
+  lead,
+}: {
+  baseOffer: LeadBaseOffer | null;
+  flowState: LeadCommercialFlowState;
+  lead: LeadDetail;
+}) {
+  const statusLabel = baseOffer ? formatBaseOfferStatus(baseOffer.status) : flowState.label;
+  const statusBadgeClass = getCommercialFlowBadgeClass(flowState.stage);
+
   if (!baseOffer) {
     return (
-      <AdminPanel title="Oferta Base" subtitle="Criada automaticamente pelo fluxo manual pré-discovery.">
-        <AdminEmptyState>
-          Oferta Base ainda não criada. A Oferta Base será gerada automaticamente após a submissão do formulário pré-reunião.
-        </AdminEmptyState>
+      <AdminPanel
+        title="Oferta Base"
+        subtitle="Criada automaticamente pelo fluxo manual pré-discovery."
+        action={<span className={`admin-badge ${statusBadgeClass}`}>{flowState.label}</span>}
+      >
+        <div className="base-offer-summary-card" id="oferta-base">
+          <CommercialFlowStateSummary flowState={flowState} />
+          <AdminEmptyState>
+            Oferta Base ainda não criada. A Oferta Base será gerada automaticamente após a submissão do formulário pré-reunião.
+          </AdminEmptyState>
+          <BaseOfferSummaryActions baseOfferId={null} flowState={flowState} lead={lead} />
+        </div>
       </AdminPanel>
     );
   }
-
-  const statusLabel = formatBaseOfferStatus(baseOffer.status);
 
   return (
     <AdminPanel
       title="Oferta Base"
       subtitle="Resumo executivo para orientar a próxima etapa comercial."
-      action={<span className="admin-badge admin-badge-blue">{statusLabel}</span>}
+      action={<span className={`admin-badge ${statusBadgeClass}`}>{flowState.label}</span>}
     >
-      <div className="base-offer-summary-card">
+      <div className="base-offer-summary-card" id="oferta-base">
+        <CommercialFlowStateSummary flowState={flowState} />
         <div className="base-offer-summary-grid">
           <BaseOfferSummaryItem label="Estado da Oferta Base" value={statusLabel} />
           <BaseOfferSummaryItem label="Problema principal" value={formatBaseOfferText(baseOffer.problemSummary, 'Ainda sem informação suficiente.')} />
@@ -469,9 +498,19 @@ function BaseOfferPanel({ baseOffer, finalProposal, leadId }: { baseOffer: LeadB
           <BaseOfferSummaryItem label="Última atualização" value={formatDatePt(baseOffer.updatedAt)} />
         </div>
 
-        <BaseOfferSummaryActions baseOfferId={baseOffer.id} finalProposal={finalProposal} leadId={leadId} status={baseOffer.status} />
+        <BaseOfferSummaryActions baseOfferId={baseOffer.id} flowState={flowState} lead={lead} />
       </div>
     </AdminPanel>
+  );
+}
+
+function CommercialFlowStateSummary({ flowState }: { flowState: LeadCommercialFlowState }) {
+  return (
+    <div className="base-offer-flow-state">
+      <span className="base-offer-summary-label">Próxima fase</span>
+      <strong>{flowState.label}</strong>
+      <p>{flowState.description}</p>
+    </div>
   );
 }
 
@@ -488,67 +527,80 @@ function BaseOfferSummaryItem({ clamp = false, label, value }: { clamp?: boolean
 
 function BaseOfferSummaryActions({
   baseOfferId,
-  finalProposal,
-  leadId,
-  status,
+  flowState,
+  lead,
 }: {
-  baseOfferId: string;
-  finalProposal: LeadProposal | null;
-  leadId: string;
-  status: string;
+  baseOfferId: string | null;
+  flowState: LeadCommercialFlowState;
+  lead: LeadDetail;
 }) {
-  if (status === 'ARCHIVED') {
+  const visibleSecondaryActions = flowState.secondaryActions.filter((action) => action.href !== flowState.primaryAction?.href);
+
+  if (!flowState.primaryAction && visibleSecondaryActions.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="base-offer-summary-actions">
+      {flowState.primaryAction ? renderCommercialFlowAction(flowState.primaryAction, baseOfferId, lead, true) : null}
+      {visibleSecondaryActions.map((action) => renderCommercialFlowAction(action, baseOfferId, lead, false))}
+    </div>
+  );
+}
+
+function renderCommercialFlowAction(
+  action: LeadCommercialFlowAction,
+  baseOfferId: string | null,
+  lead: LeadDetail,
+  primary: boolean,
+) {
+  const className = primary ? 'admin-button' : 'admin-button admin-button-muted';
+
+  if (action.type === 'link' && action.href) {
+    return <Link className={className} href={action.href} key={action.label}>{action.label}</Link>;
+  }
+
+  if (action.type === 'external' && action.href) {
+    return <Link className={className} href={action.href} key={action.label} rel="noreferrer" target="_blank">{action.label}</Link>;
+  }
+
+  if (action.type === 'form' && baseOfferId) {
     return (
-      <div className="base-offer-summary-actions">
-        <span className="admin-badge">Arquivada</span>
-      </div>
+      <form action={generateFinalProposalFromBaseOfferAction} key={action.label}>
+        <input name="baseOfferId" type="hidden" value={baseOfferId} />
+        <button className={className} type="submit">{action.label}</button>
+      </form>
     );
   }
 
-  const primaryAction = getBaseOfferPrimaryAction({
-    baseOfferStatus: status,
-    finalProposalId: finalProposal?.id,
-    hasFinalProposal: Boolean(finalProposal),
-    leadId,
-  });
-
-  if (primaryAction.type === 'VIEW_FINAL_PROPOSAL') {
+  if (action.type === 'form') {
     return (
-      <div className="base-offer-summary-actions">
-        {primaryAction.href ? (
-          <Link className="admin-button" href={primaryAction.href}>{primaryAction.label}</Link>
-        ) : (
-          <div className="discovery-warning">
-            <p>A Oferta Base est&aacute; marcada como convertida, mas n&atilde;o foi encontrada uma proposta associada.</p>
-          </div>
-        )}
-        <Link className="admin-button admin-button-muted" href={`/admin/leads/${leadId}/discovery`}>Ver Discovery</Link>
-      </div>
-    );
-  }
-
-  if (primaryAction.type === 'GENERATE_FINAL_PROPOSAL') {
-    return (
-      <div className="base-offer-summary-actions">
-        <form action={generateFinalProposalFromBaseOfferAction}>
-          <input name="baseOfferId" type="hidden" value={baseOfferId} />
-          <button className="admin-button" type="submit">{primaryAction.label}</button>
-        </form>
-        <Link className="admin-button admin-button-muted" href={`/admin/leads/${leadId}/discovery`}>Ver Discovery</Link>
-      </div>
-    );
-  }
-
-  if (primaryAction.href) {
-    return (
-      <div className="base-offer-summary-actions">
-        <Link className="admin-button" href={primaryAction.href}>{primaryAction.label}</Link>
-      </div>
+      <SendPreMeetingIntakeRequestModal
+        defaultCompanyName={lead.company}
+        defaultContactName={lead.name}
+        defaultEmail={lead.email}
+        defaultPhone={lead.phone}
+        key={action.label}
+        leadId={lead.id}
+        triggerLabel={action.label}
+      />
     );
   }
 
   return null;
 }
+
+function selectPrimaryDiscoverySession(sessions: LeadDiscoverySession[], baseOffer: LeadBaseOffer | null): LeadDiscoverySession | null {
+  const activeSessions = sessions.filter((session) => session.status !== 'ARCHIVED');
+
+  if (baseOffer) {
+    const matchingSession = activeSessions.find((session) => session.baseOfferId === baseOffer.id);
+    if (matchingSession) return matchingSession;
+  }
+
+  return activeSessions[0] ?? null;
+}
+
 function selectActiveFinalProposal(proposals: LeadProposal[], baseOffer: LeadBaseOffer | null): LeadProposal | null {
   const activeProposals = proposals.filter((proposal) => ['DRAFT', 'GENERATED', 'SENT', 'ACCEPTED'].includes(proposal.status));
   const candidates = activeProposals.length > 0 ? activeProposals : proposals;
@@ -578,12 +630,21 @@ function formatBaseOfferText(value?: string | null, fallback = 'Por definir'): s
   return normalized || fallback;
 }
 
-function isDiscoveryCompletedBaseOffer(status: string): boolean {
-  return status === 'VALIDATED' || status === 'DISCOVERY_COMPLETED';
+function getProposalPdfHref(proposal: LeadProposal): string | null {
+  return proposal.pdfUrl || proposal.pdfPath || null;
 }
 
-function isConvertedBaseOffer(status: string): boolean {
-  return status === 'CONVERTED_TO_PROPOSAL';
+function getCommercialFlowBadgeClass(stage: LeadCommercialFlowState['stage']): string {
+  const classes: Record<LeadCommercialFlowState['stage'], string> = {
+    WAITING_PRE_MEETING_SUBMISSION: 'admin-badge-slate',
+    BASE_OFFER_CREATED: 'admin-badge-blue',
+    DISCOVERY_IN_PREPARATION: 'admin-badge-blue',
+    DISCOVERY_COMPLETED: 'admin-badge-green',
+    FINAL_PROPOSAL_CREATED: 'admin-badge-green',
+    BASE_OFFER_ARCHIVED: 'admin-badge-slate',
+  };
+
+  return classes[stage];
 }
 
 function formatBaseOfferStatus(status: string): string {
