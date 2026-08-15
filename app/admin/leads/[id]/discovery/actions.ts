@@ -58,7 +58,7 @@ export async function completeDiscoveryAction(
 
     revalidateDiscoveryPaths(result);
 
-    return { success: true, message: result.message };
+    return { success: true, message: 'Discovery marcada como concluída.' };
   } catch (error) {
     console.error('Failed to complete Discovery', error);
     return { success: false, error: 'Não foi possível concluir a discovery. Tente novamente.' };
@@ -80,10 +80,21 @@ export async function saveDiscoveryNotesAction(
 
     revalidateDiscoveryPaths(result);
 
-    return { success: true, message: result.message };
+    const intent = String(formData.get('intent') ?? 'discovery');
+
+    return {
+      success: true,
+      message: intent === 'base-offer' ? 'Oferta Base guardada com sucesso.' : 'Discovery guardada com sucesso.',
+    };
   } catch (error) {
     console.error('Failed to save Discovery notes', error);
-    return { success: false, error: 'Não foi possível guardar as notas da Discovery. Tente novamente.' };
+    const intent = String(formData.get('intent') ?? 'discovery');
+    return {
+      success: false,
+      error: intent === 'base-offer'
+        ? 'Não foi possível guardar a Oferta Base. Tente novamente.'
+        : 'Não foi possível guardar a discovery. Tente novamente.',
+    };
   }
 }
 
@@ -105,7 +116,7 @@ export async function saveDiscoveryQuestionsAction(
     return { success: true, message: result.message };
   } catch (error) {
     console.error('Failed to save Discovery workspace', error);
-    return { success: false, error: 'Não foi possível guardar a Discovery. Tente novamente.' };
+    return { success: false, error: 'Não foi possível guardar a discovery. Tente novamente.' };
   }
 }
 

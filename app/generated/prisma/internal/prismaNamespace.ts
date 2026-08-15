@@ -392,6 +392,11 @@ export const ModelName = {
   BaseOffer: 'BaseOffer',
   DiscoverySession: 'DiscoverySession',
   DiscoveryQuestion: 'DiscoveryQuestion',
+  FinanceTransaction: 'FinanceTransaction',
+  FinanceRecurringRevenue: 'FinanceRecurringRevenue',
+  FinanceRecurringCost: 'FinanceRecurringCost',
+  FinanceCategory: 'FinanceCategory',
+  FinanceAccount: 'FinanceAccount',
   ManualIntakeInvite: 'ManualIntakeInvite',
   Notification: 'Notification',
   EmailLog: 'EmailLog',
@@ -426,7 +431,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "lead" | "submission" | "leadActivity" | "leadAction" | "proposal" | "baseOffer" | "discoverySession" | "discoveryQuestion" | "manualIntakeInvite" | "notification" | "emailLog" | "meetingBooking" | "auditAnalysis" | "adminUser" | "adminSession" | "adminAuthLog" | "companyLegalSettings" | "contract" | "contractTemplate" | "contractTemplateSection" | "contractSection" | "contractVersion" | "contractNumberSequence" | "contractPhase" | "contractDeliverable" | "contractPaymentMilestone" | "contractActivityLog"
+    modelProps: "lead" | "submission" | "leadActivity" | "leadAction" | "proposal" | "baseOffer" | "discoverySession" | "discoveryQuestion" | "financeTransaction" | "financeRecurringRevenue" | "financeRecurringCost" | "financeCategory" | "financeAccount" | "manualIntakeInvite" | "notification" | "emailLog" | "meetingBooking" | "auditAnalysis" | "adminUser" | "adminSession" | "adminAuthLog" | "companyLegalSettings" | "contract" | "contractTemplate" | "contractTemplateSection" | "contractSection" | "contractVersion" | "contractNumberSequence" | "contractPhase" | "contractDeliverable" | "contractPaymentMilestone" | "contractActivityLog"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1019,6 +1024,376 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.DiscoveryQuestionCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.DiscoveryQuestionCountAggregateOutputType> | number
+        }
+      }
+    }
+    FinanceTransaction: {
+      payload: Prisma.$FinanceTransactionPayload<ExtArgs>
+      fields: Prisma.FinanceTransactionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FinanceTransactionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceTransactionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FinanceTransactionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceTransactionPayload>
+        }
+        findFirst: {
+          args: Prisma.FinanceTransactionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceTransactionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FinanceTransactionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceTransactionPayload>
+        }
+        findMany: {
+          args: Prisma.FinanceTransactionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceTransactionPayload>[]
+        }
+        create: {
+          args: Prisma.FinanceTransactionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceTransactionPayload>
+        }
+        createMany: {
+          args: Prisma.FinanceTransactionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FinanceTransactionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceTransactionPayload>[]
+        }
+        delete: {
+          args: Prisma.FinanceTransactionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceTransactionPayload>
+        }
+        update: {
+          args: Prisma.FinanceTransactionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceTransactionPayload>
+        }
+        deleteMany: {
+          args: Prisma.FinanceTransactionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FinanceTransactionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FinanceTransactionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceTransactionPayload>[]
+        }
+        upsert: {
+          args: Prisma.FinanceTransactionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceTransactionPayload>
+        }
+        aggregate: {
+          args: Prisma.FinanceTransactionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFinanceTransaction>
+        }
+        groupBy: {
+          args: Prisma.FinanceTransactionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FinanceTransactionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FinanceTransactionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FinanceTransactionCountAggregateOutputType> | number
+        }
+      }
+    }
+    FinanceRecurringRevenue: {
+      payload: Prisma.$FinanceRecurringRevenuePayload<ExtArgs>
+      fields: Prisma.FinanceRecurringRevenueFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FinanceRecurringRevenueFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceRecurringRevenuePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FinanceRecurringRevenueFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceRecurringRevenuePayload>
+        }
+        findFirst: {
+          args: Prisma.FinanceRecurringRevenueFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceRecurringRevenuePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FinanceRecurringRevenueFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceRecurringRevenuePayload>
+        }
+        findMany: {
+          args: Prisma.FinanceRecurringRevenueFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceRecurringRevenuePayload>[]
+        }
+        create: {
+          args: Prisma.FinanceRecurringRevenueCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceRecurringRevenuePayload>
+        }
+        createMany: {
+          args: Prisma.FinanceRecurringRevenueCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FinanceRecurringRevenueCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceRecurringRevenuePayload>[]
+        }
+        delete: {
+          args: Prisma.FinanceRecurringRevenueDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceRecurringRevenuePayload>
+        }
+        update: {
+          args: Prisma.FinanceRecurringRevenueUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceRecurringRevenuePayload>
+        }
+        deleteMany: {
+          args: Prisma.FinanceRecurringRevenueDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FinanceRecurringRevenueUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FinanceRecurringRevenueUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceRecurringRevenuePayload>[]
+        }
+        upsert: {
+          args: Prisma.FinanceRecurringRevenueUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceRecurringRevenuePayload>
+        }
+        aggregate: {
+          args: Prisma.FinanceRecurringRevenueAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFinanceRecurringRevenue>
+        }
+        groupBy: {
+          args: Prisma.FinanceRecurringRevenueGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FinanceRecurringRevenueGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FinanceRecurringRevenueCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FinanceRecurringRevenueCountAggregateOutputType> | number
+        }
+      }
+    }
+    FinanceRecurringCost: {
+      payload: Prisma.$FinanceRecurringCostPayload<ExtArgs>
+      fields: Prisma.FinanceRecurringCostFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FinanceRecurringCostFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceRecurringCostPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FinanceRecurringCostFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceRecurringCostPayload>
+        }
+        findFirst: {
+          args: Prisma.FinanceRecurringCostFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceRecurringCostPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FinanceRecurringCostFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceRecurringCostPayload>
+        }
+        findMany: {
+          args: Prisma.FinanceRecurringCostFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceRecurringCostPayload>[]
+        }
+        create: {
+          args: Prisma.FinanceRecurringCostCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceRecurringCostPayload>
+        }
+        createMany: {
+          args: Prisma.FinanceRecurringCostCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FinanceRecurringCostCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceRecurringCostPayload>[]
+        }
+        delete: {
+          args: Prisma.FinanceRecurringCostDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceRecurringCostPayload>
+        }
+        update: {
+          args: Prisma.FinanceRecurringCostUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceRecurringCostPayload>
+        }
+        deleteMany: {
+          args: Prisma.FinanceRecurringCostDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FinanceRecurringCostUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FinanceRecurringCostUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceRecurringCostPayload>[]
+        }
+        upsert: {
+          args: Prisma.FinanceRecurringCostUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceRecurringCostPayload>
+        }
+        aggregate: {
+          args: Prisma.FinanceRecurringCostAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFinanceRecurringCost>
+        }
+        groupBy: {
+          args: Prisma.FinanceRecurringCostGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FinanceRecurringCostGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FinanceRecurringCostCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FinanceRecurringCostCountAggregateOutputType> | number
+        }
+      }
+    }
+    FinanceCategory: {
+      payload: Prisma.$FinanceCategoryPayload<ExtArgs>
+      fields: Prisma.FinanceCategoryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FinanceCategoryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceCategoryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FinanceCategoryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceCategoryPayload>
+        }
+        findFirst: {
+          args: Prisma.FinanceCategoryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceCategoryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FinanceCategoryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceCategoryPayload>
+        }
+        findMany: {
+          args: Prisma.FinanceCategoryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceCategoryPayload>[]
+        }
+        create: {
+          args: Prisma.FinanceCategoryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceCategoryPayload>
+        }
+        createMany: {
+          args: Prisma.FinanceCategoryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FinanceCategoryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceCategoryPayload>[]
+        }
+        delete: {
+          args: Prisma.FinanceCategoryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceCategoryPayload>
+        }
+        update: {
+          args: Prisma.FinanceCategoryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceCategoryPayload>
+        }
+        deleteMany: {
+          args: Prisma.FinanceCategoryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FinanceCategoryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FinanceCategoryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceCategoryPayload>[]
+        }
+        upsert: {
+          args: Prisma.FinanceCategoryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceCategoryPayload>
+        }
+        aggregate: {
+          args: Prisma.FinanceCategoryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFinanceCategory>
+        }
+        groupBy: {
+          args: Prisma.FinanceCategoryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FinanceCategoryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FinanceCategoryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FinanceCategoryCountAggregateOutputType> | number
+        }
+      }
+    }
+    FinanceAccount: {
+      payload: Prisma.$FinanceAccountPayload<ExtArgs>
+      fields: Prisma.FinanceAccountFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FinanceAccountFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceAccountPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FinanceAccountFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceAccountPayload>
+        }
+        findFirst: {
+          args: Prisma.FinanceAccountFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceAccountPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FinanceAccountFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceAccountPayload>
+        }
+        findMany: {
+          args: Prisma.FinanceAccountFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceAccountPayload>[]
+        }
+        create: {
+          args: Prisma.FinanceAccountCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceAccountPayload>
+        }
+        createMany: {
+          args: Prisma.FinanceAccountCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FinanceAccountCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceAccountPayload>[]
+        }
+        delete: {
+          args: Prisma.FinanceAccountDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceAccountPayload>
+        }
+        update: {
+          args: Prisma.FinanceAccountUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceAccountPayload>
+        }
+        deleteMany: {
+          args: Prisma.FinanceAccountDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FinanceAccountUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FinanceAccountUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceAccountPayload>[]
+        }
+        upsert: {
+          args: Prisma.FinanceAccountUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FinanceAccountPayload>
+        }
+        aggregate: {
+          args: Prisma.FinanceAccountAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFinanceAccount>
+        }
+        groupBy: {
+          args: Prisma.FinanceAccountGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FinanceAccountGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FinanceAccountCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FinanceAccountCountAggregateOutputType> | number
         }
       }
     }
@@ -2616,6 +2991,103 @@ export const DiscoveryQuestionScalarFieldEnum = {
 export type DiscoveryQuestionScalarFieldEnum = (typeof DiscoveryQuestionScalarFieldEnum)[keyof typeof DiscoveryQuestionScalarFieldEnum]
 
 
+export const FinanceTransactionScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  status: 'status',
+  title: 'title',
+  description: 'description',
+  amountCents: 'amountCents',
+  currency: 'currency',
+  categoryId: 'categoryId',
+  accountId: 'accountId',
+  occurredAt: 'occurredAt',
+  dueDate: 'dueDate',
+  paidAt: 'paidAt',
+  source: 'source',
+  clientName: 'clientName',
+  leadId: 'leadId',
+  proposalId: 'proposalId',
+  contractId: 'contractId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FinanceTransactionScalarFieldEnum = (typeof FinanceTransactionScalarFieldEnum)[keyof typeof FinanceTransactionScalarFieldEnum]
+
+
+export const FinanceRecurringRevenueScalarFieldEnum = {
+  id: 'id',
+  clientName: 'clientName',
+  title: 'title',
+  description: 'description',
+  monthlyAmountCents: 'monthlyAmountCents',
+  currency: 'currency',
+  status: 'status',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  billingDay: 'billingDay',
+  leadId: 'leadId',
+  proposalId: 'proposalId',
+  contractId: 'contractId',
+  categoryId: 'categoryId',
+  accountId: 'accountId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FinanceRecurringRevenueScalarFieldEnum = (typeof FinanceRecurringRevenueScalarFieldEnum)[keyof typeof FinanceRecurringRevenueScalarFieldEnum]
+
+
+export const FinanceRecurringCostScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  amountCents: 'amountCents',
+  currency: 'currency',
+  status: 'status',
+  frequency: 'frequency',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  renewalDate: 'renewalDate',
+  billingDay: 'billingDay',
+  categoryId: 'categoryId',
+  accountId: 'accountId',
+  vendorName: 'vendorName',
+  websiteUrl: 'websiteUrl',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FinanceRecurringCostScalarFieldEnum = (typeof FinanceRecurringCostScalarFieldEnum)[keyof typeof FinanceRecurringCostScalarFieldEnum]
+
+
+export const FinanceCategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  type: 'type',
+  color: 'color',
+  isDefault: 'isDefault',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FinanceCategoryScalarFieldEnum = (typeof FinanceCategoryScalarFieldEnum)[keyof typeof FinanceCategoryScalarFieldEnum]
+
+
+export const FinanceAccountScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  currency: 'currency',
+  isDefault: 'isDefault',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FinanceAccountScalarFieldEnum = (typeof FinanceAccountScalarFieldEnum)[keyof typeof FinanceAccountScalarFieldEnum]
+
+
 export const ManualIntakeInviteScalarFieldEnum = {
   id: 'id',
   leadId: 'leadId',
@@ -3271,6 +3743,90 @@ export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
 
 
 /**
+ * Reference to a field of type 'FinanceTransactionType'
+ */
+export type EnumFinanceTransactionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FinanceTransactionType'>
+    
+
+
+/**
+ * Reference to a field of type 'FinanceTransactionType[]'
+ */
+export type ListEnumFinanceTransactionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FinanceTransactionType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'FinanceTransactionStatus'
+ */
+export type EnumFinanceTransactionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FinanceTransactionStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'FinanceTransactionStatus[]'
+ */
+export type ListEnumFinanceTransactionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FinanceTransactionStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'FinanceTransactionSource'
+ */
+export type EnumFinanceTransactionSourceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FinanceTransactionSource'>
+    
+
+
+/**
+ * Reference to a field of type 'FinanceTransactionSource[]'
+ */
+export type ListEnumFinanceTransactionSourceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FinanceTransactionSource[]'>
+    
+
+
+/**
+ * Reference to a field of type 'FinanceRecurringRevenueStatus'
+ */
+export type EnumFinanceRecurringRevenueStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FinanceRecurringRevenueStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'FinanceRecurringRevenueStatus[]'
+ */
+export type ListEnumFinanceRecurringRevenueStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FinanceRecurringRevenueStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'FinanceRecurringCostStatus'
+ */
+export type EnumFinanceRecurringCostStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FinanceRecurringCostStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'FinanceRecurringCostStatus[]'
+ */
+export type ListEnumFinanceRecurringCostStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FinanceRecurringCostStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'FinanceRecurringCostFrequency'
+ */
+export type EnumFinanceRecurringCostFrequencyFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FinanceRecurringCostFrequency'>
+    
+
+
+/**
+ * Reference to a field of type 'FinanceRecurringCostFrequency[]'
+ */
+export type ListEnumFinanceRecurringCostFrequencyFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FinanceRecurringCostFrequency[]'>
+    
+
+
+/**
  * Reference to a field of type 'ManualIntakeInviteStatus'
  */
 export type EnumManualIntakeInviteStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ManualIntakeInviteStatus'>
@@ -3639,6 +4195,11 @@ export type GlobalOmitConfig = {
   baseOffer?: Prisma.BaseOfferOmit
   discoverySession?: Prisma.DiscoverySessionOmit
   discoveryQuestion?: Prisma.DiscoveryQuestionOmit
+  financeTransaction?: Prisma.FinanceTransactionOmit
+  financeRecurringRevenue?: Prisma.FinanceRecurringRevenueOmit
+  financeRecurringCost?: Prisma.FinanceRecurringCostOmit
+  financeCategory?: Prisma.FinanceCategoryOmit
+  financeAccount?: Prisma.FinanceAccountOmit
   manualIntakeInvite?: Prisma.ManualIntakeInviteOmit
   notification?: Prisma.NotificationOmit
   emailLog?: Prisma.EmailLogOmit

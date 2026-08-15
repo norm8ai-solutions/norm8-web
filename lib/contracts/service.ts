@@ -14,6 +14,7 @@ import {
   type PaymentMilestoneStatus,
 } from '@/app/generated/prisma/client';
 import { isAdminAuthDisabledForDemo, normalizeAdminEmail } from '@/lib/admin/auth';
+import { syncFinanceIncomeForContract } from '@/lib/admin/finance-commercial-sync';
 import { prisma } from '@/lib/db/prisma';
 import { normalizePortugueseText } from '@/lib/text/normalize-portuguese';
 import { normalizeBasicPortugueseTaxId } from '@/lib/contracts/wizard/validation';
@@ -188,7 +189,7 @@ export async function generateContractNumber(
 export async function createContractDraft(input: ContractWizardInput) {
   const normalized = normalizeWizardInput(input);
 
-  return prisma.$transaction(async (tx) => {
+  const contract = await prisma.$transaction(async (tx) => {
     const createdById = await resolvePersistentAdminId(tx, { adminId: input.adminUserId, email: input.adminEmail });
     const assignedToId = normalized.assignedToId
       ? await resolveOptionalAdminId(tx, normalized.assignedToId)
@@ -244,12 +245,16 @@ export async function createContractDraft(input: ContractWizardInput) {
 
     return contract;
   });
+
+  await syncFinanceIncomeForContract(contract.id);
+
+  return contract;
 }
 
 export async function updateContractFromWizard(contractId: string, input: ContractWizardInput) {
   const normalized = normalizeWizardInput(input);
 
-  return prisma.$transaction(async (tx) => {
+  const contract = await prisma.$transaction(async (tx) => {
     const adminUserId = await resolvePersistentAdminId(tx, { adminId: input.adminUserId, email: input.adminEmail });
     const existing = await tx.contract.findUnique({
       where: { id: contractId },
@@ -335,6 +340,10 @@ export async function updateContractFromWizard(contractId: string, input: Contra
 
     return contract;
   });
+
+  await syncFinanceIncomeForContract(contract.id);
+
+  return contract;
 }
 
 export async function updateCompanyLegalSettings(input: UpdateCompanyLegalSettingsInput) {
@@ -858,7 +867,7 @@ function parsePaymentStatus(value?: string | null): PaymentMilestoneStatus {
   return value === 'READY_TO_INVOICE' || value === 'INVOICED' || value === 'PAID' || value === 'OVERDUE' || value === 'CANCELLED' ? value : 'PENDING';
 }
 export async function updateContractStatusControlled(input: { contractId: string; nextStatus: ContractStatus; adminUserId: string; adminEmail?: string | null; changeReason?: string | null }) {
-  return prisma.$transaction(async (tx) => {
+  const updatedContract = await prisma.$transaction(async (tx) => {
     const adminUserId = await resolvePersistentAdminId(tx, { adminId: input.adminUserId, email: input.adminEmail });
     const contract = await tx.contract.findUnique({
       where: { id: input.contractId },
@@ -900,6 +909,12 @@ export async function updateContractStatusControlled(input: { contractId: string
 
     return updated;
   });
+
+  if (input.nextStatus === 'SIGNED') {
+    await syncFinanceIncomeForContract(updatedContract.id);
+  }
+
+  return updatedContract;
 }
 
 export async function reopenContractForRevision(input: { contractId: string; adminUserId: string; adminEmail?: string | null; changeReason?: string | null }) {

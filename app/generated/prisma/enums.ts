@@ -68,6 +68,62 @@ export const DiscoveryQuestionCategory = {
 export type DiscoveryQuestionCategory = (typeof DiscoveryQuestionCategory)[keyof typeof DiscoveryQuestionCategory]
 
 
+export const FinanceTransactionType = {
+  INCOME: 'INCOME',
+  EXPENSE: 'EXPENSE'
+} as const
+
+export type FinanceTransactionType = (typeof FinanceTransactionType)[keyof typeof FinanceTransactionType]
+
+
+export const FinanceTransactionStatus = {
+  PENDING: 'PENDING',
+  CONFIRMED: 'CONFIRMED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type FinanceTransactionStatus = (typeof FinanceTransactionStatus)[keyof typeof FinanceTransactionStatus]
+
+
+export const FinanceRecurringRevenueStatus = {
+  ACTIVE: 'ACTIVE',
+  PAUSED: 'PAUSED',
+  CANCELLED: 'CANCELLED',
+  ENDED: 'ENDED'
+} as const
+
+export type FinanceRecurringRevenueStatus = (typeof FinanceRecurringRevenueStatus)[keyof typeof FinanceRecurringRevenueStatus]
+
+
+export const FinanceRecurringCostStatus = {
+  ACTIVE: 'ACTIVE',
+  PAUSED: 'PAUSED',
+  CANCELLED: 'CANCELLED',
+  ENDED: 'ENDED'
+} as const
+
+export type FinanceRecurringCostStatus = (typeof FinanceRecurringCostStatus)[keyof typeof FinanceRecurringCostStatus]
+
+
+export const FinanceRecurringCostFrequency = {
+  MONTHLY: 'MONTHLY',
+  YEARLY: 'YEARLY'
+} as const
+
+export type FinanceRecurringCostFrequency = (typeof FinanceRecurringCostFrequency)[keyof typeof FinanceRecurringCostFrequency]
+
+
+export const FinanceTransactionSource = {
+  MANUAL: 'MANUAL',
+  PROPOSAL: 'PROPOSAL',
+  CONTRACT: 'CONTRACT',
+  SUBSCRIPTION: 'SUBSCRIPTION',
+  OTHER: 'OTHER'
+} as const
+
+export type FinanceTransactionSource = (typeof FinanceTransactionSource)[keyof typeof FinanceTransactionSource]
+
+
 export const SubmissionStatus = {
   NEW: 'NEW',
   IN_REVIEW: 'IN_REVIEW',

@@ -2717,6 +2717,12 @@
   border: 1px solid rgba(244, 63, 94, 0.22);
   color: #fecdd3;
 }
+
+.admin-action-feedback-stack {
+  align-items: flex-start;
+  display: grid;
+  gap: 8px;
+}
 .discovery-question-list,
 .discovery-checklist {
   display: grid;
@@ -2963,6 +2969,10 @@
 
 .base-offer-summary-actions form {
   display: inline-flex;
+}
+
+.base-offer-summary-actions .admin-action-feedback-stack {
+  display: grid;
 }
 
 .base-offer-summary-actions .admin-button:disabled {
@@ -3701,4 +3711,215 @@
   .admin-sidebar * {
     transition: none !important;
   }
+}
+
+
+.finance-page {
+  gap: 18px;
+}
+
+.finance-kpi-grid .admin-stat-value {
+  font-variant-numeric: tabular-nums;
+}
+
+.finance-filters {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(220px, 1.4fr) repeat(4, minmax(150px, 1fr)) auto;
+}
+
+.finance-search-input {
+  min-height: 44px;
+}
+
+.finance-recent-list {
+  display: grid;
+  gap: 10px;
+}
+
+.finance-recent-item {
+  align-items: center;
+  background: rgba(8, 13, 24, 0.56);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 12px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  padding: 12px;
+}
+
+.finance-recent-item strong,
+.finance-table-title {
+  color: #f8fbff;
+  display: block;
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+
+.finance-recent-item p,
+.finance-table-meta {
+  color: #8fa3bf;
+  display: block;
+  font-size: 0.82rem;
+  margin: 3px 0 0;
+}
+
+.finance-recent-icon {
+  align-items: center;
+  background: rgba(37, 99, 235, 0.12);
+  border: 1px solid rgba(96, 165, 250, 0.22);
+  border-radius: 10px;
+  color: #93c5fd;
+  display: inline-flex;
+  height: 34px;
+  justify-content: center;
+  width: 34px;
+}
+
+.finance-amount-income,
+.finance-amount-expense {
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.finance-amount-income {
+  color: #86efac;
+}
+
+.finance-amount-expense {
+  color: #fca5a5;
+}
+
+.finance-table-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.finance-inline-action {
+  display: inline-flex;
+}
+
+.finance-inline-action .admin-link:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.finance-inline-error {
+  color: #fecdd3;
+  font-size: 0.78rem;
+}
+
+.finance-empty-state {
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+}
+
+.finance-modal-backdrop {
+  align-items: center;
+  background: rgba(2, 6, 23, 0.72);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 20px;
+  position: fixed;
+  z-index: 90;
+}
+
+.finance-modal {
+  background: rgba(7, 12, 22, 0.98);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 18px;
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.52);
+  max-height: min(88vh, 860px);
+  max-width: 760px;
+  overflow: auto;
+  padding: 22px;
+  width: min(100%, 760px);
+}
+
+.finance-modal-header {
+  align-items: flex-start;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.finance-transaction-form {
+  display: grid;
+  gap: 14px;
+}
+
+@media (max-width: 1180px) {
+  .finance-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .finance-filters,
+  .finance-recent-item {
+    grid-template-columns: 1fr;
+  }
+
+  .finance-modal {
+    border-radius: 14px;
+    padding: 16px;
+  }
+
+  .finance-modal-header {
+    display: grid;
+  }
+}
+
+.finance-table-link {
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.finance-target-card {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.finance-target-card strong {
+  color: rgba(248, 250, 252, 0.96);
+  display: block;
+  font-size: 1.35rem;
+  margin-top: 4px;
+}
+
+.finance-target-label {
+  color: rgba(148, 163, 184, 0.82);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.finance-target-track {
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(96, 165, 250, 0.14);
+  border-radius: 999px;
+  height: 10px;
+  margin-top: 16px;
+  overflow: hidden;
+}
+
+.finance-target-track span {
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.95), rgba(37, 99, 235, 0.95));
+  border-radius: inherit;
+  display: block;
+  height: 100%;
+  max-width: 100%;
+}
+
+.finance-client-search {
+  margin-bottom: 8px;
 }

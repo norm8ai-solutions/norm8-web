@@ -82,6 +82,31 @@ export type DiscoverySession = Prisma.DiscoverySessionModel
  */
 export type DiscoveryQuestion = Prisma.DiscoveryQuestionModel
 /**
+ * Model FinanceTransaction
+ * Internal finance transaction for simple operational cash tracking.
+ */
+export type FinanceTransaction = Prisma.FinanceTransactionModel
+/**
+ * Model FinanceRecurringRevenue
+ * Simple internal category for grouping finance transactions.
+ */
+export type FinanceRecurringRevenue = Prisma.FinanceRecurringRevenueModel
+/**
+ * Model FinanceRecurringCost
+ * Internal recurring cost used to track fixed subscriptions and renewals.
+ */
+export type FinanceRecurringCost = Prisma.FinanceRecurringCostModel
+/**
+ * Model FinanceCategory
+ * 
+ */
+export type FinanceCategory = Prisma.FinanceCategoryModel
+/**
+ * Model FinanceAccount
+ * Internal finance account used to group transactions by source account.
+ */
+export type FinanceAccount = Prisma.FinanceAccountModel
+/**
  * Model ManualIntakeInvite
  * Tokenized manual request sent by Admin before a pre-meeting intake submission.
  */

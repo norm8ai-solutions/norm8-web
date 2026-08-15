@@ -18,6 +18,7 @@ import {
   Gauge,
   Inbox,
   Mail,
+  Receipt,
   Plug,
   Settings,
   TrendingUp,
@@ -47,6 +48,7 @@ const navSections: Array<{ label?: string; items: NavItem[] }> = [
       { href: '/admin/leads', label: 'Leads', icon: Users },
       { href: '/admin/submissions', label: 'Pipeline', icon: Inbox },
       { href: '/admin/contracts', label: 'Contratos', icon: FileSignature },
+      { href: '/admin/finance', label: 'Finance', icon: Receipt },
     ],
   },
   {

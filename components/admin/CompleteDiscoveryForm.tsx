@@ -7,7 +7,8 @@
 
 'use client';
 
-import { useActionState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useActionState, useEffect } from 'react';
 import {
   completeDiscoveryAction,
   type DiscoveryActionState,
@@ -32,9 +33,16 @@ export function CompleteDiscoveryForm({
   submitLabel = 'Marcar discovery como concluída',
   variant = 'primary',
 }: CompleteDiscoveryFormProps) {
+  const router = useRouter();
   const [state, formAction, pending] = useActionState(completeDiscoveryAction, initialState);
   const isDisabled = disabled || pending;
   const buttonClassName = variant === 'secondary' ? 'admin-button admin-button-muted' : 'admin-button';
+
+  useEffect(() => {
+    if (state.success) {
+      router.refresh();
+    }
+  }, [router, state.success]);
 
   return (
     <form action={formAction} className="discovery-complete-form">

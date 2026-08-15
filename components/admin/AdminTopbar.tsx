@@ -33,6 +33,13 @@ const internalNotFoundCopy: TopbarCopy = {
 
 const copyByRoute: Array<{ prefix: string; copy: TopbarCopy }> = [
   {
+    prefix: '/admin/finance',
+    copy: {
+      title: 'Finance',
+      subtitle: 'Gest\u00e3o interna de entradas, despesas, lucro e transa\u00e7\u00f5es da Norm8.',
+    },
+  },
+  {
     prefix: '/admin/proposals',
     copy: {
       title: 'Proposta Final',

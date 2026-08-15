@@ -14,6 +14,7 @@ import 'server-only';
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { Prisma, type AuditAnalysis, type Lead, type LeadAction, type Proposal, type Submission } from '@/app/generated/prisma/client';
+import { syncFinanceIncomeForProposal } from '@/lib/admin/finance-commercial-sync';
 import { prisma } from '@/lib/db/prisma';
 import { renderProposalPdf } from '@/lib/proposals/pdf/generator';
 import { buildProposalPdfTemplate } from '@/lib/proposals/pdf/template';
@@ -106,6 +107,7 @@ export async function createProposal(input: CreateProposalInput): Promise<Propos
  });
 
  if (existing) {
+ await syncFinanceIncomeForProposal(existing.id);
  return existing;
  }
  }
@@ -114,7 +116,7 @@ export async function createProposal(input: CreateProposalInput): Promise<Propos
  const companyName = normalizeRequired(input.companyName ?? lead.company, 'companyName');
  const estimatedValue = normalizeDecimal(input.estimatedValue);
 
- return prisma.proposal.create({
+ const proposal = await prisma.proposal.create({
  data: {
  lead: { connect: { id: leadId } },
  ...(input.submissionId ? { submission: { connect: { id: input.submissionId } } } : {}),
@@ -130,6 +132,10 @@ export async function createProposal(input: CreateProposalInput): Promise<Propos
  nextSteps: normalizeOptional(input.nextSteps),
  },
  });
+
+ await syncFinanceIncomeForProposal(proposal.id);
+
+ return proposal;
 }
 
 export async function getProposalById(id: string): Promise<Proposal | null> {
@@ -188,7 +194,7 @@ export async function getActiveFinalProposalForLead(
 }
 
 export async function getProposalDetailById(id: string) {
- return prisma.proposal.findUnique({
+ const proposal = await prisma.proposal.findUnique({
  where: { id },
  include: {
  lead: {
@@ -205,12 +211,21 @@ export async function getProposalDetailById(id: string) {
  leadAction: true,
  },
  });
+
+ if (!proposal) return null;
+
+ const financeTransaction = await prisma.financeTransaction.findFirst({
+ where: { proposalId: proposal.id, source: 'PROPOSAL', type: 'INCOME' },
+ orderBy: { updatedAt: 'desc' },
+ });
+
+ return { ...proposal, financeTransaction };
 }
 
 export async function updateProposal(id: string, input: UpdateProposalInput): Promise<Proposal> {
  const estimatedValue = 'estimatedValue' in input ? normalizeDecimal(input.estimatedValue) : undefined;
 
- return prisma.proposal.update({
+ const proposal = await prisma.proposal.update({
  where: { id },
  data: {
  ...(input.submissionId !== undefined
@@ -236,6 +251,10 @@ export async function updateProposal(id: string, input: UpdateProposalInput): Pr
  ...(input.pdfPath !== undefined ? { pdfPath: normalizeOptional(input.pdfPath) } : {}),
  },
  });
+
+ await syncFinanceIncomeForProposal(proposal.id);
+
+ return proposal;
 }
 
 export async function generateProposalPdf({
@@ -279,6 +298,8 @@ export async function generateProposalPdf({
  status: 'GENERATED',
  },
  });
+
+ await syncFinanceIncomeForProposal(updatedProposal.id);
 
  return {
  pdfPath,
@@ -552,6 +573,7 @@ export async function createDraftProposalFromLeadAction({
  }
 
  if (action.proposal) {
+ await syncFinanceIncomeForProposal(action.proposal.id);
  return { proposal: action.proposal, created: false };
  }
 

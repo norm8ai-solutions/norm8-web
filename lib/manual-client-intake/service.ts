@@ -3,6 +3,7 @@ import 'server-only';
 import { createHash, randomBytes } from 'node:crypto';
 import { z } from 'zod';
 import { Prisma } from '@/app/generated/prisma/client';
+import { syncFinanceIncomeForProposal } from '@/lib/admin/finance-commercial-sync';
 import { prisma } from '@/lib/db/prisma';
 import { getActiveFinalProposalForLead } from '@/lib/proposals/service';
 import { sendManualIntakeEmails, sendPreMeetingInviteEmail } from './email';
@@ -688,6 +689,8 @@ export async function generateFinalProposalFromBaseOffer(baseOfferId: string) {
       proposalId: activeProposal.id,
     });
 
+    await syncFinanceIncomeForProposal(activeProposal.id);
+
     return { leadId: context.lead.id, proposalId: activeProposal.id };
   }
 
@@ -736,6 +739,8 @@ export async function generateFinalProposalFromBaseOffer(baseOfferId: string) {
 
     return createdProposal;
   });
+
+  await syncFinanceIncomeForProposal(proposal.id);
 
   return { leadId: context.lead.id, proposalId: proposal.id };
 }

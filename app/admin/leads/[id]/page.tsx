@@ -11,6 +11,7 @@
 
 import Link from 'next/link';
 import { LeadActionsPanel } from '@/components/admin/LeadActionsPanel';
+import { FinalProposalLink, GenerateFinalProposalForm } from '@/components/admin/FinalProposalActions';
 import { ProposalPdfActions } from '@/components/admin/ProposalPdfActions';
 import { SendPreMeetingIntakeRequestModal } from '@/components/admin/SendPreMeetingIntakeRequestModal';
 import { Norm8Select } from '@/components/ui/norm8-select';
@@ -48,7 +49,6 @@ import {
 } from '@/lib/admin/commercial-next-action';
 import { getLeadById } from '@/lib/admin/queries';
 import { buildDefaultProposalDataFromLead } from '@/lib/proposals/service';
-import { generateFinalProposalFromBaseOfferAction } from '@/lib/manual-client-intake/actions';
 
 
 
@@ -360,7 +360,7 @@ export default async function LeadDetailPage({ params, searchParams }: LeadDetai
  </div>
  <p className="proposal-compact-summary">{getProposalSummary(proposal)}</p>
  <div className="proposal-compact-actions">
- <Link className="admin-button" href={`/admin/proposals/${proposal.id}`}>Ver Proposta Final</Link>
+ <FinalProposalLink href={`/admin/proposals/${proposal.id}`} />
  <ProposalPdfActions
  leadId={lead.id}
  pdfUrl={proposal.pdfUrl}
@@ -557,7 +557,11 @@ function renderCommercialFlowAction(
   const className = primary ? 'admin-button' : 'admin-button admin-button-muted';
 
   if (action.type === 'link' && action.href) {
-    return <Link className={className} href={action.href} key={action.label}>{action.label}</Link>;
+    return action.label === 'Ver Proposta Final' ? (
+      <FinalProposalLink className={className} href={action.href} key={action.label} label={action.label} />
+    ) : (
+      <Link className={className} href={action.href} key={action.label}>{action.label}</Link>
+    );
   }
 
   if (action.type === 'external' && action.href) {
@@ -566,10 +570,7 @@ function renderCommercialFlowAction(
 
   if (action.type === 'form' && baseOfferId) {
     return (
-      <form action={generateFinalProposalFromBaseOfferAction} key={action.label}>
-        <input name="baseOfferId" type="hidden" value={baseOfferId} />
-        <button className={className} type="submit">{action.label}</button>
-      </form>
+      <GenerateFinalProposalForm baseOfferId={baseOfferId} className={className} key={action.label} label={action.label} />
     );
   }
 

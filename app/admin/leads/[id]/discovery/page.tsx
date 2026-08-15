@@ -13,6 +13,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { CompleteDiscoveryForm } from '@/components/admin/CompleteDiscoveryForm';
 import { GenerateFinalProposalWithWarning } from '@/components/admin/GenerateFinalProposalWithWarning';
+import { FinalProposalLink, GenerateFinalProposalForm } from '@/components/admin/FinalProposalActions';
 import { DiscoveryQuestionsForm } from '@/components/admin/DiscoveryQuestionsForm';
 import { DiscoveryWorkspaceSaveForm } from '@/components/admin/DiscoveryWorkspaceSaveForm';
 import {
@@ -25,9 +26,6 @@ import {
   AdminPanel,
   AdminRow,
 } from '@/components/admin/AdminPrimitives';
-import {
-  generateFinalProposalFromBaseOfferAction,
-} from '@/lib/manual-client-intake/actions';
 import {
   formatDiscoverySessionStatus,
   getOrCreateDiscoverySessionForLead,
@@ -114,7 +112,7 @@ export default async function LeadDiscoveryPage({ params }: DiscoveryPageProps) 
 
       <section className="discovery-workspace-layout">
         {discoverySession ? (
-          <DiscoveryWorkspaceSaveForm discoverySessionId={discoverySession.id} leadId={lead.id}>
+          <DiscoveryWorkspaceSaveForm discoverySessionId={discoverySession.id} hasBaseOffer={Boolean(displayBaseOffer)} leadId={lead.id}>
             <LeadSummaryPanel lead={lead} />
             <PreMeetingSubmissionPanel submission={preMeetingSubmission} />
             <BaseOfferWorkspacePanel baseOffer={displayBaseOffer} />
@@ -370,7 +368,7 @@ function DiscoveryStatePanel({
 
         <div className="base-offer-summary-actions">
           {finalProposal ? (
-            <Link className="admin-button" href={`/admin/proposals/${finalProposal.id}`}>Ver Proposta Final</Link>
+            <FinalProposalLink href={`/admin/proposals/${finalProposal.id}`} />
           ) : null}
           {discoverySession && !finalProposal ? (
             <CompleteDiscoveryForm
@@ -390,10 +388,7 @@ function DiscoveryStatePanel({
             />
           ) : null}
           {baseOffer && canGenerateProposal ? (
-            <form action={generateFinalProposalFromBaseOfferAction}>
-              <input name="baseOfferId" type="hidden" value={baseOffer.id} />
-              <button className="admin-button" type="submit">{primaryAction.label}</button>
-            </form>
+            <GenerateFinalProposalForm baseOfferId={baseOffer.id} label={primaryAction.label} />
           ) : null}
           {canGenerateWithWarning && baseOffer ? (
             <GenerateFinalProposalWithWarning

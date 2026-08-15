@@ -944,14 +944,6 @@ export type AuditAnalysisUncheckedUpdateOneWithoutSubmissionNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.AuditAnalysisUpdateToOneWithWhereWithoutSubmissionInput, Prisma.AuditAnalysisUpdateWithoutSubmissionInput>, Prisma.AuditAnalysisUncheckedUpdateWithoutSubmissionInput>
 }
 
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type NullableEnumAuditPriorityFieldUpdateOperationsInput = {
   set?: $Enums.AuditPriority | null
 }

@@ -8,13 +8,16 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ProposalPdfActions } from '@/components/admin/ProposalPdfActions';
+import { syncProposalFinanceIncomeAction } from '@/lib/finance/actions';
 import {
   AdminEmptyState,
   AdminField,
   AdminPanel,
 } from '@/components/admin/AdminPrimitives';
+import { toAmountCents } from '@/lib/admin/finance-commercial-sync';
 import { requireAdmin } from '@/lib/admin/auth';
 import { formatDatePt } from '@/lib/admin/formatters';
+import { formatCurrencyCents, formatFinanceTransactionStatus } from '@/lib/finance/formatters';
 import { getProposalDetailById } from '@/lib/proposals/service';
 
 type ProposalDetailPageProps = {
@@ -39,6 +42,7 @@ export default async function ProposalDetailPage({ params }: ProposalDetailPageP
   const discoverySession = findProposalDiscoverySession(proposal, baseOffer);
   const pdfUrl = proposal.pdfUrl || null;
   const sourceLabel = getProposalSourceLabel(baseOffer, discoverySession, proposal.leadActionId);
+  const proposalAmountCents = toAmountCents(proposal.estimatedValue);
 
   return (
     <div className="admin-page-grid">
@@ -116,6 +120,25 @@ export default async function ProposalDetailPage({ params }: ProposalDetailPageP
               <AdminField label="Discovery" value={discoverySession ? formatDiscoveryStatus(discoverySession.status) : 'Por definir'} />
               <AdminField label="Submissão" value={proposal.submission ? formatDatePt(proposal.submission.createdAt) : 'Por definir'} />
             </div>
+          </AdminPanel>
+
+          <AdminPanel title="Finance" subtitle={proposal.financeTransaction ? 'Entrada financeira associada.' : 'Receita prevista para acompanhar no Finance.'}>
+            {proposal.financeTransaction ? (
+              <div className="admin-field-grid">
+                <AdminField label="Estado" value={formatFinanceTransactionStatus(proposal.financeTransaction.status)} />
+                <AdminField label="Valor" value={formatCurrencyCents(proposal.financeTransaction.amountCents, proposal.financeTransaction.currency)} />
+                <AdminField label="Origem" value="Proposta" />
+                <AdminField label="Finance" value={<Link className="admin-link" href="/admin/finance?type=INCOME&status=PENDING">Abrir Finance</Link>} />
+              </div>
+            ) : proposalAmountCents ? (
+              <form action={syncProposalFinanceIncomeAction} className="admin-page-grid" style={{ gap: 10 }}>
+                <input name="proposalId" type="hidden" value={proposal.id} />
+                <p className="admin-row-meta">Ainda não existe entrada financeira para esta proposta.</p>
+                <button className="admin-button admin-button-muted" type="submit">Criar entrada financeira</button>
+              </form>
+            ) : (
+              <AdminEmptyState>Defina um valor estimado para criar uma entrada financeira.</AdminEmptyState>
+            )}
           </AdminPanel>
 
           <AdminPanel title="Estado do PDF" subtitle={pdfUrl ? 'Documento gerado e associado.' : 'Documento ainda não gerado.'}>

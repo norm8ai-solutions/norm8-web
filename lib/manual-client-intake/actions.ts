@@ -40,6 +40,12 @@ export type DiscoveryQuestionsActionState = {
   message?: string;
   error?: string;
 };
+export type FinalProposalActionState = {
+  success: boolean;
+  message?: string;
+  error?: string;
+  proposalId?: string;
+};
 
 const initialError = 'Verifique os campos assinalados e tente novamente.';
 
@@ -124,6 +130,7 @@ export async function updateBaseOfferAction(formData: FormData): Promise<void> {
   revalidatePath(`/admin/leads/${leadId}/discovery`);
 }
 
+
 export async function validateBaseOfferAction(formData: FormData): Promise<void> {
   const baseOfferId = String(formData.get('baseOfferId') ?? '');
   const leadId = await validateBaseOffer(baseOfferId);
@@ -164,6 +171,34 @@ export async function generateFinalProposalFromBaseOfferAction(formData: FormDat
   revalidatePath(`/admin/leads/${result.leadId}/discovery`);
   revalidatePath(`/admin/proposals/${result.proposalId}`);
   redirect(`/admin/proposals/${result.proposalId}`);
+}
+
+export async function generateFinalProposalFromBaseOfferFeedbackAction(
+  _previousState: FinalProposalActionState,
+  formData: FormData,
+): Promise<FinalProposalActionState> {
+  try {
+    const baseOfferId = String(formData.get('baseOfferId') ?? '');
+
+    if (!baseOfferId) {
+      return { success: false, error: 'Não foi possível gerar a Proposta Final. Tente novamente.' };
+    }
+
+    const result = await generateFinalProposalFromBaseOffer(baseOfferId);
+
+    revalidatePath(`/admin/leads/${result.leadId}`);
+    revalidatePath(`/admin/leads/${result.leadId}/discovery`);
+    revalidatePath(`/admin/proposals/${result.proposalId}`);
+
+    return {
+      success: true,
+      message: 'Proposta Final gerada com sucesso.',
+      proposalId: result.proposalId,
+    };
+  } catch (error) {
+    console.error('Failed to generate Final Proposal', error);
+    return { success: false, error: 'Não foi possível gerar a Proposta Final. Tente novamente.' };
+  }
 }
 
 function toActionState(result: ManualIntakeResult): PublicIntakeActionState {

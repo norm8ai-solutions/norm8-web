@@ -59,6 +59,11 @@ export const ModelName = {
   BaseOffer: 'BaseOffer',
   DiscoverySession: 'DiscoverySession',
   DiscoveryQuestion: 'DiscoveryQuestion',
+  FinanceTransaction: 'FinanceTransaction',
+  FinanceRecurringRevenue: 'FinanceRecurringRevenue',
+  FinanceRecurringCost: 'FinanceRecurringCost',
+  FinanceCategory: 'FinanceCategory',
+  FinanceAccount: 'FinanceAccount',
   ManualIntakeInvite: 'ManualIntakeInvite',
   Notification: 'Notification',
   EmailLog: 'EmailLog',
@@ -243,6 +248,103 @@ export const DiscoveryQuestionScalarFieldEnum = {
 } as const
 
 export type DiscoveryQuestionScalarFieldEnum = (typeof DiscoveryQuestionScalarFieldEnum)[keyof typeof DiscoveryQuestionScalarFieldEnum]
+
+
+export const FinanceTransactionScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  status: 'status',
+  title: 'title',
+  description: 'description',
+  amountCents: 'amountCents',
+  currency: 'currency',
+  categoryId: 'categoryId',
+  accountId: 'accountId',
+  occurredAt: 'occurredAt',
+  dueDate: 'dueDate',
+  paidAt: 'paidAt',
+  source: 'source',
+  clientName: 'clientName',
+  leadId: 'leadId',
+  proposalId: 'proposalId',
+  contractId: 'contractId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FinanceTransactionScalarFieldEnum = (typeof FinanceTransactionScalarFieldEnum)[keyof typeof FinanceTransactionScalarFieldEnum]
+
+
+export const FinanceRecurringRevenueScalarFieldEnum = {
+  id: 'id',
+  clientName: 'clientName',
+  title: 'title',
+  description: 'description',
+  monthlyAmountCents: 'monthlyAmountCents',
+  currency: 'currency',
+  status: 'status',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  billingDay: 'billingDay',
+  leadId: 'leadId',
+  proposalId: 'proposalId',
+  contractId: 'contractId',
+  categoryId: 'categoryId',
+  accountId: 'accountId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FinanceRecurringRevenueScalarFieldEnum = (typeof FinanceRecurringRevenueScalarFieldEnum)[keyof typeof FinanceRecurringRevenueScalarFieldEnum]
+
+
+export const FinanceRecurringCostScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  amountCents: 'amountCents',
+  currency: 'currency',
+  status: 'status',
+  frequency: 'frequency',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  renewalDate: 'renewalDate',
+  billingDay: 'billingDay',
+  categoryId: 'categoryId',
+  accountId: 'accountId',
+  vendorName: 'vendorName',
+  websiteUrl: 'websiteUrl',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FinanceRecurringCostScalarFieldEnum = (typeof FinanceRecurringCostScalarFieldEnum)[keyof typeof FinanceRecurringCostScalarFieldEnum]
+
+
+export const FinanceCategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  type: 'type',
+  color: 'color',
+  isDefault: 'isDefault',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FinanceCategoryScalarFieldEnum = (typeof FinanceCategoryScalarFieldEnum)[keyof typeof FinanceCategoryScalarFieldEnum]
+
+
+export const FinanceAccountScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  currency: 'currency',
+  isDefault: 'isDefault',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FinanceAccountScalarFieldEnum = (typeof FinanceAccountScalarFieldEnum)[keyof typeof FinanceAccountScalarFieldEnum]
 
 
 export const ManualIntakeInviteScalarFieldEnum = {
