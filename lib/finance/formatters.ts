@@ -43,6 +43,36 @@ export function formatFinanceSource(source: FinanceTransactionSource): string {
   return labels[source];
 }
 
+export function formatDateOnly(value: Date | string | null | undefined): string {
+  if (!value) return '\u2014';
+
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return '\u2014';
+
+  return new Intl.DateTimeFormat('pt-PT', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  }).format(date);
+}
+
+export function formatPercentage(value: number | null | undefined): string {
+  if (value === null || value === undefined || !Number.isFinite(value)) return '—';
+
+  const rounded = Math.round(value * 10) / 10;
+  const formatted = new Intl.NumberFormat('pt-PT', { maximumFractionDigits: 1, minimumFractionDigits: Number.isInteger(rounded) ? 0 : 1 }).format(rounded);
+  return formatted + '%';
+}
+
+export function formatRunwayMonths(value: number | null): string {
+  if (value === null || !Number.isFinite(value)) return '\u2014';
+  if (value <= 0) return '0 meses';
+
+  const rounded = Math.round(value * 10) / 10;
+  const formatted = new Intl.NumberFormat('pt-PT', { maximumFractionDigits: 1, minimumFractionDigits: Number.isInteger(rounded) ? 0 : 1 }).format(rounded);
+  return `${formatted} ${rounded === 1 ? 'mês' : 'meses'}`;
+}
+
 export function parseEuroToCents(input: FormDataEntryValue | null): number | null {
   const raw = String(input ?? '').trim();
 

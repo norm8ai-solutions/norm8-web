@@ -13,6 +13,8 @@ import type { ReactNode } from 'react';
 import type { AdminMetricTrend } from '@/lib/admin/metrics';
 
 type AdminPanelProps = {
+  id?: string;
+  className?: string;
   title?: string;
   subtitle?: string;
   action?: ReactNode;
@@ -49,9 +51,11 @@ type AdminRowProps = {
  * @param props Panel title, subtitle, action, and body.
  * @returns Admin panel container.
  */
-export function AdminPanel({ title, subtitle, action, children }: AdminPanelProps) {
+export function AdminPanel({ id, className, title, subtitle, action, children }: AdminPanelProps) {
+  const panelClassName = className ? `admin-panel ${className}` : 'admin-panel';
+
   return (
-    <section className="admin-panel">
+    <section className={panelClassName} id={id}>
       {(title || subtitle || action) && (
         <div className="admin-panel-header">
           <div>

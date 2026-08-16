@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import type { FinanceRecurringCostFrequency, FinanceRecurringCostStatus, FinanceRecurringRevenueStatus, FinanceTransactionSource, FinanceTransactionStatus, FinanceTransactionType } from '@/app/generated/prisma/client';
 import { requireAdmin } from '@/lib/admin/auth';
-import { ensureRecurringCostDefaults } from '@/lib/admin/finance-recurring-costs';
+import { ensureRecurringCostDefaults, getNextRecurringCostRenewalDate } from '@/lib/admin/finance-recurring-costs';
 import { syncFinanceIncomeForProposal } from '@/lib/admin/finance-commercial-sync';
 import { prisma } from '@/lib/db/prisma';
 import { parseEuroToCents } from './formatters';
@@ -206,7 +206,8 @@ async function parseTransactionFormData(formData: FormData): Promise<ParsedTrans
   const status = parseStatus(formData.get('status'));
   const source = parseSource(formData.get('source'));
   const amountCents = parseEuroToCents(formData.get('amount'));
-  const occurredAt = parseDate(formData.get('occurredAt'));
+  const occurredAt = parseDateOnly(formData.get('occurredAt'));
+  const dueDate = parseOptionalDateOnly(formData.get('dueDate'));
   const currency = String(formData.get('currency') ?? 'EUR').trim().toUpperCase() || 'EUR';
   const leadId = optionalString(formData.get('leadId'));
   let clientName = optionalString(formData.get('clientName'));
@@ -226,7 +227,8 @@ async function parseTransactionFormData(formData: FormData): Promise<ParsedTrans
   if (!status) return { ok: false, error: 'O estado da transa\u00e7\u00e3o \u00e9 obrigat\u00f3rio.' };
   if (!source) return { ok: false, error: 'A origem da transa\u00e7\u00e3o \u00e9 obrigat\u00f3ria.' };
   if (!amountCents || amountCents <= 0) return { ok: false, error: 'O valor deve ser superior a zero.' };
-  if (!occurredAt) return { ok: false, error: 'Selecione uma data v\u00e1lida.' };
+  if (occurredAt === 'INVALID') return { ok: false, error: 'Selecione uma data v\u00e1lida.' };
+  if (dueDate === 'INVALID') return { ok: false, error: 'Selecione uma data v\u00e1lida.' };
   if (!currency) return { ok: false, error: genericSaveError };
 
   return {
@@ -238,7 +240,7 @@ async function parseTransactionFormData(formData: FormData): Promise<ParsedTrans
       clientName,
       currency,
       description: optionalString(formData.get('description')),
-      dueDate: parseDate(formData.get('dueDate')),
+      dueDate,
       leadId,
       occurredAt,
       paidAt: status === 'CONFIRMED' ? new Date() : null,
@@ -318,7 +320,6 @@ async function parseRecurringCostFormData(formData: FormData): Promise<ParsedRec
   const status = parseRecurringCostStatus(formData.get('status'));
   const startDate = parseDate(formData.get('startDate'));
   const endDate = parseDate(formData.get('endDate'));
-  const renewalDate = parseDate(formData.get('renewalDate'));
   const currency = String(formData.get('currency') ?? 'EUR').trim().toUpperCase() || 'EUR';
   const websiteUrl = optionalString(formData.get('websiteUrl'));
 
@@ -329,6 +330,8 @@ async function parseRecurringCostFormData(formData: FormData): Promise<ParsedRec
   if (!startDate) return { ok: false, error: 'Selecione uma data de início válida.' };
   if (endDate && endDate < startDate) return { ok: false, error: 'A data de fim não pode ser anterior ao início.' };
   if (websiteUrl && !isValidUrl(websiteUrl)) return { ok: false, error: 'Introduza um website válido.' };
+
+  const renewalDate = getNextRecurringCostRenewalDate({ endDate, frequency, startDate, status });
 
   return {
     ok: true,
@@ -360,6 +363,38 @@ function parseDate(value: FormDataEntryValue | null): Date | null {
   if (!raw) return null;
   const date = new Date(raw);
   return Number.isNaN(date.getTime()) ? null : date;
+}
+
+type ParsedDateOnly = Date | null | 'INVALID';
+
+function parseDateOnly(value: FormDataEntryValue | null): Date | 'INVALID' {
+  const date = parseOptionalDateOnly(value);
+  return date ?? 'INVALID';
+}
+
+function parseOptionalDateOnly(value: FormDataEntryValue | null): ParsedDateOnly {
+  const raw = String(value ?? '').trim();
+  if (!raw) return null;
+
+  const dateOnlyMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(raw);
+  if (dateOnlyMatch) {
+    const [, year, month, day] = dateOnlyMatch;
+    return buildDateOnly(Number(year), Number(month), Number(day));
+  }
+
+  const parsed = new Date(raw);
+  if (Number.isNaN(parsed.getTime())) return 'INVALID';
+  return normalizeDateOnly(parsed);
+}
+
+function buildDateOnly(year: number, month: number, day: number): Date | 'INVALID' {
+  const date = new Date(year, month - 1, day);
+  if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) return 'INVALID';
+  return date;
+}
+
+function normalizeDateOnly(value: Date): Date {
+  return new Date(value.getFullYear(), value.getMonth(), value.getDate());
 }
 
 function parseType(value: FormDataEntryValue | null): FinanceTransactionType | null {

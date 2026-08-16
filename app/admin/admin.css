@@ -3718,6 +3718,10 @@
   gap: 18px;
 }
 
+.finance-section-anchor {
+  scroll-margin-top: 104px;
+}
+
 .finance-kpi-grid .admin-stat-value {
   font-variant-numeric: tabular-nums;
 }
@@ -3729,6 +3733,28 @@
   grid-template-columns: minmax(220px, 1.4fr) repeat(4, minmax(150px, 1fr)) auto;
 }
 
+.finance-profitability-filters {
+  align-items: end;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(145px, 1fr)) auto;
+  min-width: 0;
+}
+
+.finance-profitability-filters label {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.finance-profitability-filters span {
+  color: rgba(148, 163, 184, 0.82);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
 .finance-search-input {
   min-height: 44px;
 }
@@ -3736,6 +3762,78 @@
 .finance-recent-list {
   display: grid;
   gap: 10px;
+}
+
+.finance-alert-list {
+  display: grid;
+  gap: 10px;
+}
+
+.finance-alert-item {
+  align-items: center;
+  background: rgba(8, 13, 24, 0.56);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  padding: 12px;
+}
+
+.finance-alert-item-danger {
+  border-color: rgba(248, 113, 113, 0.22);
+}
+
+.finance-alert-item-warning {
+  border-color: rgba(234, 179, 8, 0.22);
+}
+
+.finance-alert-item-info {
+  border-color: rgba(96, 165, 250, 0.2);
+}
+
+.finance-alert-icon {
+  align-items: center;
+  border-radius: 8px;
+  display: inline-flex;
+  height: 34px;
+  justify-content: center;
+  width: 34px;
+}
+
+.finance-alert-item-danger .finance-alert-icon {
+  background: rgba(239, 68, 68, 0.1);
+  color: #fca5a5;
+}
+
+.finance-alert-item-warning .finance-alert-icon {
+  background: rgba(234, 179, 8, 0.1);
+  color: #fde68a;
+}
+
+.finance-alert-item-info .finance-alert-icon {
+  background: rgba(59, 130, 246, 0.1);
+  color: #93c5fd;
+}
+
+.finance-alert-heading {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.finance-alert-heading strong {
+  color: #f8fbff;
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+
+.finance-alert-item p {
+  color: #8fa3bf;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  margin: 4px 0 0;
 }
 
 .finance-recent-item {
@@ -3861,7 +3959,10 @@
 }
 
 @media (max-width: 720px) {
+  .finance-alert-item,
   .finance-filters,
+  .finance-forecast-breakdown,
+  .finance-profitability-filters,
   .finance-recent-item {
     grid-template-columns: 1fr;
   }
@@ -3893,6 +3994,40 @@
   display: block;
   font-size: 1.35rem;
   margin-top: 4px;
+}
+
+.finance-forecast-breakdown {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin-top: 14px;
+}
+
+.finance-forecast-breakdown-item {
+  background: rgba(8, 13, 24, 0.56);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 8px;
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  padding: 12px;
+}
+
+.finance-forecast-breakdown-item span {
+  color: rgba(148, 163, 184, 0.82);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+.finance-forecast-breakdown-item strong {
+  color: rgba(248, 250, 252, 0.96);
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
 }
 
 .finance-target-label {

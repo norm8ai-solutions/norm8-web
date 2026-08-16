@@ -29,6 +29,7 @@ type Norm8DateTimePickerProps = {
   timeOptionsLoading?: boolean;
   emptyTimeMessage?: string;
   mode?: 'date' | 'datetime';
+  submitFormat?: 'iso' | 'date';
   disablePast?: boolean;
   minDateTime?: Date | string | null;
 };
@@ -87,6 +88,7 @@ export function Norm8DateTimePicker({
   timeOptionsLoading = false,
   emptyTimeMessage = 'Sem horários disponíveis para este dia.',
   mode = 'datetime',
+  submitFormat = 'iso',
   disablePast = false,
   minDateTime,
 }: Norm8DateTimePickerProps) {
@@ -414,7 +416,7 @@ export function Norm8DateTimePicker({
         <input
           name={name}
           type="hidden"
-          value={selectedDate ? selectedDate.toISOString() : ''}
+          value={selectedDate ? submitFormat === 'date' ? formatDateInputValue(selectedDate) : selectedDate.toISOString() : ''}
         />
       ) : null}
 
@@ -520,6 +522,10 @@ function formatDateTimePt(date: Date): string {
 
 function formatDatePt(date: Date): string {
   return date.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+function formatDateInputValue(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 }
 
 

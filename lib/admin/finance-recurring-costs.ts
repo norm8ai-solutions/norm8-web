@@ -85,11 +85,91 @@ export function calculateMonthlyEquivalentCents(item: { amountCents: number; fre
   return Math.round(item.amountCents / 12);
 }
 
-export function getUpcomingRenewals<T extends { renewalDate: Date | null; status: FinanceRecurringCostStatus }>(items: T[], days = 30): T[] {
-  const now = new Date();
-  const limit = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
+export type RecurringCostWithNextRenewal<T> = T & { nextRenewalDate: Date };
 
-  return items.filter((item) => item.status === 'ACTIVE' && item.renewalDate && item.renewalDate >= now && item.renewalDate <= limit);
+export function getUpcomingRenewals<T extends RecurringCostRenewalInput>(items: T[], days = 30, referenceDate = new Date()): Array<RecurringCostWithNextRenewal<T>> {
+  const today = startOfDay(referenceDate);
+  const limit = addDays(today, days);
+
+  return items
+    .map((item) => ({ item, nextRenewalDate: getNextRecurringCostRenewalDate(item, today) }))
+    .filter((entry): entry is { item: T; nextRenewalDate: Date } => Boolean(entry.nextRenewalDate && entry.nextRenewalDate >= today && entry.nextRenewalDate <= limit))
+    .sort((left, right) => left.nextRenewalDate.getTime() - right.nextRenewalDate.getTime())
+    .map(({ item, nextRenewalDate }) => ({ ...item, nextRenewalDate }));
+}
+
+type RecurringCostRenewalInput = {
+  endDate?: Date | null;
+  frequency: FinanceRecurringCostFrequency;
+  startDate: Date;
+  status: FinanceRecurringCostStatus;
+};
+
+export function getNextRecurringCostRenewalDate(cost: RecurringCostRenewalInput, referenceDate = new Date()): Date | null {
+  if (cost.status !== 'ACTIVE') return null;
+
+  const startDate = startOfDay(cost.startDate);
+  if (Number.isNaN(startDate.getTime())) return null;
+
+  const today = startOfDay(referenceDate);
+  let nextRenewal = startDate;
+
+  if (nextRenewal < today) {
+    const interval = cost.frequency === 'YEARLY' ? 'year' : 'month';
+
+    do {
+      nextRenewal = interval === 'year'
+        ? addYearsPreservingDay(startDate, getYearDifference(startDate, today))
+        : addMonthsPreservingDay(startDate, getMonthDifference(startDate, today));
+
+      if (nextRenewal < today) {
+        nextRenewal = interval === 'year'
+          ? addYearsPreservingDay(nextRenewal, 1)
+          : addMonthsPreservingDay(nextRenewal, 1);
+      }
+    } while (nextRenewal < today);
+  }
+
+  const endDate = cost.endDate ? startOfDay(cost.endDate) : null;
+  if (endDate && nextRenewal > endDate) return null;
+
+  return nextRenewal;
+}
+
+function startOfDay(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+function addDays(date: Date, days: number): Date {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return startOfDay(result);
+}
+
+function addMonthsPreservingDay(date: Date, months: number): Date {
+  const year = date.getFullYear();
+  const month = date.getMonth() + months;
+  const day = date.getDate();
+  const lastDayOfTargetMonth = new Date(year, month + 1, 0).getDate();
+
+  return new Date(year, month, Math.min(day, lastDayOfTargetMonth));
+}
+
+function addYearsPreservingDay(date: Date, years: number): Date {
+  const year = date.getFullYear() + years;
+  const month = date.getMonth();
+  const day = date.getDate();
+  const lastDayOfTargetMonth = new Date(year, month + 1, 0).getDate();
+
+  return new Date(year, month, Math.min(day, lastDayOfTargetMonth));
+}
+
+function getMonthDifference(startDate: Date, targetDate: Date): number {
+  return Math.max(1, (targetDate.getFullYear() - startDate.getFullYear()) * 12 + targetDate.getMonth() - startDate.getMonth());
+}
+
+function getYearDifference(startDate: Date, targetDate: Date): number {
+  return Math.max(1, targetDate.getFullYear() - startDate.getFullYear());
 }
 
 export function getNextRenewalLabel(renewalDate: Date | null): string {

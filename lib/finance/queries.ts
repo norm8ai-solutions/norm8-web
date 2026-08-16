@@ -2,6 +2,9 @@
 import { financePeriodOptions, type FinancePeriodKey } from './constants';
 import { requireAdmin } from '@/lib/admin/auth';
 import { getRecurringCostDashboard } from '@/lib/admin/finance-recurring-costs';
+import { getFinanceAlerts } from '@/lib/admin/finance-alerts';
+import { getFinanceForecastMetrics } from '@/lib/admin/finance-forecast';
+import { getClientProfitabilityMetrics, parseFinanceProfitabilityFilters } from '@/lib/admin/finance-profitability';
 import { prisma } from '@/lib/db/prisma';
 import { getRecurringRevenueDashboard } from './recurring-revenue';
 
@@ -29,6 +32,7 @@ export type FinanceClientOption = {
 export type FinanceFilters = {
   categoryId?: string;
   period: FinancePeriodKey;
+  profitability: ReturnType<typeof parseFinanceProfitabilityFilters>;
   query?: string;
   status?: FinanceTransactionStatus | 'ALL';
   type?: FinanceTransactionType | 'ALL';
@@ -37,8 +41,23 @@ export type FinanceFilters = {
 const incomeCategories = ['Implementa\u00e7\u00e3o', 'Mensalidade', 'Automa\u00e7\u00e3o recorrente', 'Auditoria', 'Consultoria', 'Outro rendimento'];
 const expenseCategories = ['Software', 'Infraestrutura', 'Marketing', 'Subcontrata\u00e7\u00e3o', 'Ferramentas IA', 'Dom\u00ednios', 'Contabilidade', 'Impostos', 'Outro custo'];
 
+const financeDefaultCategoryNameCorrections: Array<{ corrupted: string; correct: string; type: FinanceTransactionType }> = [
+  { corrupted: 'Implementa\u00c3\u00a7\u00c3\u00a3o', correct: 'Implementa\u00e7\u00e3o', type: 'INCOME' },
+  { corrupted: 'Implementa\u00c3\u0192\u00c2\u00a7\u00c3\u0192\u00c2\u00a3o', correct: 'Implementa\u00e7\u00e3o', type: 'INCOME' },
+  { corrupted: 'Automa\u00c3\u00a7\u00c3\u00a3o recorrente', correct: 'Automa\u00e7\u00e3o recorrente', type: 'INCOME' },
+  { corrupted: 'Automa\u00c3\u0192\u00c2\u00a7\u00c3\u0192\u00c2\u00a3o recorrente', correct: 'Automa\u00e7\u00e3o recorrente', type: 'INCOME' },
+  { corrupted: 'Subcontrata\u00c3\u00a7\u00c3\u00a3o', correct: 'Subcontrata\u00e7\u00e3o', type: 'EXPENSE' },
+  { corrupted: 'Subcontrata\u00c3\u0192\u00c2\u00a7\u00c3\u0192\u00c2\u00a3o', correct: 'Subcontrata\u00e7\u00e3o', type: 'EXPENSE' },
+  { corrupted: 'Dom\u00c3\u00adnios', correct: 'Dom\u00ednios', type: 'EXPENSE' },
+  { corrupted: 'Dom\u00c3\u0192\u00c2\u00adnios', correct: 'Dom\u00ednios', type: 'EXPENSE' },
+  { corrupted: 'Automa\u00c3\u00a7\u00c3\u00a3o', correct: 'Automa\u00e7\u00e3o', type: 'EXPENSE' },
+  { corrupted: 'Automa\u00c3\u0192\u00c2\u00a7\u00c3\u0192\u00c2\u00a3o', correct: 'Automa\u00e7\u00e3o', type: 'EXPENSE' },
+];
+
 
 export async function ensureFinanceDefaults(): Promise<void> {
+  await normalizeFinanceDefaultCategoryNames();
+
   const account = await prisma.financeAccount.findFirst({
     where: { name: 'Conta principal', currency: 'EUR' },
     select: { id: true },
@@ -57,6 +76,41 @@ async function ensureCategory(name: string, type: FinanceTransactionType): Promi
   if (!category) await prisma.financeCategory.create({ data: { isDefault: true, name, type } });
 }
 
+async function normalizeFinanceDefaultCategoryNames(): Promise<void> {
+  for (const correction of financeDefaultCategoryNameCorrections) {
+    const corruptedCategories = await prisma.financeCategory.findMany({
+      where: { isDefault: true, name: correction.corrupted, type: correction.type },
+      select: { id: true },
+    });
+
+    if (corruptedCategories.length === 0) continue;
+
+    let correctCategory = await prisma.financeCategory.findFirst({
+      where: { name: correction.correct, type: correction.type },
+      select: { id: true },
+    });
+
+    if (!correctCategory) {
+      correctCategory = await prisma.financeCategory.update({
+        where: { id: corruptedCategories[0].id },
+        data: { isDefault: true, name: correction.correct },
+        select: { id: true },
+      });
+    }
+
+    const duplicateCategories = corruptedCategories.filter((category) => category.id !== correctCategory.id);
+
+    for (const duplicateCategory of duplicateCategories) {
+      await prisma.$transaction([
+        prisma.financeTransaction.updateMany({ where: { categoryId: duplicateCategory.id }, data: { categoryId: correctCategory.id } }),
+        prisma.financeRecurringRevenue.updateMany({ where: { categoryId: duplicateCategory.id }, data: { categoryId: correctCategory.id } }),
+        prisma.financeRecurringCost.updateMany({ where: { categoryId: duplicateCategory.id }, data: { categoryId: correctCategory.id } }),
+        prisma.financeCategory.delete({ where: { id: duplicateCategory.id } }),
+      ]);
+    }
+  }
+}
+
 export async function getFinanceDashboard(filters: FinanceFilters) {
   await ensureFinanceDefaults();
   const periodWhere = getPeriodWhere(filters.period);
@@ -73,7 +127,7 @@ export async function getFinanceDashboard(filters: FinanceFilters) {
     ];
   }
 
-  const [confirmedIncome, confirmedExpense, pendingIncome, pendingExpense, recentTransactions, transactions, categories, accounts, clientOptions, proposalOptionsByLeadId, recurringRevenue, recurringCosts] = await Promise.all([
+  const [confirmedIncome, confirmedExpense, pendingIncome, pendingExpense, recentTransactions, transactions, categories, accounts, clientOptions, proposalOptionsByLeadId, recurringRevenue, recurringCosts, forecast, profitability] = await Promise.all([
     sumAmount({ ...periodWhere, status: 'CONFIRMED', type: 'INCOME' }),
     sumAmount({ ...periodWhere, status: 'CONFIRMED', type: 'EXPENSE' }),
     sumAmount({ ...periodWhere, status: 'PENDING', type: 'INCOME' }),
@@ -86,14 +140,18 @@ export async function getFinanceDashboard(filters: FinanceFilters) {
     getFinanceProposalOptionsByLeadId(),
     getRecurringRevenueDashboard(periodWhere),
     getRecurringCostDashboard(),
+    getFinanceForecastMetrics(),
+    getClientProfitabilityMetrics(filters.profitability),
   ]);
+
+  const alerts = await getFinanceAlerts(new Date(), { forecast, recurringRevenueMetrics: recurringRevenue.metrics });
 
   const profitCents = confirmedIncome - confirmedExpense;
   const pendingCents = pendingIncome + pendingExpense;
   const estimatedBalanceCents = confirmedIncome - confirmedExpense + pendingIncome - pendingExpense;
   const margin = confirmedIncome > 0 ? Math.round((profitCents / confirmedIncome) * 1000) / 10 : 0;
 
-  return { accounts, categories, clientOptions, filters, metrics: { confirmedExpenseCents: confirmedExpense, confirmedIncomeCents: confirmedIncome, estimatedBalanceCents, margin, pendingCents, profitCents }, proposalOptionsByLeadId, recurringCosts, recurringRevenue, recentTransactions, transactions };
+  return { accounts, alerts, categories, clientOptions, filters, forecast, metrics: { confirmedExpenseCents: confirmedExpense, confirmedIncomeCents: confirmedIncome, estimatedBalanceCents, margin, pendingCents, profitCents }, profitability, proposalOptionsByLeadId, recurringCosts, recurringRevenue, recentTransactions, transactions };
 }
 
 export async function getFinanceProposalOptionsByLeadId(): Promise<FinanceProposalOptionsByLeadId> {
@@ -189,6 +247,7 @@ export function parseFinanceFilters(searchParams: Record<string, string | string
   return {
     categoryId: normalizeAll(getSingle(searchParams.categoryId)),
     period: parsePeriod(getSingle(searchParams.period)),
+    profitability: parseFinanceProfitabilityFilters(searchParams),
     query: getSingle(searchParams.q),
     status: parseStatus(getSingle(searchParams.status)),
     type: parseType(getSingle(searchParams.type)),

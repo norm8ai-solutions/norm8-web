@@ -97,8 +97,10 @@ export function FinanceTransactionModal({ accounts, categories, clientOptions, t
                     defaultValue={transaction?.occurredAt ?? new Date()}
                     error={state.error === 'Selecione uma data v\u00e1lida.'}
                     errorId="finance-occurredAt-error"
+                    mode="date"
                     name="occurredAt"
-                    placeholder="Selecionar data e hora"
+                    submitFormat="date"
+                    placeholder="Selecionar data"
                   />
                   {state.error === 'Selecione uma data v\u00e1lida.' ? <small className="admin-field-error" id="finance-occurredAt-error">{state.error}</small> : null}
                 </label>
@@ -114,6 +116,7 @@ export function FinanceTransactionModal({ accounts, categories, clientOptions, t
                     defaultValue={transaction?.dueDate ?? null}
                     mode="date"
                     name="dueDate"
+                    submitFormat="date"
                     placeholder="Selecionar data"
                   />
                 </label>
@@ -283,11 +286,8 @@ export function FinanceRecurringCostModal({ accounts, categories, recurringCost 
                 </label>
                 <label className="manual-intake-admin-field"><span>Data de fim opcional</span><Norm8DateTimePicker defaultValue={recurringCost?.endDate ?? null} mode="date" name="endDate" placeholder="Selecionar data" /></label>
               </div>
-              <p className="admin-row-meta">O dia de referência é definido automaticamente pela data de início.</p>
-              <div className="manual-intake-two-cols">
-                <label className="manual-intake-admin-field"><span>Próxima renovação opcional</span><Norm8DateTimePicker defaultValue={recurringCost?.renewalDate ?? null} mode="date" name="renewalDate" placeholder="Selecionar data" /></label>
-                <label className="manual-intake-admin-field"><span>Categoria</span><Norm8Select defaultValue={defaultCategoryId} name="categoryId" options={categoryOptions} /></label>
-              </div>
+              <p className="admin-row-meta">A próxima renovação será calculada automaticamente um mês após a data de início.</p>
+              <label className="manual-intake-admin-field"><span>Categoria</span><Norm8Select defaultValue={defaultCategoryId} name="categoryId" options={categoryOptions} /></label>
               <label className="manual-intake-admin-field"><span>Conta</span><Norm8Select defaultValue={recurringCost?.accountId ?? accountOptions[0]?.value ?? ''} name="accountId" options={accountOptions} /></label>
               {state.message ? <p className="discovery-action-feedback discovery-action-feedback-success">{state.message}</p> : null}
               {state.error && state.error !== 'Selecione uma data de início válida.' ? <p className="discovery-action-feedback discovery-action-feedback-error">{state.error}</p> : null}
