@@ -9,6 +9,16 @@ export type FinanceForecastMetrics = {
   monthLabel: string;
   monthStart: Date;
   monthEnd: Date;
+  confirmedMonthIncomeCents: number;
+  confirmedMonthExpenseCents: number;
+  confirmedMonthProfitCents: number;
+  pendingFutureIncomeCents: number;
+  futureRecurringRevenueCents: number;
+  pendingFutureExpenseCents: number;
+  futureRecurringCostCents: number;
+  remainingExpectedProfitCents: number;
+  expectedMonthIncomeCents: number;
+  expectedMonthExpenseCents: number;
   expectedRevenueCents: number;
   expectedExpensesCents: number;
   expectedProfitCents: number;
@@ -17,10 +27,14 @@ export type FinanceForecastMetrics = {
   monthlyBurnRateCents: number;
   runwayMonths: number | null;
   breakdown: {
+    confirmedMonthIncomeCents: number;
+    confirmedMonthExpenseCents: number;
+    confirmedMonthProfitCents: number;
     pendingIncomeFutureCents: number;
     recurringRevenueFutureCents: number;
     pendingExpensesFutureCents: number;
     recurringCostsFutureCents: number;
+    remainingExpectedProfitCents: number;
   };
 };
 
@@ -46,7 +60,7 @@ export async function getFinanceForecastMetrics(referenceDate = new Date()): Pro
   const todayStart = startOfDay(referenceDate);
   const todayEnd = getEndOfDay(referenceDate);
 
-  const [forecastTransactions, balanceIncome, balanceExpenses, recurringRevenues, recurringCosts] = await Promise.all([
+  const [forecastTransactions, balanceIncome, balanceExpenses, confirmedMonthIncome, confirmedMonthExpenses, recurringRevenues, recurringCosts] = await Promise.all([
     prisma.financeTransaction.findMany({
       select: { amountCents: true, dueDate: true, occurredAt: true, status: true, type: true },
       where: {
@@ -59,6 +73,8 @@ export async function getFinanceForecastMetrics(referenceDate = new Date()): Pro
     }),
     sumConfirmedTransactionsUntil('INCOME', todayEnd),
     sumConfirmedTransactionsUntil('EXPENSE', todayEnd),
+    sumConfirmedTransactionsBetween('INCOME', monthStart, todayEnd),
+    sumConfirmedTransactionsBetween('EXPENSE', monthStart, todayEnd),
     prisma.financeRecurringRevenue.findMany({
       select: { endDate: true, monthlyAmountCents: true, startDate: true, status: true },
       where: {
@@ -92,17 +108,37 @@ export async function getFinanceForecastMetrics(referenceDate = new Date()): Pro
       : total;
   }, 0);
   const monthlyBurnRateCents = recurringCosts.reduce((total, item) => total + calculateMonthlyEquivalentCents(item), 0);
-  const expectedRevenueCents = pendingIncomeFutureCents + recurringRevenueFutureCents;
-  const expectedExpensesCents = pendingExpensesFutureCents + recurringCostsFutureCents;
-  const expectedProfitCents = expectedRevenueCents - expectedExpensesCents;
+  const confirmedMonthIncomeCents = confirmedMonthIncome;
+  const confirmedMonthExpenseCents = confirmedMonthExpenses;
+  const confirmedMonthProfitCents = confirmedMonthIncomeCents - confirmedMonthExpenseCents;
+  const pendingFutureIncomeCents = pendingIncomeFutureCents;
+  const futureRecurringRevenueCents = recurringRevenueFutureCents;
+  const pendingFutureExpenseCents = pendingExpensesFutureCents;
+  const futureRecurringCostCents = recurringCostsFutureCents;
+  const remainingExpectedProfitCents = pendingFutureIncomeCents + futureRecurringRevenueCents - pendingFutureExpenseCents - futureRecurringCostCents;
+  const expectedMonthIncomeCents = confirmedMonthIncomeCents + pendingFutureIncomeCents + futureRecurringRevenueCents;
+  const expectedMonthExpenseCents = confirmedMonthExpenseCents + pendingFutureExpenseCents + futureRecurringCostCents;
+  const expectedRevenueCents = expectedMonthIncomeCents;
+  const expectedExpensesCents = expectedMonthExpenseCents;
+  const expectedProfitCents = expectedMonthIncomeCents - expectedMonthExpenseCents;
   const estimatedCurrentBalanceCents = balanceIncome - balanceExpenses;
-  const estimatedEndOfMonthBalanceCents = estimatedCurrentBalanceCents + expectedProfitCents;
+  const estimatedEndOfMonthBalanceCents = estimatedCurrentBalanceCents + remainingExpectedProfitCents;
   const runwayMonths = calculateRunwayMonths(estimatedEndOfMonthBalanceCents, monthlyBurnRateCents);
 
   return {
     monthLabel: formatMonthLabel(monthStart),
     monthStart,
     monthEnd,
+    confirmedMonthIncomeCents,
+    confirmedMonthExpenseCents,
+    confirmedMonthProfitCents,
+    pendingFutureIncomeCents,
+    futureRecurringRevenueCents,
+    pendingFutureExpenseCents,
+    futureRecurringCostCents,
+    remainingExpectedProfitCents,
+    expectedMonthIncomeCents,
+    expectedMonthExpenseCents,
     expectedRevenueCents,
     expectedExpensesCents,
     expectedProfitCents,
@@ -111,10 +147,14 @@ export async function getFinanceForecastMetrics(referenceDate = new Date()): Pro
     monthlyBurnRateCents,
     runwayMonths,
     breakdown: {
+      confirmedMonthIncomeCents,
+      confirmedMonthExpenseCents,
+      confirmedMonthProfitCents,
       pendingIncomeFutureCents,
       recurringRevenueFutureCents,
       pendingExpensesFutureCents,
       recurringCostsFutureCents,
+      remainingExpectedProfitCents,
     },
   };
 }
@@ -129,6 +169,15 @@ async function sumConfirmedTransactionsUntil(type: FinanceTransactionType, until
   const aggregate = await prisma.financeTransaction.aggregate({
     _sum: { amountCents: true },
     where: { occurredAt: { lte: until }, status: 'CONFIRMED', type },
+  });
+
+  return aggregate._sum.amountCents ?? 0;
+}
+
+async function sumConfirmedTransactionsBetween(type: FinanceTransactionType, from: Date, until: Date): Promise<number> {
+  const aggregate = await prisma.financeTransaction.aggregate({
+    _sum: { amountCents: true },
+    where: { occurredAt: { gte: from, lte: until }, status: 'CONFIRMED', type },
   });
 
   return aggregate._sum.amountCents ?? 0;

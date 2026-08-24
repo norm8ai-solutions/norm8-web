@@ -397,6 +397,11 @@ export const ModelName = {
   FinanceRecurringCost: 'FinanceRecurringCost',
   FinanceCategory: 'FinanceCategory',
   FinanceAccount: 'FinanceAccount',
+  Project: 'Project',
+  ProjectMilestone: 'ProjectMilestone',
+  ProjectTask: 'ProjectTask',
+  ProjectTimeEntry: 'ProjectTimeEntry',
+  ProjectTimerSession: 'ProjectTimerSession',
   ManualIntakeInvite: 'ManualIntakeInvite',
   Notification: 'Notification',
   EmailLog: 'EmailLog',
@@ -431,7 +436,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "lead" | "submission" | "leadActivity" | "leadAction" | "proposal" | "baseOffer" | "discoverySession" | "discoveryQuestion" | "financeTransaction" | "financeRecurringRevenue" | "financeRecurringCost" | "financeCategory" | "financeAccount" | "manualIntakeInvite" | "notification" | "emailLog" | "meetingBooking" | "auditAnalysis" | "adminUser" | "adminSession" | "adminAuthLog" | "companyLegalSettings" | "contract" | "contractTemplate" | "contractTemplateSection" | "contractSection" | "contractVersion" | "contractNumberSequence" | "contractPhase" | "contractDeliverable" | "contractPaymentMilestone" | "contractActivityLog"
+    modelProps: "lead" | "submission" | "leadActivity" | "leadAction" | "proposal" | "baseOffer" | "discoverySession" | "discoveryQuestion" | "financeTransaction" | "financeRecurringRevenue" | "financeRecurringCost" | "financeCategory" | "financeAccount" | "project" | "projectMilestone" | "projectTask" | "projectTimeEntry" | "projectTimerSession" | "manualIntakeInvite" | "notification" | "emailLog" | "meetingBooking" | "auditAnalysis" | "adminUser" | "adminSession" | "adminAuthLog" | "companyLegalSettings" | "contract" | "contractTemplate" | "contractTemplateSection" | "contractSection" | "contractVersion" | "contractNumberSequence" | "contractPhase" | "contractDeliverable" | "contractPaymentMilestone" | "contractActivityLog"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1394,6 +1399,376 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.FinanceAccountCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.FinanceAccountCountAggregateOutputType> | number
+        }
+      }
+    }
+    Project: {
+      payload: Prisma.$ProjectPayload<ExtArgs>
+      fields: Prisma.ProjectFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProjectFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProjectFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectPayload>
+        }
+        findFirst: {
+          args: Prisma.ProjectFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProjectFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectPayload>
+        }
+        findMany: {
+          args: Prisma.ProjectFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectPayload>[]
+        }
+        create: {
+          args: Prisma.ProjectCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectPayload>
+        }
+        createMany: {
+          args: Prisma.ProjectCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProjectCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectPayload>[]
+        }
+        delete: {
+          args: Prisma.ProjectDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectPayload>
+        }
+        update: {
+          args: Prisma.ProjectUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectPayload>
+        }
+        deleteMany: {
+          args: Prisma.ProjectDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProjectUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProjectUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectPayload>[]
+        }
+        upsert: {
+          args: Prisma.ProjectUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectPayload>
+        }
+        aggregate: {
+          args: Prisma.ProjectAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProject>
+        }
+        groupBy: {
+          args: Prisma.ProjectGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProjectGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProjectCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProjectCountAggregateOutputType> | number
+        }
+      }
+    }
+    ProjectMilestone: {
+      payload: Prisma.$ProjectMilestonePayload<ExtArgs>
+      fields: Prisma.ProjectMilestoneFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProjectMilestoneFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectMilestonePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProjectMilestoneFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectMilestonePayload>
+        }
+        findFirst: {
+          args: Prisma.ProjectMilestoneFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectMilestonePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProjectMilestoneFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectMilestonePayload>
+        }
+        findMany: {
+          args: Prisma.ProjectMilestoneFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectMilestonePayload>[]
+        }
+        create: {
+          args: Prisma.ProjectMilestoneCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectMilestonePayload>
+        }
+        createMany: {
+          args: Prisma.ProjectMilestoneCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProjectMilestoneCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectMilestonePayload>[]
+        }
+        delete: {
+          args: Prisma.ProjectMilestoneDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectMilestonePayload>
+        }
+        update: {
+          args: Prisma.ProjectMilestoneUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectMilestonePayload>
+        }
+        deleteMany: {
+          args: Prisma.ProjectMilestoneDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProjectMilestoneUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProjectMilestoneUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectMilestonePayload>[]
+        }
+        upsert: {
+          args: Prisma.ProjectMilestoneUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectMilestonePayload>
+        }
+        aggregate: {
+          args: Prisma.ProjectMilestoneAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProjectMilestone>
+        }
+        groupBy: {
+          args: Prisma.ProjectMilestoneGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProjectMilestoneGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProjectMilestoneCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProjectMilestoneCountAggregateOutputType> | number
+        }
+      }
+    }
+    ProjectTask: {
+      payload: Prisma.$ProjectTaskPayload<ExtArgs>
+      fields: Prisma.ProjectTaskFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProjectTaskFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTaskPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProjectTaskFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTaskPayload>
+        }
+        findFirst: {
+          args: Prisma.ProjectTaskFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTaskPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProjectTaskFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTaskPayload>
+        }
+        findMany: {
+          args: Prisma.ProjectTaskFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTaskPayload>[]
+        }
+        create: {
+          args: Prisma.ProjectTaskCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTaskPayload>
+        }
+        createMany: {
+          args: Prisma.ProjectTaskCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProjectTaskCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTaskPayload>[]
+        }
+        delete: {
+          args: Prisma.ProjectTaskDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTaskPayload>
+        }
+        update: {
+          args: Prisma.ProjectTaskUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTaskPayload>
+        }
+        deleteMany: {
+          args: Prisma.ProjectTaskDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProjectTaskUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProjectTaskUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTaskPayload>[]
+        }
+        upsert: {
+          args: Prisma.ProjectTaskUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTaskPayload>
+        }
+        aggregate: {
+          args: Prisma.ProjectTaskAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProjectTask>
+        }
+        groupBy: {
+          args: Prisma.ProjectTaskGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProjectTaskGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProjectTaskCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProjectTaskCountAggregateOutputType> | number
+        }
+      }
+    }
+    ProjectTimeEntry: {
+      payload: Prisma.$ProjectTimeEntryPayload<ExtArgs>
+      fields: Prisma.ProjectTimeEntryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProjectTimeEntryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTimeEntryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProjectTimeEntryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTimeEntryPayload>
+        }
+        findFirst: {
+          args: Prisma.ProjectTimeEntryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTimeEntryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProjectTimeEntryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTimeEntryPayload>
+        }
+        findMany: {
+          args: Prisma.ProjectTimeEntryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTimeEntryPayload>[]
+        }
+        create: {
+          args: Prisma.ProjectTimeEntryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTimeEntryPayload>
+        }
+        createMany: {
+          args: Prisma.ProjectTimeEntryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProjectTimeEntryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTimeEntryPayload>[]
+        }
+        delete: {
+          args: Prisma.ProjectTimeEntryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTimeEntryPayload>
+        }
+        update: {
+          args: Prisma.ProjectTimeEntryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTimeEntryPayload>
+        }
+        deleteMany: {
+          args: Prisma.ProjectTimeEntryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProjectTimeEntryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProjectTimeEntryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTimeEntryPayload>[]
+        }
+        upsert: {
+          args: Prisma.ProjectTimeEntryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTimeEntryPayload>
+        }
+        aggregate: {
+          args: Prisma.ProjectTimeEntryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProjectTimeEntry>
+        }
+        groupBy: {
+          args: Prisma.ProjectTimeEntryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProjectTimeEntryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProjectTimeEntryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProjectTimeEntryCountAggregateOutputType> | number
+        }
+      }
+    }
+    ProjectTimerSession: {
+      payload: Prisma.$ProjectTimerSessionPayload<ExtArgs>
+      fields: Prisma.ProjectTimerSessionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProjectTimerSessionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTimerSessionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProjectTimerSessionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTimerSessionPayload>
+        }
+        findFirst: {
+          args: Prisma.ProjectTimerSessionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTimerSessionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProjectTimerSessionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTimerSessionPayload>
+        }
+        findMany: {
+          args: Prisma.ProjectTimerSessionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTimerSessionPayload>[]
+        }
+        create: {
+          args: Prisma.ProjectTimerSessionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTimerSessionPayload>
+        }
+        createMany: {
+          args: Prisma.ProjectTimerSessionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProjectTimerSessionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTimerSessionPayload>[]
+        }
+        delete: {
+          args: Prisma.ProjectTimerSessionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTimerSessionPayload>
+        }
+        update: {
+          args: Prisma.ProjectTimerSessionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTimerSessionPayload>
+        }
+        deleteMany: {
+          args: Prisma.ProjectTimerSessionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProjectTimerSessionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProjectTimerSessionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTimerSessionPayload>[]
+        }
+        upsert: {
+          args: Prisma.ProjectTimerSessionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectTimerSessionPayload>
+        }
+        aggregate: {
+          args: Prisma.ProjectTimerSessionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProjectTimerSession>
+        }
+        groupBy: {
+          args: Prisma.ProjectTimerSessionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProjectTimerSessionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProjectTimerSessionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProjectTimerSessionCountAggregateOutputType> | number
         }
       }
     }
@@ -3088,6 +3463,99 @@ export const FinanceAccountScalarFieldEnum = {
 export type FinanceAccountScalarFieldEnum = (typeof FinanceAccountScalarFieldEnum)[keyof typeof FinanceAccountScalarFieldEnum]
 
 
+export const ProjectScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  clientName: 'clientName',
+  description: 'description',
+  status: 'status',
+  growthPhase: 'growthPhase',
+  planName: 'planName',
+  commercialCondition: 'commercialCondition',
+  contractedValueCents: 'contractedValueCents',
+  currency: 'currency',
+  startDate: 'startDate',
+  targetEndDate: 'targetEndDate',
+  completedAt: 'completedAt',
+  leadId: 'leadId',
+  proposalId: 'proposalId',
+  contractId: 'contractId',
+  jiraProjectKey: 'jiraProjectKey',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]
+
+
+export const ProjectMilestoneScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  title: 'title',
+  description: 'description',
+  status: 'status',
+  order: 'order',
+  dueDate: 'dueDate',
+  completedAt: 'completedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProjectMilestoneScalarFieldEnum = (typeof ProjectMilestoneScalarFieldEnum)[keyof typeof ProjectMilestoneScalarFieldEnum]
+
+
+export const ProjectTaskScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  milestoneId: 'milestoneId',
+  title: 'title',
+  description: 'description',
+  status: 'status',
+  category: 'category',
+  order: 'order',
+  estimatedMinutes: 'estimatedMinutes',
+  completedAt: 'completedAt',
+  jiraIssueKey: 'jiraIssueKey',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProjectTaskScalarFieldEnum = (typeof ProjectTaskScalarFieldEnum)[keyof typeof ProjectTaskScalarFieldEnum]
+
+
+export const ProjectTimeEntryScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  taskId: 'taskId',
+  category: 'category',
+  description: 'description',
+  durationMinutes: 'durationMinutes',
+  entryDate: 'entryDate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProjectTimeEntryScalarFieldEnum = (typeof ProjectTimeEntryScalarFieldEnum)[keyof typeof ProjectTimeEntryScalarFieldEnum]
+
+
+export const ProjectTimerSessionScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  taskId: 'taskId',
+  category: 'category',
+  status: 'status',
+  description: 'description',
+  startedAt: 'startedAt',
+  pausedAt: 'pausedAt',
+  accumulatedSeconds: 'accumulatedSeconds',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProjectTimerSessionScalarFieldEnum = (typeof ProjectTimerSessionScalarFieldEnum)[keyof typeof ProjectTimerSessionScalarFieldEnum]
+
+
 export const ManualIntakeInviteScalarFieldEnum = {
   id: 'id',
   leadId: 'leadId',
@@ -3827,6 +4295,90 @@ export type ListEnumFinanceRecurringCostFrequencyFieldRefInput<$PrismaModel> = F
 
 
 /**
+ * Reference to a field of type 'ProjectStatus'
+ */
+export type EnumProjectStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProjectStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ProjectStatus[]'
+ */
+export type ListEnumProjectStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProjectStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ProjectGrowthPhase'
+ */
+export type EnumProjectGrowthPhaseFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProjectGrowthPhase'>
+    
+
+
+/**
+ * Reference to a field of type 'ProjectGrowthPhase[]'
+ */
+export type ListEnumProjectGrowthPhaseFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProjectGrowthPhase[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ProjectMilestoneStatus'
+ */
+export type EnumProjectMilestoneStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProjectMilestoneStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ProjectMilestoneStatus[]'
+ */
+export type ListEnumProjectMilestoneStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProjectMilestoneStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ProjectTaskStatus'
+ */
+export type EnumProjectTaskStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProjectTaskStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ProjectTaskStatus[]'
+ */
+export type ListEnumProjectTaskStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProjectTaskStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ProjectWorkCategory'
+ */
+export type EnumProjectWorkCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProjectWorkCategory'>
+    
+
+
+/**
+ * Reference to a field of type 'ProjectWorkCategory[]'
+ */
+export type ListEnumProjectWorkCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProjectWorkCategory[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ProjectTimerStatus'
+ */
+export type EnumProjectTimerStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProjectTimerStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ProjectTimerStatus[]'
+ */
+export type ListEnumProjectTimerStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProjectTimerStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'ManualIntakeInviteStatus'
  */
 export type EnumManualIntakeInviteStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ManualIntakeInviteStatus'>
@@ -4200,6 +4752,11 @@ export type GlobalOmitConfig = {
   financeRecurringCost?: Prisma.FinanceRecurringCostOmit
   financeCategory?: Prisma.FinanceCategoryOmit
   financeAccount?: Prisma.FinanceAccountOmit
+  project?: Prisma.ProjectOmit
+  projectMilestone?: Prisma.ProjectMilestoneOmit
+  projectTask?: Prisma.ProjectTaskOmit
+  projectTimeEntry?: Prisma.ProjectTimeEntryOmit
+  projectTimerSession?: Prisma.ProjectTimerSessionOmit
   manualIntakeInvite?: Prisma.ManualIntakeInviteOmit
   notification?: Prisma.NotificationOmit
   emailLog?: Prisma.EmailLogOmit

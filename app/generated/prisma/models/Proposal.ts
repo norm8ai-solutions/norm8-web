@@ -336,6 +336,7 @@ export type ProposalWhereInput = {
   submission?: Prisma.XOR<Prisma.SubmissionNullableScalarRelationFilter, Prisma.SubmissionWhereInput> | null
   leadAction?: Prisma.XOR<Prisma.LeadActionNullableScalarRelationFilter, Prisma.LeadActionWhereInput> | null
   contracts?: Prisma.ContractListRelationFilter
+  projects?: Prisma.ProjectListRelationFilter
 }
 
 export type ProposalOrderByWithRelationInput = {
@@ -362,6 +363,7 @@ export type ProposalOrderByWithRelationInput = {
   submission?: Prisma.SubmissionOrderByWithRelationInput
   leadAction?: Prisma.LeadActionOrderByWithRelationInput
   contracts?: Prisma.ContractOrderByRelationAggregateInput
+  projects?: Prisma.ProjectOrderByRelationAggregateInput
 }
 
 export type ProposalWhereUniqueInput = Prisma.AtLeast<{
@@ -391,6 +393,7 @@ export type ProposalWhereUniqueInput = Prisma.AtLeast<{
   submission?: Prisma.XOR<Prisma.SubmissionNullableScalarRelationFilter, Prisma.SubmissionWhereInput> | null
   leadAction?: Prisma.XOR<Prisma.LeadActionNullableScalarRelationFilter, Prisma.LeadActionWhereInput> | null
   contracts?: Prisma.ContractListRelationFilter
+  projects?: Prisma.ProjectListRelationFilter
 }, "id" | "leadActionId">
 
 export type ProposalOrderByWithAggregationInput = {
@@ -466,6 +469,7 @@ export type ProposalCreateInput = {
   submission?: Prisma.SubmissionCreateNestedOneWithoutProposalsInput
   leadAction?: Prisma.LeadActionCreateNestedOneWithoutProposalInput
   contracts?: Prisma.ContractCreateNestedManyWithoutProposalInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutProposalInput
 }
 
 export type ProposalUncheckedCreateInput = {
@@ -489,6 +493,7 @@ export type ProposalUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   contracts?: Prisma.ContractUncheckedCreateNestedManyWithoutProposalInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutProposalInput
 }
 
 export type ProposalUpdateInput = {
@@ -512,6 +517,7 @@ export type ProposalUpdateInput = {
   submission?: Prisma.SubmissionUpdateOneWithoutProposalsNestedInput
   leadAction?: Prisma.LeadActionUpdateOneWithoutProposalNestedInput
   contracts?: Prisma.ContractUpdateManyWithoutProposalNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutProposalNestedInput
 }
 
 export type ProposalUncheckedUpdateInput = {
@@ -535,6 +541,7 @@ export type ProposalUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   contracts?: Prisma.ContractUncheckedUpdateManyWithoutProposalNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutProposalNestedInput
 }
 
 export type ProposalCreateManyInput = {
@@ -827,6 +834,22 @@ export type NullableDecimalFieldUpdateOperationsInput = {
   divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
+export type ProposalCreateNestedOneWithoutProjectsInput = {
+  create?: Prisma.XOR<Prisma.ProposalCreateWithoutProjectsInput, Prisma.ProposalUncheckedCreateWithoutProjectsInput>
+  connectOrCreate?: Prisma.ProposalCreateOrConnectWithoutProjectsInput
+  connect?: Prisma.ProposalWhereUniqueInput
+}
+
+export type ProposalUpdateOneWithoutProjectsNestedInput = {
+  create?: Prisma.XOR<Prisma.ProposalCreateWithoutProjectsInput, Prisma.ProposalUncheckedCreateWithoutProjectsInput>
+  connectOrCreate?: Prisma.ProposalCreateOrConnectWithoutProjectsInput
+  upsert?: Prisma.ProposalUpsertWithoutProjectsInput
+  disconnect?: Prisma.ProposalWhereInput | boolean
+  delete?: Prisma.ProposalWhereInput | boolean
+  connect?: Prisma.ProposalWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProposalUpdateToOneWithWhereWithoutProjectsInput, Prisma.ProposalUpdateWithoutProjectsInput>, Prisma.ProposalUncheckedUpdateWithoutProjectsInput>
+}
+
 export type ProposalCreateNestedOneWithoutContractsInput = {
   create?: Prisma.XOR<Prisma.ProposalCreateWithoutContractsInput, Prisma.ProposalUncheckedCreateWithoutContractsInput>
   connectOrCreate?: Prisma.ProposalCreateOrConnectWithoutContractsInput
@@ -863,6 +886,7 @@ export type ProposalCreateWithoutLeadInput = {
   submission?: Prisma.SubmissionCreateNestedOneWithoutProposalsInput
   leadAction?: Prisma.LeadActionCreateNestedOneWithoutProposalInput
   contracts?: Prisma.ContractCreateNestedManyWithoutProposalInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutProposalInput
 }
 
 export type ProposalUncheckedCreateWithoutLeadInput = {
@@ -885,6 +909,7 @@ export type ProposalUncheckedCreateWithoutLeadInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   contracts?: Prisma.ContractUncheckedCreateNestedManyWithoutProposalInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutProposalInput
 }
 
 export type ProposalCreateOrConnectWithoutLeadInput = {
@@ -958,6 +983,7 @@ export type ProposalCreateWithoutSubmissionInput = {
   lead: Prisma.LeadCreateNestedOneWithoutProposalsInput
   leadAction?: Prisma.LeadActionCreateNestedOneWithoutProposalInput
   contracts?: Prisma.ContractCreateNestedManyWithoutProposalInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutProposalInput
 }
 
 export type ProposalUncheckedCreateWithoutSubmissionInput = {
@@ -980,6 +1006,7 @@ export type ProposalUncheckedCreateWithoutSubmissionInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   contracts?: Prisma.ContractUncheckedCreateNestedManyWithoutProposalInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutProposalInput
 }
 
 export type ProposalCreateOrConnectWithoutSubmissionInput = {
@@ -1028,6 +1055,7 @@ export type ProposalCreateWithoutLeadActionInput = {
   lead: Prisma.LeadCreateNestedOneWithoutProposalsInput
   submission?: Prisma.SubmissionCreateNestedOneWithoutProposalsInput
   contracts?: Prisma.ContractCreateNestedManyWithoutProposalInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutProposalInput
 }
 
 export type ProposalUncheckedCreateWithoutLeadActionInput = {
@@ -1050,6 +1078,7 @@ export type ProposalUncheckedCreateWithoutLeadActionInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   contracts?: Prisma.ContractUncheckedCreateNestedManyWithoutProposalInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutProposalInput
 }
 
 export type ProposalCreateOrConnectWithoutLeadActionInput = {
@@ -1088,12 +1117,122 @@ export type ProposalUpdateWithoutLeadActionInput = {
   lead?: Prisma.LeadUpdateOneRequiredWithoutProposalsNestedInput
   submission?: Prisma.SubmissionUpdateOneWithoutProposalsNestedInput
   contracts?: Prisma.ContractUpdateManyWithoutProposalNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutProposalNestedInput
 }
 
 export type ProposalUncheckedUpdateWithoutLeadActionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   leadId?: Prisma.StringFieldUpdateOperationsInput | string
   submissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumProposalStatusFieldUpdateOperationsInput | $Enums.ProposalStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  estimatedValue?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  scope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  painPoints?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recommendedSolution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  implementationPlan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nextSteps?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pdfPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contracts?: Prisma.ContractUncheckedUpdateManyWithoutProposalNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutProposalNestedInput
+}
+
+export type ProposalCreateWithoutProjectsInput = {
+  id?: string
+  title: string
+  companyName: string
+  contactName?: string | null
+  status?: $Enums.ProposalStatus
+  version?: number
+  estimatedValue?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  scope?: string | null
+  painPoints?: string | null
+  recommendedSolution?: string | null
+  implementationPlan?: string | null
+  nextSteps?: string | null
+  pdfUrl?: string | null
+  pdfPath?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lead: Prisma.LeadCreateNestedOneWithoutProposalsInput
+  submission?: Prisma.SubmissionCreateNestedOneWithoutProposalsInput
+  leadAction?: Prisma.LeadActionCreateNestedOneWithoutProposalInput
+  contracts?: Prisma.ContractCreateNestedManyWithoutProposalInput
+}
+
+export type ProposalUncheckedCreateWithoutProjectsInput = {
+  id?: string
+  leadId: string
+  submissionId?: string | null
+  leadActionId?: string | null
+  title: string
+  companyName: string
+  contactName?: string | null
+  status?: $Enums.ProposalStatus
+  version?: number
+  estimatedValue?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  scope?: string | null
+  painPoints?: string | null
+  recommendedSolution?: string | null
+  implementationPlan?: string | null
+  nextSteps?: string | null
+  pdfUrl?: string | null
+  pdfPath?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  contracts?: Prisma.ContractUncheckedCreateNestedManyWithoutProposalInput
+}
+
+export type ProposalCreateOrConnectWithoutProjectsInput = {
+  where: Prisma.ProposalWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProposalCreateWithoutProjectsInput, Prisma.ProposalUncheckedCreateWithoutProjectsInput>
+}
+
+export type ProposalUpsertWithoutProjectsInput = {
+  update: Prisma.XOR<Prisma.ProposalUpdateWithoutProjectsInput, Prisma.ProposalUncheckedUpdateWithoutProjectsInput>
+  create: Prisma.XOR<Prisma.ProposalCreateWithoutProjectsInput, Prisma.ProposalUncheckedCreateWithoutProjectsInput>
+  where?: Prisma.ProposalWhereInput
+}
+
+export type ProposalUpdateToOneWithWhereWithoutProjectsInput = {
+  where?: Prisma.ProposalWhereInput
+  data: Prisma.XOR<Prisma.ProposalUpdateWithoutProjectsInput, Prisma.ProposalUncheckedUpdateWithoutProjectsInput>
+}
+
+export type ProposalUpdateWithoutProjectsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumProposalStatusFieldUpdateOperationsInput | $Enums.ProposalStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  estimatedValue?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  scope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  painPoints?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recommendedSolution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  implementationPlan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nextSteps?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pdfPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lead?: Prisma.LeadUpdateOneRequiredWithoutProposalsNestedInput
+  submission?: Prisma.SubmissionUpdateOneWithoutProposalsNestedInput
+  leadAction?: Prisma.LeadActionUpdateOneWithoutProposalNestedInput
+  contracts?: Prisma.ContractUpdateManyWithoutProposalNestedInput
+}
+
+export type ProposalUncheckedUpdateWithoutProjectsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  leadId?: Prisma.StringFieldUpdateOperationsInput | string
+  submissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  leadActionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
   companyName?: Prisma.StringFieldUpdateOperationsInput | string
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1132,6 +1271,7 @@ export type ProposalCreateWithoutContractsInput = {
   lead: Prisma.LeadCreateNestedOneWithoutProposalsInput
   submission?: Prisma.SubmissionCreateNestedOneWithoutProposalsInput
   leadAction?: Prisma.LeadActionCreateNestedOneWithoutProposalInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutProposalInput
 }
 
 export type ProposalUncheckedCreateWithoutContractsInput = {
@@ -1154,6 +1294,7 @@ export type ProposalUncheckedCreateWithoutContractsInput = {
   pdfPath?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutProposalInput
 }
 
 export type ProposalCreateOrConnectWithoutContractsInput = {
@@ -1192,6 +1333,7 @@ export type ProposalUpdateWithoutContractsInput = {
   lead?: Prisma.LeadUpdateOneRequiredWithoutProposalsNestedInput
   submission?: Prisma.SubmissionUpdateOneWithoutProposalsNestedInput
   leadAction?: Prisma.LeadActionUpdateOneWithoutProposalNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutProposalNestedInput
 }
 
 export type ProposalUncheckedUpdateWithoutContractsInput = {
@@ -1214,6 +1356,7 @@ export type ProposalUncheckedUpdateWithoutContractsInput = {
   pdfPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutProposalNestedInput
 }
 
 export type ProposalCreateManyLeadInput = {
@@ -1257,6 +1400,7 @@ export type ProposalUpdateWithoutLeadInput = {
   submission?: Prisma.SubmissionUpdateOneWithoutProposalsNestedInput
   leadAction?: Prisma.LeadActionUpdateOneWithoutProposalNestedInput
   contracts?: Prisma.ContractUpdateManyWithoutProposalNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutProposalNestedInput
 }
 
 export type ProposalUncheckedUpdateWithoutLeadInput = {
@@ -1279,6 +1423,7 @@ export type ProposalUncheckedUpdateWithoutLeadInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   contracts?: Prisma.ContractUncheckedUpdateManyWithoutProposalNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutProposalNestedInput
 }
 
 export type ProposalUncheckedUpdateManyWithoutLeadInput = {
@@ -1343,6 +1488,7 @@ export type ProposalUpdateWithoutSubmissionInput = {
   lead?: Prisma.LeadUpdateOneRequiredWithoutProposalsNestedInput
   leadAction?: Prisma.LeadActionUpdateOneWithoutProposalNestedInput
   contracts?: Prisma.ContractUpdateManyWithoutProposalNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutProposalNestedInput
 }
 
 export type ProposalUncheckedUpdateWithoutSubmissionInput = {
@@ -1365,6 +1511,7 @@ export type ProposalUncheckedUpdateWithoutSubmissionInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   contracts?: Prisma.ContractUncheckedUpdateManyWithoutProposalNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutProposalNestedInput
 }
 
 export type ProposalUncheckedUpdateManyWithoutSubmissionInput = {
@@ -1395,10 +1542,12 @@ export type ProposalUncheckedUpdateManyWithoutSubmissionInput = {
 
 export type ProposalCountOutputType = {
   contracts: number
+  projects: number
 }
 
 export type ProposalCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   contracts?: boolean | ProposalCountOutputTypeCountContractsArgs
+  projects?: boolean | ProposalCountOutputTypeCountProjectsArgs
 }
 
 /**
@@ -1416,6 +1565,13 @@ export type ProposalCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Ext
  */
 export type ProposalCountOutputTypeCountContractsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ContractWhereInput
+}
+
+/**
+ * ProposalCountOutputType without action
+ */
+export type ProposalCountOutputTypeCountProjectsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProjectWhereInput
 }
 
 
@@ -1443,6 +1599,7 @@ export type ProposalSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   submission?: boolean | Prisma.Proposal$submissionArgs<ExtArgs>
   leadAction?: boolean | Prisma.Proposal$leadActionArgs<ExtArgs>
   contracts?: boolean | Prisma.Proposal$contractsArgs<ExtArgs>
+  projects?: boolean | Prisma.Proposal$projectsArgs<ExtArgs>
   _count?: boolean | Prisma.ProposalCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["proposal"]>
 
@@ -1524,6 +1681,7 @@ export type ProposalInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   submission?: boolean | Prisma.Proposal$submissionArgs<ExtArgs>
   leadAction?: boolean | Prisma.Proposal$leadActionArgs<ExtArgs>
   contracts?: boolean | Prisma.Proposal$contractsArgs<ExtArgs>
+  projects?: boolean | Prisma.Proposal$projectsArgs<ExtArgs>
   _count?: boolean | Prisma.ProposalCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProposalIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1544,6 +1702,7 @@ export type $ProposalPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     submission: Prisma.$SubmissionPayload<ExtArgs> | null
     leadAction: Prisma.$LeadActionPayload<ExtArgs> | null
     contracts: Prisma.$ContractPayload<ExtArgs>[]
+    projects: Prisma.$ProjectPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1963,6 +2122,7 @@ export interface Prisma__ProposalClient<T, Null = never, ExtArgs extends runtime
   submission<T extends Prisma.Proposal$submissionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Proposal$submissionArgs<ExtArgs>>): Prisma.Prisma__SubmissionClient<runtime.Types.Result.GetResult<Prisma.$SubmissionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   leadAction<T extends Prisma.Proposal$leadActionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Proposal$leadActionArgs<ExtArgs>>): Prisma.Prisma__LeadActionClient<runtime.Types.Result.GetResult<Prisma.$LeadActionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   contracts<T extends Prisma.Proposal$contractsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Proposal$contractsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContractPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  projects<T extends Prisma.Proposal$projectsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Proposal$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2471,6 +2631,30 @@ export type Proposal$contractsArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.ContractScalarFieldEnum | Prisma.ContractScalarFieldEnum[]
+}
+
+/**
+ * Proposal.projects
+ */
+export type Proposal$projectsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Project
+   */
+  select?: Prisma.ProjectSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Project
+   */
+  omit?: Prisma.ProjectOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProjectInclude<ExtArgs> | null
+  where?: Prisma.ProjectWhereInput
+  orderBy?: Prisma.ProjectOrderByWithRelationInput | Prisma.ProjectOrderByWithRelationInput[]
+  cursor?: Prisma.ProjectWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProjectScalarFieldEnum | Prisma.ProjectScalarFieldEnum[]
 }
 
 /**

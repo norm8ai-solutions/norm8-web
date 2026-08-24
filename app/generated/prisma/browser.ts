@@ -83,6 +83,31 @@ export type FinanceCategory = Prisma.FinanceCategoryModel
  */
 export type FinanceAccount = Prisma.FinanceAccountModel
 /**
+ * Model Project
+ * Operational project used to track delivery, time spent and real profitability.
+ */
+export type Project = Prisma.ProjectModel
+/**
+ * Model ProjectMilestone
+ * Simple delivery milestone grouped inside a Project.
+ */
+export type ProjectMilestone = Prisma.ProjectMilestoneModel
+/**
+ * Model ProjectTask
+ * Lightweight delivery task for progress tracking. Jira remains the source for technical detail.
+ */
+export type ProjectTask = Prisma.ProjectTaskModel
+/**
+ * Model ProjectTimeEntry
+ * Manual time tracking entry attached to a project and, in the UI, to a task.
+ */
+export type ProjectTimeEntry = Prisma.ProjectTimeEntryModel
+/**
+ * Model ProjectTimerSession
+ * Persistent timer session used by the Admin project workspace before it is saved as a time entry.
+ */
+export type ProjectTimerSession = Prisma.ProjectTimerSessionModel
+/**
  * Model ManualIntakeInvite
  * Tokenized manual request sent by Admin before a pre-meeting intake submission.
  */

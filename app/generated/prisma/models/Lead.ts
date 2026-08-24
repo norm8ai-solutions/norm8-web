@@ -266,6 +266,7 @@ export type LeadWhereInput = {
   discoverySessions?: Prisma.DiscoverySessionListRelationFilter
   manualIntakeInvites?: Prisma.ManualIntakeInviteListRelationFilter
   contracts?: Prisma.ContractListRelationFilter
+  projects?: Prisma.ProjectListRelationFilter
 }
 
 export type LeadOrderByWithRelationInput = {
@@ -295,6 +296,7 @@ export type LeadOrderByWithRelationInput = {
   discoverySessions?: Prisma.DiscoverySessionOrderByRelationAggregateInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteOrderByRelationAggregateInput
   contracts?: Prisma.ContractOrderByRelationAggregateInput
+  projects?: Prisma.ProjectOrderByRelationAggregateInput
 }
 
 export type LeadWhereUniqueInput = Prisma.AtLeast<{
@@ -327,6 +329,7 @@ export type LeadWhereUniqueInput = Prisma.AtLeast<{
   discoverySessions?: Prisma.DiscoverySessionListRelationFilter
   manualIntakeInvites?: Prisma.ManualIntakeInviteListRelationFilter
   contracts?: Prisma.ContractListRelationFilter
+  projects?: Prisma.ProjectListRelationFilter
 }, "id">
 
 export type LeadOrderByWithAggregationInput = {
@@ -396,6 +399,7 @@ export type LeadCreateInput = {
   discoverySessions?: Prisma.DiscoverySessionCreateNestedManyWithoutLeadInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteCreateNestedManyWithoutLeadInput
   contracts?: Prisma.ContractCreateNestedManyWithoutLeadInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateInput = {
@@ -425,6 +429,7 @@ export type LeadUncheckedCreateInput = {
   discoverySessions?: Prisma.DiscoverySessionUncheckedCreateNestedManyWithoutLeadInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUncheckedCreateNestedManyWithoutLeadInput
   contracts?: Prisma.ContractUncheckedCreateNestedManyWithoutLeadInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUpdateInput = {
@@ -454,6 +459,7 @@ export type LeadUpdateInput = {
   discoverySessions?: Prisma.DiscoverySessionUpdateManyWithoutLeadNestedInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUpdateManyWithoutLeadNestedInput
   contracts?: Prisma.ContractUpdateManyWithoutLeadNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateInput = {
@@ -483,6 +489,7 @@ export type LeadUncheckedUpdateInput = {
   discoverySessions?: Prisma.DiscoverySessionUncheckedUpdateManyWithoutLeadNestedInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUncheckedUpdateManyWithoutLeadNestedInput
   contracts?: Prisma.ContractUncheckedUpdateManyWithoutLeadNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadCreateManyInput = {
@@ -701,6 +708,22 @@ export type LeadUpdateOneRequiredWithoutDiscoverySessionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.LeadUpdateToOneWithWhereWithoutDiscoverySessionsInput, Prisma.LeadUpdateWithoutDiscoverySessionsInput>, Prisma.LeadUncheckedUpdateWithoutDiscoverySessionsInput>
 }
 
+export type LeadCreateNestedOneWithoutProjectsInput = {
+  create?: Prisma.XOR<Prisma.LeadCreateWithoutProjectsInput, Prisma.LeadUncheckedCreateWithoutProjectsInput>
+  connectOrCreate?: Prisma.LeadCreateOrConnectWithoutProjectsInput
+  connect?: Prisma.LeadWhereUniqueInput
+}
+
+export type LeadUpdateOneWithoutProjectsNestedInput = {
+  create?: Prisma.XOR<Prisma.LeadCreateWithoutProjectsInput, Prisma.LeadUncheckedCreateWithoutProjectsInput>
+  connectOrCreate?: Prisma.LeadCreateOrConnectWithoutProjectsInput
+  upsert?: Prisma.LeadUpsertWithoutProjectsInput
+  disconnect?: Prisma.LeadWhereInput | boolean
+  delete?: Prisma.LeadWhereInput | boolean
+  connect?: Prisma.LeadWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.LeadUpdateToOneWithWhereWithoutProjectsInput, Prisma.LeadUpdateWithoutProjectsInput>, Prisma.LeadUncheckedUpdateWithoutProjectsInput>
+}
+
 export type LeadCreateNestedOneWithoutManualIntakeInvitesInput = {
   create?: Prisma.XOR<Prisma.LeadCreateWithoutManualIntakeInvitesInput, Prisma.LeadUncheckedCreateWithoutManualIntakeInvitesInput>
   connectOrCreate?: Prisma.LeadCreateOrConnectWithoutManualIntakeInvitesInput
@@ -817,6 +840,7 @@ export type LeadCreateWithoutSubmissionsInput = {
   discoverySessions?: Prisma.DiscoverySessionCreateNestedManyWithoutLeadInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteCreateNestedManyWithoutLeadInput
   contracts?: Prisma.ContractCreateNestedManyWithoutLeadInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateWithoutSubmissionsInput = {
@@ -845,6 +869,7 @@ export type LeadUncheckedCreateWithoutSubmissionsInput = {
   discoverySessions?: Prisma.DiscoverySessionUncheckedCreateNestedManyWithoutLeadInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUncheckedCreateNestedManyWithoutLeadInput
   contracts?: Prisma.ContractUncheckedCreateNestedManyWithoutLeadInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadCreateOrConnectWithoutSubmissionsInput = {
@@ -889,6 +914,7 @@ export type LeadUpdateWithoutSubmissionsInput = {
   discoverySessions?: Prisma.DiscoverySessionUpdateManyWithoutLeadNestedInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUpdateManyWithoutLeadNestedInput
   contracts?: Prisma.ContractUpdateManyWithoutLeadNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutSubmissionsInput = {
@@ -917,6 +943,7 @@ export type LeadUncheckedUpdateWithoutSubmissionsInput = {
   discoverySessions?: Prisma.DiscoverySessionUncheckedUpdateManyWithoutLeadNestedInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUncheckedUpdateManyWithoutLeadNestedInput
   contracts?: Prisma.ContractUncheckedUpdateManyWithoutLeadNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadCreateWithoutActivitiesInput = {
@@ -945,6 +972,7 @@ export type LeadCreateWithoutActivitiesInput = {
   discoverySessions?: Prisma.DiscoverySessionCreateNestedManyWithoutLeadInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteCreateNestedManyWithoutLeadInput
   contracts?: Prisma.ContractCreateNestedManyWithoutLeadInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateWithoutActivitiesInput = {
@@ -973,6 +1001,7 @@ export type LeadUncheckedCreateWithoutActivitiesInput = {
   discoverySessions?: Prisma.DiscoverySessionUncheckedCreateNestedManyWithoutLeadInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUncheckedCreateNestedManyWithoutLeadInput
   contracts?: Prisma.ContractUncheckedCreateNestedManyWithoutLeadInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadCreateOrConnectWithoutActivitiesInput = {
@@ -1017,6 +1046,7 @@ export type LeadUpdateWithoutActivitiesInput = {
   discoverySessions?: Prisma.DiscoverySessionUpdateManyWithoutLeadNestedInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUpdateManyWithoutLeadNestedInput
   contracts?: Prisma.ContractUpdateManyWithoutLeadNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutActivitiesInput = {
@@ -1045,6 +1075,7 @@ export type LeadUncheckedUpdateWithoutActivitiesInput = {
   discoverySessions?: Prisma.DiscoverySessionUncheckedUpdateManyWithoutLeadNestedInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUncheckedUpdateManyWithoutLeadNestedInput
   contracts?: Prisma.ContractUncheckedUpdateManyWithoutLeadNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadCreateWithoutLeadActionsInput = {
@@ -1073,6 +1104,7 @@ export type LeadCreateWithoutLeadActionsInput = {
   discoverySessions?: Prisma.DiscoverySessionCreateNestedManyWithoutLeadInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteCreateNestedManyWithoutLeadInput
   contracts?: Prisma.ContractCreateNestedManyWithoutLeadInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateWithoutLeadActionsInput = {
@@ -1101,6 +1133,7 @@ export type LeadUncheckedCreateWithoutLeadActionsInput = {
   discoverySessions?: Prisma.DiscoverySessionUncheckedCreateNestedManyWithoutLeadInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUncheckedCreateNestedManyWithoutLeadInput
   contracts?: Prisma.ContractUncheckedCreateNestedManyWithoutLeadInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadCreateOrConnectWithoutLeadActionsInput = {
@@ -1145,6 +1178,7 @@ export type LeadUpdateWithoutLeadActionsInput = {
   discoverySessions?: Prisma.DiscoverySessionUpdateManyWithoutLeadNestedInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUpdateManyWithoutLeadNestedInput
   contracts?: Prisma.ContractUpdateManyWithoutLeadNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutLeadActionsInput = {
@@ -1173,6 +1207,7 @@ export type LeadUncheckedUpdateWithoutLeadActionsInput = {
   discoverySessions?: Prisma.DiscoverySessionUncheckedUpdateManyWithoutLeadNestedInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUncheckedUpdateManyWithoutLeadNestedInput
   contracts?: Prisma.ContractUncheckedUpdateManyWithoutLeadNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadCreateWithoutProposalsInput = {
@@ -1201,6 +1236,7 @@ export type LeadCreateWithoutProposalsInput = {
   discoverySessions?: Prisma.DiscoverySessionCreateNestedManyWithoutLeadInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteCreateNestedManyWithoutLeadInput
   contracts?: Prisma.ContractCreateNestedManyWithoutLeadInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateWithoutProposalsInput = {
@@ -1229,6 +1265,7 @@ export type LeadUncheckedCreateWithoutProposalsInput = {
   discoverySessions?: Prisma.DiscoverySessionUncheckedCreateNestedManyWithoutLeadInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUncheckedCreateNestedManyWithoutLeadInput
   contracts?: Prisma.ContractUncheckedCreateNestedManyWithoutLeadInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadCreateOrConnectWithoutProposalsInput = {
@@ -1273,6 +1310,7 @@ export type LeadUpdateWithoutProposalsInput = {
   discoverySessions?: Prisma.DiscoverySessionUpdateManyWithoutLeadNestedInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUpdateManyWithoutLeadNestedInput
   contracts?: Prisma.ContractUpdateManyWithoutLeadNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutProposalsInput = {
@@ -1301,6 +1339,7 @@ export type LeadUncheckedUpdateWithoutProposalsInput = {
   discoverySessions?: Prisma.DiscoverySessionUncheckedUpdateManyWithoutLeadNestedInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUncheckedUpdateManyWithoutLeadNestedInput
   contracts?: Prisma.ContractUncheckedUpdateManyWithoutLeadNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadCreateWithoutBaseOffersInput = {
@@ -1329,6 +1368,7 @@ export type LeadCreateWithoutBaseOffersInput = {
   discoverySessions?: Prisma.DiscoverySessionCreateNestedManyWithoutLeadInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteCreateNestedManyWithoutLeadInput
   contracts?: Prisma.ContractCreateNestedManyWithoutLeadInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateWithoutBaseOffersInput = {
@@ -1357,6 +1397,7 @@ export type LeadUncheckedCreateWithoutBaseOffersInput = {
   discoverySessions?: Prisma.DiscoverySessionUncheckedCreateNestedManyWithoutLeadInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUncheckedCreateNestedManyWithoutLeadInput
   contracts?: Prisma.ContractUncheckedCreateNestedManyWithoutLeadInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadCreateOrConnectWithoutBaseOffersInput = {
@@ -1401,6 +1442,7 @@ export type LeadUpdateWithoutBaseOffersInput = {
   discoverySessions?: Prisma.DiscoverySessionUpdateManyWithoutLeadNestedInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUpdateManyWithoutLeadNestedInput
   contracts?: Prisma.ContractUpdateManyWithoutLeadNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutBaseOffersInput = {
@@ -1429,6 +1471,7 @@ export type LeadUncheckedUpdateWithoutBaseOffersInput = {
   discoverySessions?: Prisma.DiscoverySessionUncheckedUpdateManyWithoutLeadNestedInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUncheckedUpdateManyWithoutLeadNestedInput
   contracts?: Prisma.ContractUncheckedUpdateManyWithoutLeadNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadCreateWithoutDiscoverySessionsInput = {
@@ -1457,6 +1500,7 @@ export type LeadCreateWithoutDiscoverySessionsInput = {
   baseOffers?: Prisma.BaseOfferCreateNestedManyWithoutLeadInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteCreateNestedManyWithoutLeadInput
   contracts?: Prisma.ContractCreateNestedManyWithoutLeadInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateWithoutDiscoverySessionsInput = {
@@ -1485,6 +1529,7 @@ export type LeadUncheckedCreateWithoutDiscoverySessionsInput = {
   baseOffers?: Prisma.BaseOfferUncheckedCreateNestedManyWithoutLeadInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUncheckedCreateNestedManyWithoutLeadInput
   contracts?: Prisma.ContractUncheckedCreateNestedManyWithoutLeadInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadCreateOrConnectWithoutDiscoverySessionsInput = {
@@ -1529,6 +1574,7 @@ export type LeadUpdateWithoutDiscoverySessionsInput = {
   baseOffers?: Prisma.BaseOfferUpdateManyWithoutLeadNestedInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUpdateManyWithoutLeadNestedInput
   contracts?: Prisma.ContractUpdateManyWithoutLeadNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutDiscoverySessionsInput = {
@@ -1555,6 +1601,139 @@ export type LeadUncheckedUpdateWithoutDiscoverySessionsInput = {
   leadActions?: Prisma.LeadActionUncheckedUpdateManyWithoutLeadNestedInput
   proposals?: Prisma.ProposalUncheckedUpdateManyWithoutLeadNestedInput
   baseOffers?: Prisma.BaseOfferUncheckedUpdateManyWithoutLeadNestedInput
+  manualIntakeInvites?: Prisma.ManualIntakeInviteUncheckedUpdateManyWithoutLeadNestedInput
+  contracts?: Prisma.ContractUncheckedUpdateManyWithoutLeadNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutLeadNestedInput
+}
+
+export type LeadCreateWithoutProjectsInput = {
+  id?: string
+  name?: string | null
+  company: string
+  email: string
+  phone?: string | null
+  website?: string | null
+  normalizedCompany?: string | null
+  normalizedWebsite?: string | null
+  normalizedEmail?: string | null
+  source: string
+  status?: $Enums.LeadStatus
+  priority?: $Enums.LeadPriority
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  submissions?: Prisma.SubmissionCreateNestedManyWithoutLeadInput
+  activities?: Prisma.LeadActivityCreateNestedManyWithoutLeadInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRelatedLeadInput
+  emailLogs?: Prisma.EmailLogCreateNestedManyWithoutLeadInput
+  meetingBookings?: Prisma.MeetingBookingCreateNestedManyWithoutLeadInput
+  auditAnalyses?: Prisma.AuditAnalysisCreateNestedManyWithoutLeadInput
+  leadActions?: Prisma.LeadActionCreateNestedManyWithoutLeadInput
+  proposals?: Prisma.ProposalCreateNestedManyWithoutLeadInput
+  baseOffers?: Prisma.BaseOfferCreateNestedManyWithoutLeadInput
+  discoverySessions?: Prisma.DiscoverySessionCreateNestedManyWithoutLeadInput
+  manualIntakeInvites?: Prisma.ManualIntakeInviteCreateNestedManyWithoutLeadInput
+  contracts?: Prisma.ContractCreateNestedManyWithoutLeadInput
+}
+
+export type LeadUncheckedCreateWithoutProjectsInput = {
+  id?: string
+  name?: string | null
+  company: string
+  email: string
+  phone?: string | null
+  website?: string | null
+  normalizedCompany?: string | null
+  normalizedWebsite?: string | null
+  normalizedEmail?: string | null
+  source: string
+  status?: $Enums.LeadStatus
+  priority?: $Enums.LeadPriority
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  submissions?: Prisma.SubmissionUncheckedCreateNestedManyWithoutLeadInput
+  activities?: Prisma.LeadActivityUncheckedCreateNestedManyWithoutLeadInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRelatedLeadInput
+  emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutLeadInput
+  meetingBookings?: Prisma.MeetingBookingUncheckedCreateNestedManyWithoutLeadInput
+  auditAnalyses?: Prisma.AuditAnalysisUncheckedCreateNestedManyWithoutLeadInput
+  leadActions?: Prisma.LeadActionUncheckedCreateNestedManyWithoutLeadInput
+  proposals?: Prisma.ProposalUncheckedCreateNestedManyWithoutLeadInput
+  baseOffers?: Prisma.BaseOfferUncheckedCreateNestedManyWithoutLeadInput
+  discoverySessions?: Prisma.DiscoverySessionUncheckedCreateNestedManyWithoutLeadInput
+  manualIntakeInvites?: Prisma.ManualIntakeInviteUncheckedCreateNestedManyWithoutLeadInput
+  contracts?: Prisma.ContractUncheckedCreateNestedManyWithoutLeadInput
+}
+
+export type LeadCreateOrConnectWithoutProjectsInput = {
+  where: Prisma.LeadWhereUniqueInput
+  create: Prisma.XOR<Prisma.LeadCreateWithoutProjectsInput, Prisma.LeadUncheckedCreateWithoutProjectsInput>
+}
+
+export type LeadUpsertWithoutProjectsInput = {
+  update: Prisma.XOR<Prisma.LeadUpdateWithoutProjectsInput, Prisma.LeadUncheckedUpdateWithoutProjectsInput>
+  create: Prisma.XOR<Prisma.LeadCreateWithoutProjectsInput, Prisma.LeadUncheckedCreateWithoutProjectsInput>
+  where?: Prisma.LeadWhereInput
+}
+
+export type LeadUpdateToOneWithWhereWithoutProjectsInput = {
+  where?: Prisma.LeadWhereInput
+  data: Prisma.XOR<Prisma.LeadUpdateWithoutProjectsInput, Prisma.LeadUncheckedUpdateWithoutProjectsInput>
+}
+
+export type LeadUpdateWithoutProjectsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  company?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  normalizedCompany?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  normalizedWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  normalizedEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumLeadStatusFieldUpdateOperationsInput | $Enums.LeadStatus
+  priority?: Prisma.EnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  submissions?: Prisma.SubmissionUpdateManyWithoutLeadNestedInput
+  activities?: Prisma.LeadActivityUpdateManyWithoutLeadNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRelatedLeadNestedInput
+  emailLogs?: Prisma.EmailLogUpdateManyWithoutLeadNestedInput
+  meetingBookings?: Prisma.MeetingBookingUpdateManyWithoutLeadNestedInput
+  auditAnalyses?: Prisma.AuditAnalysisUpdateManyWithoutLeadNestedInput
+  leadActions?: Prisma.LeadActionUpdateManyWithoutLeadNestedInput
+  proposals?: Prisma.ProposalUpdateManyWithoutLeadNestedInput
+  baseOffers?: Prisma.BaseOfferUpdateManyWithoutLeadNestedInput
+  discoverySessions?: Prisma.DiscoverySessionUpdateManyWithoutLeadNestedInput
+  manualIntakeInvites?: Prisma.ManualIntakeInviteUpdateManyWithoutLeadNestedInput
+  contracts?: Prisma.ContractUpdateManyWithoutLeadNestedInput
+}
+
+export type LeadUncheckedUpdateWithoutProjectsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  company?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  normalizedCompany?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  normalizedWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  normalizedEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumLeadStatusFieldUpdateOperationsInput | $Enums.LeadStatus
+  priority?: Prisma.EnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  submissions?: Prisma.SubmissionUncheckedUpdateManyWithoutLeadNestedInput
+  activities?: Prisma.LeadActivityUncheckedUpdateManyWithoutLeadNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRelatedLeadNestedInput
+  emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutLeadNestedInput
+  meetingBookings?: Prisma.MeetingBookingUncheckedUpdateManyWithoutLeadNestedInput
+  auditAnalyses?: Prisma.AuditAnalysisUncheckedUpdateManyWithoutLeadNestedInput
+  leadActions?: Prisma.LeadActionUncheckedUpdateManyWithoutLeadNestedInput
+  proposals?: Prisma.ProposalUncheckedUpdateManyWithoutLeadNestedInput
+  baseOffers?: Prisma.BaseOfferUncheckedUpdateManyWithoutLeadNestedInput
+  discoverySessions?: Prisma.DiscoverySessionUncheckedUpdateManyWithoutLeadNestedInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUncheckedUpdateManyWithoutLeadNestedInput
   contracts?: Prisma.ContractUncheckedUpdateManyWithoutLeadNestedInput
 }
@@ -1585,6 +1764,7 @@ export type LeadCreateWithoutManualIntakeInvitesInput = {
   baseOffers?: Prisma.BaseOfferCreateNestedManyWithoutLeadInput
   discoverySessions?: Prisma.DiscoverySessionCreateNestedManyWithoutLeadInput
   contracts?: Prisma.ContractCreateNestedManyWithoutLeadInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateWithoutManualIntakeInvitesInput = {
@@ -1613,6 +1793,7 @@ export type LeadUncheckedCreateWithoutManualIntakeInvitesInput = {
   baseOffers?: Prisma.BaseOfferUncheckedCreateNestedManyWithoutLeadInput
   discoverySessions?: Prisma.DiscoverySessionUncheckedCreateNestedManyWithoutLeadInput
   contracts?: Prisma.ContractUncheckedCreateNestedManyWithoutLeadInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadCreateOrConnectWithoutManualIntakeInvitesInput = {
@@ -1657,6 +1838,7 @@ export type LeadUpdateWithoutManualIntakeInvitesInput = {
   baseOffers?: Prisma.BaseOfferUpdateManyWithoutLeadNestedInput
   discoverySessions?: Prisma.DiscoverySessionUpdateManyWithoutLeadNestedInput
   contracts?: Prisma.ContractUpdateManyWithoutLeadNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutManualIntakeInvitesInput = {
@@ -1685,6 +1867,7 @@ export type LeadUncheckedUpdateWithoutManualIntakeInvitesInput = {
   baseOffers?: Prisma.BaseOfferUncheckedUpdateManyWithoutLeadNestedInput
   discoverySessions?: Prisma.DiscoverySessionUncheckedUpdateManyWithoutLeadNestedInput
   contracts?: Prisma.ContractUncheckedUpdateManyWithoutLeadNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadCreateWithoutNotificationsInput = {
@@ -1713,6 +1896,7 @@ export type LeadCreateWithoutNotificationsInput = {
   discoverySessions?: Prisma.DiscoverySessionCreateNestedManyWithoutLeadInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteCreateNestedManyWithoutLeadInput
   contracts?: Prisma.ContractCreateNestedManyWithoutLeadInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateWithoutNotificationsInput = {
@@ -1741,6 +1925,7 @@ export type LeadUncheckedCreateWithoutNotificationsInput = {
   discoverySessions?: Prisma.DiscoverySessionUncheckedCreateNestedManyWithoutLeadInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUncheckedCreateNestedManyWithoutLeadInput
   contracts?: Prisma.ContractUncheckedCreateNestedManyWithoutLeadInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadCreateOrConnectWithoutNotificationsInput = {
@@ -1785,6 +1970,7 @@ export type LeadUpdateWithoutNotificationsInput = {
   discoverySessions?: Prisma.DiscoverySessionUpdateManyWithoutLeadNestedInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUpdateManyWithoutLeadNestedInput
   contracts?: Prisma.ContractUpdateManyWithoutLeadNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutNotificationsInput = {
@@ -1813,6 +1999,7 @@ export type LeadUncheckedUpdateWithoutNotificationsInput = {
   discoverySessions?: Prisma.DiscoverySessionUncheckedUpdateManyWithoutLeadNestedInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUncheckedUpdateManyWithoutLeadNestedInput
   contracts?: Prisma.ContractUncheckedUpdateManyWithoutLeadNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadCreateWithoutEmailLogsInput = {
@@ -1841,6 +2028,7 @@ export type LeadCreateWithoutEmailLogsInput = {
   discoverySessions?: Prisma.DiscoverySessionCreateNestedManyWithoutLeadInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteCreateNestedManyWithoutLeadInput
   contracts?: Prisma.ContractCreateNestedManyWithoutLeadInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateWithoutEmailLogsInput = {
@@ -1869,6 +2057,7 @@ export type LeadUncheckedCreateWithoutEmailLogsInput = {
   discoverySessions?: Prisma.DiscoverySessionUncheckedCreateNestedManyWithoutLeadInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUncheckedCreateNestedManyWithoutLeadInput
   contracts?: Prisma.ContractUncheckedCreateNestedManyWithoutLeadInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadCreateOrConnectWithoutEmailLogsInput = {
@@ -1913,6 +2102,7 @@ export type LeadUpdateWithoutEmailLogsInput = {
   discoverySessions?: Prisma.DiscoverySessionUpdateManyWithoutLeadNestedInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUpdateManyWithoutLeadNestedInput
   contracts?: Prisma.ContractUpdateManyWithoutLeadNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutEmailLogsInput = {
@@ -1941,6 +2131,7 @@ export type LeadUncheckedUpdateWithoutEmailLogsInput = {
   discoverySessions?: Prisma.DiscoverySessionUncheckedUpdateManyWithoutLeadNestedInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUncheckedUpdateManyWithoutLeadNestedInput
   contracts?: Prisma.ContractUncheckedUpdateManyWithoutLeadNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadCreateWithoutMeetingBookingsInput = {
@@ -1969,6 +2160,7 @@ export type LeadCreateWithoutMeetingBookingsInput = {
   discoverySessions?: Prisma.DiscoverySessionCreateNestedManyWithoutLeadInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteCreateNestedManyWithoutLeadInput
   contracts?: Prisma.ContractCreateNestedManyWithoutLeadInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateWithoutMeetingBookingsInput = {
@@ -1997,6 +2189,7 @@ export type LeadUncheckedCreateWithoutMeetingBookingsInput = {
   discoverySessions?: Prisma.DiscoverySessionUncheckedCreateNestedManyWithoutLeadInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUncheckedCreateNestedManyWithoutLeadInput
   contracts?: Prisma.ContractUncheckedCreateNestedManyWithoutLeadInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadCreateOrConnectWithoutMeetingBookingsInput = {
@@ -2041,6 +2234,7 @@ export type LeadUpdateWithoutMeetingBookingsInput = {
   discoverySessions?: Prisma.DiscoverySessionUpdateManyWithoutLeadNestedInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUpdateManyWithoutLeadNestedInput
   contracts?: Prisma.ContractUpdateManyWithoutLeadNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutMeetingBookingsInput = {
@@ -2069,6 +2263,7 @@ export type LeadUncheckedUpdateWithoutMeetingBookingsInput = {
   discoverySessions?: Prisma.DiscoverySessionUncheckedUpdateManyWithoutLeadNestedInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUncheckedUpdateManyWithoutLeadNestedInput
   contracts?: Prisma.ContractUncheckedUpdateManyWithoutLeadNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadCreateWithoutAuditAnalysesInput = {
@@ -2097,6 +2292,7 @@ export type LeadCreateWithoutAuditAnalysesInput = {
   discoverySessions?: Prisma.DiscoverySessionCreateNestedManyWithoutLeadInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteCreateNestedManyWithoutLeadInput
   contracts?: Prisma.ContractCreateNestedManyWithoutLeadInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateWithoutAuditAnalysesInput = {
@@ -2125,6 +2321,7 @@ export type LeadUncheckedCreateWithoutAuditAnalysesInput = {
   discoverySessions?: Prisma.DiscoverySessionUncheckedCreateNestedManyWithoutLeadInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUncheckedCreateNestedManyWithoutLeadInput
   contracts?: Prisma.ContractUncheckedCreateNestedManyWithoutLeadInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadCreateOrConnectWithoutAuditAnalysesInput = {
@@ -2169,6 +2366,7 @@ export type LeadUpdateWithoutAuditAnalysesInput = {
   discoverySessions?: Prisma.DiscoverySessionUpdateManyWithoutLeadNestedInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUpdateManyWithoutLeadNestedInput
   contracts?: Prisma.ContractUpdateManyWithoutLeadNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutAuditAnalysesInput = {
@@ -2197,6 +2395,7 @@ export type LeadUncheckedUpdateWithoutAuditAnalysesInput = {
   discoverySessions?: Prisma.DiscoverySessionUncheckedUpdateManyWithoutLeadNestedInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUncheckedUpdateManyWithoutLeadNestedInput
   contracts?: Prisma.ContractUncheckedUpdateManyWithoutLeadNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadCreateWithoutContractsInput = {
@@ -2225,6 +2424,7 @@ export type LeadCreateWithoutContractsInput = {
   baseOffers?: Prisma.BaseOfferCreateNestedManyWithoutLeadInput
   discoverySessions?: Prisma.DiscoverySessionCreateNestedManyWithoutLeadInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteCreateNestedManyWithoutLeadInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateWithoutContractsInput = {
@@ -2253,6 +2453,7 @@ export type LeadUncheckedCreateWithoutContractsInput = {
   baseOffers?: Prisma.BaseOfferUncheckedCreateNestedManyWithoutLeadInput
   discoverySessions?: Prisma.DiscoverySessionUncheckedCreateNestedManyWithoutLeadInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUncheckedCreateNestedManyWithoutLeadInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadCreateOrConnectWithoutContractsInput = {
@@ -2297,6 +2498,7 @@ export type LeadUpdateWithoutContractsInput = {
   baseOffers?: Prisma.BaseOfferUpdateManyWithoutLeadNestedInput
   discoverySessions?: Prisma.DiscoverySessionUpdateManyWithoutLeadNestedInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUpdateManyWithoutLeadNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutContractsInput = {
@@ -2325,6 +2527,7 @@ export type LeadUncheckedUpdateWithoutContractsInput = {
   baseOffers?: Prisma.BaseOfferUncheckedUpdateManyWithoutLeadNestedInput
   discoverySessions?: Prisma.DiscoverySessionUncheckedUpdateManyWithoutLeadNestedInput
   manualIntakeInvites?: Prisma.ManualIntakeInviteUncheckedUpdateManyWithoutLeadNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutLeadNestedInput
 }
 
 
@@ -2345,6 +2548,7 @@ export type LeadCountOutputType = {
   discoverySessions: number
   manualIntakeInvites: number
   contracts: number
+  projects: number
 }
 
 export type LeadCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2360,6 +2564,7 @@ export type LeadCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   discoverySessions?: boolean | LeadCountOutputTypeCountDiscoverySessionsArgs
   manualIntakeInvites?: boolean | LeadCountOutputTypeCountManualIntakeInvitesArgs
   contracts?: boolean | LeadCountOutputTypeCountContractsArgs
+  projects?: boolean | LeadCountOutputTypeCountProjectsArgs
 }
 
 /**
@@ -2456,6 +2661,13 @@ export type LeadCountOutputTypeCountContractsArgs<ExtArgs extends runtime.Types.
   where?: Prisma.ContractWhereInput
 }
 
+/**
+ * LeadCountOutputType without action
+ */
+export type LeadCountOutputTypeCountProjectsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProjectWhereInput
+}
+
 
 export type LeadSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2484,6 +2696,7 @@ export type LeadSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   discoverySessions?: boolean | Prisma.Lead$discoverySessionsArgs<ExtArgs>
   manualIntakeInvites?: boolean | Prisma.Lead$manualIntakeInvitesArgs<ExtArgs>
   contracts?: boolean | Prisma.Lead$contractsArgs<ExtArgs>
+  projects?: boolean | Prisma.Lead$projectsArgs<ExtArgs>
   _count?: boolean | Prisma.LeadCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["lead"]>
 
@@ -2552,6 +2765,7 @@ export type LeadInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   discoverySessions?: boolean | Prisma.Lead$discoverySessionsArgs<ExtArgs>
   manualIntakeInvites?: boolean | Prisma.Lead$manualIntakeInvitesArgs<ExtArgs>
   contracts?: boolean | Prisma.Lead$contractsArgs<ExtArgs>
+  projects?: boolean | Prisma.Lead$projectsArgs<ExtArgs>
   _count?: boolean | Prisma.LeadCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type LeadIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -2572,6 +2786,7 @@ export type $LeadPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     discoverySessions: Prisma.$DiscoverySessionPayload<ExtArgs>[]
     manualIntakeInvites: Prisma.$ManualIntakeInvitePayload<ExtArgs>[]
     contracts: Prisma.$ContractPayload<ExtArgs>[]
+    projects: Prisma.$ProjectPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2994,6 +3209,7 @@ export interface Prisma__LeadClient<T, Null = never, ExtArgs extends runtime.Typ
   discoverySessions<T extends Prisma.Lead$discoverySessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Lead$discoverySessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DiscoverySessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   manualIntakeInvites<T extends Prisma.Lead$manualIntakeInvitesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Lead$manualIntakeInvitesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ManualIntakeInvitePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   contracts<T extends Prisma.Lead$contractsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Lead$contractsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContractPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  projects<T extends Prisma.Lead$projectsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Lead$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3715,6 +3931,30 @@ export type Lead$contractsArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.ContractScalarFieldEnum | Prisma.ContractScalarFieldEnum[]
+}
+
+/**
+ * Lead.projects
+ */
+export type Lead$projectsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Project
+   */
+  select?: Prisma.ProjectSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Project
+   */
+  omit?: Prisma.ProjectOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProjectInclude<ExtArgs> | null
+  where?: Prisma.ProjectWhereInput
+  orderBy?: Prisma.ProjectOrderByWithRelationInput | Prisma.ProjectOrderByWithRelationInput[]
+  cursor?: Prisma.ProjectWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProjectScalarFieldEnum | Prisma.ProjectScalarFieldEnum[]
 }
 
 /**

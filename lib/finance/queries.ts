@@ -113,8 +113,13 @@ async function normalizeFinanceDefaultCategoryNames(): Promise<void> {
 
 export async function getFinanceDashboard(filters: FinanceFilters) {
   await ensureFinanceDefaults();
-  const periodWhere = getPeriodWhere(filters.period);
+  const referenceDate = new Date();
+  const periodWhere = getPeriodWhere(filters.period, referenceDate);
   const transactionWhere: Prisma.FinanceTransactionWhereInput = { ...periodWhere };
+  const confirmedPeriodWhere: Prisma.FinanceTransactionWhereInput = {
+    ...periodWhere,
+    occurredAt: mergeDateWhere(periodWhere.occurredAt, { lte: referenceDate }),
+  };
 
   if (filters.type && filters.type !== 'ALL') transactionWhere.type = filters.type;
   if (filters.status && filters.status !== 'ALL') transactionWhere.status = filters.status;
@@ -128,8 +133,8 @@ export async function getFinanceDashboard(filters: FinanceFilters) {
   }
 
   const [confirmedIncome, confirmedExpense, pendingIncome, pendingExpense, recentTransactions, transactions, categories, accounts, clientOptions, proposalOptionsByLeadId, recurringRevenue, recurringCosts, forecast, profitability] = await Promise.all([
-    sumAmount({ ...periodWhere, status: 'CONFIRMED', type: 'INCOME' }),
-    sumAmount({ ...periodWhere, status: 'CONFIRMED', type: 'EXPENSE' }),
+    sumAmount({ ...confirmedPeriodWhere, status: 'CONFIRMED', type: 'INCOME' }),
+    sumAmount({ ...confirmedPeriodWhere, status: 'CONFIRMED', type: 'EXPENSE' }),
     sumAmount({ ...periodWhere, status: 'PENDING', type: 'INCOME' }),
     sumAmount({ ...periodWhere, status: 'PENDING', type: 'EXPENSE' }),
     prisma.financeTransaction.findMany({ include: { account: true, category: true }, orderBy: { occurredAt: 'desc' }, take: 10 }),
@@ -140,11 +145,11 @@ export async function getFinanceDashboard(filters: FinanceFilters) {
     getFinanceProposalOptionsByLeadId(),
     getRecurringRevenueDashboard(periodWhere),
     getRecurringCostDashboard(),
-    getFinanceForecastMetrics(),
+    getFinanceForecastMetrics(referenceDate),
     getClientProfitabilityMetrics(filters.profitability),
   ]);
 
-  const alerts = await getFinanceAlerts(new Date(), { forecast, recurringRevenueMetrics: recurringRevenue.metrics });
+  const alerts = await getFinanceAlerts({ forecast, recurringRevenueMetrics: recurringRevenue.metrics, referenceDate });
 
   const profitCents = confirmedIncome - confirmedExpense;
   const pendingCents = pendingIncome + pendingExpense;
@@ -276,13 +281,19 @@ function parseStatus(value: string | undefined): FinanceTransactionStatus | 'ALL
   return value === 'PENDING' || value === 'CONFIRMED' || value === 'CANCELLED' ? value : 'ALL';
 }
 
-function getPeriodWhere(period: FinancePeriodKey): Prisma.FinanceTransactionWhereInput {
-  const now = new Date();
+function getPeriodWhere(period: FinancePeriodKey, now = new Date()): Prisma.FinanceTransactionWhereInput {
   if (period === 'all') return {};
   if (period === 'last30') return { occurredAt: { gte: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000) } };
   if (period === 'year') return { occurredAt: { gte: new Date(now.getFullYear(), 0, 1) } };
   if (period === 'quarter') return { occurredAt: { gte: new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3, 1) } };
   return { occurredAt: { gte: new Date(now.getFullYear(), now.getMonth(), 1) } };
+}
+
+type FinanceTransactionDateWhere = NonNullable<Prisma.FinanceTransactionWhereInput['occurredAt']>;
+
+function mergeDateWhere(left: FinanceTransactionDateWhere | undefined, right: Prisma.DateTimeFilter<'FinanceTransaction'>): FinanceTransactionDateWhere {
+  if (left instanceof Date || typeof left === 'string') return { equals: left, ...right };
+  return { ...(left ?? {}), ...right };
 }
 
 async function sumAmount(where: Prisma.FinanceTransactionWhereInput): Promise<number> {

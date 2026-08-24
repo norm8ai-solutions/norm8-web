@@ -124,6 +124,69 @@ export const FinanceTransactionSource = {
 export type FinanceTransactionSource = (typeof FinanceTransactionSource)[keyof typeof FinanceTransactionSource]
 
 
+export const ProjectStatus = {
+  PLANNED: 'PLANNED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  PAUSED: 'PAUSED',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type ProjectStatus = (typeof ProjectStatus)[keyof typeof ProjectStatus]
+
+
+export const ProjectGrowthPhase = {
+  LAUNCH: 'LAUNCH',
+  OPERATE: 'OPERATE',
+  SCALE: 'SCALE'
+} as const
+
+export type ProjectGrowthPhase = (typeof ProjectGrowthPhase)[keyof typeof ProjectGrowthPhase]
+
+
+export const ProjectMilestoneStatus = {
+  TODO: 'TODO',
+  IN_PROGRESS: 'IN_PROGRESS',
+  DONE: 'DONE'
+} as const
+
+export type ProjectMilestoneStatus = (typeof ProjectMilestoneStatus)[keyof typeof ProjectMilestoneStatus]
+
+
+export const ProjectTaskStatus = {
+  TODO: 'TODO',
+  IN_PROGRESS: 'IN_PROGRESS',
+  IN_REVIEW: 'IN_REVIEW',
+  DONE: 'DONE',
+  BLOCKED: 'BLOCKED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type ProjectTaskStatus = (typeof ProjectTaskStatus)[keyof typeof ProjectTaskStatus]
+
+
+export const ProjectWorkCategory = {
+  DEVELOPMENT: 'DEVELOPMENT',
+  DESIGN: 'DESIGN',
+  MEETING: 'MEETING',
+  CLIENT_COMMUNICATION: 'CLIENT_COMMUNICATION',
+  QA: 'QA',
+  DEPLOYMENT: 'DEPLOYMENT',
+  ADMIN: 'ADMIN'
+} as const
+
+export type ProjectWorkCategory = (typeof ProjectWorkCategory)[keyof typeof ProjectWorkCategory]
+
+
+export const ProjectTimerStatus = {
+  RUNNING: 'RUNNING',
+  PAUSED: 'PAUSED',
+  STOPPED: 'STOPPED'
+} as const
+
+export type ProjectTimerStatus = (typeof ProjectTimerStatus)[keyof typeof ProjectTimerStatus]
+
+
 export const SubmissionStatus = {
   NEW: 'NEW',
   IN_REVIEW: 'IN_REVIEW',

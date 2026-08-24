@@ -19,6 +19,7 @@ import {
   Inbox,
   Mail,
   Receipt,
+  PanelsTopLeft,
   Plug,
   Settings,
   TrendingUp,
@@ -48,6 +49,7 @@ const navSections: Array<{ label?: string; items: NavItem[] }> = [
       { href: '/admin/leads', label: 'Leads', icon: Users },
       { href: '/admin/submissions', label: 'Pipeline', icon: Inbox },
       { href: '/admin/contracts', label: 'Contratos', icon: FileSignature },
+      { href: '/admin/projects', label: 'Projetos', icon: PanelsTopLeft },
       { href: '/admin/finance', label: 'Finance', icon: Receipt },
     ],
   },
@@ -78,7 +80,7 @@ export default function AdminNav({ isCollapsed = false }: AdminNavProps) {
   const iconSize = 16;
 
   return (
-    <nav className="admin-nav" aria-label="Navegação principal do Admin">
+    <nav className="admin-nav" aria-label="NavegaÃ§Ã£o principal do Admin">
       {navSections.map((section, sectionIndex) => (
         <div className="admin-nav-section" key={sectionIndex}>
           {section.items.map((item) => {
@@ -91,10 +93,10 @@ export default function AdminNav({ isCollapsed = false }: AdminNavProps) {
             if (item.disabled || !item.href) {
               return (
                 <span
-                  aria-label={`${item.label} — em breve`}
+                  aria-label={`${item.label} â€” em breve`}
                   className="admin-nav-link admin-nav-link-disabled"
                   key={item.label}
-                  title={isCollapsed ? `${item.label} — em breve` : undefined}
+                  title={isCollapsed ? `${item.label} â€” em breve` : undefined}
                 >
                   <Icon aria-hidden="true" size={iconSize} />
                   <span aria-hidden={isCollapsed} className="admin-nav-label">

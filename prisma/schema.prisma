@@ -33,18 +33,19 @@ model Lead {
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
 
-  submissions     Submission[]
-  activities      LeadActivity[]
-  notifications   Notification[]
-  emailLogs       EmailLog[]
-  meetingBookings MeetingBooking[]
-  auditAnalyses   AuditAnalysis[]
-  leadActions     LeadAction[]
-  proposals       Proposal[]
-  baseOffers      BaseOffer[]
-  discoverySessions DiscoverySession[]
+  submissions         Submission[]
+  activities          LeadActivity[]
+  notifications       Notification[]
+  emailLogs           EmailLog[]
+  meetingBookings     MeetingBooking[]
+  auditAnalyses       AuditAnalysis[]
+  leadActions         LeadAction[]
+  proposals           Proposal[]
+  baseOffers          BaseOffer[]
+  discoverySessions   DiscoverySession[]
   manualIntakeInvites ManualIntakeInvite[]
-  contracts       Contract[]
+  contracts           Contract[]
+  projects            Project[]
 
   @@index([normalizedCompany])
   @@index([normalizedWebsite])
@@ -144,12 +145,14 @@ model Proposal {
   submission Submission? @relation(fields: [submissionId], references: [id], onDelete: SetNull)
   leadAction LeadAction? @relation(fields: [leadActionId], references: [id], onDelete: SetNull)
   contracts  Contract[]
+  projects   Project[]
 
   @@index([leadId])
   @@index([submissionId])
   @@index([status])
   @@index([createdAt])
 }
+
 /// Internal base offer prepared from manual commercial intake before discovery.
 model BaseOffer {
   id                      String          @id @default(cuid())
@@ -358,6 +361,137 @@ model FinanceAccount {
   recurringCosts    FinanceRecurringCost[]
 }
 
+/// Operational project used to track delivery, time spent and real profitability.
+model Project {
+  id                   String             @id @default(cuid())
+  name                 String
+  clientName           String
+  description          String?
+  status               ProjectStatus      @default(IN_PROGRESS)
+  growthPhase          ProjectGrowthPhase @default(LAUNCH)
+  planName             String?
+  commercialCondition  String?
+  contractedValueCents Int
+  currency             String             @default("EUR")
+  startDate            DateTime?
+  targetEndDate        DateTime?
+  completedAt          DateTime?
+  leadId               String?
+  proposalId           String?
+  contractId           String?
+  jiraProjectKey       String?
+  metadata             Json?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+
+  lead          Lead?                 @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  proposal      Proposal?             @relation(fields: [proposalId], references: [id], onDelete: SetNull)
+  contract      Contract?             @relation(fields: [contractId], references: [id], onDelete: SetNull)
+  milestones    ProjectMilestone[]
+  tasks         ProjectTask[]
+  timeEntries   ProjectTimeEntry[]
+  timerSessions ProjectTimerSession[]
+
+  @@index([leadId])
+  @@index([proposalId])
+  @@index([contractId])
+  @@index([status])
+  @@index([growthPhase])
+  @@index([createdAt])
+}
+
+/// Simple delivery milestone grouped inside a Project.
+model ProjectMilestone {
+  id          String                 @id @default(cuid())
+  projectId   String
+  title       String
+  description String?
+  status      ProjectMilestoneStatus @default(TODO)
+  order       Int
+  dueDate     DateTime?
+  completedAt DateTime?
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+
+  project Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tasks   ProjectTask[]
+
+  @@index([projectId])
+  @@index([status])
+  @@index([dueDate])
+}
+
+/// Lightweight delivery task for progress tracking. Jira remains the source for technical detail.
+model ProjectTask {
+  id               String              @id @default(cuid())
+  projectId        String
+  milestoneId      String?
+  title            String
+  description      String?
+  status           ProjectTaskStatus   @default(TODO)
+  category         ProjectWorkCategory @default(DEVELOPMENT)
+  order            Int
+  estimatedMinutes Int?
+  completedAt      DateTime?
+  jiraIssueKey     String?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  project       Project               @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  milestone     ProjectMilestone?     @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
+  timeEntries   ProjectTimeEntry[]
+  timerSessions ProjectTimerSession[]
+
+  @@index([projectId])
+  @@index([milestoneId])
+  @@index([status])
+  @@index([category])
+}
+
+/// Manual time tracking entry attached to a project and, in the UI, to a task.
+model ProjectTimeEntry {
+  id              String              @id @default(cuid())
+  projectId       String
+  taskId          String?
+  category        ProjectWorkCategory
+  description     String?
+  durationMinutes Int
+  entryDate       DateTime
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  project Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  task    ProjectTask? @relation(fields: [taskId], references: [id], onDelete: SetNull)
+
+  @@index([projectId])
+  @@index([taskId])
+  @@index([category])
+  @@index([entryDate])
+}
+
+/// Persistent timer session used by the Admin project workspace before it is saved as a time entry.
+model ProjectTimerSession {
+  id                 String              @id @default(cuid())
+  projectId          String
+  taskId             String
+  category           ProjectWorkCategory
+  status             ProjectTimerStatus  @default(RUNNING)
+  description        String?
+  startedAt          DateTime
+  pausedAt           DateTime?
+  accumulatedSeconds Int                 @default(0)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  project Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  task    ProjectTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([taskId])
+  @@index([status])
+  @@index([startedAt])
+}
+
 /// Tokenized manual request sent by Admin before a pre-meeting intake submission.
 model ManualIntakeInvite {
   id              String                   @id @default(cuid())
@@ -385,6 +519,7 @@ model ManualIntakeInvite {
   @@index([expiresAt])
   @@index([createdAt])
 }
+
 /// Internal notification prepared for future back-office and sales workflows.
 model Notification {
   id                  String             @id @default(cuid())
@@ -606,43 +741,43 @@ model CompanyLegalSettings {
 
 /// Commercial services contract prepared from Lead and optional Proposal context.
 model Contract {
-  id                String               @id @default(cuid())
-  number            String               @unique
-  version           Int                  @default(1)
-  title             String
-  status            ContractStatus       @default(DRAFT)
-  leadId            String?
-  proposalId        String?
-  meetingBookingId  String?
-  templateId        String?
-  projectName       String?
-  clientSnapshot    Json
-  providerSnapshot  Json
-  projectSnapshot   Json
-  financialSnapshot Json
-  termsSnapshot     Json
-  serviceType       ContractServiceType?
-  serviceTypeOther  String?
-  plan              ContractPlan?
-  includesLaunch    Boolean              @default(true)
-  includesOperate   Boolean              @default(false)
-  includesScale     Boolean              @default(false)
-  estimatedValue    Decimal?
-  currency          String               @default("EUR")
-  issueDate         DateTime?
-  validUntil        DateTime?
-  signedAt          DateTime?
-  cancelledAt       DateTime?
-  pdfUrl            String?
-  pdfStorageKey     String?
-  pdfHash           String?
-  generatedAt       DateTime?
+  id                  String               @id @default(cuid())
+  number              String               @unique
+  version             Int                  @default(1)
+  title               String
+  status              ContractStatus       @default(DRAFT)
+  leadId              String?
+  proposalId          String?
+  meetingBookingId    String?
+  templateId          String?
+  projectName         String?
+  clientSnapshot      Json
+  providerSnapshot    Json
+  projectSnapshot     Json
+  financialSnapshot   Json
+  termsSnapshot       Json
+  serviceType         ContractServiceType?
+  serviceTypeOther    String?
+  plan                ContractPlan?
+  includesLaunch      Boolean              @default(true)
+  includesOperate     Boolean              @default(false)
+  includesScale       Boolean              @default(false)
+  estimatedValue      Decimal?
+  currency            String               @default("EUR")
+  issueDate           DateTime?
+  validUntil          DateTime?
+  signedAt            DateTime?
+  cancelledAt         DateTime?
+  pdfUrl              String?
+  pdfStorageKey       String?
+  pdfHash             String?
+  generatedAt         DateTime?
   pendingChangeReason String?
   pendingChangeAt     DateTime?
-  createdById       String
-  assignedToId      String?
-  createdAt         DateTime             @default(now())
-  updatedAt         DateTime             @updatedAt
+  createdById         String
+  assignedToId        String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
 
   lead              Lead?                      @relation(fields: [leadId], references: [id], onDelete: SetNull)
   proposal          Proposal?                  @relation(fields: [proposalId], references: [id], onDelete: SetNull)
@@ -656,6 +791,7 @@ model Contract {
   paymentMilestones ContractPaymentMilestone[]
   versions          ContractVersion[]
   activityLogs      ContractActivityLog[]
+  projects          Project[]
 
   @@index([leadId])
   @@index([proposalId])
@@ -947,6 +1083,56 @@ enum FinanceTransactionSource {
   CONTRACT
   SUBSCRIPTION
   OTHER
+}
+
+/// Operational delivery lifecycle for internal Norm8 projects.
+enum ProjectStatus {
+  PLANNED
+  IN_PROGRESS
+  PAUSED
+  COMPLETED
+  CANCELLED
+}
+
+/// Growth System phase associated with a project.
+enum ProjectGrowthPhase {
+  LAUNCH
+  OPERATE
+  SCALE
+}
+
+/// Simple milestone lifecycle.
+enum ProjectMilestoneStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+/// Simple task lifecycle for project progress.
+enum ProjectTaskStatus {
+  TODO
+  IN_PROGRESS
+  IN_REVIEW
+  DONE
+  BLOCKED
+  CANCELLED
+}
+
+/// Work category used for time tracking and profitability analysis.
+enum ProjectWorkCategory {
+  DEVELOPMENT
+  DESIGN
+  MEETING
+  CLIENT_COMMUNICATION
+  QA
+  DEPLOYMENT
+  ADMIN
+}
+
+enum ProjectTimerStatus {
+  RUNNING
+  PAUSED
+  STOPPED
 }
 
 /// Operational lifecycle for a submitted request.

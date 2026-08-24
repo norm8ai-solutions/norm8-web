@@ -8,6 +8,7 @@ import { syncFinanceIncomeForProposal } from '@/lib/admin/finance-commercial-syn
 import { prisma } from '@/lib/db/prisma';
 import { parseEuroToCents } from './formatters';
 import { ensureRecurringRevenueDefaults } from './recurring-revenue';
+import { canConfirmFinanceTransaction, normalizeFinanceTransactionStatus } from './transaction-status';
 
 export type FinanceActionState = { success: boolean; message?: string; error?: string };
 
@@ -187,6 +188,15 @@ async function updateFinanceTransactionStatus(formData: FormData, status: Financ
   try {
     const id = String(formData.get('transactionId') ?? '').trim();
     if (!id) return { success: false, error: genericSaveError };
+    const transaction = await prisma.financeTransaction.findUnique({
+      select: { dueDate: true, occurredAt: true },
+      where: { id },
+    });
+    if (!transaction) return { success: false, error: genericSaveError };
+    if (status === 'CONFIRMED' && !canConfirmFinanceTransaction(transaction)) {
+      return { success: false, error: 'Transações com data futura ficam pendentes até serem confirmadas.' };
+    }
+
     await prisma.financeTransaction.update({ data: { paidAt: status === 'CONFIRMED' ? new Date() : null, status }, where: { id } });
     revalidatePath('/admin/finance');
     return { success: true, message };
@@ -231,6 +241,8 @@ async function parseTransactionFormData(formData: FormData): Promise<ParsedTrans
   if (dueDate === 'INVALID') return { ok: false, error: 'Selecione uma data v\u00e1lida.' };
   if (!currency) return { ok: false, error: genericSaveError };
 
+  const normalizedStatus = normalizeFinanceTransactionStatus({ dueDate, occurredAt, status });
+
   return {
     ok: true,
     data: {
@@ -243,9 +255,9 @@ async function parseTransactionFormData(formData: FormData): Promise<ParsedTrans
       dueDate,
       leadId,
       occurredAt,
-      paidAt: status === 'CONFIRMED' ? new Date() : null,
+      paidAt: normalizedStatus === 'CONFIRMED' ? new Date() : null,
       source,
-      status,
+      status: normalizedStatus,
       title,
       type,
     },

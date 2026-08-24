@@ -64,6 +64,11 @@ export const ModelName = {
   FinanceRecurringCost: 'FinanceRecurringCost',
   FinanceCategory: 'FinanceCategory',
   FinanceAccount: 'FinanceAccount',
+  Project: 'Project',
+  ProjectMilestone: 'ProjectMilestone',
+  ProjectTask: 'ProjectTask',
+  ProjectTimeEntry: 'ProjectTimeEntry',
+  ProjectTimerSession: 'ProjectTimerSession',
   ManualIntakeInvite: 'ManualIntakeInvite',
   Notification: 'Notification',
   EmailLog: 'EmailLog',
@@ -345,6 +350,99 @@ export const FinanceAccountScalarFieldEnum = {
 } as const
 
 export type FinanceAccountScalarFieldEnum = (typeof FinanceAccountScalarFieldEnum)[keyof typeof FinanceAccountScalarFieldEnum]
+
+
+export const ProjectScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  clientName: 'clientName',
+  description: 'description',
+  status: 'status',
+  growthPhase: 'growthPhase',
+  planName: 'planName',
+  commercialCondition: 'commercialCondition',
+  contractedValueCents: 'contractedValueCents',
+  currency: 'currency',
+  startDate: 'startDate',
+  targetEndDate: 'targetEndDate',
+  completedAt: 'completedAt',
+  leadId: 'leadId',
+  proposalId: 'proposalId',
+  contractId: 'contractId',
+  jiraProjectKey: 'jiraProjectKey',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]
+
+
+export const ProjectMilestoneScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  title: 'title',
+  description: 'description',
+  status: 'status',
+  order: 'order',
+  dueDate: 'dueDate',
+  completedAt: 'completedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProjectMilestoneScalarFieldEnum = (typeof ProjectMilestoneScalarFieldEnum)[keyof typeof ProjectMilestoneScalarFieldEnum]
+
+
+export const ProjectTaskScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  milestoneId: 'milestoneId',
+  title: 'title',
+  description: 'description',
+  status: 'status',
+  category: 'category',
+  order: 'order',
+  estimatedMinutes: 'estimatedMinutes',
+  completedAt: 'completedAt',
+  jiraIssueKey: 'jiraIssueKey',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProjectTaskScalarFieldEnum = (typeof ProjectTaskScalarFieldEnum)[keyof typeof ProjectTaskScalarFieldEnum]
+
+
+export const ProjectTimeEntryScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  taskId: 'taskId',
+  category: 'category',
+  description: 'description',
+  durationMinutes: 'durationMinutes',
+  entryDate: 'entryDate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProjectTimeEntryScalarFieldEnum = (typeof ProjectTimeEntryScalarFieldEnum)[keyof typeof ProjectTimeEntryScalarFieldEnum]
+
+
+export const ProjectTimerSessionScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  taskId: 'taskId',
+  category: 'category',
+  status: 'status',
+  description: 'description',
+  startedAt: 'startedAt',
+  pausedAt: 'pausedAt',
+  accumulatedSeconds: 'accumulatedSeconds',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProjectTimerSessionScalarFieldEnum = (typeof ProjectTimerSessionScalarFieldEnum)[keyof typeof ProjectTimerSessionScalarFieldEnum]
 
 
 export const ManualIntakeInviteScalarFieldEnum = {

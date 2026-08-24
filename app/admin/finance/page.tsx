@@ -86,14 +86,15 @@ export default async function AdminFinancePage({ searchParams }: FinancePageProp
 
       <AdminPanel className="finance-section-anchor" id="previsao-financeira" title="Previsão financeira" subtitle={`Veja a receita, despesas, lucro e saldo estimado para ${data.forecast.monthLabel}.`}>
         <div className="admin-kpi-grid finance-kpi-grid">
-          <AdminStatCard icon={<TrendingUp size={16} />} label="Receita prevista este mês" value={formatCurrencyCents(data.forecast.expectedRevenueCents)} context="Receitas pendentes e recorrentes ainda previstas até ao fim do mês." />
-          <AdminStatCard icon={<TrendingDown size={16} />} label="Despesas previstas este mês" value={formatCurrencyCents(data.forecast.expectedExpensesCents)} context="Despesas pendentes e renovações ainda previstas até ao fim do mês." />
-          <AdminStatCard icon={<Euro size={16} />} label="Lucro previsto" value={formatCurrencyCents(data.forecast.expectedProfitCents)} context="Receita futura restante menos despesas futuras restantes." />
+          <AdminStatCard icon={<TrendingUp size={16} />} label="Receita prevista este mês" value={formatCurrencyCents(data.forecast.expectedMonthIncomeCents)} context="Entradas confirmadas do mês somadas às receitas ainda previstas." />
+          <AdminStatCard icon={<TrendingDown size={16} />} label="Despesas previstas este mês" value={formatCurrencyCents(data.forecast.expectedMonthExpenseCents)} context="Despesas confirmadas do mês somadas aos custos ainda previstos." />
+          <AdminStatCard icon={<Euro size={16} />} label="Lucro previsto" value={formatCurrencyCents(data.forecast.expectedProfitCents)} context="Resultado confirmado do mês somado ao resultado futuro restante." />
           <AdminStatCard icon={<Banknote size={16} />} label="Saldo estimado no fim do mês" value={formatCurrencyCents(data.forecast.estimatedEndOfMonthBalanceCents)} context="Saldo confirmado atual somado ao resultado previsto restante do mês." />
           <AdminStatCard icon={<CalendarClock size={16} />} label="Runway" value={formatRunwayMonths(data.forecast.runwayMonths)} context="Meses estimados que o saldo consegue cobrir com o burn rate atual." />
         </div>
         <div className="finance-forecast-breakdown" aria-label="Breakdown da previsão">
           <FinanceForecastBreakdownItem label="Saldo atual" value={formatCurrencyCents(data.forecast.estimatedCurrentBalanceCents)} />
+          <FinanceForecastBreakdownItem label="Resultado confirmado do mês" value={formatCurrencyCents(data.forecast.breakdown.confirmedMonthProfitCents)} />
           <FinanceForecastBreakdownItem label="Entradas pendentes" value={formatCurrencyCents(data.forecast.breakdown.pendingIncomeFutureCents)} />
           <FinanceForecastBreakdownItem label="Receitas recorrentes futuras" value={formatCurrencyCents(data.forecast.breakdown.recurringRevenueFutureCents)} />
           <FinanceForecastBreakdownItem label="Despesas pendentes" value={formatCurrencyCents(data.forecast.breakdown.pendingExpensesFutureCents)} />

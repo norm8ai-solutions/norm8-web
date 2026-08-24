@@ -10,6 +10,7 @@ import { Norm8Select, type Norm8SelectOption } from '@/components/ui/norm8-selec
 import { cancelFinanceRecurringCostAction, cancelFinanceTransactionAction, confirmFinanceTransactionAction, createFinanceRecurringCostAction, createFinanceRecurringRevenueAction, createFinanceTransactionAction, endFinanceRecurringCostAction, endFinanceRecurringRevenueAction, pauseFinanceRecurringCostAction, pauseFinanceRecurringRevenueAction, reactivateFinanceRecurringCostAction, reactivateFinanceRecurringRevenueAction, updateFinanceRecurringCostAction, updateFinanceRecurringRevenueAction, updateFinanceTransactionAction, type FinanceActionState } from '@/lib/finance/actions';
 import { formatCurrencyCents } from '@/lib/finance/formatters';
 import { financePeriodOptions, type FinancePeriodKey } from '@/lib/finance/constants';
+import { isFutureFinanceTransaction } from '@/lib/finance/transaction-status';
 
 type FinanceCategoryOption = { id: string; name: string; type: FinanceTransactionType };
 type FinanceAccountOption = { id: string; name: string };
@@ -53,19 +54,31 @@ export function FinanceFiltersForm({ categories, filters }: FinanceFiltersFormPr
 export function FinanceTransactionModal({ accounts, categories, clientOptions, transaction }: FinanceTransactionModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<FinanceClientOption | null>(() => clientOptions.find((client) => client.id === transaction?.leadId) ?? null);
+  const [selectedOccurredAt, setSelectedOccurredAt] = useState<Date | null>(() => transaction?.occurredAt ?? new Date());
+  const [selectedDueDate, setSelectedDueDate] = useState<Date | null>(() => transaction?.dueDate ?? null);
+  const [selectedStatus, setSelectedStatus] = useState<FinanceTransactionStatus>(() => transaction?.status ?? 'CONFIRMED');
   const action = transaction ? updateFinanceTransactionAction : createFinanceTransactionAction;
   const [state, formAction, pending] = useActionState(action, initialState);
   const router = useRouter();
   const categoryOptions = useMemo<Norm8SelectOption[]>(() => categories.map((category) => ({ label: (category.type === 'INCOME' ? 'Entrada' : 'Despesa') + ' \u00b7 ' + category.name, value: category.id })), [categories]);
   const accountOptions = useMemo<Norm8SelectOption[]>(() => accounts.map((account) => ({ label: account.name, value: account.id })), [accounts]);
+  const isFutureTransaction = selectedOccurredAt ? isFutureFinanceTransaction({ dueDate: selectedDueDate, occurredAt: selectedOccurredAt }) : false;
+  const availableStatusOptions = useMemo(() => isFutureTransaction ? statusOptions.filter((option) => option.value !== 'CONFIRMED') : statusOptions, [isFutureTransaction]);
   useEffect(() => { if (state.success) router.refresh(); }, [router, state.success]);
 
   useEffect(() => {
     if (isOpen) {
       const initialClient = clientOptions.find((client) => client.id === transaction?.leadId) ?? null;
       setSelectedClient(initialClient);
+      setSelectedOccurredAt(transaction?.occurredAt ?? new Date());
+      setSelectedDueDate(transaction?.dueDate ?? null);
+      setSelectedStatus(transaction?.status ?? 'CONFIRMED');
     }
-  }, [clientOptions, isOpen, transaction?.leadId]);
+  }, [clientOptions, isOpen, transaction?.dueDate, transaction?.leadId, transaction?.occurredAt, transaction?.status]);
+
+  useEffect(() => {
+    if (isFutureTransaction && selectedStatus === 'CONFIRMED') setSelectedStatus('PENDING');
+  }, [isFutureTransaction, selectedStatus]);
 
   const title = transaction ? 'Editar transa\u00e7\u00e3o' : 'Nova transa\u00e7\u00e3o';
 
@@ -84,7 +97,7 @@ export function FinanceTransactionModal({ accounts, categories, clientOptions, t
               <input name="currency" type="hidden" value="EUR" />
               <div className="manual-intake-two-cols">
                 <label className="manual-intake-admin-field"><span>Tipo</span><Norm8Select defaultValue={transaction?.type ?? 'INCOME'} name="type" options={typeOptions} /></label>
-                <label className="manual-intake-admin-field"><span>Estado</span><Norm8Select defaultValue={transaction?.status ?? 'CONFIRMED'} name="status" options={statusOptions} /></label>
+                <label className="manual-intake-admin-field"><span>Estado</span><Norm8Select name="status" onValueChange={(value) => setSelectedStatus(value as FinanceTransactionStatus)} options={availableStatusOptions} value={selectedStatus} /></label>
               </div>
               <label className="manual-intake-admin-field"><span>{'T\u00edtulo'}</span><input className="admin-input" defaultValue={transaction?.title ?? ''} name="title" required /></label>
               <label className="manual-intake-admin-field"><span>{'Descri\u00e7\u00e3o opcional'}</span><textarea className="admin-textarea" defaultValue={transaction?.description ?? ''} name="description" /></label>
@@ -99,6 +112,7 @@ export function FinanceTransactionModal({ accounts, categories, clientOptions, t
                     errorId="finance-occurredAt-error"
                     mode="date"
                     name="occurredAt"
+                    onValueChange={setSelectedOccurredAt}
                     submitFormat="date"
                     placeholder="Selecionar data"
                   />
@@ -114,6 +128,7 @@ export function FinanceTransactionModal({ accounts, categories, clientOptions, t
                   <span>Data de vencimento</span>
                   <Norm8DateTimePicker
                     defaultValue={transaction?.dueDate ?? null}
+                    onValueChange={setSelectedDueDate}
                     mode="date"
                     name="dueDate"
                     submitFormat="date"
@@ -128,6 +143,7 @@ export function FinanceTransactionModal({ accounts, categories, clientOptions, t
                   {!selectedClient && transaction?.clientName ? <small className="admin-row-meta">Cliente registado anteriormente: {transaction.clientName}</small> : null}
                 </div>
               </div>
+              {isFutureTransaction ? <p className="admin-row-meta">Transações com data futura ficam pendentes até serem confirmadas.</p> : null}
               <label className="manual-intake-admin-field"><span>Origem</span><Norm8Select defaultValue={transaction?.source ?? 'MANUAL'} name="source" options={sourceOptions} /></label>
               {state.message ? <p className="discovery-action-feedback discovery-action-feedback-success">{state.message}</p> : null}
               {state.error && state.error !== 'Selecione uma data v\u00e1lida.' ? <p className="discovery-action-feedback discovery-action-feedback-error">{state.error}</p> : null}

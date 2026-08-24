@@ -2,7 +2,7 @@
 
 import { requireAdmin } from '@/lib/admin/auth';
 import { buildNegativeForecastAlert } from '@/lib/admin/finance-alert-builders';
-import { getFinanceForecastMetrics, type FinanceForecastMetrics } from '@/lib/admin/finance-forecast';
+import type { FinanceForecastMetrics } from '@/lib/admin/finance-forecast';
 import { getNextRecurringCostRenewalDate } from '@/lib/admin/finance-recurring-costs';
 import { prisma } from '@/lib/db/prisma';
 import { formatCurrencyCents, formatDateOnly, formatPercentage } from '@/lib/finance/formatters';
@@ -24,18 +24,25 @@ export type FinanceAlert = {
 const maxAlerts = 8;
 const dayInMs = 24 * 60 * 60 * 1000;
 
-export async function getFinanceAlerts(referenceDate = new Date(), context: { forecast?: FinanceForecastMetrics; recurringRevenueMetrics?: FinanceRecurringRevenueMetrics } = {}): Promise<FinanceAlert[]> {
+type FinanceAlertsContext = {
+  forecast: FinanceForecastMetrics;
+  recurringRevenueMetrics?: FinanceRecurringRevenueMetrics;
+  referenceDate?: Date;
+};
+
+export async function getFinanceAlerts(context: FinanceAlertsContext): Promise<FinanceAlert[]> {
   await requireAdmin();
 
+  const referenceDate = context.referenceDate ?? new Date();
+  const negativeForecastAlert = buildNegativeForecastAlert(context.forecast);
   const results = await Promise.allSettled([
     getUpcomingRecurringCostAlerts(referenceDate),
-    getNegativeForecastAlert(referenceDate, context.forecast),
     getMrrBelowTargetAlert(context.recurringRevenueMetrics),
     getUnusualExpenseAlerts(referenceDate),
     getOverduePendingIncomeAlerts(referenceDate),
   ]);
 
-  const alerts = results.flatMap((result) => {
+  const settledAlerts = results.flatMap((result) => {
     if (result.status === 'rejected') {
       console.error('Failed to calculate finance alert', result.reason);
       return [];
@@ -46,7 +53,19 @@ export async function getFinanceAlerts(referenceDate = new Date(), context: { fo
     return value ? [value] : [];
   });
 
-  return alerts.sort(compareAlerts).slice(0, maxAlerts);
+  const finalAlerts = [negativeForecastAlert, ...settledAlerts]
+    .filter((alert): alert is FinanceAlert => Boolean(alert))
+    .sort(compareAlerts)
+    .slice(0, maxAlerts);
+
+  if (process.env.NODE_ENV === 'development') {
+    console.info('[finance-alerts]', {
+      alertIds: finalAlerts.map((alert) => alert.id),
+      expectedProfitCents: context.forecast.expectedProfitCents,
+    });
+  }
+
+  return finalAlerts;
 }
 
 async function getUpcomingRecurringCostAlerts(referenceDate: Date): Promise<FinanceAlert[]> {
@@ -91,12 +110,6 @@ async function getUpcomingRecurringCostAlerts(referenceDate: Date): Promise<Fina
     title: 'Despesa recorrente vence nos próximos 7 dias',
   }];
 }
-
-async function getNegativeForecastAlert(referenceDate: Date, currentForecast?: FinanceForecastMetrics): Promise<FinanceAlert | null> {
-  const forecast = currentForecast ?? await getFinanceForecastMetrics(referenceDate);
-  return buildNegativeForecastAlert(forecast);
-}
-
 
 async function getMrrBelowTargetAlert(currentMetrics?: FinanceRecurringRevenueMetrics): Promise<FinanceAlert | null> {
   const metrics = currentMetrics ?? (await getRecurringRevenueDashboard()).metrics;

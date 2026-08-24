@@ -468,6 +468,7 @@ export type ContractWhereInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneListRelationFilter
   versions?: Prisma.ContractVersionListRelationFilter
   activityLogs?: Prisma.ContractActivityLogListRelationFilter
+  projects?: Prisma.ProjectListRelationFilter
 }
 
 export type ContractOrderByWithRelationInput = {
@@ -520,6 +521,7 @@ export type ContractOrderByWithRelationInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneOrderByRelationAggregateInput
   versions?: Prisma.ContractVersionOrderByRelationAggregateInput
   activityLogs?: Prisma.ContractActivityLogOrderByRelationAggregateInput
+  projects?: Prisma.ProjectOrderByRelationAggregateInput
 }
 
 export type ContractWhereUniqueInput = Prisma.AtLeast<{
@@ -575,6 +577,7 @@ export type ContractWhereUniqueInput = Prisma.AtLeast<{
   paymentMilestones?: Prisma.ContractPaymentMilestoneListRelationFilter
   versions?: Prisma.ContractVersionListRelationFilter
   activityLogs?: Prisma.ContractActivityLogListRelationFilter
+  projects?: Prisma.ProjectListRelationFilter
 }, "id" | "number">
 
 export type ContractOrderByWithAggregationInput = {
@@ -709,6 +712,7 @@ export type ContractCreateInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneCreateNestedManyWithoutContractInput
   versions?: Prisma.ContractVersionCreateNestedManyWithoutContractInput
   activityLogs?: Prisma.ContractActivityLogCreateNestedManyWithoutContractInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutContractInput
 }
 
 export type ContractUncheckedCreateInput = {
@@ -755,6 +759,7 @@ export type ContractUncheckedCreateInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneUncheckedCreateNestedManyWithoutContractInput
   versions?: Prisma.ContractVersionUncheckedCreateNestedManyWithoutContractInput
   activityLogs?: Prisma.ContractActivityLogUncheckedCreateNestedManyWithoutContractInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutContractInput
 }
 
 export type ContractUpdateInput = {
@@ -801,6 +806,7 @@ export type ContractUpdateInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneUpdateManyWithoutContractNestedInput
   versions?: Prisma.ContractVersionUpdateManyWithoutContractNestedInput
   activityLogs?: Prisma.ContractActivityLogUpdateManyWithoutContractNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutContractNestedInput
 }
 
 export type ContractUncheckedUpdateInput = {
@@ -847,6 +853,7 @@ export type ContractUncheckedUpdateInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneUncheckedUpdateManyWithoutContractNestedInput
   versions?: Prisma.ContractVersionUncheckedUpdateManyWithoutContractNestedInput
   activityLogs?: Prisma.ContractActivityLogUncheckedUpdateManyWithoutContractNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutContractNestedInput
 }
 
 export type ContractCreateManyInput = {
@@ -971,6 +978,11 @@ export type ContractListRelationFilter = {
 
 export type ContractOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type ContractNullableScalarRelationFilter = {
+  is?: Prisma.ContractWhereInput | null
+  isNot?: Prisma.ContractWhereInput | null
 }
 
 export type ContractCountOrderByAggregateInput = {
@@ -1180,6 +1192,22 @@ export type ContractUncheckedUpdateManyWithoutProposalNestedInput = {
   update?: Prisma.ContractUpdateWithWhereUniqueWithoutProposalInput | Prisma.ContractUpdateWithWhereUniqueWithoutProposalInput[]
   updateMany?: Prisma.ContractUpdateManyWithWhereWithoutProposalInput | Prisma.ContractUpdateManyWithWhereWithoutProposalInput[]
   deleteMany?: Prisma.ContractScalarWhereInput | Prisma.ContractScalarWhereInput[]
+}
+
+export type ContractCreateNestedOneWithoutProjectsInput = {
+  create?: Prisma.XOR<Prisma.ContractCreateWithoutProjectsInput, Prisma.ContractUncheckedCreateWithoutProjectsInput>
+  connectOrCreate?: Prisma.ContractCreateOrConnectWithoutProjectsInput
+  connect?: Prisma.ContractWhereUniqueInput
+}
+
+export type ContractUpdateOneWithoutProjectsNestedInput = {
+  create?: Prisma.XOR<Prisma.ContractCreateWithoutProjectsInput, Prisma.ContractUncheckedCreateWithoutProjectsInput>
+  connectOrCreate?: Prisma.ContractCreateOrConnectWithoutProjectsInput
+  upsert?: Prisma.ContractUpsertWithoutProjectsInput
+  disconnect?: Prisma.ContractWhereInput | boolean
+  delete?: Prisma.ContractWhereInput | boolean
+  connect?: Prisma.ContractWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ContractUpdateToOneWithWhereWithoutProjectsInput, Prisma.ContractUpdateWithoutProjectsInput>, Prisma.ContractUncheckedUpdateWithoutProjectsInput>
 }
 
 export type ContractCreateNestedManyWithoutMeetingBookingInput = {
@@ -1489,6 +1517,7 @@ export type ContractCreateWithoutLeadInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneCreateNestedManyWithoutContractInput
   versions?: Prisma.ContractVersionCreateNestedManyWithoutContractInput
   activityLogs?: Prisma.ContractActivityLogCreateNestedManyWithoutContractInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutContractInput
 }
 
 export type ContractUncheckedCreateWithoutLeadInput = {
@@ -1534,6 +1563,7 @@ export type ContractUncheckedCreateWithoutLeadInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneUncheckedCreateNestedManyWithoutContractInput
   versions?: Prisma.ContractVersionUncheckedCreateNestedManyWithoutContractInput
   activityLogs?: Prisma.ContractActivityLogUncheckedCreateNestedManyWithoutContractInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutContractInput
 }
 
 export type ContractCreateOrConnectWithoutLeadInput = {
@@ -1648,6 +1678,7 @@ export type ContractCreateWithoutProposalInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneCreateNestedManyWithoutContractInput
   versions?: Prisma.ContractVersionCreateNestedManyWithoutContractInput
   activityLogs?: Prisma.ContractActivityLogCreateNestedManyWithoutContractInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutContractInput
 }
 
 export type ContractUncheckedCreateWithoutProposalInput = {
@@ -1693,6 +1724,7 @@ export type ContractUncheckedCreateWithoutProposalInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneUncheckedCreateNestedManyWithoutContractInput
   versions?: Prisma.ContractVersionUncheckedCreateNestedManyWithoutContractInput
   activityLogs?: Prisma.ContractActivityLogUncheckedCreateNestedManyWithoutContractInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutContractInput
 }
 
 export type ContractCreateOrConnectWithoutProposalInput = {
@@ -1719,6 +1751,206 @@ export type ContractUpdateWithWhereUniqueWithoutProposalInput = {
 export type ContractUpdateManyWithWhereWithoutProposalInput = {
   where: Prisma.ContractScalarWhereInput
   data: Prisma.XOR<Prisma.ContractUpdateManyMutationInput, Prisma.ContractUncheckedUpdateManyWithoutProposalInput>
+}
+
+export type ContractCreateWithoutProjectsInput = {
+  id?: string
+  number: string
+  version?: number
+  title: string
+  status?: $Enums.ContractStatus
+  projectName?: string | null
+  clientSnapshot: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  providerSnapshot: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  projectSnapshot: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  financialSnapshot: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  termsSnapshot: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  serviceType?: $Enums.ContractServiceType | null
+  serviceTypeOther?: string | null
+  plan?: $Enums.ContractPlan | null
+  includesLaunch?: boolean
+  includesOperate?: boolean
+  includesScale?: boolean
+  estimatedValue?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currency?: string
+  issueDate?: Date | string | null
+  validUntil?: Date | string | null
+  signedAt?: Date | string | null
+  cancelledAt?: Date | string | null
+  pdfUrl?: string | null
+  pdfStorageKey?: string | null
+  pdfHash?: string | null
+  generatedAt?: Date | string | null
+  pendingChangeReason?: string | null
+  pendingChangeAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lead?: Prisma.LeadCreateNestedOneWithoutContractsInput
+  proposal?: Prisma.ProposalCreateNestedOneWithoutContractsInput
+  meetingBooking?: Prisma.MeetingBookingCreateNestedOneWithoutContractsInput
+  template?: Prisma.ContractTemplateCreateNestedOneWithoutContractsInput
+  createdBy: Prisma.AdminUserCreateNestedOneWithoutCreatedContractsInput
+  assignedTo?: Prisma.AdminUserCreateNestedOneWithoutAssignedContractsInput
+  sections?: Prisma.ContractSectionCreateNestedManyWithoutContractInput
+  phases?: Prisma.ContractPhaseCreateNestedManyWithoutContractInput
+  deliverables?: Prisma.ContractDeliverableCreateNestedManyWithoutContractInput
+  paymentMilestones?: Prisma.ContractPaymentMilestoneCreateNestedManyWithoutContractInput
+  versions?: Prisma.ContractVersionCreateNestedManyWithoutContractInput
+  activityLogs?: Prisma.ContractActivityLogCreateNestedManyWithoutContractInput
+}
+
+export type ContractUncheckedCreateWithoutProjectsInput = {
+  id?: string
+  number: string
+  version?: number
+  title: string
+  status?: $Enums.ContractStatus
+  leadId?: string | null
+  proposalId?: string | null
+  meetingBookingId?: string | null
+  templateId?: string | null
+  projectName?: string | null
+  clientSnapshot: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  providerSnapshot: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  projectSnapshot: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  financialSnapshot: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  termsSnapshot: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  serviceType?: $Enums.ContractServiceType | null
+  serviceTypeOther?: string | null
+  plan?: $Enums.ContractPlan | null
+  includesLaunch?: boolean
+  includesOperate?: boolean
+  includesScale?: boolean
+  estimatedValue?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currency?: string
+  issueDate?: Date | string | null
+  validUntil?: Date | string | null
+  signedAt?: Date | string | null
+  cancelledAt?: Date | string | null
+  pdfUrl?: string | null
+  pdfStorageKey?: string | null
+  pdfHash?: string | null
+  generatedAt?: Date | string | null
+  pendingChangeReason?: string | null
+  pendingChangeAt?: Date | string | null
+  createdById: string
+  assignedToId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sections?: Prisma.ContractSectionUncheckedCreateNestedManyWithoutContractInput
+  phases?: Prisma.ContractPhaseUncheckedCreateNestedManyWithoutContractInput
+  deliverables?: Prisma.ContractDeliverableUncheckedCreateNestedManyWithoutContractInput
+  paymentMilestones?: Prisma.ContractPaymentMilestoneUncheckedCreateNestedManyWithoutContractInput
+  versions?: Prisma.ContractVersionUncheckedCreateNestedManyWithoutContractInput
+  activityLogs?: Prisma.ContractActivityLogUncheckedCreateNestedManyWithoutContractInput
+}
+
+export type ContractCreateOrConnectWithoutProjectsInput = {
+  where: Prisma.ContractWhereUniqueInput
+  create: Prisma.XOR<Prisma.ContractCreateWithoutProjectsInput, Prisma.ContractUncheckedCreateWithoutProjectsInput>
+}
+
+export type ContractUpsertWithoutProjectsInput = {
+  update: Prisma.XOR<Prisma.ContractUpdateWithoutProjectsInput, Prisma.ContractUncheckedUpdateWithoutProjectsInput>
+  create: Prisma.XOR<Prisma.ContractCreateWithoutProjectsInput, Prisma.ContractUncheckedCreateWithoutProjectsInput>
+  where?: Prisma.ContractWhereInput
+}
+
+export type ContractUpdateToOneWithWhereWithoutProjectsInput = {
+  where?: Prisma.ContractWhereInput
+  data: Prisma.XOR<Prisma.ContractUpdateWithoutProjectsInput, Prisma.ContractUncheckedUpdateWithoutProjectsInput>
+}
+
+export type ContractUpdateWithoutProjectsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumContractStatusFieldUpdateOperationsInput | $Enums.ContractStatus
+  projectName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientSnapshot?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  providerSnapshot?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  projectSnapshot?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  financialSnapshot?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  termsSnapshot?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  serviceType?: Prisma.NullableEnumContractServiceTypeFieldUpdateOperationsInput | $Enums.ContractServiceType | null
+  serviceTypeOther?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plan?: Prisma.NullableEnumContractPlanFieldUpdateOperationsInput | $Enums.ContractPlan | null
+  includesLaunch?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  includesOperate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  includesScale?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  estimatedValue?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  issueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pdfStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pdfHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  generatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pendingChangeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingChangeAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lead?: Prisma.LeadUpdateOneWithoutContractsNestedInput
+  proposal?: Prisma.ProposalUpdateOneWithoutContractsNestedInput
+  meetingBooking?: Prisma.MeetingBookingUpdateOneWithoutContractsNestedInput
+  template?: Prisma.ContractTemplateUpdateOneWithoutContractsNestedInput
+  createdBy?: Prisma.AdminUserUpdateOneRequiredWithoutCreatedContractsNestedInput
+  assignedTo?: Prisma.AdminUserUpdateOneWithoutAssignedContractsNestedInput
+  sections?: Prisma.ContractSectionUpdateManyWithoutContractNestedInput
+  phases?: Prisma.ContractPhaseUpdateManyWithoutContractNestedInput
+  deliverables?: Prisma.ContractDeliverableUpdateManyWithoutContractNestedInput
+  paymentMilestones?: Prisma.ContractPaymentMilestoneUpdateManyWithoutContractNestedInput
+  versions?: Prisma.ContractVersionUpdateManyWithoutContractNestedInput
+  activityLogs?: Prisma.ContractActivityLogUpdateManyWithoutContractNestedInput
+}
+
+export type ContractUncheckedUpdateWithoutProjectsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumContractStatusFieldUpdateOperationsInput | $Enums.ContractStatus
+  leadId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  proposalId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meetingBookingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  templateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  projectName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientSnapshot?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  providerSnapshot?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  projectSnapshot?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  financialSnapshot?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  termsSnapshot?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  serviceType?: Prisma.NullableEnumContractServiceTypeFieldUpdateOperationsInput | $Enums.ContractServiceType | null
+  serviceTypeOther?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plan?: Prisma.NullableEnumContractPlanFieldUpdateOperationsInput | $Enums.ContractPlan | null
+  includesLaunch?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  includesOperate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  includesScale?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  estimatedValue?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  issueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pdfStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pdfHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  generatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pendingChangeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pendingChangeAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sections?: Prisma.ContractSectionUncheckedUpdateManyWithoutContractNestedInput
+  phases?: Prisma.ContractPhaseUncheckedUpdateManyWithoutContractNestedInput
+  deliverables?: Prisma.ContractDeliverableUncheckedUpdateManyWithoutContractNestedInput
+  paymentMilestones?: Prisma.ContractPaymentMilestoneUncheckedUpdateManyWithoutContractNestedInput
+  versions?: Prisma.ContractVersionUncheckedUpdateManyWithoutContractNestedInput
+  activityLogs?: Prisma.ContractActivityLogUncheckedUpdateManyWithoutContractNestedInput
 }
 
 export type ContractCreateWithoutMeetingBookingInput = {
@@ -1764,6 +1996,7 @@ export type ContractCreateWithoutMeetingBookingInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneCreateNestedManyWithoutContractInput
   versions?: Prisma.ContractVersionCreateNestedManyWithoutContractInput
   activityLogs?: Prisma.ContractActivityLogCreateNestedManyWithoutContractInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutContractInput
 }
 
 export type ContractUncheckedCreateWithoutMeetingBookingInput = {
@@ -1809,6 +2042,7 @@ export type ContractUncheckedCreateWithoutMeetingBookingInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneUncheckedCreateNestedManyWithoutContractInput
   versions?: Prisma.ContractVersionUncheckedCreateNestedManyWithoutContractInput
   activityLogs?: Prisma.ContractActivityLogUncheckedCreateNestedManyWithoutContractInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutContractInput
 }
 
 export type ContractCreateOrConnectWithoutMeetingBookingInput = {
@@ -1880,6 +2114,7 @@ export type ContractCreateWithoutCreatedByInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneCreateNestedManyWithoutContractInput
   versions?: Prisma.ContractVersionCreateNestedManyWithoutContractInput
   activityLogs?: Prisma.ContractActivityLogCreateNestedManyWithoutContractInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutContractInput
 }
 
 export type ContractUncheckedCreateWithoutCreatedByInput = {
@@ -1925,6 +2160,7 @@ export type ContractUncheckedCreateWithoutCreatedByInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneUncheckedCreateNestedManyWithoutContractInput
   versions?: Prisma.ContractVersionUncheckedCreateNestedManyWithoutContractInput
   activityLogs?: Prisma.ContractActivityLogUncheckedCreateNestedManyWithoutContractInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutContractInput
 }
 
 export type ContractCreateOrConnectWithoutCreatedByInput = {
@@ -1980,6 +2216,7 @@ export type ContractCreateWithoutAssignedToInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneCreateNestedManyWithoutContractInput
   versions?: Prisma.ContractVersionCreateNestedManyWithoutContractInput
   activityLogs?: Prisma.ContractActivityLogCreateNestedManyWithoutContractInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutContractInput
 }
 
 export type ContractUncheckedCreateWithoutAssignedToInput = {
@@ -2025,6 +2262,7 @@ export type ContractUncheckedCreateWithoutAssignedToInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneUncheckedCreateNestedManyWithoutContractInput
   versions?: Prisma.ContractVersionUncheckedCreateNestedManyWithoutContractInput
   activityLogs?: Prisma.ContractActivityLogUncheckedCreateNestedManyWithoutContractInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutContractInput
 }
 
 export type ContractCreateOrConnectWithoutAssignedToInput = {
@@ -2112,6 +2350,7 @@ export type ContractCreateWithoutTemplateInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneCreateNestedManyWithoutContractInput
   versions?: Prisma.ContractVersionCreateNestedManyWithoutContractInput
   activityLogs?: Prisma.ContractActivityLogCreateNestedManyWithoutContractInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutContractInput
 }
 
 export type ContractUncheckedCreateWithoutTemplateInput = {
@@ -2157,6 +2396,7 @@ export type ContractUncheckedCreateWithoutTemplateInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneUncheckedCreateNestedManyWithoutContractInput
   versions?: Prisma.ContractVersionUncheckedCreateNestedManyWithoutContractInput
   activityLogs?: Prisma.ContractActivityLogUncheckedCreateNestedManyWithoutContractInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutContractInput
 }
 
 export type ContractCreateOrConnectWithoutTemplateInput = {
@@ -2228,6 +2468,7 @@ export type ContractCreateWithoutSectionsInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneCreateNestedManyWithoutContractInput
   versions?: Prisma.ContractVersionCreateNestedManyWithoutContractInput
   activityLogs?: Prisma.ContractActivityLogCreateNestedManyWithoutContractInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutContractInput
 }
 
 export type ContractUncheckedCreateWithoutSectionsInput = {
@@ -2273,6 +2514,7 @@ export type ContractUncheckedCreateWithoutSectionsInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneUncheckedCreateNestedManyWithoutContractInput
   versions?: Prisma.ContractVersionUncheckedCreateNestedManyWithoutContractInput
   activityLogs?: Prisma.ContractActivityLogUncheckedCreateNestedManyWithoutContractInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutContractInput
 }
 
 export type ContractCreateOrConnectWithoutSectionsInput = {
@@ -2334,6 +2576,7 @@ export type ContractUpdateWithoutSectionsInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneUpdateManyWithoutContractNestedInput
   versions?: Prisma.ContractVersionUpdateManyWithoutContractNestedInput
   activityLogs?: Prisma.ContractActivityLogUpdateManyWithoutContractNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutContractNestedInput
 }
 
 export type ContractUncheckedUpdateWithoutSectionsInput = {
@@ -2379,6 +2622,7 @@ export type ContractUncheckedUpdateWithoutSectionsInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneUncheckedUpdateManyWithoutContractNestedInput
   versions?: Prisma.ContractVersionUncheckedUpdateManyWithoutContractNestedInput
   activityLogs?: Prisma.ContractActivityLogUncheckedUpdateManyWithoutContractNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutContractNestedInput
 }
 
 export type ContractCreateWithoutVersionsInput = {
@@ -2424,6 +2668,7 @@ export type ContractCreateWithoutVersionsInput = {
   deliverables?: Prisma.ContractDeliverableCreateNestedManyWithoutContractInput
   paymentMilestones?: Prisma.ContractPaymentMilestoneCreateNestedManyWithoutContractInput
   activityLogs?: Prisma.ContractActivityLogCreateNestedManyWithoutContractInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutContractInput
 }
 
 export type ContractUncheckedCreateWithoutVersionsInput = {
@@ -2469,6 +2714,7 @@ export type ContractUncheckedCreateWithoutVersionsInput = {
   deliverables?: Prisma.ContractDeliverableUncheckedCreateNestedManyWithoutContractInput
   paymentMilestones?: Prisma.ContractPaymentMilestoneUncheckedCreateNestedManyWithoutContractInput
   activityLogs?: Prisma.ContractActivityLogUncheckedCreateNestedManyWithoutContractInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutContractInput
 }
 
 export type ContractCreateOrConnectWithoutVersionsInput = {
@@ -2530,6 +2776,7 @@ export type ContractUpdateWithoutVersionsInput = {
   deliverables?: Prisma.ContractDeliverableUpdateManyWithoutContractNestedInput
   paymentMilestones?: Prisma.ContractPaymentMilestoneUpdateManyWithoutContractNestedInput
   activityLogs?: Prisma.ContractActivityLogUpdateManyWithoutContractNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutContractNestedInput
 }
 
 export type ContractUncheckedUpdateWithoutVersionsInput = {
@@ -2575,6 +2822,7 @@ export type ContractUncheckedUpdateWithoutVersionsInput = {
   deliverables?: Prisma.ContractDeliverableUncheckedUpdateManyWithoutContractNestedInput
   paymentMilestones?: Prisma.ContractPaymentMilestoneUncheckedUpdateManyWithoutContractNestedInput
   activityLogs?: Prisma.ContractActivityLogUncheckedUpdateManyWithoutContractNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutContractNestedInput
 }
 
 export type ContractCreateWithoutPhasesInput = {
@@ -2620,6 +2868,7 @@ export type ContractCreateWithoutPhasesInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneCreateNestedManyWithoutContractInput
   versions?: Prisma.ContractVersionCreateNestedManyWithoutContractInput
   activityLogs?: Prisma.ContractActivityLogCreateNestedManyWithoutContractInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutContractInput
 }
 
 export type ContractUncheckedCreateWithoutPhasesInput = {
@@ -2665,6 +2914,7 @@ export type ContractUncheckedCreateWithoutPhasesInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneUncheckedCreateNestedManyWithoutContractInput
   versions?: Prisma.ContractVersionUncheckedCreateNestedManyWithoutContractInput
   activityLogs?: Prisma.ContractActivityLogUncheckedCreateNestedManyWithoutContractInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutContractInput
 }
 
 export type ContractCreateOrConnectWithoutPhasesInput = {
@@ -2726,6 +2976,7 @@ export type ContractUpdateWithoutPhasesInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneUpdateManyWithoutContractNestedInput
   versions?: Prisma.ContractVersionUpdateManyWithoutContractNestedInput
   activityLogs?: Prisma.ContractActivityLogUpdateManyWithoutContractNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutContractNestedInput
 }
 
 export type ContractUncheckedUpdateWithoutPhasesInput = {
@@ -2771,6 +3022,7 @@ export type ContractUncheckedUpdateWithoutPhasesInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneUncheckedUpdateManyWithoutContractNestedInput
   versions?: Prisma.ContractVersionUncheckedUpdateManyWithoutContractNestedInput
   activityLogs?: Prisma.ContractActivityLogUncheckedUpdateManyWithoutContractNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutContractNestedInput
 }
 
 export type ContractCreateWithoutDeliverablesInput = {
@@ -2816,6 +3068,7 @@ export type ContractCreateWithoutDeliverablesInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneCreateNestedManyWithoutContractInput
   versions?: Prisma.ContractVersionCreateNestedManyWithoutContractInput
   activityLogs?: Prisma.ContractActivityLogCreateNestedManyWithoutContractInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutContractInput
 }
 
 export type ContractUncheckedCreateWithoutDeliverablesInput = {
@@ -2861,6 +3114,7 @@ export type ContractUncheckedCreateWithoutDeliverablesInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneUncheckedCreateNestedManyWithoutContractInput
   versions?: Prisma.ContractVersionUncheckedCreateNestedManyWithoutContractInput
   activityLogs?: Prisma.ContractActivityLogUncheckedCreateNestedManyWithoutContractInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutContractInput
 }
 
 export type ContractCreateOrConnectWithoutDeliverablesInput = {
@@ -2922,6 +3176,7 @@ export type ContractUpdateWithoutDeliverablesInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneUpdateManyWithoutContractNestedInput
   versions?: Prisma.ContractVersionUpdateManyWithoutContractNestedInput
   activityLogs?: Prisma.ContractActivityLogUpdateManyWithoutContractNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutContractNestedInput
 }
 
 export type ContractUncheckedUpdateWithoutDeliverablesInput = {
@@ -2967,6 +3222,7 @@ export type ContractUncheckedUpdateWithoutDeliverablesInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneUncheckedUpdateManyWithoutContractNestedInput
   versions?: Prisma.ContractVersionUncheckedUpdateManyWithoutContractNestedInput
   activityLogs?: Prisma.ContractActivityLogUncheckedUpdateManyWithoutContractNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutContractNestedInput
 }
 
 export type ContractCreateWithoutPaymentMilestonesInput = {
@@ -3012,6 +3268,7 @@ export type ContractCreateWithoutPaymentMilestonesInput = {
   deliverables?: Prisma.ContractDeliverableCreateNestedManyWithoutContractInput
   versions?: Prisma.ContractVersionCreateNestedManyWithoutContractInput
   activityLogs?: Prisma.ContractActivityLogCreateNestedManyWithoutContractInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutContractInput
 }
 
 export type ContractUncheckedCreateWithoutPaymentMilestonesInput = {
@@ -3057,6 +3314,7 @@ export type ContractUncheckedCreateWithoutPaymentMilestonesInput = {
   deliverables?: Prisma.ContractDeliverableUncheckedCreateNestedManyWithoutContractInput
   versions?: Prisma.ContractVersionUncheckedCreateNestedManyWithoutContractInput
   activityLogs?: Prisma.ContractActivityLogUncheckedCreateNestedManyWithoutContractInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutContractInput
 }
 
 export type ContractCreateOrConnectWithoutPaymentMilestonesInput = {
@@ -3118,6 +3376,7 @@ export type ContractUpdateWithoutPaymentMilestonesInput = {
   deliverables?: Prisma.ContractDeliverableUpdateManyWithoutContractNestedInput
   versions?: Prisma.ContractVersionUpdateManyWithoutContractNestedInput
   activityLogs?: Prisma.ContractActivityLogUpdateManyWithoutContractNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutContractNestedInput
 }
 
 export type ContractUncheckedUpdateWithoutPaymentMilestonesInput = {
@@ -3163,6 +3422,7 @@ export type ContractUncheckedUpdateWithoutPaymentMilestonesInput = {
   deliverables?: Prisma.ContractDeliverableUncheckedUpdateManyWithoutContractNestedInput
   versions?: Prisma.ContractVersionUncheckedUpdateManyWithoutContractNestedInput
   activityLogs?: Prisma.ContractActivityLogUncheckedUpdateManyWithoutContractNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutContractNestedInput
 }
 
 export type ContractCreateWithoutActivityLogsInput = {
@@ -3208,6 +3468,7 @@ export type ContractCreateWithoutActivityLogsInput = {
   deliverables?: Prisma.ContractDeliverableCreateNestedManyWithoutContractInput
   paymentMilestones?: Prisma.ContractPaymentMilestoneCreateNestedManyWithoutContractInput
   versions?: Prisma.ContractVersionCreateNestedManyWithoutContractInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutContractInput
 }
 
 export type ContractUncheckedCreateWithoutActivityLogsInput = {
@@ -3253,6 +3514,7 @@ export type ContractUncheckedCreateWithoutActivityLogsInput = {
   deliverables?: Prisma.ContractDeliverableUncheckedCreateNestedManyWithoutContractInput
   paymentMilestones?: Prisma.ContractPaymentMilestoneUncheckedCreateNestedManyWithoutContractInput
   versions?: Prisma.ContractVersionUncheckedCreateNestedManyWithoutContractInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutContractInput
 }
 
 export type ContractCreateOrConnectWithoutActivityLogsInput = {
@@ -3314,6 +3576,7 @@ export type ContractUpdateWithoutActivityLogsInput = {
   deliverables?: Prisma.ContractDeliverableUpdateManyWithoutContractNestedInput
   paymentMilestones?: Prisma.ContractPaymentMilestoneUpdateManyWithoutContractNestedInput
   versions?: Prisma.ContractVersionUpdateManyWithoutContractNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutContractNestedInput
 }
 
 export type ContractUncheckedUpdateWithoutActivityLogsInput = {
@@ -3359,6 +3622,7 @@ export type ContractUncheckedUpdateWithoutActivityLogsInput = {
   deliverables?: Prisma.ContractDeliverableUncheckedUpdateManyWithoutContractNestedInput
   paymentMilestones?: Prisma.ContractPaymentMilestoneUncheckedUpdateManyWithoutContractNestedInput
   versions?: Prisma.ContractVersionUncheckedUpdateManyWithoutContractNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutContractNestedInput
 }
 
 export type ContractCreateManyLeadInput = {
@@ -3443,6 +3707,7 @@ export type ContractUpdateWithoutLeadInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneUpdateManyWithoutContractNestedInput
   versions?: Prisma.ContractVersionUpdateManyWithoutContractNestedInput
   activityLogs?: Prisma.ContractActivityLogUpdateManyWithoutContractNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutContractNestedInput
 }
 
 export type ContractUncheckedUpdateWithoutLeadInput = {
@@ -3488,6 +3753,7 @@ export type ContractUncheckedUpdateWithoutLeadInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneUncheckedUpdateManyWithoutContractNestedInput
   versions?: Prisma.ContractVersionUncheckedUpdateManyWithoutContractNestedInput
   activityLogs?: Prisma.ContractActivityLogUncheckedUpdateManyWithoutContractNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutContractNestedInput
 }
 
 export type ContractUncheckedUpdateManyWithoutLeadInput = {
@@ -3611,6 +3877,7 @@ export type ContractUpdateWithoutProposalInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneUpdateManyWithoutContractNestedInput
   versions?: Prisma.ContractVersionUpdateManyWithoutContractNestedInput
   activityLogs?: Prisma.ContractActivityLogUpdateManyWithoutContractNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutContractNestedInput
 }
 
 export type ContractUncheckedUpdateWithoutProposalInput = {
@@ -3656,6 +3923,7 @@ export type ContractUncheckedUpdateWithoutProposalInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneUncheckedUpdateManyWithoutContractNestedInput
   versions?: Prisma.ContractVersionUncheckedUpdateManyWithoutContractNestedInput
   activityLogs?: Prisma.ContractActivityLogUncheckedUpdateManyWithoutContractNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutContractNestedInput
 }
 
 export type ContractUncheckedUpdateManyWithoutProposalInput = {
@@ -3779,6 +4047,7 @@ export type ContractUpdateWithoutMeetingBookingInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneUpdateManyWithoutContractNestedInput
   versions?: Prisma.ContractVersionUpdateManyWithoutContractNestedInput
   activityLogs?: Prisma.ContractActivityLogUpdateManyWithoutContractNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutContractNestedInput
 }
 
 export type ContractUncheckedUpdateWithoutMeetingBookingInput = {
@@ -3824,6 +4093,7 @@ export type ContractUncheckedUpdateWithoutMeetingBookingInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneUncheckedUpdateManyWithoutContractNestedInput
   versions?: Prisma.ContractVersionUncheckedUpdateManyWithoutContractNestedInput
   activityLogs?: Prisma.ContractActivityLogUncheckedUpdateManyWithoutContractNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutContractNestedInput
 }
 
 export type ContractUncheckedUpdateManyWithoutMeetingBookingInput = {
@@ -3986,6 +4256,7 @@ export type ContractUpdateWithoutCreatedByInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneUpdateManyWithoutContractNestedInput
   versions?: Prisma.ContractVersionUpdateManyWithoutContractNestedInput
   activityLogs?: Prisma.ContractActivityLogUpdateManyWithoutContractNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutContractNestedInput
 }
 
 export type ContractUncheckedUpdateWithoutCreatedByInput = {
@@ -4031,6 +4302,7 @@ export type ContractUncheckedUpdateWithoutCreatedByInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneUncheckedUpdateManyWithoutContractNestedInput
   versions?: Prisma.ContractVersionUncheckedUpdateManyWithoutContractNestedInput
   activityLogs?: Prisma.ContractActivityLogUncheckedUpdateManyWithoutContractNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutContractNestedInput
 }
 
 export type ContractUncheckedUpdateManyWithoutCreatedByInput = {
@@ -4115,6 +4387,7 @@ export type ContractUpdateWithoutAssignedToInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneUpdateManyWithoutContractNestedInput
   versions?: Prisma.ContractVersionUpdateManyWithoutContractNestedInput
   activityLogs?: Prisma.ContractActivityLogUpdateManyWithoutContractNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutContractNestedInput
 }
 
 export type ContractUncheckedUpdateWithoutAssignedToInput = {
@@ -4160,6 +4433,7 @@ export type ContractUncheckedUpdateWithoutAssignedToInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneUncheckedUpdateManyWithoutContractNestedInput
   versions?: Prisma.ContractVersionUncheckedUpdateManyWithoutContractNestedInput
   activityLogs?: Prisma.ContractActivityLogUncheckedUpdateManyWithoutContractNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutContractNestedInput
 }
 
 export type ContractUncheckedUpdateManyWithoutAssignedToInput = {
@@ -4283,6 +4557,7 @@ export type ContractUpdateWithoutTemplateInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneUpdateManyWithoutContractNestedInput
   versions?: Prisma.ContractVersionUpdateManyWithoutContractNestedInput
   activityLogs?: Prisma.ContractActivityLogUpdateManyWithoutContractNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutContractNestedInput
 }
 
 export type ContractUncheckedUpdateWithoutTemplateInput = {
@@ -4328,6 +4603,7 @@ export type ContractUncheckedUpdateWithoutTemplateInput = {
   paymentMilestones?: Prisma.ContractPaymentMilestoneUncheckedUpdateManyWithoutContractNestedInput
   versions?: Prisma.ContractVersionUncheckedUpdateManyWithoutContractNestedInput
   activityLogs?: Prisma.ContractActivityLogUncheckedUpdateManyWithoutContractNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutContractNestedInput
 }
 
 export type ContractUncheckedUpdateManyWithoutTemplateInput = {
@@ -4381,6 +4657,7 @@ export type ContractCountOutputType = {
   paymentMilestones: number
   versions: number
   activityLogs: number
+  projects: number
 }
 
 export type ContractCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -4390,6 +4667,7 @@ export type ContractCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensio
   paymentMilestones?: boolean | ContractCountOutputTypeCountPaymentMilestonesArgs
   versions?: boolean | ContractCountOutputTypeCountVersionsArgs
   activityLogs?: boolean | ContractCountOutputTypeCountActivityLogsArgs
+  projects?: boolean | ContractCountOutputTypeCountProjectsArgs
 }
 
 /**
@@ -4444,6 +4722,13 @@ export type ContractCountOutputTypeCountActivityLogsArgs<ExtArgs extends runtime
   where?: Prisma.ContractActivityLogWhereInput
 }
 
+/**
+ * ContractCountOutputType without action
+ */
+export type ContractCountOutputTypeCountProjectsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProjectWhereInput
+}
+
 
 export type ContractSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -4495,6 +4780,7 @@ export type ContractSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   paymentMilestones?: boolean | Prisma.Contract$paymentMilestonesArgs<ExtArgs>
   versions?: boolean | Prisma.Contract$versionsArgs<ExtArgs>
   activityLogs?: boolean | Prisma.Contract$activityLogsArgs<ExtArgs>
+  projects?: boolean | Prisma.Contract$projectsArgs<ExtArgs>
   _count?: boolean | Prisma.ContractCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["contract"]>
 
@@ -4644,6 +4930,7 @@ export type ContractInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   paymentMilestones?: boolean | Prisma.Contract$paymentMilestonesArgs<ExtArgs>
   versions?: boolean | Prisma.Contract$versionsArgs<ExtArgs>
   activityLogs?: boolean | Prisma.Contract$activityLogsArgs<ExtArgs>
+  projects?: boolean | Prisma.Contract$projectsArgs<ExtArgs>
   _count?: boolean | Prisma.ContractCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ContractIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -4678,6 +4965,7 @@ export type $ContractPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     paymentMilestones: Prisma.$ContractPaymentMilestonePayload<ExtArgs>[]
     versions: Prisma.$ContractVersionPayload<ExtArgs>[]
     activityLogs: Prisma.$ContractActivityLogPayload<ExtArgs>[]
+    projects: Prisma.$ProjectPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -5123,6 +5411,7 @@ export interface Prisma__ContractClient<T, Null = never, ExtArgs extends runtime
   paymentMilestones<T extends Prisma.Contract$paymentMilestonesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Contract$paymentMilestonesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContractPaymentMilestonePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   versions<T extends Prisma.Contract$versionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Contract$versionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContractVersionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   activityLogs<T extends Prisma.Contract$activityLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Contract$activityLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContractActivityLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  projects<T extends Prisma.Contract$projectsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Contract$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5826,6 +6115,30 @@ export type Contract$activityLogsArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.ContractActivityLogScalarFieldEnum | Prisma.ContractActivityLogScalarFieldEnum[]
+}
+
+/**
+ * Contract.projects
+ */
+export type Contract$projectsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Project
+   */
+  select?: Prisma.ProjectSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Project
+   */
+  omit?: Prisma.ProjectOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProjectInclude<ExtArgs> | null
+  where?: Prisma.ProjectWhereInput
+  orderBy?: Prisma.ProjectOrderByWithRelationInput | Prisma.ProjectOrderByWithRelationInput[]
+  cursor?: Prisma.ProjectWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProjectScalarFieldEnum | Prisma.ProjectScalarFieldEnum[]
 }
 
 /**
