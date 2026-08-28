@@ -4191,6 +4191,88 @@
   text-align: right;
 }
 
+.project-time-section {
+  display: grid;
+  gap: 16px;
+}
+
+.project-time-entry-form {
+  background: rgba(15, 23, 42, 0.44);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+
+.project-time-entry-form-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.project-time-entry-duration-field .admin-input,
+.project-time-entry-date-field [aria-haspopup="dialog"] {
+  min-height: 44px;
+}
+
+.project-time-entry-date-helper {
+  visibility: hidden;
+}
+
+.project-time-entry-form .admin-textarea {
+  min-height: 88px;
+}
+
+.project-time-entry-form-actions {
+  align-items: center;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.project-time-history {
+  display: grid;
+  gap: 10px;
+}
+
+.project-time-history-heading {
+  align-items: center;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  padding-bottom: 10px;
+}
+
+.project-time-history-heading h3 {
+  color: #f8fafc;
+  font-size: 0.92rem;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.project-time-history-heading span {
+  color: rgba(148, 163, 184, 0.82);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+@media (max-width: 720px) {
+  .project-time-entry-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .project-time-entry-form-actions,
+  .project-time-entry-form-actions .admin-button {
+    width: 100%;
+  }
+
+  .project-time-history-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
 .project-time-entry-row {
   align-items: center;
   display: flex;
@@ -4350,10 +4432,12 @@
 }
 
 .project-kanban-column {
+  align-items: stretch;
   background: rgba(2, 6, 23, 0.36);
   border: 1px solid rgba(148, 163, 184, 0.12);
   border-radius: 8px;
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
   min-height: 360px;
   min-width: 190px;
@@ -4381,15 +4465,51 @@
 }
 
 .project-kanban-list {
+  align-content: start;
   display: grid;
+  flex: 1 1 auto;
   gap: 10px;
+  min-height: 240px;
 }
 
 .project-kanban-empty {
-  border: 1px dashed rgba(148, 163, 184, 0.16);
+  display: none;
+}
+
+.project-kanban-transition-hint {
+  align-items: center;
+  align-self: stretch;
+  background: rgba(34, 211, 238, 0.06);
+  border: 1px solid rgba(34, 211, 238, 0.2);
   border-radius: 8px;
-  padding: 14px;
+  color: rgba(224, 242, 254, 0.86);
+  display: inline-flex;
+  font-size: 0.74rem;
+  font-weight: 750;
+  gap: 7px;
+  justify-content: center;
+  line-height: 1.2;
+  min-height: 34px;
+  padding: 8px 10px;
+  pointer-events: none;
   text-align: center;
+  transition: background 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.project-kanban-transition-hint span {
+  min-width: 0;
+}
+
+.project-kanban-transition-hint svg {
+  color: #67e8f9;
+  flex: 0 0 auto;
+}
+
+.project-kanban-transition-hint.is-target {
+  background: rgba(14, 165, 233, 0.12);
+  border-color: rgba(34, 211, 238, 0.42);
+  box-shadow: inset 0 0 0 1px rgba(34, 211, 238, 0.12), 0 12px 30px rgba(8, 145, 178, 0.08);
+  color: #e0f2fe;
 }
 
 .project-task-card {
@@ -4412,6 +4532,27 @@
   box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.12);
 }
 
+.project-task-card .project-progress-track {
+  border-color: rgba(96, 165, 250, 0.18);
+}
+
+.project-task-card .project-progress-track span {
+  background: linear-gradient(90deg, #2563eb 0%, #7c3aed 100%);
+  box-shadow: 0 0 14px rgba(96, 165, 250, 0.22);
+}
+
+.project-task-card--dragging-source {
+  border-color: rgba(148, 163, 184, 0.22);
+  border-style: dashed;
+  box-shadow: none;
+  filter: grayscale(1);
+  opacity: 0.38;
+}
+
+.project-task-card.is-saving {
+  border-color: rgba(148, 163, 184, 0.22);
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.08);
+}
 .project-task-card strong {
   color: #f8fafc;
   font-size: 0.9rem;
@@ -4429,20 +4570,21 @@
 .project-status-dot-cancelled { color: #f87171; }
 
 .project-task-drawer {
-  background: rgba(8, 13, 24, 0.96);
+  background: rgba(8, 13, 24, 0.98);
   border: 1px solid rgba(148, 163, 184, 0.18);
-  border-radius: 8px;
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
+  border-radius: 10px;
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.5);
   display: grid;
-  gap: 16px;
-  max-height: calc(100vh - 120px);
+  gap: 18px;
+  left: 50%;
+  max-height: calc(100vh - 48px);
   overflow: auto;
-  padding: 18px;
+  padding: 20px;
   position: fixed;
-  right: 24px;
-  top: 92px;
-  width: min(430px, calc(100vw - 32px));
-  z-index: 30;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(1100px, calc(100vw - 48px));
+  z-index: 40;
 }
 
 .project-task-drawer-header {
@@ -4467,6 +4609,96 @@
   display: grid;
   gap: 12px;
   padding-top: 14px;
+}
+.project-task-detail-form {
+  display: grid;
+  gap: 16px;
+}
+
+.project-task-detail-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+}
+
+.project-task-detail-main,
+.project-task-detail-side {
+  align-content: start;
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.project-task-detail-side {
+  background: rgba(15, 23, 42, 0.46);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.project-task-title-field {
+  display: grid;
+  gap: 8px;
+}
+
+.project-task-title-field span {
+  color: rgba(203, 213, 225, 0.68);
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.project-task-title-input {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: #f8fafc;
+  font-size: 1.55rem;
+  font-weight: 850;
+  line-height: 1.2;
+  min-width: 0;
+  padding: 8px 10px;
+  width: 100%;
+}
+
+.project-task-title-input:hover,
+.project-task-title-input:focus {
+  background: rgba(15, 23, 42, 0.54);
+  border-color: rgba(34, 211, 238, 0.34);
+  outline: none;
+}
+
+.project-task-description-input {
+  min-height: 240px;
+  resize: vertical;
+}
+
+.project-task-detail-readonly {
+  margin-top: 2px;
+}
+
+.project-estimate-field {
+  gap: 6px;
+}
+
+.project-estimate-field .admin-input {
+  min-height: 38px;
+  padding-bottom: 9px;
+  padding-top: 9px;
+}
+.project-estimate-feedback {
+  color: rgba(148, 163, 184, 0.82);
+  font-size: 0.74rem;
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+.project-estimate-feedback.is-saved {
+  color: #34d399;
+}
+
+.project-estimate-feedback.is-error {
+  color: #f87171;
 }
 
 .project-task-meta-grid {
@@ -4514,11 +4746,82 @@
   gap: 10px;
 }
 
+.project-timer-primary-actions,
+.project-timer-secondary-actions,
+.project-manual-time-form {
+  display: grid;
+  gap: 10px;
+}
+
+.project-timer-secondary-actions {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.project-timer-secondary-actions.is-ready-to-start {
+  grid-template-columns: 1fr;
+}
+
+.project-timer-secondary-actions form,
+.project-timer-action-form {
+  min-width: 0;
+}
+
+.project-timer-secondary-actions .admin-button,
+.project-timer-action-form .admin-button {
+  width: 100%;
+}
+
+.project-timer-note-field .admin-textarea {
+  min-height: 88px;
+}
+
+.project-timer-reset-dialog {
+  background: rgba(2, 6, 23, 0.98);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 14px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.48);
+  color: #f8fafc;
+}
+
+.project-timer-reset-dialog [role="heading"] {
+  color: #f8fafc;
+}
+
+.project-timer-reset-dialog [data-radix-alert-dialog-description] {
+  color: rgba(203, 213, 225, 0.76);
+  line-height: 1.6;
+}
+
+
+.project-timer-reset-confirm {
+  background: linear-gradient(135deg, #f97316 0%, #ef4444 100%);
+  color: #fff7ed;
+}
+
+.project-timer-reset-confirm:hover {
+  box-shadow: 0 12px 28px rgba(239, 68, 68, 0.24);
+}
+
+.project-manual-time-form {
+  background: rgba(2, 6, 23, 0.26);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 8px;
+  margin-top: 2px;
+  padding: 12px;
+}
+.project-manual-time-actions {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 1fr 1fr;
+}
+
+
 .project-active-timer-strip {
   display: grid;
   gap: 10px;
   margin-bottom: 14px;
 }
+
 
 .project-active-timer {
   background: rgba(34, 211, 238, 0.08);
@@ -4553,16 +4856,24 @@
     grid-template-columns: repeat(5, minmax(220px, 1fr));
   }
 
-  .project-task-drawer {
-    bottom: 16px;
-    max-height: calc(100vh - 120px);
-    right: 16px;
-    top: auto;
+  .project-task-detail-grid {
+    grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 640px) {
+  .project-task-drawer {
+    max-height: calc(100vh - 24px);
+    padding: 14px;
+    width: calc(100vw - 24px);
+  }
+
   .project-task-meta-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .project-timer-secondary-actions,
+  .project-manual-time-actions {
     grid-template-columns: 1fr;
   }
 
@@ -4572,18 +4883,48 @@
   }
 }
 
+.project-milestones-section {
+  display: grid;
+  gap: 16px;
+}
+
+.project-milestone-create-form {
+  background: rgba(15, 23, 42, 0.44);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+
+.project-milestone-create-row {
+  align-items: end;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(220px, 1.4fr) minmax(180px, 0.75fr) auto;
+}
+
+.project-milestone-create-row .admin-button {
+  min-height: 44px;
+  white-space: nowrap;
+}
+
 .project-milestone-list {
   display: grid;
   gap: 10px;
 }
 
 .project-milestone-card {
-  align-items: center;
+  align-items: start;
   display: grid;
   gap: 14px;
-  grid-template-columns: minmax(0, 1fr) minmax(190px, 240px);
+  grid-template-columns: minmax(0, 1fr) auto;
   min-height: auto;
   padding: 14px;
+}
+
+.project-milestone-card.is-editing {
+  grid-template-columns: 1fr;
 }
 
 .project-milestone-main {
@@ -4642,17 +4983,34 @@
   color: rgba(148, 163, 184, 0.88);
 }
 
-.project-milestone-status-form {
-  align-items: end;
+.project-milestone-card-actions {
+  align-items: start;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.project-milestone-edit-form,
+.project-milestone-edit-grid {
   display: grid;
-  gap: 8px;
-  grid-template-columns: minmax(0, 1fr) auto;
-  justify-self: stretch;
-  margin: 0;
+  gap: 12px;
+  min-width: 0;
+}
+
+.project-milestone-edit-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.project-milestone-edit-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
 }
 
 .project-task-drawer-backdrop {
-  background: rgba(2, 6, 23, 0.28);
+  background: rgba(2, 6, 23, 0.62);
+  backdrop-filter: blur(8px);
   border: 0;
   cursor: default;
   inset: 0;
@@ -4661,14 +5019,22 @@
   z-index: 35;
 }
 
-.project-task-drawer {
-  z-index: 40;
-}
-
 @media (max-width: 760px) {
+  .project-milestone-create-row,
   .project-milestone-card,
-  .project-milestone-status-form {
+  .project-milestone-edit-grid {
     grid-template-columns: 1fr;
+  }
+
+  .project-milestone-create-row .admin-button,
+  .project-milestone-card-actions,
+  .project-milestone-edit-actions {
+    width: 100%;
+  }
+
+  .project-milestone-card-actions .admin-button,
+  .project-milestone-edit-actions .admin-button {
+    width: 100%;
   }
 
   .project-milestone-heading {

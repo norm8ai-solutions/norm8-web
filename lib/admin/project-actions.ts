@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import type { ProjectGrowthPhase, ProjectMilestoneStatus, ProjectStatus, ProjectTaskStatus, ProjectWorkCategory } from '@/app/generated/prisma/client';
+import type { ProjectGrowthPhase, ProjectMilestoneStatus, ProjectStatus, ProjectTaskStatus, ProjectTimerStatus, ProjectWorkCategory } from '@/app/generated/prisma/client';
 import { requireAdmin } from '@/lib/admin/auth';
 import {
   createProject,
@@ -21,9 +21,30 @@ import {
   projectWorkCategories,
 } from '@/lib/admin/project-presenters';
 import { prisma } from '@/lib/db/prisma';
+import { parseDurationToMinutes } from '@/lib/admin/project-time-formatters';
 import { parseEuroToCents } from '@/lib/finance/formatters';
 
-export type ProjectActionState = { error?: string; message?: string; success: boolean };
+export type ProjectTimerSessionPayload = {
+  accumulatedSeconds: number;
+  category: ProjectWorkCategory;
+  description: string | null;
+  id: string;
+  pausedAt: Date | string | null;
+  projectId: string;
+  startedAt: Date | string;
+  status: ProjectTimerStatus;
+  task: { id: string; title: string };
+  taskId: string;
+};
+
+export type ProjectActionState = {
+  error?: string;
+  message?: string;
+  resetTimerId?: string;
+  stoppedTimerId?: string;
+  success: boolean;
+  timerSession?: ProjectTimerSessionPayload;
+};
 
 const genericProjectError = 'Não foi possível guardar o projeto. Confirme os dados e tente novamente.';
 const genericMilestoneError = 'Não foi possível guardar a milestone. Confirme os dados e tente novamente.';
@@ -56,7 +77,7 @@ export async function createAureusProjectAction(): Promise<void> {
 
   const existing = await prisma.project.findFirst({
     select: { id: true },
-    where: { clientName: 'Aureus', name: 'Aureus — Digital Platform' },
+    where: { clientName: 'Aureus', name: 'Aureus - Digital Platform' },
   });
 
   if (existing) {
@@ -71,7 +92,7 @@ export async function createAureusProjectAction(): Promise<void> {
       currency: 'EUR',
       description: 'Projeto inicial da Aureus no fluxo Launch do Norm8 Growth System.',
       growthPhase: 'LAUNCH',
-      name: 'Aureus — Digital Platform',
+      name: 'Aureus - Digital Platform',
       planName: 'Business',
       status: 'IN_PROGRESS',
       milestones: {
@@ -151,6 +172,34 @@ export async function updateProjectMilestoneStatusAction(formData: FormData): Pr
   }
 }
 
+export async function updateProjectMilestoneAction(_previousState: ProjectActionState, formData: FormData): Promise<ProjectActionState> {
+  await requireAdmin();
+
+  const id = requiredString(formData.get('milestoneId'));
+  const projectId = requiredString(formData.get('projectId'));
+  const title = requiredString(formData.get('title'));
+  const description = optionalString(formData.get('description'));
+  const dueDate = parseOptionalDateOnly(formData.get('dueDate'));
+  const status = parseMilestoneStatus(formData.get('status'));
+
+  if (!id || !projectId) return { success: false, error: genericMilestoneError };
+  if (!title) return { success: false, error: 'O título da milestone é obrigatório.' };
+  if (dueDate === 'INVALID') return { success: false, error: 'Selecione uma data válida.' };
+  if (!status) return { success: false, error: 'O estado da milestone é obrigatório.' };
+
+  try {
+    const milestone = await prisma.projectMilestone.findFirst({ select: { id: true }, where: { id, projectId } });
+    if (!milestone) return { success: false, error: 'A milestone selecionada não pertence a este projeto.' };
+
+    await updateProjectMilestone(id, { description, dueDate, status, title });
+    revalidateProjectPaths(projectId);
+    return { success: true, message: 'Milestone atualizada.' };
+  } catch (error) {
+    console.error('Failed to update project milestone', { error, milestoneId: id, projectId });
+    return { success: false, error: genericMilestoneError };
+  }
+}
+
 export async function createProjectTaskAction(_previousState: ProjectActionState, formData: FormData): Promise<ProjectActionState> {
   await requireAdmin();
 
@@ -184,6 +233,108 @@ export async function createProjectTaskAction(_previousState: ProjectActionState
   }
 }
 
+export async function updateProjectTaskAction(_previousState: ProjectActionState, formData: FormData): Promise<ProjectActionState> {
+  await requireAdmin();
+
+  const id = requiredString(formData.get('taskId'));
+  const projectId = requiredString(formData.get('projectId'));
+  const title = requiredString(formData.get('title'));
+  const description = optionalString(formData.get('description'));
+  const status = parseTaskStatus(formData.get('status'));
+  const category = parseWorkCategory(formData.get('category'));
+  const milestoneId = optionalString(formData.get('milestoneId'));
+  const estimatedMinutes = parseOptionalHoursToMinutes(formData.get('estimatedHours'));
+
+  if (!id || !projectId) return { success: false, error: genericTaskError };
+  if (!title) return { success: false, error: 'O título da tarefa é obrigatório.' };
+  if (!status) return { success: false, error: 'O estado da tarefa é obrigatório.' };
+  if (!category) return { success: false, error: 'A categoria é obrigatória.' };
+  if (estimatedMinutes === 'INVALID') return { success: false, error: 'A estimativa deve ser um número de horas válido.' };
+
+  try {
+    const task = await prisma.projectTask.findFirst({ select: { id: true }, where: { id, projectId } });
+    if (!task) return { success: false, error: 'A tarefa selecionada não pertence a este projeto.' };
+
+    if (milestoneId) {
+      const milestone = await prisma.projectMilestone.findFirst({ select: { id: true }, where: { id: milestoneId, projectId } });
+      if (!milestone) return { success: false, error: 'A milestone selecionada não pertence a este projeto.' };
+    }
+
+    await updateProjectTask(id, { category, description, estimatedMinutes, milestoneId, status, title });
+    revalidateProjectPaths(projectId);
+    return { success: true, message: 'Tarefa atualizada.' };
+  } catch (error) {
+    console.error('Failed to update project task', { error, projectId, taskId: id });
+    return { success: false, error: genericTaskError };
+  }
+}
+export async function updateProjectTaskTitleAction(_previousState: ProjectActionState, formData: FormData): Promise<ProjectActionState> {
+  await requireAdmin();
+
+  const id = requiredString(formData.get('taskId'));
+  const projectId = requiredString(formData.get('projectId'));
+  const title = requiredString(formData.get('title'));
+
+  if (!id || !projectId) return { success: false, error: genericTaskError };
+  if (!title) return { success: false, error: 'O título da tarefa é obrigatório.' };
+
+  try {
+    const task = await prisma.projectTask.findFirst({ select: { id: true }, where: { id, projectId } });
+    if (!task) return { success: false, error: 'A tarefa selecionada não pertence a este projeto.' };
+
+    await updateProjectTask(id, { title });
+    revalidateProjectPaths(projectId);
+    return { success: true, message: 'Guardado' };
+  } catch (error) {
+    console.error('Failed to update project task title', { error, projectId, taskId: id });
+    return { success: false, error: genericTaskError };
+  }
+}
+
+export async function updateProjectTaskDescriptionAction(_previousState: ProjectActionState, formData: FormData): Promise<ProjectActionState> {
+  await requireAdmin();
+
+  const id = requiredString(formData.get('taskId'));
+  const projectId = requiredString(formData.get('projectId'));
+  const description = optionalString(formData.get('description'));
+
+  if (!id || !projectId) return { success: false, error: genericTaskError };
+
+  try {
+    const task = await prisma.projectTask.findFirst({ select: { id: true }, where: { id, projectId } });
+    if (!task) return { success: false, error: 'A tarefa selecionada não pertence a este projeto.' };
+
+    await updateProjectTask(id, { description });
+    revalidateProjectPaths(projectId);
+    return { success: true, message: 'Guardado' };
+  } catch (error) {
+    console.error('Failed to update project task description', { error, projectId, taskId: id });
+    return { success: false, error: genericTaskError };
+  }
+}
+export async function updateProjectTaskEstimateAction(_previousState: ProjectActionState, formData: FormData): Promise<ProjectActionState> {
+  await requireAdmin();
+
+  const id = requiredString(formData.get('taskId'));
+  const projectId = requiredString(formData.get('projectId'));
+  const rawEstimate = requiredString(formData.get('estimate'));
+  const estimatedMinutes = parseOptionalEstimateToMinutes(rawEstimate);
+
+  if (!id || !projectId) return { success: false, error: genericTaskError };
+  if (estimatedMinutes === 'INVALID') return { success: false, error: 'Use um formato como 2h, 30m ou 1h 30m.' };
+
+  try {
+    const task = await prisma.projectTask.findFirst({ select: { id: true }, where: { id, projectId } });
+    if (!task) return { success: false, error: 'A tarefa selecionada não pertence a este projeto.' };
+
+    await updateProjectTask(id, { estimatedMinutes });
+    revalidateProjectPaths(projectId);
+    return { success: true, message: 'Guardado' };
+  } catch (error) {
+    console.error('Failed to update project task estimate', { error, projectId, taskId: id });
+    return { success: false, error: genericTaskError };
+  }
+}
 export async function updateProjectTaskStatusAction(formData: FormData): Promise<void> {
   await requireAdmin();
 
@@ -216,9 +367,9 @@ export async function moveProjectTaskStatusAction(_previousState: ProjectActionS
 
     await updateProjectTask(id, { status });
     revalidateProjectPaths(projectId);
-    return { success: true, message: 'Estado da tarefa atualizado.' };
+    return { success: true };
   } catch (error) {
-    console.error('Failed to move project task status', error);
+    console.error('Failed to move project task status', { error, projectId, status, taskId: id });
     return { success: false, error: 'Não foi possível atualizar o estado da tarefa.' };
   }
 }
@@ -237,7 +388,7 @@ export async function createProjectTimeEntryAction(_previousState: ProjectAction
     if (!taskId) return { success: false, error: 'A tarefa é obrigatória.' };
     if (!category) return { success: false, error: 'A categoria é obrigatória.' };
     if (entryDate === 'INVALID') return { success: false, error: 'A data é obrigatória e tem de ser válida.' };
-    if (durationMinutes === 'INVALID') return { success: false, error: 'A duração deve ser superior a 0 e no máximo 12h.' };
+    if (durationMinutes === 'INVALID') return { success: false, error: 'Use um formato como 30m, 1h ou 1h 30m.' };
 
     const task = await prisma.projectTask.findFirst({ select: { id: true }, where: { id: taskId, projectId } });
     if (!task) return { success: false, error: 'A tarefa selecionada não pertence a este projeto.' };
@@ -288,7 +439,7 @@ export async function startProjectTaskTimerAction(_previousState: ProjectActionS
 
     if (activeTimer) return { success: false, error: 'Já existe um timer ativo neste projeto.' };
 
-    await prisma.projectTimerSession.create({
+    const timerSession = await prisma.projectTimerSession.create({
       data: {
         category,
         description: optionalString(formData.get('description')),
@@ -296,10 +447,11 @@ export async function startProjectTaskTimerAction(_previousState: ProjectActionS
         startedAt: new Date(),
         taskId,
       },
+      include: { task: { select: { id: true, title: true } } },
     });
 
     revalidateProjectPaths(projectId);
-    return { success: true, message: 'Timer iniciado.' };
+    return { success: true, timerSession };
   } catch (error) {
     console.error('Failed to start project task timer', error);
     return { success: false, error: 'Não foi possível iniciar o timer.' };
@@ -317,17 +469,18 @@ export async function pauseProjectTaskTimerAction(_previousState: ProjectActionS
     const timer = await prisma.projectTimerSession.findFirst({ where: { id: timerId, projectId, status: 'RUNNING' } });
     if (!timer) return { success: false, error: 'Timer ativo não encontrado.' };
 
-    await prisma.projectTimerSession.update({
+    const timerSession = await prisma.projectTimerSession.update({
       data: {
         accumulatedSeconds: timer.accumulatedSeconds + elapsedSecondsSince(timer.startedAt),
         pausedAt: new Date(),
         status: 'PAUSED',
       },
+      include: { task: { select: { id: true, title: true } } },
       where: { id: timer.id },
     });
 
     revalidateProjectPaths(projectId);
-    return { success: true, message: 'Timer pausado.' };
+    return { success: true, timerSession };
   } catch (error) {
     console.error('Failed to pause project task timer', error);
     return { success: false, error: 'Não foi possível pausar o timer.' };
@@ -345,19 +498,50 @@ export async function resumeProjectTaskTimerAction(_previousState: ProjectAction
     const timer = await prisma.projectTimerSession.findFirst({ where: { id: timerId, projectId, status: 'PAUSED' } });
     if (!timer) return { success: false, error: 'Timer pausado não encontrado.' };
 
-    await prisma.projectTimerSession.update({
+    const timerSession = await prisma.projectTimerSession.update({
       data: { pausedAt: null, startedAt: new Date(), status: 'RUNNING' },
+      include: { task: { select: { id: true, title: true } } },
       where: { id: timer.id },
     });
 
     revalidateProjectPaths(projectId);
-    return { success: true, message: 'Timer retomado.' };
+    return { success: true, timerSession };
   } catch (error) {
     console.error('Failed to resume project task timer', error);
     return { success: false, error: 'Não foi possível retomar o timer.' };
   }
 }
 
+export async function resetProjectTaskTimerAction(_previousState: ProjectActionState, formData: FormData): Promise<ProjectActionState> {
+  await requireAdmin();
+
+  try {
+    const projectId = requiredString(formData.get('projectId'));
+    const timerId = requiredString(formData.get('timerId'));
+    if (!projectId || !timerId) return { success: false, error: genericTimeEntryError };
+
+    const timer = await prisma.projectTimerSession.findFirst({
+      select: { id: true, projectId: true, taskId: true },
+      where: { id: timerId, projectId, status: { in: ['RUNNING', 'PAUSED'] } },
+    });
+    if (!timer) return { success: false, error: 'Timer não encontrado.' };
+
+    await prisma.projectTimerSession.update({
+      data: {
+        accumulatedSeconds: 0,
+        pausedAt: null,
+        status: 'STOPPED',
+      },
+      where: { id: timer.id },
+    });
+
+    revalidateProjectPaths(projectId);
+    return { resetTimerId: timer.id, success: true };
+  } catch (error) {
+    console.error('Failed to reset project task timer', error);
+    return { success: false, error: 'Não foi possível reiniciar o timer.' };
+  }
+}
 export async function stopProjectTaskTimerAction(_previousState: ProjectActionState, formData: FormData): Promise<ProjectActionState> {
   await requireAdmin();
 
@@ -506,17 +690,21 @@ function parseOptionalDateOnly(value: FormDataEntryValue | null): ParsedDateOnly
 }
 
 function parseHoursToMinutes(value: FormDataEntryValue | null): number | 'INVALID' {
-  const raw = requiredString(value).replace(',', '.');
-  const hours = Number(raw);
+  const minutes = parseDurationToMinutes(requiredString(value));
 
-  if (!Number.isFinite(hours) || hours <= 0 || hours > 12) return 'INVALID';
-  return Math.round(hours * 60);
+  if (minutes === null || minutes <= 0 || minutes > 12 * 60) return 'INVALID';
+  return minutes;
 }
 
 function parseOptionalHoursToMinutes(value: FormDataEntryValue | null): number | null | 'INVALID' {
-  const raw = requiredString(value);
-  if (!raw) return null;
-  return parseHoursToMinutes(raw);
+  return parseOptionalEstimateToMinutes(requiredString(value));
+}
+
+function parseOptionalEstimateToMinutes(value: string): number | null | 'INVALID' {
+  if (!value.trim()) return null;
+
+  const minutes = parseDurationToMinutes(value);
+  return minutes === null || minutes < 0 ? 'INVALID' : minutes;
 }
 
 function mapProjectError(error: unknown, fallback: string): string {

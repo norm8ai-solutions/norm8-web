@@ -190,10 +190,12 @@ export async function createProjectMilestone(input: { description?: string | nul
   });
 }
 
-export async function updateProjectMilestone(id: string, input: { status?: ProjectMilestoneStatus; title?: string }) {
+export async function updateProjectMilestone(id: string, input: { description?: string | null; dueDate?: Date | null; status?: ProjectMilestoneStatus; title?: string }) {
   return prisma.projectMilestone.update({
     data: {
       completedAt: input.status === 'DONE' ? new Date() : input.status ? null : undefined,
+      description: input.description,
+      dueDate: input.dueDate,
       status: input.status,
       title: input.title,
     },
@@ -218,10 +220,14 @@ export async function createProjectTask(input: { category: ProjectWorkCategory; 
   });
 }
 
-export async function updateProjectTask(id: string, input: { status?: ProjectTaskStatus; title?: string }) {
+export async function updateProjectTask(id: string, input: { category?: ProjectWorkCategory; description?: string | null; estimatedMinutes?: number | null; milestoneId?: string | null; status?: ProjectTaskStatus; title?: string }) {
   return prisma.projectTask.update({
     data: {
+      category: input.category,
       completedAt: input.status === 'DONE' ? new Date() : input.status ? null : undefined,
+      description: input.description,
+      estimatedMinutes: input.estimatedMinutes,
+      milestoneId: input.milestoneId,
       status: input.status,
       title: input.title,
     },
@@ -332,10 +338,10 @@ export function formatProjectMilestoneStatus(status: ProjectMilestoneStatus): st
 
 export function formatProjectTaskStatus(status: ProjectTaskStatus): string {
   const labels: Record<ProjectTaskStatus, string> = {
-    BLOCKED: 'Bloqueada',
-    CANCELLED: 'Cancelada',
-    DONE: 'Concluída',
-    IN_PROGRESS: 'Em curso',
+    BLOCKED: 'Bloqueado',
+    CANCELLED: 'Cancelado',
+    DONE: 'Concluído',
+    IN_PROGRESS: 'Em progresso',
     IN_REVIEW: 'Em validação',
     TODO: 'Por fazer',
   };

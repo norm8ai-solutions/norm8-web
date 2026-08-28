@@ -59,10 +59,10 @@ export function formatProjectMilestoneStatus(status: ProjectMilestoneStatus): st
 
 export function formatProjectTaskStatus(status: ProjectTaskStatus): string {
   const labels: Record<ProjectTaskStatus, string> = {
-    BLOCKED: 'Bloqueada',
-    CANCELLED: 'Cancelada',
-    DONE: 'Concluída',
-    IN_PROGRESS: 'Em curso',
+    BLOCKED: 'Bloqueado',
+    CANCELLED: 'Cancelado',
+    DONE: 'Concluído',
+    IN_PROGRESS: 'Em progresso',
     IN_REVIEW: 'Em validação',
     TODO: 'Por fazer',
   };
