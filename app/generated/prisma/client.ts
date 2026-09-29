@@ -162,8 +162,93 @@ export type AuditAnalysis = Prisma.AuditAnalysisModel
  */
 export type AdminUser = Prisma.AdminUserModel
 /**
- * Model AdminSession
+ * Model OperationsAudit
  * Server-side admin session. The browser only receives the raw token in an httpOnly cookie.
+ */
+export type OperationsAudit = Prisma.OperationsAuditModel
+/**
+ * Model AuditStakeholder
+ * 
+ */
+export type AuditStakeholder = Prisma.AuditStakeholderModel
+/**
+ * Model OperationsProcess
+ * 
+ */
+export type OperationsProcess = Prisma.OperationsProcessModel
+/**
+ * Model OperationsTask
+ * 
+ */
+export type OperationsTask = Prisma.OperationsTaskModel
+/**
+ * Model ProcessStakeholder
+ * 
+ */
+export type ProcessStakeholder = Prisma.ProcessStakeholderModel
+/**
+ * Model AuditSystem
+ * 
+ */
+export type AuditSystem = Prisma.AuditSystemModel
+/**
+ * Model ProcessSystem
+ * 
+ */
+export type ProcessSystem = Prisma.ProcessSystemModel
+/**
+ * Model TaskSystem
+ * 
+ */
+export type TaskSystem = Prisma.TaskSystemModel
+/**
+ * Model AuditDataSource
+ * 
+ */
+export type AuditDataSource = Prisma.AuditDataSourceModel
+/**
+ * Model ProcessDataSource
+ * 
+ */
+export type ProcessDataSource = Prisma.ProcessDataSourceModel
+/**
+ * Model AuditBottleneck
+ * 
+ */
+export type AuditBottleneck = Prisma.AuditBottleneckModel
+/**
+ * Model AuditBaselineMetric
+ * 
+ */
+export type AuditBaselineMetric = Prisma.AuditBaselineMetricModel
+/**
+ * Model AuditScoringModel
+ * 
+ */
+export type AuditScoringModel = Prisma.AuditScoringModelModel
+/**
+ * Model AutomationOpportunity
+ * 
+ */
+export type AutomationOpportunity = Prisma.AutomationOpportunityModel
+/**
+ * Model OpportunityBottleneck
+ * 
+ */
+export type OpportunityBottleneck = Prisma.OpportunityBottleneckModel
+/**
+ * Model OpportunityBaselineMetric
+ * 
+ */
+export type OpportunityBaselineMetric = Prisma.OpportunityBaselineMetricModel
+/**
+ * Model AuditPilotProposal
+ * 
+ */
+export type AuditPilotProposal = Prisma.AuditPilotProposalModel
+/**
+ * Model AdminSession
+ * 
  */
 export type AdminSession = Prisma.AdminSessionModel
 /**

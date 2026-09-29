@@ -46,6 +46,7 @@ model Lead {
   manualIntakeInvites ManualIntakeInvite[]
   contracts           Contract[]
   projects            Project[]
+  operationsAudits    OperationsAudit[]
 
   @@index([normalizedCompany])
   @@index([normalizedWebsite])
@@ -391,6 +392,7 @@ model Project {
   tasks         ProjectTask[]
   timeEntries   ProjectTimeEntry[]
   timerSessions ProjectTimerSession[]
+  auditPilots   AuditPilotProposal[]
 
   @@index([leadId])
   @@index([proposalId])
@@ -669,6 +671,7 @@ model AdminUser {
   contractActivityLogs      ContractActivityLog[]
   contractVersions          ContractVersion[]
   companyLegalSettingsEdits CompanyLegalSettings[]
+  ownedOperationsAudits     OperationsAudit[]      @relation("OperationsAuditOwner")
 
   @@index([role])
   @@index([isActive])
@@ -676,6 +679,379 @@ model AdminUser {
 }
 
 /// Server-side admin session. The browser only receives the raw token in an httpOnly cookie.
+model OperationsAudit {
+  id          String                @id @default(cuid())
+  leadId      String
+  ownerId     String?
+  name        String
+  status      OperationsAuditStatus @default(DRAFT)
+  auditType   String                @default("AI_OPERATIONS")
+  scope       String?
+  objectives  String?
+  notes       String?
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+
+  lead          Lead                    @relation(fields: [leadId], references: [id], onDelete: Restrict)
+  owner         AdminUser?              @relation("OperationsAuditOwner", fields: [ownerId], references: [id], onDelete: SetNull)
+  stakeholders  AuditStakeholder[]
+  processes     OperationsProcess[]
+  systems       AuditSystem[]
+  dataSources   AuditDataSource[]
+  opportunities AutomationOpportunity[]
+
+  @@index([leadId])
+  @@index([ownerId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model AuditStakeholder {
+  id               String                     @id @default(cuid())
+  auditId          String
+  name             String
+  role             String?
+  department       String?
+  seniority        String?
+  responsibilities String?
+  interviewStatus  StakeholderInterviewStatus @default(NOT_PLANNED)
+  notes            String?
+  createdAt        DateTime                   @default(now())
+  updatedAt        DateTime                   @updatedAt
+
+  audit OperationsAudit @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  ownedProcesses OperationsProcess[] @relation("ProcessOwnerStakeholder")
+  processLinks ProcessStakeholder[]
+  tasks OperationsTask[]
+
+  @@index([auditId])
+  @@index([department])
+  @@index([interviewStatus])
+}
+
+model OperationsProcess {
+  id                      String               @id @default(cuid())
+  auditId                 String
+  ownerStakeholderId      String?
+  name                    String
+  department              String?
+  description             String?
+  trigger                 String?
+  endState                String?
+  frequency               String?
+  volume                  Decimal?
+  volumePeriod            String?
+  owner                   String?
+  participants            String?
+  currentCycleTimeMinutes Int?
+  humanHoursPerPeriod     Decimal?
+  costPerPeriodCents      Int?
+  costPeriod              String?
+  businessImportance      Int?
+  deadlineSensitivity     Int?
+  status                  ProcessMappingStatus @default(CAPTURED)
+  notes                   String?
+  createdAt               DateTime             @default(now())
+  updatedAt               DateTime             @updatedAt
+
+  audit         OperationsAudit         @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  ownerStakeholder AuditStakeholder?     @relation("ProcessOwnerStakeholder", fields: [ownerStakeholderId], references: [id], onDelete: SetNull)
+  stakeholderLinks ProcessStakeholder[]
+  tasks         OperationsTask[]
+  systems       ProcessSystem[]
+  dataSources   ProcessDataSource[]
+  bottlenecks   AuditBottleneck[]
+  baselines     AuditBaselineMetric[]
+  opportunities AutomationOpportunity[]
+
+  @@index([auditId])
+  @@index([ownerStakeholderId])
+  @@index([department])
+  @@index([status])
+}
+
+model OperationsTask {
+  id                 String            @id @default(cuid())
+  processId          String
+  stakeholderId      String?
+  sequence           Int
+  name               String
+  description        String?
+  actor              String?
+  executionMode      TaskExecutionMode @default(MANUAL)
+  averageTimeMinutes Int?
+  frequency          String?
+  input              String?
+  output             String?
+  decisionRequired   Boolean           @default(false)
+  exceptionFrequency String?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+
+  process     OperationsProcess @relation(fields: [processId], references: [id], onDelete: Cascade)
+  stakeholder AuditStakeholder? @relation(fields: [stakeholderId], references: [id], onDelete: SetNull)
+  systems     TaskSystem[]
+  bottlenecks AuditBottleneck[]
+
+  @@unique([processId, sequence])
+  @@index([processId])
+  @@index([stakeholderId])
+}
+
+model ProcessStakeholder {
+  processId     String
+  stakeholderId String
+  process       OperationsProcess @relation(fields: [processId], references: [id], onDelete: Cascade)
+  stakeholder   AuditStakeholder  @relation(fields: [stakeholderId], references: [id], onDelete: Cascade)
+
+  @@id([processId, stakeholderId])
+  @@index([stakeholderId])
+}
+
+model AuditSystem {
+  id                    String                 @id @default(cuid())
+  auditId               String
+  name                  String
+  category              String?
+  vendor                String?
+  purpose               String?
+  apiAvailable          EvidenceAnswer         @default(UNKNOWN)
+  exportAvailable       EvidenceAnswer         @default(UNKNOWN)
+  integrationDifficulty IntegrationDifficulty?
+  dataOwner             String?
+  notes                 String?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+
+  audit     OperationsAudit @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  processes ProcessSystem[]
+  tasks     TaskSystem[]
+  dataSources AuditDataSource[]
+
+  @@unique([auditId, name])
+  @@index([auditId])
+}
+
+model ProcessSystem {
+  processId String
+  systemId  String
+  process   OperationsProcess @relation(fields: [processId], references: [id], onDelete: Cascade)
+  system    AuditSystem       @relation(fields: [systemId], references: [id], onDelete: Cascade)
+
+  @@id([processId, systemId])
+  @@index([systemId])
+}
+
+model TaskSystem {
+  taskId   String
+  systemId String
+  task     OperationsTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  system   AuditSystem    @relation(fields: [systemId], references: [id], onDelete: Cascade)
+
+  @@id([taskId, systemId])
+  @@index([systemId])
+}
+
+model AuditDataSource {
+  id              String            @id @default(cuid())
+  auditId         String
+  systemId        String?
+  name            String
+  type            String?
+  description     String?
+  structure       DataStructureType @default(UNKNOWN)
+  accessibility   String?
+  quality         Int?
+  sensitivity     DataSensitivity   @default(UNKNOWN)
+  updateFrequency String?
+  notes           String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  audit     OperationsAudit     @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  system    AuditSystem?        @relation(fields: [systemId], references: [id], onDelete: SetNull)
+  processes ProcessDataSource[]
+
+  @@unique([auditId, name])
+  @@index([auditId])
+  @@index([systemId])
+}
+
+model ProcessDataSource {
+  processId    String
+  dataSourceId String
+  process      OperationsProcess @relation(fields: [processId], references: [id], onDelete: Cascade)
+  dataSource   AuditDataSource   @relation(fields: [dataSourceId], references: [id], onDelete: Cascade)
+
+  @@id([processId, dataSourceId])
+  @@index([dataSourceId])
+}
+
+model AuditBottleneck {
+  id                String             @id @default(cuid())
+  processId         String
+  taskId            String?
+  description       String
+  category          BottleneckCategory
+  timeImpact        String?
+  costImpactCents   Int?
+  errorImpact       String?
+  revenueImpact     String?
+  customerImpact    String?
+  evidence          String?
+  evidenceQuality   EvidenceQuality    @default(UNKNOWN)
+  source            String?
+  evidenceReference String?
+  capturedAt        DateTime?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  process OperationsProcess @relation(fields: [processId], references: [id], onDelete: Cascade)
+  task    OperationsTask?   @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  opportunityLinks OpportunityBottleneck[]
+
+  @@index([processId])
+  @@index([taskId])
+  @@index([category])
+}
+
+model AuditBaselineMetric {
+  id              String          @id @default(cuid())
+  processId       String
+  metricKey       String
+  label           String
+  numericValue    Decimal?
+  textValue       String?
+  unit            String?
+  period          String?
+  evidenceQuality EvidenceQuality @default(UNKNOWN)
+  source          String?
+  evidence        String?
+  evidenceReference String?
+  notes           String?
+  observedAt      DateTime?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  process OperationsProcess @relation(fields: [processId], references: [id], onDelete: Cascade)
+  opportunityLinks OpportunityBaselineMetric[]
+
+  @@index([processId])
+  @@index([metricKey])
+}
+
+model AuditScoringModel {
+  id          String   @id @default(cuid())
+  key         String
+  version     Int
+  name        String
+  description String?
+  config      Json
+  isActive    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  opportunities AutomationOpportunity[]
+
+  @@unique([key, version])
+  @@index([isActive])
+}
+
+model AutomationOpportunity {
+  id                               String                      @id @default(cuid())
+  auditId                          String
+  processId                        String
+  scoringModelId                   String?
+  title                            String?
+  problem                          String
+  currentState                     String?
+  proposedOutcome                  String?
+  automationConcept                String?
+  expectedFutureState              String?
+  expectedTimeSavingHoursPerPeriod Decimal?
+  expectedCostSavingCentsPerPeriod Int?
+  savingPeriod                     String?
+  implementationComplexity         ImplementationComplexity?
+  businessValueScore               Decimal?
+  feasibilityScore                 Decimal?
+  marketPotentialScore             Decimal?
+  opportunityScore                 Decimal?
+  confidenceScore                  Decimal?
+  evidenceConfidence               EvidenceConfidence          @default(LOW)
+  strategicFit                     StrategicFit?
+  risk                             String?
+  whyThisMatters                   String?
+  recommendation                   String?
+  status                           AutomationOpportunityStatus @default(DISCOVERED)
+  assessment                       Json?
+  scoreSnapshot                    Json?
+  scoredAt                         DateTime?
+  createdAt                        DateTime                    @default(now())
+  updatedAt                        DateTime                    @updatedAt
+
+  audit        OperationsAudit     @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  process      OperationsProcess   @relation(fields: [processId], references: [id], onDelete: Cascade)
+  scoringModel AuditScoringModel?  @relation(fields: [scoringModelId], references: [id], onDelete: Restrict)
+  pilot        AuditPilotProposal?
+  bottleneckLinks OpportunityBottleneck[]
+  baselineLinks   OpportunityBaselineMetric[]
+
+  @@index([auditId])
+  @@index([processId])
+  @@index([status])
+  @@index([opportunityScore])
+}
+
+model OpportunityBottleneck {
+  opportunityId String
+  bottleneckId  String
+  createdAt     DateTime @default(now())
+
+  opportunity AutomationOpportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  bottleneck  AuditBottleneck       @relation(fields: [bottleneckId], references: [id], onDelete: Cascade)
+
+  @@id([opportunityId, bottleneckId])
+  @@index([bottleneckId])
+}
+
+model OpportunityBaselineMetric {
+  opportunityId String
+  baselineId    String
+  createdAt     DateTime @default(now())
+
+  opportunity AutomationOpportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  baseline    AuditBaselineMetric   @relation(fields: [baselineId], references: [id], onDelete: Cascade)
+
+  @@id([opportunityId, baselineId])
+  @@index([baselineId])
+}
+
+model AuditPilotProposal {
+  id                     String              @id @default(cuid())
+  opportunityId          String              @unique
+  projectId              String?
+  problem                String
+  scope                  String?
+  workflow               String?
+  baselineSummary        String?
+  targetBusinessOutcome  String?
+  expectedRoi            String?
+  implementationEstimate String?
+  recurringModel         String?
+  successMetrics         Json?
+  status                 PilotProposalStatus @default(DRAFT)
+  createdAt              DateTime            @default(now())
+  updatedAt              DateTime            @updatedAt
+
+  opportunity AutomationOpportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  project     Project?              @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@index([projectId])
+  @@index([status])
+}
+
 model AdminSession {
   id          String    @id @default(cuid())
   adminUserId String
@@ -996,6 +1372,113 @@ model ContractActivityLog {
 }
 
 /// Supported public acquisition flows that all use the same submissions pipeline.
+enum OperationsAuditStatus {
+  DRAFT
+  PLANNED
+  IN_PROGRESS
+  ANALYSIS
+  COMPLETED
+  ARCHIVED
+}
+
+enum StakeholderInterviewStatus {
+  NOT_PLANNED
+  PLANNED
+  INTERVIEWED
+  FOLLOW_UP
+}
+
+enum ProcessMappingStatus {
+  CAPTURED
+  MAPPED
+  VALIDATED
+}
+
+enum TaskExecutionMode {
+  MANUAL
+  AUTOMATED
+  HYBRID
+}
+
+enum EvidenceAnswer {
+  YES
+  NO
+  UNKNOWN
+}
+
+enum IntegrationDifficulty {
+  LOW
+  MEDIUM
+  HIGH
+  UNKNOWN
+}
+
+enum DataStructureType {
+  STRUCTURED
+  SEMI_STRUCTURED
+  UNSTRUCTURED
+  UNKNOWN
+}
+
+enum DataSensitivity {
+  CLIENT_PRIVATE
+  CLIENT_DERIVED
+  AGGREGATED
+  NORM8_KNOWLEDGE
+  UNKNOWN
+}
+
+enum EvidenceQuality {
+  MEASURED
+  ESTIMATED
+  UNKNOWN
+}
+
+enum EvidenceConfidence {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum StrategicFit {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum BottleneckCategory {
+  MANUAL_WORK
+  WAITING
+  DUPLICATE_ENTRY
+  MISSING_INFORMATION
+  POOR_INTEGRATION
+  ERRORS
+  COMMUNICATION
+  APPROVAL
+  SEARCH_RETRIEVAL
+  RECONCILIATION
+  DATA_QUALITY
+  OTHER
+}
+
+enum AutomationOpportunityStatus {
+  DISCOVERED
+  VALIDATING
+  RECOMMENDED
+  PILOT_PROPOSED
+  PILOT_ACCEPTED
+  IMPLEMENTED
+  REJECTED
+}
+
+enum PilotProposalStatus {
+  DRAFT
+  PROPOSED
+  ACCEPTED
+  REJECTED
+  CONVERTED_TO_PROJECT
+}
+
 enum SubmissionType {
   AUDIT_REQUEST
   CUSTOM_AUTOMATION_REQUEST

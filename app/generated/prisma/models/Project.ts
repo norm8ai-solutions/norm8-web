@@ -339,6 +339,7 @@ export type ProjectWhereInput = {
   tasks?: Prisma.ProjectTaskListRelationFilter
   timeEntries?: Prisma.ProjectTimeEntryListRelationFilter
   timerSessions?: Prisma.ProjectTimerSessionListRelationFilter
+  auditPilots?: Prisma.AuditPilotProposalListRelationFilter
 }
 
 export type ProjectOrderByWithRelationInput = {
@@ -369,6 +370,7 @@ export type ProjectOrderByWithRelationInput = {
   tasks?: Prisma.ProjectTaskOrderByRelationAggregateInput
   timeEntries?: Prisma.ProjectTimeEntryOrderByRelationAggregateInput
   timerSessions?: Prisma.ProjectTimerSessionOrderByRelationAggregateInput
+  auditPilots?: Prisma.AuditPilotProposalOrderByRelationAggregateInput
 }
 
 export type ProjectWhereUniqueInput = Prisma.AtLeast<{
@@ -402,6 +404,7 @@ export type ProjectWhereUniqueInput = Prisma.AtLeast<{
   tasks?: Prisma.ProjectTaskListRelationFilter
   timeEntries?: Prisma.ProjectTimeEntryListRelationFilter
   timerSessions?: Prisma.ProjectTimerSessionListRelationFilter
+  auditPilots?: Prisma.AuditPilotProposalListRelationFilter
 }, "id">
 
 export type ProjectOrderByWithAggregationInput = {
@@ -483,6 +486,7 @@ export type ProjectCreateInput = {
   tasks?: Prisma.ProjectTaskCreateNestedManyWithoutProjectInput
   timeEntries?: Prisma.ProjectTimeEntryCreateNestedManyWithoutProjectInput
   timerSessions?: Prisma.ProjectTimerSessionCreateNestedManyWithoutProjectInput
+  auditPilots?: Prisma.AuditPilotProposalCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateInput = {
@@ -510,6 +514,7 @@ export type ProjectUncheckedCreateInput = {
   tasks?: Prisma.ProjectTaskUncheckedCreateNestedManyWithoutProjectInput
   timeEntries?: Prisma.ProjectTimeEntryUncheckedCreateNestedManyWithoutProjectInput
   timerSessions?: Prisma.ProjectTimerSessionUncheckedCreateNestedManyWithoutProjectInput
+  auditPilots?: Prisma.AuditPilotProposalUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUpdateInput = {
@@ -537,6 +542,7 @@ export type ProjectUpdateInput = {
   tasks?: Prisma.ProjectTaskUpdateManyWithoutProjectNestedInput
   timeEntries?: Prisma.ProjectTimeEntryUpdateManyWithoutProjectNestedInput
   timerSessions?: Prisma.ProjectTimerSessionUpdateManyWithoutProjectNestedInput
+  auditPilots?: Prisma.AuditPilotProposalUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateInput = {
@@ -564,6 +570,7 @@ export type ProjectUncheckedUpdateInput = {
   tasks?: Prisma.ProjectTaskUncheckedUpdateManyWithoutProjectNestedInput
   timeEntries?: Prisma.ProjectTimeEntryUncheckedUpdateManyWithoutProjectNestedInput
   timerSessions?: Prisma.ProjectTimerSessionUncheckedUpdateManyWithoutProjectNestedInput
+  auditPilots?: Prisma.AuditPilotProposalUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateManyInput = {
@@ -722,6 +729,11 @@ export type ProjectScalarRelationFilter = {
   isNot?: Prisma.ProjectWhereInput
 }
 
+export type ProjectNullableScalarRelationFilter = {
+  is?: Prisma.ProjectWhereInput | null
+  isNot?: Prisma.ProjectWhereInput | null
+}
+
 export type ProjectCreateNestedManyWithoutLeadInput = {
   create?: Prisma.XOR<Prisma.ProjectCreateWithoutLeadInput, Prisma.ProjectUncheckedCreateWithoutLeadInput> | Prisma.ProjectCreateWithoutLeadInput[] | Prisma.ProjectUncheckedCreateWithoutLeadInput[]
   connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutLeadInput | Prisma.ProjectCreateOrConnectWithoutLeadInput[]
@@ -870,6 +882,22 @@ export type ProjectUpdateOneRequiredWithoutTimerSessionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutTimerSessionsInput, Prisma.ProjectUpdateWithoutTimerSessionsInput>, Prisma.ProjectUncheckedUpdateWithoutTimerSessionsInput>
 }
 
+export type ProjectCreateNestedOneWithoutAuditPilotsInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutAuditPilotsInput, Prisma.ProjectUncheckedCreateWithoutAuditPilotsInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutAuditPilotsInput
+  connect?: Prisma.ProjectWhereUniqueInput
+}
+
+export type ProjectUpdateOneWithoutAuditPilotsNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutAuditPilotsInput, Prisma.ProjectUncheckedCreateWithoutAuditPilotsInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutAuditPilotsInput
+  upsert?: Prisma.ProjectUpsertWithoutAuditPilotsInput
+  disconnect?: Prisma.ProjectWhereInput | boolean
+  delete?: Prisma.ProjectWhereInput | boolean
+  connect?: Prisma.ProjectWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutAuditPilotsInput, Prisma.ProjectUpdateWithoutAuditPilotsInput>, Prisma.ProjectUncheckedUpdateWithoutAuditPilotsInput>
+}
+
 export type ProjectCreateNestedManyWithoutContractInput = {
   create?: Prisma.XOR<Prisma.ProjectCreateWithoutContractInput, Prisma.ProjectUncheckedCreateWithoutContractInput> | Prisma.ProjectCreateWithoutContractInput[] | Prisma.ProjectUncheckedCreateWithoutContractInput[]
   connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutContractInput | Prisma.ProjectCreateOrConnectWithoutContractInput[]
@@ -936,6 +964,7 @@ export type ProjectCreateWithoutLeadInput = {
   tasks?: Prisma.ProjectTaskCreateNestedManyWithoutProjectInput
   timeEntries?: Prisma.ProjectTimeEntryCreateNestedManyWithoutProjectInput
   timerSessions?: Prisma.ProjectTimerSessionCreateNestedManyWithoutProjectInput
+  auditPilots?: Prisma.AuditPilotProposalCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutLeadInput = {
@@ -962,6 +991,7 @@ export type ProjectUncheckedCreateWithoutLeadInput = {
   tasks?: Prisma.ProjectTaskUncheckedCreateNestedManyWithoutProjectInput
   timeEntries?: Prisma.ProjectTimeEntryUncheckedCreateNestedManyWithoutProjectInput
   timerSessions?: Prisma.ProjectTimerSessionUncheckedCreateNestedManyWithoutProjectInput
+  auditPilots?: Prisma.AuditPilotProposalUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutLeadInput = {
@@ -1040,6 +1070,7 @@ export type ProjectCreateWithoutProposalInput = {
   tasks?: Prisma.ProjectTaskCreateNestedManyWithoutProjectInput
   timeEntries?: Prisma.ProjectTimeEntryCreateNestedManyWithoutProjectInput
   timerSessions?: Prisma.ProjectTimerSessionCreateNestedManyWithoutProjectInput
+  auditPilots?: Prisma.AuditPilotProposalCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutProposalInput = {
@@ -1066,6 +1097,7 @@ export type ProjectUncheckedCreateWithoutProposalInput = {
   tasks?: Prisma.ProjectTaskUncheckedCreateNestedManyWithoutProjectInput
   timeEntries?: Prisma.ProjectTimeEntryUncheckedCreateNestedManyWithoutProjectInput
   timerSessions?: Prisma.ProjectTimerSessionUncheckedCreateNestedManyWithoutProjectInput
+  auditPilots?: Prisma.AuditPilotProposalUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutProposalInput = {
@@ -1118,6 +1150,7 @@ export type ProjectCreateWithoutMilestonesInput = {
   tasks?: Prisma.ProjectTaskCreateNestedManyWithoutProjectInput
   timeEntries?: Prisma.ProjectTimeEntryCreateNestedManyWithoutProjectInput
   timerSessions?: Prisma.ProjectTimerSessionCreateNestedManyWithoutProjectInput
+  auditPilots?: Prisma.AuditPilotProposalCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutMilestonesInput = {
@@ -1144,6 +1177,7 @@ export type ProjectUncheckedCreateWithoutMilestonesInput = {
   tasks?: Prisma.ProjectTaskUncheckedCreateNestedManyWithoutProjectInput
   timeEntries?: Prisma.ProjectTimeEntryUncheckedCreateNestedManyWithoutProjectInput
   timerSessions?: Prisma.ProjectTimerSessionUncheckedCreateNestedManyWithoutProjectInput
+  auditPilots?: Prisma.AuditPilotProposalUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutMilestonesInput = {
@@ -1186,6 +1220,7 @@ export type ProjectUpdateWithoutMilestonesInput = {
   tasks?: Prisma.ProjectTaskUpdateManyWithoutProjectNestedInput
   timeEntries?: Prisma.ProjectTimeEntryUpdateManyWithoutProjectNestedInput
   timerSessions?: Prisma.ProjectTimerSessionUpdateManyWithoutProjectNestedInput
+  auditPilots?: Prisma.AuditPilotProposalUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutMilestonesInput = {
@@ -1212,6 +1247,7 @@ export type ProjectUncheckedUpdateWithoutMilestonesInput = {
   tasks?: Prisma.ProjectTaskUncheckedUpdateManyWithoutProjectNestedInput
   timeEntries?: Prisma.ProjectTimeEntryUncheckedUpdateManyWithoutProjectNestedInput
   timerSessions?: Prisma.ProjectTimerSessionUncheckedUpdateManyWithoutProjectNestedInput
+  auditPilots?: Prisma.AuditPilotProposalUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutTasksInput = {
@@ -1238,6 +1274,7 @@ export type ProjectCreateWithoutTasksInput = {
   milestones?: Prisma.ProjectMilestoneCreateNestedManyWithoutProjectInput
   timeEntries?: Prisma.ProjectTimeEntryCreateNestedManyWithoutProjectInput
   timerSessions?: Prisma.ProjectTimerSessionCreateNestedManyWithoutProjectInput
+  auditPilots?: Prisma.AuditPilotProposalCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutTasksInput = {
@@ -1264,6 +1301,7 @@ export type ProjectUncheckedCreateWithoutTasksInput = {
   milestones?: Prisma.ProjectMilestoneUncheckedCreateNestedManyWithoutProjectInput
   timeEntries?: Prisma.ProjectTimeEntryUncheckedCreateNestedManyWithoutProjectInput
   timerSessions?: Prisma.ProjectTimerSessionUncheckedCreateNestedManyWithoutProjectInput
+  auditPilots?: Prisma.AuditPilotProposalUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutTasksInput = {
@@ -1306,6 +1344,7 @@ export type ProjectUpdateWithoutTasksInput = {
   milestones?: Prisma.ProjectMilestoneUpdateManyWithoutProjectNestedInput
   timeEntries?: Prisma.ProjectTimeEntryUpdateManyWithoutProjectNestedInput
   timerSessions?: Prisma.ProjectTimerSessionUpdateManyWithoutProjectNestedInput
+  auditPilots?: Prisma.AuditPilotProposalUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutTasksInput = {
@@ -1332,6 +1371,7 @@ export type ProjectUncheckedUpdateWithoutTasksInput = {
   milestones?: Prisma.ProjectMilestoneUncheckedUpdateManyWithoutProjectNestedInput
   timeEntries?: Prisma.ProjectTimeEntryUncheckedUpdateManyWithoutProjectNestedInput
   timerSessions?: Prisma.ProjectTimerSessionUncheckedUpdateManyWithoutProjectNestedInput
+  auditPilots?: Prisma.AuditPilotProposalUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutTimeEntriesInput = {
@@ -1358,6 +1398,7 @@ export type ProjectCreateWithoutTimeEntriesInput = {
   milestones?: Prisma.ProjectMilestoneCreateNestedManyWithoutProjectInput
   tasks?: Prisma.ProjectTaskCreateNestedManyWithoutProjectInput
   timerSessions?: Prisma.ProjectTimerSessionCreateNestedManyWithoutProjectInput
+  auditPilots?: Prisma.AuditPilotProposalCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutTimeEntriesInput = {
@@ -1384,6 +1425,7 @@ export type ProjectUncheckedCreateWithoutTimeEntriesInput = {
   milestones?: Prisma.ProjectMilestoneUncheckedCreateNestedManyWithoutProjectInput
   tasks?: Prisma.ProjectTaskUncheckedCreateNestedManyWithoutProjectInput
   timerSessions?: Prisma.ProjectTimerSessionUncheckedCreateNestedManyWithoutProjectInput
+  auditPilots?: Prisma.AuditPilotProposalUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutTimeEntriesInput = {
@@ -1426,6 +1468,7 @@ export type ProjectUpdateWithoutTimeEntriesInput = {
   milestones?: Prisma.ProjectMilestoneUpdateManyWithoutProjectNestedInput
   tasks?: Prisma.ProjectTaskUpdateManyWithoutProjectNestedInput
   timerSessions?: Prisma.ProjectTimerSessionUpdateManyWithoutProjectNestedInput
+  auditPilots?: Prisma.AuditPilotProposalUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutTimeEntriesInput = {
@@ -1452,6 +1495,7 @@ export type ProjectUncheckedUpdateWithoutTimeEntriesInput = {
   milestones?: Prisma.ProjectMilestoneUncheckedUpdateManyWithoutProjectNestedInput
   tasks?: Prisma.ProjectTaskUncheckedUpdateManyWithoutProjectNestedInput
   timerSessions?: Prisma.ProjectTimerSessionUncheckedUpdateManyWithoutProjectNestedInput
+  auditPilots?: Prisma.AuditPilotProposalUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutTimerSessionsInput = {
@@ -1478,6 +1522,7 @@ export type ProjectCreateWithoutTimerSessionsInput = {
   milestones?: Prisma.ProjectMilestoneCreateNestedManyWithoutProjectInput
   tasks?: Prisma.ProjectTaskCreateNestedManyWithoutProjectInput
   timeEntries?: Prisma.ProjectTimeEntryCreateNestedManyWithoutProjectInput
+  auditPilots?: Prisma.AuditPilotProposalCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutTimerSessionsInput = {
@@ -1504,6 +1549,7 @@ export type ProjectUncheckedCreateWithoutTimerSessionsInput = {
   milestones?: Prisma.ProjectMilestoneUncheckedCreateNestedManyWithoutProjectInput
   tasks?: Prisma.ProjectTaskUncheckedCreateNestedManyWithoutProjectInput
   timeEntries?: Prisma.ProjectTimeEntryUncheckedCreateNestedManyWithoutProjectInput
+  auditPilots?: Prisma.AuditPilotProposalUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutTimerSessionsInput = {
@@ -1546,6 +1592,7 @@ export type ProjectUpdateWithoutTimerSessionsInput = {
   milestones?: Prisma.ProjectMilestoneUpdateManyWithoutProjectNestedInput
   tasks?: Prisma.ProjectTaskUpdateManyWithoutProjectNestedInput
   timeEntries?: Prisma.ProjectTimeEntryUpdateManyWithoutProjectNestedInput
+  auditPilots?: Prisma.AuditPilotProposalUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutTimerSessionsInput = {
@@ -1572,6 +1619,131 @@ export type ProjectUncheckedUpdateWithoutTimerSessionsInput = {
   milestones?: Prisma.ProjectMilestoneUncheckedUpdateManyWithoutProjectNestedInput
   tasks?: Prisma.ProjectTaskUncheckedUpdateManyWithoutProjectNestedInput
   timeEntries?: Prisma.ProjectTimeEntryUncheckedUpdateManyWithoutProjectNestedInput
+  auditPilots?: Prisma.AuditPilotProposalUncheckedUpdateManyWithoutProjectNestedInput
+}
+
+export type ProjectCreateWithoutAuditPilotsInput = {
+  id?: string
+  name: string
+  clientName: string
+  description?: string | null
+  status?: $Enums.ProjectStatus
+  growthPhase?: $Enums.ProjectGrowthPhase
+  planName?: string | null
+  commercialCondition?: string | null
+  contractedValueCents: number
+  currency?: string
+  startDate?: Date | string | null
+  targetEndDate?: Date | string | null
+  completedAt?: Date | string | null
+  jiraProjectKey?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lead?: Prisma.LeadCreateNestedOneWithoutProjectsInput
+  proposal?: Prisma.ProposalCreateNestedOneWithoutProjectsInput
+  contract?: Prisma.ContractCreateNestedOneWithoutProjectsInput
+  milestones?: Prisma.ProjectMilestoneCreateNestedManyWithoutProjectInput
+  tasks?: Prisma.ProjectTaskCreateNestedManyWithoutProjectInput
+  timeEntries?: Prisma.ProjectTimeEntryCreateNestedManyWithoutProjectInput
+  timerSessions?: Prisma.ProjectTimerSessionCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectUncheckedCreateWithoutAuditPilotsInput = {
+  id?: string
+  name: string
+  clientName: string
+  description?: string | null
+  status?: $Enums.ProjectStatus
+  growthPhase?: $Enums.ProjectGrowthPhase
+  planName?: string | null
+  commercialCondition?: string | null
+  contractedValueCents: number
+  currency?: string
+  startDate?: Date | string | null
+  targetEndDate?: Date | string | null
+  completedAt?: Date | string | null
+  leadId?: string | null
+  proposalId?: string | null
+  contractId?: string | null
+  jiraProjectKey?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  milestones?: Prisma.ProjectMilestoneUncheckedCreateNestedManyWithoutProjectInput
+  tasks?: Prisma.ProjectTaskUncheckedCreateNestedManyWithoutProjectInput
+  timeEntries?: Prisma.ProjectTimeEntryUncheckedCreateNestedManyWithoutProjectInput
+  timerSessions?: Prisma.ProjectTimerSessionUncheckedCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectCreateOrConnectWithoutAuditPilotsInput = {
+  where: Prisma.ProjectWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutAuditPilotsInput, Prisma.ProjectUncheckedCreateWithoutAuditPilotsInput>
+}
+
+export type ProjectUpsertWithoutAuditPilotsInput = {
+  update: Prisma.XOR<Prisma.ProjectUpdateWithoutAuditPilotsInput, Prisma.ProjectUncheckedUpdateWithoutAuditPilotsInput>
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutAuditPilotsInput, Prisma.ProjectUncheckedCreateWithoutAuditPilotsInput>
+  where?: Prisma.ProjectWhereInput
+}
+
+export type ProjectUpdateToOneWithWhereWithoutAuditPilotsInput = {
+  where?: Prisma.ProjectWhereInput
+  data: Prisma.XOR<Prisma.ProjectUpdateWithoutAuditPilotsInput, Prisma.ProjectUncheckedUpdateWithoutAuditPilotsInput>
+}
+
+export type ProjectUpdateWithoutAuditPilotsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  clientName?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  growthPhase?: Prisma.EnumProjectGrowthPhaseFieldUpdateOperationsInput | $Enums.ProjectGrowthPhase
+  planName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commercialCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractedValueCents?: Prisma.IntFieldUpdateOperationsInput | number
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  targetEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  jiraProjectKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lead?: Prisma.LeadUpdateOneWithoutProjectsNestedInput
+  proposal?: Prisma.ProposalUpdateOneWithoutProjectsNestedInput
+  contract?: Prisma.ContractUpdateOneWithoutProjectsNestedInput
+  milestones?: Prisma.ProjectMilestoneUpdateManyWithoutProjectNestedInput
+  tasks?: Prisma.ProjectTaskUpdateManyWithoutProjectNestedInput
+  timeEntries?: Prisma.ProjectTimeEntryUpdateManyWithoutProjectNestedInput
+  timerSessions?: Prisma.ProjectTimerSessionUpdateManyWithoutProjectNestedInput
+}
+
+export type ProjectUncheckedUpdateWithoutAuditPilotsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  clientName?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  growthPhase?: Prisma.EnumProjectGrowthPhaseFieldUpdateOperationsInput | $Enums.ProjectGrowthPhase
+  planName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commercialCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractedValueCents?: Prisma.IntFieldUpdateOperationsInput | number
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  targetEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  leadId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  proposalId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jiraProjectKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  milestones?: Prisma.ProjectMilestoneUncheckedUpdateManyWithoutProjectNestedInput
+  tasks?: Prisma.ProjectTaskUncheckedUpdateManyWithoutProjectNestedInput
+  timeEntries?: Prisma.ProjectTimeEntryUncheckedUpdateManyWithoutProjectNestedInput
+  timerSessions?: Prisma.ProjectTimerSessionUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutContractInput = {
@@ -1598,6 +1770,7 @@ export type ProjectCreateWithoutContractInput = {
   tasks?: Prisma.ProjectTaskCreateNestedManyWithoutProjectInput
   timeEntries?: Prisma.ProjectTimeEntryCreateNestedManyWithoutProjectInput
   timerSessions?: Prisma.ProjectTimerSessionCreateNestedManyWithoutProjectInput
+  auditPilots?: Prisma.AuditPilotProposalCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutContractInput = {
@@ -1624,6 +1797,7 @@ export type ProjectUncheckedCreateWithoutContractInput = {
   tasks?: Prisma.ProjectTaskUncheckedCreateNestedManyWithoutProjectInput
   timeEntries?: Prisma.ProjectTimeEntryUncheckedCreateNestedManyWithoutProjectInput
   timerSessions?: Prisma.ProjectTimerSessionUncheckedCreateNestedManyWithoutProjectInput
+  auditPilots?: Prisma.AuditPilotProposalUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutContractInput = {
@@ -1698,6 +1872,7 @@ export type ProjectUpdateWithoutLeadInput = {
   tasks?: Prisma.ProjectTaskUpdateManyWithoutProjectNestedInput
   timeEntries?: Prisma.ProjectTimeEntryUpdateManyWithoutProjectNestedInput
   timerSessions?: Prisma.ProjectTimerSessionUpdateManyWithoutProjectNestedInput
+  auditPilots?: Prisma.AuditPilotProposalUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutLeadInput = {
@@ -1724,6 +1899,7 @@ export type ProjectUncheckedUpdateWithoutLeadInput = {
   tasks?: Prisma.ProjectTaskUncheckedUpdateManyWithoutProjectNestedInput
   timeEntries?: Prisma.ProjectTimeEntryUncheckedUpdateManyWithoutProjectNestedInput
   timerSessions?: Prisma.ProjectTimerSessionUncheckedUpdateManyWithoutProjectNestedInput
+  auditPilots?: Prisma.AuditPilotProposalUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateManyWithoutLeadInput = {
@@ -1794,6 +1970,7 @@ export type ProjectUpdateWithoutProposalInput = {
   tasks?: Prisma.ProjectTaskUpdateManyWithoutProjectNestedInput
   timeEntries?: Prisma.ProjectTimeEntryUpdateManyWithoutProjectNestedInput
   timerSessions?: Prisma.ProjectTimerSessionUpdateManyWithoutProjectNestedInput
+  auditPilots?: Prisma.AuditPilotProposalUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutProposalInput = {
@@ -1820,6 +1997,7 @@ export type ProjectUncheckedUpdateWithoutProposalInput = {
   tasks?: Prisma.ProjectTaskUncheckedUpdateManyWithoutProjectNestedInput
   timeEntries?: Prisma.ProjectTimeEntryUncheckedUpdateManyWithoutProjectNestedInput
   timerSessions?: Prisma.ProjectTimerSessionUncheckedUpdateManyWithoutProjectNestedInput
+  auditPilots?: Prisma.AuditPilotProposalUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateManyWithoutProposalInput = {
@@ -1890,6 +2068,7 @@ export type ProjectUpdateWithoutContractInput = {
   tasks?: Prisma.ProjectTaskUpdateManyWithoutProjectNestedInput
   timeEntries?: Prisma.ProjectTimeEntryUpdateManyWithoutProjectNestedInput
   timerSessions?: Prisma.ProjectTimerSessionUpdateManyWithoutProjectNestedInput
+  auditPilots?: Prisma.AuditPilotProposalUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutContractInput = {
@@ -1916,6 +2095,7 @@ export type ProjectUncheckedUpdateWithoutContractInput = {
   tasks?: Prisma.ProjectTaskUncheckedUpdateManyWithoutProjectNestedInput
   timeEntries?: Prisma.ProjectTimeEntryUncheckedUpdateManyWithoutProjectNestedInput
   timerSessions?: Prisma.ProjectTimerSessionUncheckedUpdateManyWithoutProjectNestedInput
+  auditPilots?: Prisma.AuditPilotProposalUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateManyWithoutContractInput = {
@@ -1950,6 +2130,7 @@ export type ProjectCountOutputType = {
   tasks: number
   timeEntries: number
   timerSessions: number
+  auditPilots: number
 }
 
 export type ProjectCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1957,6 +2138,7 @@ export type ProjectCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   tasks?: boolean | ProjectCountOutputTypeCountTasksArgs
   timeEntries?: boolean | ProjectCountOutputTypeCountTimeEntriesArgs
   timerSessions?: boolean | ProjectCountOutputTypeCountTimerSessionsArgs
+  auditPilots?: boolean | ProjectCountOutputTypeCountAuditPilotsArgs
 }
 
 /**
@@ -1997,6 +2179,13 @@ export type ProjectCountOutputTypeCountTimerSessionsArgs<ExtArgs extends runtime
   where?: Prisma.ProjectTimerSessionWhereInput
 }
 
+/**
+ * ProjectCountOutputType without action
+ */
+export type ProjectCountOutputTypeCountAuditPilotsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AuditPilotProposalWhereInput
+}
+
 
 export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2026,6 +2215,7 @@ export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   tasks?: boolean | Prisma.Project$tasksArgs<ExtArgs>
   timeEntries?: boolean | Prisma.Project$timeEntriesArgs<ExtArgs>
   timerSessions?: boolean | Prisma.Project$timerSessionsArgs<ExtArgs>
+  auditPilots?: boolean | Prisma.Project$auditPilotsArgs<ExtArgs>
   _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["project"]>
 
@@ -2113,6 +2303,7 @@ export type ProjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   tasks?: boolean | Prisma.Project$tasksArgs<ExtArgs>
   timeEntries?: boolean | Prisma.Project$timeEntriesArgs<ExtArgs>
   timerSessions?: boolean | Prisma.Project$timerSessionsArgs<ExtArgs>
+  auditPilots?: boolean | Prisma.Project$auditPilotsArgs<ExtArgs>
   _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProjectIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2136,6 +2327,7 @@ export type $ProjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     tasks: Prisma.$ProjectTaskPayload<ExtArgs>[]
     timeEntries: Prisma.$ProjectTimeEntryPayload<ExtArgs>[]
     timerSessions: Prisma.$ProjectTimerSessionPayload<ExtArgs>[]
+    auditPilots: Prisma.$AuditPilotProposalPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2559,6 +2751,7 @@ export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends runtime.
   tasks<T extends Prisma.Project$tasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   timeEntries<T extends Prisma.Project$timeEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$timeEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectTimeEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   timerSessions<T extends Prisma.Project$timerSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$timerSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectTimerSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  auditPilots<T extends Prisma.Project$auditPilotsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$auditPilotsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditPilotProposalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3159,6 +3352,30 @@ export type Project$timerSessionsArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.ProjectTimerSessionScalarFieldEnum | Prisma.ProjectTimerSessionScalarFieldEnum[]
+}
+
+/**
+ * Project.auditPilots
+ */
+export type Project$auditPilotsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AuditPilotProposal
+   */
+  select?: Prisma.AuditPilotProposalSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AuditPilotProposal
+   */
+  omit?: Prisma.AuditPilotProposalOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AuditPilotProposalInclude<ExtArgs> | null
+  where?: Prisma.AuditPilotProposalWhereInput
+  orderBy?: Prisma.AuditPilotProposalOrderByWithRelationInput | Prisma.AuditPilotProposalOrderByWithRelationInput[]
+  cursor?: Prisma.AuditPilotProposalWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AuditPilotProposalScalarFieldEnum | Prisma.AuditPilotProposalScalarFieldEnum[]
 }
 
 /**

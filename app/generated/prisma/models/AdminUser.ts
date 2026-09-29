@@ -279,6 +279,7 @@ export type AdminUserWhereInput = {
   contractActivityLogs?: Prisma.ContractActivityLogListRelationFilter
   contractVersions?: Prisma.ContractVersionListRelationFilter
   companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsListRelationFilter
+  ownedOperationsAudits?: Prisma.OperationsAuditListRelationFilter
 }
 
 export type AdminUserOrderByWithRelationInput = {
@@ -301,6 +302,7 @@ export type AdminUserOrderByWithRelationInput = {
   contractActivityLogs?: Prisma.ContractActivityLogOrderByRelationAggregateInput
   contractVersions?: Prisma.ContractVersionOrderByRelationAggregateInput
   companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsOrderByRelationAggregateInput
+  ownedOperationsAudits?: Prisma.OperationsAuditOrderByRelationAggregateInput
 }
 
 export type AdminUserWhereUniqueInput = Prisma.AtLeast<{
@@ -326,6 +328,7 @@ export type AdminUserWhereUniqueInput = Prisma.AtLeast<{
   contractActivityLogs?: Prisma.ContractActivityLogListRelationFilter
   contractVersions?: Prisma.ContractVersionListRelationFilter
   companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsListRelationFilter
+  ownedOperationsAudits?: Prisma.OperationsAuditListRelationFilter
 }, "id" | "email" | "normalizedEmail">
 
 export type AdminUserOrderByWithAggregationInput = {
@@ -386,6 +389,7 @@ export type AdminUserCreateInput = {
   contractActivityLogs?: Prisma.ContractActivityLogCreateNestedManyWithoutAdminUserInput
   contractVersions?: Prisma.ContractVersionCreateNestedManyWithoutCreatedByInput
   companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsCreateNestedManyWithoutUpdatedByInput
+  ownedOperationsAudits?: Prisma.OperationsAuditCreateNestedManyWithoutOwnerInput
 }
 
 export type AdminUserUncheckedCreateInput = {
@@ -408,6 +412,7 @@ export type AdminUserUncheckedCreateInput = {
   contractActivityLogs?: Prisma.ContractActivityLogUncheckedCreateNestedManyWithoutAdminUserInput
   contractVersions?: Prisma.ContractVersionUncheckedCreateNestedManyWithoutCreatedByInput
   companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  ownedOperationsAudits?: Prisma.OperationsAuditUncheckedCreateNestedManyWithoutOwnerInput
 }
 
 export type AdminUserUpdateInput = {
@@ -430,6 +435,7 @@ export type AdminUserUpdateInput = {
   contractActivityLogs?: Prisma.ContractActivityLogUpdateManyWithoutAdminUserNestedInput
   contractVersions?: Prisma.ContractVersionUpdateManyWithoutCreatedByNestedInput
   companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsUpdateManyWithoutUpdatedByNestedInput
+  ownedOperationsAudits?: Prisma.OperationsAuditUpdateManyWithoutOwnerNestedInput
 }
 
 export type AdminUserUncheckedUpdateInput = {
@@ -452,6 +458,7 @@ export type AdminUserUncheckedUpdateInput = {
   contractActivityLogs?: Prisma.ContractActivityLogUncheckedUpdateManyWithoutAdminUserNestedInput
   contractVersions?: Prisma.ContractVersionUncheckedUpdateManyWithoutCreatedByNestedInput
   companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  ownedOperationsAudits?: Prisma.OperationsAuditUncheckedUpdateManyWithoutOwnerNestedInput
 }
 
 export type AdminUserCreateManyInput = {
@@ -552,18 +559,34 @@ export type AdminUserSumOrderByAggregateInput = {
   failedAttempts?: Prisma.SortOrder
 }
 
-export type AdminUserScalarRelationFilter = {
-  is?: Prisma.AdminUserWhereInput
-  isNot?: Prisma.AdminUserWhereInput
-}
-
 export type AdminUserNullableScalarRelationFilter = {
   is?: Prisma.AdminUserWhereInput | null
   isNot?: Prisma.AdminUserWhereInput | null
 }
 
+export type AdminUserScalarRelationFilter = {
+  is?: Prisma.AdminUserWhereInput
+  isNot?: Prisma.AdminUserWhereInput
+}
+
 export type EnumAdminRoleFieldUpdateOperationsInput = {
   set?: $Enums.AdminRole
+}
+
+export type AdminUserCreateNestedOneWithoutOwnedOperationsAuditsInput = {
+  create?: Prisma.XOR<Prisma.AdminUserCreateWithoutOwnedOperationsAuditsInput, Prisma.AdminUserUncheckedCreateWithoutOwnedOperationsAuditsInput>
+  connectOrCreate?: Prisma.AdminUserCreateOrConnectWithoutOwnedOperationsAuditsInput
+  connect?: Prisma.AdminUserWhereUniqueInput
+}
+
+export type AdminUserUpdateOneWithoutOwnedOperationsAuditsNestedInput = {
+  create?: Prisma.XOR<Prisma.AdminUserCreateWithoutOwnedOperationsAuditsInput, Prisma.AdminUserUncheckedCreateWithoutOwnedOperationsAuditsInput>
+  connectOrCreate?: Prisma.AdminUserCreateOrConnectWithoutOwnedOperationsAuditsInput
+  upsert?: Prisma.AdminUserUpsertWithoutOwnedOperationsAuditsInput
+  disconnect?: Prisma.AdminUserWhereInput | boolean
+  delete?: Prisma.AdminUserWhereInput | boolean
+  connect?: Prisma.AdminUserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AdminUserUpdateToOneWithWhereWithoutOwnedOperationsAuditsInput, Prisma.AdminUserUpdateWithoutOwnedOperationsAuditsInput>, Prisma.AdminUserUncheckedUpdateWithoutOwnedOperationsAuditsInput>
 }
 
 export type AdminUserCreateNestedOneWithoutSessionsInput = {
@@ -672,6 +695,110 @@ export type AdminUserUpdateOneWithoutContractActivityLogsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.AdminUserUpdateToOneWithWhereWithoutContractActivityLogsInput, Prisma.AdminUserUpdateWithoutContractActivityLogsInput>, Prisma.AdminUserUncheckedUpdateWithoutContractActivityLogsInput>
 }
 
+export type AdminUserCreateWithoutOwnedOperationsAuditsInput = {
+  id?: string
+  email: string
+  normalizedEmail: string
+  name?: string | null
+  passwordHash: string
+  role?: $Enums.AdminRole
+  isActive?: boolean
+  failedAttempts?: number
+  lockedUntil?: Date | string | null
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.AdminSessionCreateNestedManyWithoutAdminUserInput
+  authLogs?: Prisma.AdminAuthLogCreateNestedManyWithoutAdminUserInput
+  createdContracts?: Prisma.ContractCreateNestedManyWithoutCreatedByInput
+  assignedContracts?: Prisma.ContractCreateNestedManyWithoutAssignedToInput
+  contractActivityLogs?: Prisma.ContractActivityLogCreateNestedManyWithoutAdminUserInput
+  contractVersions?: Prisma.ContractVersionCreateNestedManyWithoutCreatedByInput
+  companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsCreateNestedManyWithoutUpdatedByInput
+}
+
+export type AdminUserUncheckedCreateWithoutOwnedOperationsAuditsInput = {
+  id?: string
+  email: string
+  normalizedEmail: string
+  name?: string | null
+  passwordHash: string
+  role?: $Enums.AdminRole
+  isActive?: boolean
+  failedAttempts?: number
+  lockedUntil?: Date | string | null
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.AdminSessionUncheckedCreateNestedManyWithoutAdminUserInput
+  authLogs?: Prisma.AdminAuthLogUncheckedCreateNestedManyWithoutAdminUserInput
+  createdContracts?: Prisma.ContractUncheckedCreateNestedManyWithoutCreatedByInput
+  assignedContracts?: Prisma.ContractUncheckedCreateNestedManyWithoutAssignedToInput
+  contractActivityLogs?: Prisma.ContractActivityLogUncheckedCreateNestedManyWithoutAdminUserInput
+  contractVersions?: Prisma.ContractVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+}
+
+export type AdminUserCreateOrConnectWithoutOwnedOperationsAuditsInput = {
+  where: Prisma.AdminUserWhereUniqueInput
+  create: Prisma.XOR<Prisma.AdminUserCreateWithoutOwnedOperationsAuditsInput, Prisma.AdminUserUncheckedCreateWithoutOwnedOperationsAuditsInput>
+}
+
+export type AdminUserUpsertWithoutOwnedOperationsAuditsInput = {
+  update: Prisma.XOR<Prisma.AdminUserUpdateWithoutOwnedOperationsAuditsInput, Prisma.AdminUserUncheckedUpdateWithoutOwnedOperationsAuditsInput>
+  create: Prisma.XOR<Prisma.AdminUserCreateWithoutOwnedOperationsAuditsInput, Prisma.AdminUserUncheckedCreateWithoutOwnedOperationsAuditsInput>
+  where?: Prisma.AdminUserWhereInput
+}
+
+export type AdminUserUpdateToOneWithWhereWithoutOwnedOperationsAuditsInput = {
+  where?: Prisma.AdminUserWhereInput
+  data: Prisma.XOR<Prisma.AdminUserUpdateWithoutOwnedOperationsAuditsInput, Prisma.AdminUserUncheckedUpdateWithoutOwnedOperationsAuditsInput>
+}
+
+export type AdminUserUpdateWithoutOwnedOperationsAuditsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedEmail?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumAdminRoleFieldUpdateOperationsInput | $Enums.AdminRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  failedAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.AdminSessionUpdateManyWithoutAdminUserNestedInput
+  authLogs?: Prisma.AdminAuthLogUpdateManyWithoutAdminUserNestedInput
+  createdContracts?: Prisma.ContractUpdateManyWithoutCreatedByNestedInput
+  assignedContracts?: Prisma.ContractUpdateManyWithoutAssignedToNestedInput
+  contractActivityLogs?: Prisma.ContractActivityLogUpdateManyWithoutAdminUserNestedInput
+  contractVersions?: Prisma.ContractVersionUpdateManyWithoutCreatedByNestedInput
+  companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type AdminUserUncheckedUpdateWithoutOwnedOperationsAuditsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedEmail?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumAdminRoleFieldUpdateOperationsInput | $Enums.AdminRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  failedAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.AdminSessionUncheckedUpdateManyWithoutAdminUserNestedInput
+  authLogs?: Prisma.AdminAuthLogUncheckedUpdateManyWithoutAdminUserNestedInput
+  createdContracts?: Prisma.ContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  assignedContracts?: Prisma.ContractUncheckedUpdateManyWithoutAssignedToNestedInput
+  contractActivityLogs?: Prisma.ContractActivityLogUncheckedUpdateManyWithoutAdminUserNestedInput
+  contractVersions?: Prisma.ContractVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+}
+
 export type AdminUserCreateWithoutSessionsInput = {
   id?: string
   email: string
@@ -691,6 +818,7 @@ export type AdminUserCreateWithoutSessionsInput = {
   contractActivityLogs?: Prisma.ContractActivityLogCreateNestedManyWithoutAdminUserInput
   contractVersions?: Prisma.ContractVersionCreateNestedManyWithoutCreatedByInput
   companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsCreateNestedManyWithoutUpdatedByInput
+  ownedOperationsAudits?: Prisma.OperationsAuditCreateNestedManyWithoutOwnerInput
 }
 
 export type AdminUserUncheckedCreateWithoutSessionsInput = {
@@ -712,6 +840,7 @@ export type AdminUserUncheckedCreateWithoutSessionsInput = {
   contractActivityLogs?: Prisma.ContractActivityLogUncheckedCreateNestedManyWithoutAdminUserInput
   contractVersions?: Prisma.ContractVersionUncheckedCreateNestedManyWithoutCreatedByInput
   companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  ownedOperationsAudits?: Prisma.OperationsAuditUncheckedCreateNestedManyWithoutOwnerInput
 }
 
 export type AdminUserCreateOrConnectWithoutSessionsInput = {
@@ -749,6 +878,7 @@ export type AdminUserUpdateWithoutSessionsInput = {
   contractActivityLogs?: Prisma.ContractActivityLogUpdateManyWithoutAdminUserNestedInput
   contractVersions?: Prisma.ContractVersionUpdateManyWithoutCreatedByNestedInput
   companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsUpdateManyWithoutUpdatedByNestedInput
+  ownedOperationsAudits?: Prisma.OperationsAuditUpdateManyWithoutOwnerNestedInput
 }
 
 export type AdminUserUncheckedUpdateWithoutSessionsInput = {
@@ -770,6 +900,7 @@ export type AdminUserUncheckedUpdateWithoutSessionsInput = {
   contractActivityLogs?: Prisma.ContractActivityLogUncheckedUpdateManyWithoutAdminUserNestedInput
   contractVersions?: Prisma.ContractVersionUncheckedUpdateManyWithoutCreatedByNestedInput
   companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  ownedOperationsAudits?: Prisma.OperationsAuditUncheckedUpdateManyWithoutOwnerNestedInput
 }
 
 export type AdminUserCreateWithoutAuthLogsInput = {
@@ -791,6 +922,7 @@ export type AdminUserCreateWithoutAuthLogsInput = {
   contractActivityLogs?: Prisma.ContractActivityLogCreateNestedManyWithoutAdminUserInput
   contractVersions?: Prisma.ContractVersionCreateNestedManyWithoutCreatedByInput
   companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsCreateNestedManyWithoutUpdatedByInput
+  ownedOperationsAudits?: Prisma.OperationsAuditCreateNestedManyWithoutOwnerInput
 }
 
 export type AdminUserUncheckedCreateWithoutAuthLogsInput = {
@@ -812,6 +944,7 @@ export type AdminUserUncheckedCreateWithoutAuthLogsInput = {
   contractActivityLogs?: Prisma.ContractActivityLogUncheckedCreateNestedManyWithoutAdminUserInput
   contractVersions?: Prisma.ContractVersionUncheckedCreateNestedManyWithoutCreatedByInput
   companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  ownedOperationsAudits?: Prisma.OperationsAuditUncheckedCreateNestedManyWithoutOwnerInput
 }
 
 export type AdminUserCreateOrConnectWithoutAuthLogsInput = {
@@ -849,6 +982,7 @@ export type AdminUserUpdateWithoutAuthLogsInput = {
   contractActivityLogs?: Prisma.ContractActivityLogUpdateManyWithoutAdminUserNestedInput
   contractVersions?: Prisma.ContractVersionUpdateManyWithoutCreatedByNestedInput
   companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsUpdateManyWithoutUpdatedByNestedInput
+  ownedOperationsAudits?: Prisma.OperationsAuditUpdateManyWithoutOwnerNestedInput
 }
 
 export type AdminUserUncheckedUpdateWithoutAuthLogsInput = {
@@ -870,6 +1004,7 @@ export type AdminUserUncheckedUpdateWithoutAuthLogsInput = {
   contractActivityLogs?: Prisma.ContractActivityLogUncheckedUpdateManyWithoutAdminUserNestedInput
   contractVersions?: Prisma.ContractVersionUncheckedUpdateManyWithoutCreatedByNestedInput
   companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  ownedOperationsAudits?: Prisma.OperationsAuditUncheckedUpdateManyWithoutOwnerNestedInput
 }
 
 export type AdminUserCreateWithoutCompanyLegalSettingsEditsInput = {
@@ -891,6 +1026,7 @@ export type AdminUserCreateWithoutCompanyLegalSettingsEditsInput = {
   assignedContracts?: Prisma.ContractCreateNestedManyWithoutAssignedToInput
   contractActivityLogs?: Prisma.ContractActivityLogCreateNestedManyWithoutAdminUserInput
   contractVersions?: Prisma.ContractVersionCreateNestedManyWithoutCreatedByInput
+  ownedOperationsAudits?: Prisma.OperationsAuditCreateNestedManyWithoutOwnerInput
 }
 
 export type AdminUserUncheckedCreateWithoutCompanyLegalSettingsEditsInput = {
@@ -912,6 +1048,7 @@ export type AdminUserUncheckedCreateWithoutCompanyLegalSettingsEditsInput = {
   assignedContracts?: Prisma.ContractUncheckedCreateNestedManyWithoutAssignedToInput
   contractActivityLogs?: Prisma.ContractActivityLogUncheckedCreateNestedManyWithoutAdminUserInput
   contractVersions?: Prisma.ContractVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  ownedOperationsAudits?: Prisma.OperationsAuditUncheckedCreateNestedManyWithoutOwnerInput
 }
 
 export type AdminUserCreateOrConnectWithoutCompanyLegalSettingsEditsInput = {
@@ -949,6 +1086,7 @@ export type AdminUserUpdateWithoutCompanyLegalSettingsEditsInput = {
   assignedContracts?: Prisma.ContractUpdateManyWithoutAssignedToNestedInput
   contractActivityLogs?: Prisma.ContractActivityLogUpdateManyWithoutAdminUserNestedInput
   contractVersions?: Prisma.ContractVersionUpdateManyWithoutCreatedByNestedInput
+  ownedOperationsAudits?: Prisma.OperationsAuditUpdateManyWithoutOwnerNestedInput
 }
 
 export type AdminUserUncheckedUpdateWithoutCompanyLegalSettingsEditsInput = {
@@ -970,6 +1108,7 @@ export type AdminUserUncheckedUpdateWithoutCompanyLegalSettingsEditsInput = {
   assignedContracts?: Prisma.ContractUncheckedUpdateManyWithoutAssignedToNestedInput
   contractActivityLogs?: Prisma.ContractActivityLogUncheckedUpdateManyWithoutAdminUserNestedInput
   contractVersions?: Prisma.ContractVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  ownedOperationsAudits?: Prisma.OperationsAuditUncheckedUpdateManyWithoutOwnerNestedInput
 }
 
 export type AdminUserCreateWithoutCreatedContractsInput = {
@@ -991,6 +1130,7 @@ export type AdminUserCreateWithoutCreatedContractsInput = {
   contractActivityLogs?: Prisma.ContractActivityLogCreateNestedManyWithoutAdminUserInput
   contractVersions?: Prisma.ContractVersionCreateNestedManyWithoutCreatedByInput
   companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsCreateNestedManyWithoutUpdatedByInput
+  ownedOperationsAudits?: Prisma.OperationsAuditCreateNestedManyWithoutOwnerInput
 }
 
 export type AdminUserUncheckedCreateWithoutCreatedContractsInput = {
@@ -1012,6 +1152,7 @@ export type AdminUserUncheckedCreateWithoutCreatedContractsInput = {
   contractActivityLogs?: Prisma.ContractActivityLogUncheckedCreateNestedManyWithoutAdminUserInput
   contractVersions?: Prisma.ContractVersionUncheckedCreateNestedManyWithoutCreatedByInput
   companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  ownedOperationsAudits?: Prisma.OperationsAuditUncheckedCreateNestedManyWithoutOwnerInput
 }
 
 export type AdminUserCreateOrConnectWithoutCreatedContractsInput = {
@@ -1038,6 +1179,7 @@ export type AdminUserCreateWithoutAssignedContractsInput = {
   contractActivityLogs?: Prisma.ContractActivityLogCreateNestedManyWithoutAdminUserInput
   contractVersions?: Prisma.ContractVersionCreateNestedManyWithoutCreatedByInput
   companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsCreateNestedManyWithoutUpdatedByInput
+  ownedOperationsAudits?: Prisma.OperationsAuditCreateNestedManyWithoutOwnerInput
 }
 
 export type AdminUserUncheckedCreateWithoutAssignedContractsInput = {
@@ -1059,6 +1201,7 @@ export type AdminUserUncheckedCreateWithoutAssignedContractsInput = {
   contractActivityLogs?: Prisma.ContractActivityLogUncheckedCreateNestedManyWithoutAdminUserInput
   contractVersions?: Prisma.ContractVersionUncheckedCreateNestedManyWithoutCreatedByInput
   companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  ownedOperationsAudits?: Prisma.OperationsAuditUncheckedCreateNestedManyWithoutOwnerInput
 }
 
 export type AdminUserCreateOrConnectWithoutAssignedContractsInput = {
@@ -1096,6 +1239,7 @@ export type AdminUserUpdateWithoutCreatedContractsInput = {
   contractActivityLogs?: Prisma.ContractActivityLogUpdateManyWithoutAdminUserNestedInput
   contractVersions?: Prisma.ContractVersionUpdateManyWithoutCreatedByNestedInput
   companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsUpdateManyWithoutUpdatedByNestedInput
+  ownedOperationsAudits?: Prisma.OperationsAuditUpdateManyWithoutOwnerNestedInput
 }
 
 export type AdminUserUncheckedUpdateWithoutCreatedContractsInput = {
@@ -1117,6 +1261,7 @@ export type AdminUserUncheckedUpdateWithoutCreatedContractsInput = {
   contractActivityLogs?: Prisma.ContractActivityLogUncheckedUpdateManyWithoutAdminUserNestedInput
   contractVersions?: Prisma.ContractVersionUncheckedUpdateManyWithoutCreatedByNestedInput
   companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  ownedOperationsAudits?: Prisma.OperationsAuditUncheckedUpdateManyWithoutOwnerNestedInput
 }
 
 export type AdminUserUpsertWithoutAssignedContractsInput = {
@@ -1149,6 +1294,7 @@ export type AdminUserUpdateWithoutAssignedContractsInput = {
   contractActivityLogs?: Prisma.ContractActivityLogUpdateManyWithoutAdminUserNestedInput
   contractVersions?: Prisma.ContractVersionUpdateManyWithoutCreatedByNestedInput
   companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsUpdateManyWithoutUpdatedByNestedInput
+  ownedOperationsAudits?: Prisma.OperationsAuditUpdateManyWithoutOwnerNestedInput
 }
 
 export type AdminUserUncheckedUpdateWithoutAssignedContractsInput = {
@@ -1170,6 +1316,7 @@ export type AdminUserUncheckedUpdateWithoutAssignedContractsInput = {
   contractActivityLogs?: Prisma.ContractActivityLogUncheckedUpdateManyWithoutAdminUserNestedInput
   contractVersions?: Prisma.ContractVersionUncheckedUpdateManyWithoutCreatedByNestedInput
   companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  ownedOperationsAudits?: Prisma.OperationsAuditUncheckedUpdateManyWithoutOwnerNestedInput
 }
 
 export type AdminUserCreateWithoutContractVersionsInput = {
@@ -1191,6 +1338,7 @@ export type AdminUserCreateWithoutContractVersionsInput = {
   assignedContracts?: Prisma.ContractCreateNestedManyWithoutAssignedToInput
   contractActivityLogs?: Prisma.ContractActivityLogCreateNestedManyWithoutAdminUserInput
   companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsCreateNestedManyWithoutUpdatedByInput
+  ownedOperationsAudits?: Prisma.OperationsAuditCreateNestedManyWithoutOwnerInput
 }
 
 export type AdminUserUncheckedCreateWithoutContractVersionsInput = {
@@ -1212,6 +1360,7 @@ export type AdminUserUncheckedCreateWithoutContractVersionsInput = {
   assignedContracts?: Prisma.ContractUncheckedCreateNestedManyWithoutAssignedToInput
   contractActivityLogs?: Prisma.ContractActivityLogUncheckedCreateNestedManyWithoutAdminUserInput
   companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  ownedOperationsAudits?: Prisma.OperationsAuditUncheckedCreateNestedManyWithoutOwnerInput
 }
 
 export type AdminUserCreateOrConnectWithoutContractVersionsInput = {
@@ -1249,6 +1398,7 @@ export type AdminUserUpdateWithoutContractVersionsInput = {
   assignedContracts?: Prisma.ContractUpdateManyWithoutAssignedToNestedInput
   contractActivityLogs?: Prisma.ContractActivityLogUpdateManyWithoutAdminUserNestedInput
   companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsUpdateManyWithoutUpdatedByNestedInput
+  ownedOperationsAudits?: Prisma.OperationsAuditUpdateManyWithoutOwnerNestedInput
 }
 
 export type AdminUserUncheckedUpdateWithoutContractVersionsInput = {
@@ -1270,6 +1420,7 @@ export type AdminUserUncheckedUpdateWithoutContractVersionsInput = {
   assignedContracts?: Prisma.ContractUncheckedUpdateManyWithoutAssignedToNestedInput
   contractActivityLogs?: Prisma.ContractActivityLogUncheckedUpdateManyWithoutAdminUserNestedInput
   companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  ownedOperationsAudits?: Prisma.OperationsAuditUncheckedUpdateManyWithoutOwnerNestedInput
 }
 
 export type AdminUserCreateWithoutContractActivityLogsInput = {
@@ -1291,6 +1442,7 @@ export type AdminUserCreateWithoutContractActivityLogsInput = {
   assignedContracts?: Prisma.ContractCreateNestedManyWithoutAssignedToInput
   contractVersions?: Prisma.ContractVersionCreateNestedManyWithoutCreatedByInput
   companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsCreateNestedManyWithoutUpdatedByInput
+  ownedOperationsAudits?: Prisma.OperationsAuditCreateNestedManyWithoutOwnerInput
 }
 
 export type AdminUserUncheckedCreateWithoutContractActivityLogsInput = {
@@ -1312,6 +1464,7 @@ export type AdminUserUncheckedCreateWithoutContractActivityLogsInput = {
   assignedContracts?: Prisma.ContractUncheckedCreateNestedManyWithoutAssignedToInput
   contractVersions?: Prisma.ContractVersionUncheckedCreateNestedManyWithoutCreatedByInput
   companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  ownedOperationsAudits?: Prisma.OperationsAuditUncheckedCreateNestedManyWithoutOwnerInput
 }
 
 export type AdminUserCreateOrConnectWithoutContractActivityLogsInput = {
@@ -1349,6 +1502,7 @@ export type AdminUserUpdateWithoutContractActivityLogsInput = {
   assignedContracts?: Prisma.ContractUpdateManyWithoutAssignedToNestedInput
   contractVersions?: Prisma.ContractVersionUpdateManyWithoutCreatedByNestedInput
   companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsUpdateManyWithoutUpdatedByNestedInput
+  ownedOperationsAudits?: Prisma.OperationsAuditUpdateManyWithoutOwnerNestedInput
 }
 
 export type AdminUserUncheckedUpdateWithoutContractActivityLogsInput = {
@@ -1370,6 +1524,7 @@ export type AdminUserUncheckedUpdateWithoutContractActivityLogsInput = {
   assignedContracts?: Prisma.ContractUncheckedUpdateManyWithoutAssignedToNestedInput
   contractVersions?: Prisma.ContractVersionUncheckedUpdateManyWithoutCreatedByNestedInput
   companyLegalSettingsEdits?: Prisma.CompanyLegalSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  ownedOperationsAudits?: Prisma.OperationsAuditUncheckedUpdateManyWithoutOwnerNestedInput
 }
 
 
@@ -1385,6 +1540,7 @@ export type AdminUserCountOutputType = {
   contractActivityLogs: number
   contractVersions: number
   companyLegalSettingsEdits: number
+  ownedOperationsAudits: number
 }
 
 export type AdminUserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1395,6 +1551,7 @@ export type AdminUserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensi
   contractActivityLogs?: boolean | AdminUserCountOutputTypeCountContractActivityLogsArgs
   contractVersions?: boolean | AdminUserCountOutputTypeCountContractVersionsArgs
   companyLegalSettingsEdits?: boolean | AdminUserCountOutputTypeCountCompanyLegalSettingsEditsArgs
+  ownedOperationsAudits?: boolean | AdminUserCountOutputTypeCountOwnedOperationsAuditsArgs
 }
 
 /**
@@ -1456,6 +1613,13 @@ export type AdminUserCountOutputTypeCountCompanyLegalSettingsEditsArgs<ExtArgs e
   where?: Prisma.CompanyLegalSettingsWhereInput
 }
 
+/**
+ * AdminUserCountOutputType without action
+ */
+export type AdminUserCountOutputTypeCountOwnedOperationsAuditsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.OperationsAuditWhereInput
+}
+
 
 export type AdminUserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1477,6 +1641,7 @@ export type AdminUserSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   contractActivityLogs?: boolean | Prisma.AdminUser$contractActivityLogsArgs<ExtArgs>
   contractVersions?: boolean | Prisma.AdminUser$contractVersionsArgs<ExtArgs>
   companyLegalSettingsEdits?: boolean | Prisma.AdminUser$companyLegalSettingsEditsArgs<ExtArgs>
+  ownedOperationsAudits?: boolean | Prisma.AdminUser$ownedOperationsAuditsArgs<ExtArgs>
   _count?: boolean | Prisma.AdminUserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["adminUser"]>
 
@@ -1534,6 +1699,7 @@ export type AdminUserInclude<ExtArgs extends runtime.Types.Extensions.InternalAr
   contractActivityLogs?: boolean | Prisma.AdminUser$contractActivityLogsArgs<ExtArgs>
   contractVersions?: boolean | Prisma.AdminUser$contractVersionsArgs<ExtArgs>
   companyLegalSettingsEdits?: boolean | Prisma.AdminUser$companyLegalSettingsEditsArgs<ExtArgs>
+  ownedOperationsAudits?: boolean | Prisma.AdminUser$ownedOperationsAuditsArgs<ExtArgs>
   _count?: boolean | Prisma.AdminUserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AdminUserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1549,6 +1715,7 @@ export type $AdminUserPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     contractActivityLogs: Prisma.$ContractActivityLogPayload<ExtArgs>[]
     contractVersions: Prisma.$ContractVersionPayload<ExtArgs>[]
     companyLegalSettingsEdits: Prisma.$CompanyLegalSettingsPayload<ExtArgs>[]
+    ownedOperationsAudits: Prisma.$OperationsAuditPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1964,6 +2131,7 @@ export interface Prisma__AdminUserClient<T, Null = never, ExtArgs extends runtim
   contractActivityLogs<T extends Prisma.AdminUser$contractActivityLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$contractActivityLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContractActivityLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   contractVersions<T extends Prisma.AdminUser$contractVersionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$contractVersionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContractVersionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   companyLegalSettingsEdits<T extends Prisma.AdminUser$companyLegalSettingsEditsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$companyLegalSettingsEditsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CompanyLegalSettingsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  ownedOperationsAudits<T extends Prisma.AdminUser$ownedOperationsAuditsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$ownedOperationsAuditsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OperationsAuditPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2563,6 +2731,30 @@ export type AdminUser$companyLegalSettingsEditsArgs<ExtArgs extends runtime.Type
   take?: number
   skip?: number
   distinct?: Prisma.CompanyLegalSettingsScalarFieldEnum | Prisma.CompanyLegalSettingsScalarFieldEnum[]
+}
+
+/**
+ * AdminUser.ownedOperationsAudits
+ */
+export type AdminUser$ownedOperationsAuditsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the OperationsAudit
+   */
+  select?: Prisma.OperationsAuditSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the OperationsAudit
+   */
+  omit?: Prisma.OperationsAuditOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.OperationsAuditInclude<ExtArgs> | null
+  where?: Prisma.OperationsAuditWhereInput
+  orderBy?: Prisma.OperationsAuditOrderByWithRelationInput | Prisma.OperationsAuditOrderByWithRelationInput[]
+  cursor?: Prisma.OperationsAuditWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.OperationsAuditScalarFieldEnum | Prisma.OperationsAuditScalarFieldEnum[]
 }
 
 /**

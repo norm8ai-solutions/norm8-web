@@ -75,6 +75,23 @@ export const ModelName = {
   MeetingBooking: 'MeetingBooking',
   AuditAnalysis: 'AuditAnalysis',
   AdminUser: 'AdminUser',
+  OperationsAudit: 'OperationsAudit',
+  AuditStakeholder: 'AuditStakeholder',
+  OperationsProcess: 'OperationsProcess',
+  OperationsTask: 'OperationsTask',
+  ProcessStakeholder: 'ProcessStakeholder',
+  AuditSystem: 'AuditSystem',
+  ProcessSystem: 'ProcessSystem',
+  TaskSystem: 'TaskSystem',
+  AuditDataSource: 'AuditDataSource',
+  ProcessDataSource: 'ProcessDataSource',
+  AuditBottleneck: 'AuditBottleneck',
+  AuditBaselineMetric: 'AuditBaselineMetric',
+  AuditScoringModel: 'AuditScoringModel',
+  AutomationOpportunity: 'AutomationOpportunity',
+  OpportunityBottleneck: 'OpportunityBottleneck',
+  OpportunityBaselineMetric: 'OpportunityBaselineMetric',
+  AuditPilotProposal: 'AuditPilotProposal',
   AdminSession: 'AdminSession',
   AdminAuthLog: 'AdminAuthLog',
   CompanyLegalSettings: 'CompanyLegalSettings',
@@ -580,6 +597,299 @@ export const AdminUserScalarFieldEnum = {
 } as const
 
 export type AdminUserScalarFieldEnum = (typeof AdminUserScalarFieldEnum)[keyof typeof AdminUserScalarFieldEnum]
+
+
+export const OperationsAuditScalarFieldEnum = {
+  id: 'id',
+  leadId: 'leadId',
+  ownerId: 'ownerId',
+  name: 'name',
+  status: 'status',
+  auditType: 'auditType',
+  scope: 'scope',
+  objectives: 'objectives',
+  notes: 'notes',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OperationsAuditScalarFieldEnum = (typeof OperationsAuditScalarFieldEnum)[keyof typeof OperationsAuditScalarFieldEnum]
+
+
+export const AuditStakeholderScalarFieldEnum = {
+  id: 'id',
+  auditId: 'auditId',
+  name: 'name',
+  role: 'role',
+  department: 'department',
+  seniority: 'seniority',
+  responsibilities: 'responsibilities',
+  interviewStatus: 'interviewStatus',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AuditStakeholderScalarFieldEnum = (typeof AuditStakeholderScalarFieldEnum)[keyof typeof AuditStakeholderScalarFieldEnum]
+
+
+export const OperationsProcessScalarFieldEnum = {
+  id: 'id',
+  auditId: 'auditId',
+  ownerStakeholderId: 'ownerStakeholderId',
+  name: 'name',
+  department: 'department',
+  description: 'description',
+  trigger: 'trigger',
+  endState: 'endState',
+  frequency: 'frequency',
+  volume: 'volume',
+  volumePeriod: 'volumePeriod',
+  owner: 'owner',
+  participants: 'participants',
+  currentCycleTimeMinutes: 'currentCycleTimeMinutes',
+  humanHoursPerPeriod: 'humanHoursPerPeriod',
+  costPerPeriodCents: 'costPerPeriodCents',
+  costPeriod: 'costPeriod',
+  businessImportance: 'businessImportance',
+  deadlineSensitivity: 'deadlineSensitivity',
+  status: 'status',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OperationsProcessScalarFieldEnum = (typeof OperationsProcessScalarFieldEnum)[keyof typeof OperationsProcessScalarFieldEnum]
+
+
+export const OperationsTaskScalarFieldEnum = {
+  id: 'id',
+  processId: 'processId',
+  stakeholderId: 'stakeholderId',
+  sequence: 'sequence',
+  name: 'name',
+  description: 'description',
+  actor: 'actor',
+  executionMode: 'executionMode',
+  averageTimeMinutes: 'averageTimeMinutes',
+  frequency: 'frequency',
+  input: 'input',
+  output: 'output',
+  decisionRequired: 'decisionRequired',
+  exceptionFrequency: 'exceptionFrequency',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OperationsTaskScalarFieldEnum = (typeof OperationsTaskScalarFieldEnum)[keyof typeof OperationsTaskScalarFieldEnum]
+
+
+export const ProcessStakeholderScalarFieldEnum = {
+  processId: 'processId',
+  stakeholderId: 'stakeholderId'
+} as const
+
+export type ProcessStakeholderScalarFieldEnum = (typeof ProcessStakeholderScalarFieldEnum)[keyof typeof ProcessStakeholderScalarFieldEnum]
+
+
+export const AuditSystemScalarFieldEnum = {
+  id: 'id',
+  auditId: 'auditId',
+  name: 'name',
+  category: 'category',
+  vendor: 'vendor',
+  purpose: 'purpose',
+  apiAvailable: 'apiAvailable',
+  exportAvailable: 'exportAvailable',
+  integrationDifficulty: 'integrationDifficulty',
+  dataOwner: 'dataOwner',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AuditSystemScalarFieldEnum = (typeof AuditSystemScalarFieldEnum)[keyof typeof AuditSystemScalarFieldEnum]
+
+
+export const ProcessSystemScalarFieldEnum = {
+  processId: 'processId',
+  systemId: 'systemId'
+} as const
+
+export type ProcessSystemScalarFieldEnum = (typeof ProcessSystemScalarFieldEnum)[keyof typeof ProcessSystemScalarFieldEnum]
+
+
+export const TaskSystemScalarFieldEnum = {
+  taskId: 'taskId',
+  systemId: 'systemId'
+} as const
+
+export type TaskSystemScalarFieldEnum = (typeof TaskSystemScalarFieldEnum)[keyof typeof TaskSystemScalarFieldEnum]
+
+
+export const AuditDataSourceScalarFieldEnum = {
+  id: 'id',
+  auditId: 'auditId',
+  systemId: 'systemId',
+  name: 'name',
+  type: 'type',
+  description: 'description',
+  structure: 'structure',
+  accessibility: 'accessibility',
+  quality: 'quality',
+  sensitivity: 'sensitivity',
+  updateFrequency: 'updateFrequency',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AuditDataSourceScalarFieldEnum = (typeof AuditDataSourceScalarFieldEnum)[keyof typeof AuditDataSourceScalarFieldEnum]
+
+
+export const ProcessDataSourceScalarFieldEnum = {
+  processId: 'processId',
+  dataSourceId: 'dataSourceId'
+} as const
+
+export type ProcessDataSourceScalarFieldEnum = (typeof ProcessDataSourceScalarFieldEnum)[keyof typeof ProcessDataSourceScalarFieldEnum]
+
+
+export const AuditBottleneckScalarFieldEnum = {
+  id: 'id',
+  processId: 'processId',
+  taskId: 'taskId',
+  description: 'description',
+  category: 'category',
+  timeImpact: 'timeImpact',
+  costImpactCents: 'costImpactCents',
+  errorImpact: 'errorImpact',
+  revenueImpact: 'revenueImpact',
+  customerImpact: 'customerImpact',
+  evidence: 'evidence',
+  evidenceQuality: 'evidenceQuality',
+  source: 'source',
+  evidenceReference: 'evidenceReference',
+  capturedAt: 'capturedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AuditBottleneckScalarFieldEnum = (typeof AuditBottleneckScalarFieldEnum)[keyof typeof AuditBottleneckScalarFieldEnum]
+
+
+export const AuditBaselineMetricScalarFieldEnum = {
+  id: 'id',
+  processId: 'processId',
+  metricKey: 'metricKey',
+  label: 'label',
+  numericValue: 'numericValue',
+  textValue: 'textValue',
+  unit: 'unit',
+  period: 'period',
+  evidenceQuality: 'evidenceQuality',
+  source: 'source',
+  evidence: 'evidence',
+  evidenceReference: 'evidenceReference',
+  notes: 'notes',
+  observedAt: 'observedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AuditBaselineMetricScalarFieldEnum = (typeof AuditBaselineMetricScalarFieldEnum)[keyof typeof AuditBaselineMetricScalarFieldEnum]
+
+
+export const AuditScoringModelScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  version: 'version',
+  name: 'name',
+  description: 'description',
+  config: 'config',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AuditScoringModelScalarFieldEnum = (typeof AuditScoringModelScalarFieldEnum)[keyof typeof AuditScoringModelScalarFieldEnum]
+
+
+export const AutomationOpportunityScalarFieldEnum = {
+  id: 'id',
+  auditId: 'auditId',
+  processId: 'processId',
+  scoringModelId: 'scoringModelId',
+  title: 'title',
+  problem: 'problem',
+  currentState: 'currentState',
+  proposedOutcome: 'proposedOutcome',
+  automationConcept: 'automationConcept',
+  expectedFutureState: 'expectedFutureState',
+  expectedTimeSavingHoursPerPeriod: 'expectedTimeSavingHoursPerPeriod',
+  expectedCostSavingCentsPerPeriod: 'expectedCostSavingCentsPerPeriod',
+  savingPeriod: 'savingPeriod',
+  implementationComplexity: 'implementationComplexity',
+  businessValueScore: 'businessValueScore',
+  feasibilityScore: 'feasibilityScore',
+  marketPotentialScore: 'marketPotentialScore',
+  opportunityScore: 'opportunityScore',
+  confidenceScore: 'confidenceScore',
+  evidenceConfidence: 'evidenceConfidence',
+  strategicFit: 'strategicFit',
+  risk: 'risk',
+  whyThisMatters: 'whyThisMatters',
+  recommendation: 'recommendation',
+  status: 'status',
+  assessment: 'assessment',
+  scoreSnapshot: 'scoreSnapshot',
+  scoredAt: 'scoredAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AutomationOpportunityScalarFieldEnum = (typeof AutomationOpportunityScalarFieldEnum)[keyof typeof AutomationOpportunityScalarFieldEnum]
+
+
+export const OpportunityBottleneckScalarFieldEnum = {
+  opportunityId: 'opportunityId',
+  bottleneckId: 'bottleneckId',
+  createdAt: 'createdAt'
+} as const
+
+export type OpportunityBottleneckScalarFieldEnum = (typeof OpportunityBottleneckScalarFieldEnum)[keyof typeof OpportunityBottleneckScalarFieldEnum]
+
+
+export const OpportunityBaselineMetricScalarFieldEnum = {
+  opportunityId: 'opportunityId',
+  baselineId: 'baselineId',
+  createdAt: 'createdAt'
+} as const
+
+export type OpportunityBaselineMetricScalarFieldEnum = (typeof OpportunityBaselineMetricScalarFieldEnum)[keyof typeof OpportunityBaselineMetricScalarFieldEnum]
+
+
+export const AuditPilotProposalScalarFieldEnum = {
+  id: 'id',
+  opportunityId: 'opportunityId',
+  projectId: 'projectId',
+  problem: 'problem',
+  scope: 'scope',
+  workflow: 'workflow',
+  baselineSummary: 'baselineSummary',
+  targetBusinessOutcome: 'targetBusinessOutcome',
+  expectedRoi: 'expectedRoi',
+  implementationEstimate: 'implementationEstimate',
+  recurringModel: 'recurringModel',
+  successMetrics: 'successMetrics',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AuditPilotProposalScalarFieldEnum = (typeof AuditPilotProposalScalarFieldEnum)[keyof typeof AuditPilotProposalScalarFieldEnum]
 
 
 export const AdminSessionScalarFieldEnum = {

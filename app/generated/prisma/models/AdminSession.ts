@@ -14,7 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model AdminSession
- * Server-side admin session. The browser only receives the raw token in an httpOnly cookie.
+ * 
  */
 export type AdminSessionModel = runtime.Types.Result.DefaultSelection<Prisma.$AdminSessionPayload>
 

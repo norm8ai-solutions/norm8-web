@@ -9,6 +9,155 @@
 * 🟢 You can import this file directly.
 */
 
+export const OperationsAuditStatus = {
+  DRAFT: 'DRAFT',
+  PLANNED: 'PLANNED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  ANALYSIS: 'ANALYSIS',
+  COMPLETED: 'COMPLETED',
+  ARCHIVED: 'ARCHIVED'
+} as const
+
+export type OperationsAuditStatus = (typeof OperationsAuditStatus)[keyof typeof OperationsAuditStatus]
+
+
+export const StakeholderInterviewStatus = {
+  NOT_PLANNED: 'NOT_PLANNED',
+  PLANNED: 'PLANNED',
+  INTERVIEWED: 'INTERVIEWED',
+  FOLLOW_UP: 'FOLLOW_UP'
+} as const
+
+export type StakeholderInterviewStatus = (typeof StakeholderInterviewStatus)[keyof typeof StakeholderInterviewStatus]
+
+
+export const ProcessMappingStatus = {
+  CAPTURED: 'CAPTURED',
+  MAPPED: 'MAPPED',
+  VALIDATED: 'VALIDATED'
+} as const
+
+export type ProcessMappingStatus = (typeof ProcessMappingStatus)[keyof typeof ProcessMappingStatus]
+
+
+export const TaskExecutionMode = {
+  MANUAL: 'MANUAL',
+  AUTOMATED: 'AUTOMATED',
+  HYBRID: 'HYBRID'
+} as const
+
+export type TaskExecutionMode = (typeof TaskExecutionMode)[keyof typeof TaskExecutionMode]
+
+
+export const EvidenceAnswer = {
+  YES: 'YES',
+  NO: 'NO',
+  UNKNOWN: 'UNKNOWN'
+} as const
+
+export type EvidenceAnswer = (typeof EvidenceAnswer)[keyof typeof EvidenceAnswer]
+
+
+export const IntegrationDifficulty = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+  UNKNOWN: 'UNKNOWN'
+} as const
+
+export type IntegrationDifficulty = (typeof IntegrationDifficulty)[keyof typeof IntegrationDifficulty]
+
+
+export const DataStructureType = {
+  STRUCTURED: 'STRUCTURED',
+  SEMI_STRUCTURED: 'SEMI_STRUCTURED',
+  UNSTRUCTURED: 'UNSTRUCTURED',
+  UNKNOWN: 'UNKNOWN'
+} as const
+
+export type DataStructureType = (typeof DataStructureType)[keyof typeof DataStructureType]
+
+
+export const DataSensitivity = {
+  CLIENT_PRIVATE: 'CLIENT_PRIVATE',
+  CLIENT_DERIVED: 'CLIENT_DERIVED',
+  AGGREGATED: 'AGGREGATED',
+  NORM8_KNOWLEDGE: 'NORM8_KNOWLEDGE',
+  UNKNOWN: 'UNKNOWN'
+} as const
+
+export type DataSensitivity = (typeof DataSensitivity)[keyof typeof DataSensitivity]
+
+
+export const EvidenceQuality = {
+  MEASURED: 'MEASURED',
+  ESTIMATED: 'ESTIMATED',
+  UNKNOWN: 'UNKNOWN'
+} as const
+
+export type EvidenceQuality = (typeof EvidenceQuality)[keyof typeof EvidenceQuality]
+
+
+export const EvidenceConfidence = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH'
+} as const
+
+export type EvidenceConfidence = (typeof EvidenceConfidence)[keyof typeof EvidenceConfidence]
+
+
+export const StrategicFit = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH'
+} as const
+
+export type StrategicFit = (typeof StrategicFit)[keyof typeof StrategicFit]
+
+
+export const BottleneckCategory = {
+  MANUAL_WORK: 'MANUAL_WORK',
+  WAITING: 'WAITING',
+  DUPLICATE_ENTRY: 'DUPLICATE_ENTRY',
+  MISSING_INFORMATION: 'MISSING_INFORMATION',
+  POOR_INTEGRATION: 'POOR_INTEGRATION',
+  ERRORS: 'ERRORS',
+  COMMUNICATION: 'COMMUNICATION',
+  APPROVAL: 'APPROVAL',
+  SEARCH_RETRIEVAL: 'SEARCH_RETRIEVAL',
+  RECONCILIATION: 'RECONCILIATION',
+  DATA_QUALITY: 'DATA_QUALITY',
+  OTHER: 'OTHER'
+} as const
+
+export type BottleneckCategory = (typeof BottleneckCategory)[keyof typeof BottleneckCategory]
+
+
+export const AutomationOpportunityStatus = {
+  DISCOVERED: 'DISCOVERED',
+  VALIDATING: 'VALIDATING',
+  RECOMMENDED: 'RECOMMENDED',
+  PILOT_PROPOSED: 'PILOT_PROPOSED',
+  PILOT_ACCEPTED: 'PILOT_ACCEPTED',
+  IMPLEMENTED: 'IMPLEMENTED',
+  REJECTED: 'REJECTED'
+} as const
+
+export type AutomationOpportunityStatus = (typeof AutomationOpportunityStatus)[keyof typeof AutomationOpportunityStatus]
+
+
+export const PilotProposalStatus = {
+  DRAFT: 'DRAFT',
+  PROPOSED: 'PROPOSED',
+  ACCEPTED: 'ACCEPTED',
+  REJECTED: 'REJECTED',
+  CONVERTED_TO_PROJECT: 'CONVERTED_TO_PROJECT'
+} as const
+
+export type PilotProposalStatus = (typeof PilotProposalStatus)[keyof typeof PilotProposalStatus]
+
+
 export const SubmissionType = {
   AUDIT_REQUEST: 'AUDIT_REQUEST',
   CUSTOM_AUTOMATION_REQUEST: 'CUSTOM_AUTOMATION_REQUEST',
