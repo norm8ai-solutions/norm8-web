@@ -71,6 +71,11 @@ export type AutomationOpportunityMinAggregateOutputType = {
   risk: string | null
   whyThisMatters: string | null
   recommendation: string | null
+  decision: $Enums.OpportunityDecision | null
+  decisionRationale: string | null
+  decisionOwner: string | null
+  decidedAt: Date | null
+  nextStep: string | null
   status: $Enums.AutomationOpportunityStatus | null
   scoredAt: Date | null
   createdAt: Date | null
@@ -102,6 +107,11 @@ export type AutomationOpportunityMaxAggregateOutputType = {
   risk: string | null
   whyThisMatters: string | null
   recommendation: string | null
+  decision: $Enums.OpportunityDecision | null
+  decisionRationale: string | null
+  decisionOwner: string | null
+  decidedAt: Date | null
+  nextStep: string | null
   status: $Enums.AutomationOpportunityStatus | null
   scoredAt: Date | null
   createdAt: Date | null
@@ -133,6 +143,11 @@ export type AutomationOpportunityCountAggregateOutputType = {
   risk: number
   whyThisMatters: number
   recommendation: number
+  decision: number
+  decisionRationale: number
+  decisionOwner: number
+  decidedAt: number
+  nextStep: number
   status: number
   assessment: number
   scoreSnapshot: number
@@ -188,6 +203,11 @@ export type AutomationOpportunityMinAggregateInputType = {
   risk?: true
   whyThisMatters?: true
   recommendation?: true
+  decision?: true
+  decisionRationale?: true
+  decisionOwner?: true
+  decidedAt?: true
+  nextStep?: true
   status?: true
   scoredAt?: true
   createdAt?: true
@@ -219,6 +239,11 @@ export type AutomationOpportunityMaxAggregateInputType = {
   risk?: true
   whyThisMatters?: true
   recommendation?: true
+  decision?: true
+  decisionRationale?: true
+  decisionOwner?: true
+  decidedAt?: true
+  nextStep?: true
   status?: true
   scoredAt?: true
   createdAt?: true
@@ -250,6 +275,11 @@ export type AutomationOpportunityCountAggregateInputType = {
   risk?: true
   whyThisMatters?: true
   recommendation?: true
+  decision?: true
+  decisionRationale?: true
+  decisionOwner?: true
+  decidedAt?: true
+  nextStep?: true
   status?: true
   assessment?: true
   scoreSnapshot?: true
@@ -370,6 +400,11 @@ export type AutomationOpportunityGroupByOutputType = {
   risk: string | null
   whyThisMatters: string | null
   recommendation: string | null
+  decision: $Enums.OpportunityDecision
+  decisionRationale: string | null
+  decisionOwner: string | null
+  decidedAt: Date | null
+  nextStep: string | null
   status: $Enums.AutomationOpportunityStatus
   assessment: runtime.JsonValue | null
   scoreSnapshot: runtime.JsonValue | null
@@ -426,6 +461,11 @@ export type AutomationOpportunityWhereInput = {
   risk?: Prisma.StringNullableFilter<"AutomationOpportunity"> | string | null
   whyThisMatters?: Prisma.StringNullableFilter<"AutomationOpportunity"> | string | null
   recommendation?: Prisma.StringNullableFilter<"AutomationOpportunity"> | string | null
+  decision?: Prisma.EnumOpportunityDecisionFilter<"AutomationOpportunity"> | $Enums.OpportunityDecision
+  decisionRationale?: Prisma.StringNullableFilter<"AutomationOpportunity"> | string | null
+  decisionOwner?: Prisma.StringNullableFilter<"AutomationOpportunity"> | string | null
+  decidedAt?: Prisma.DateTimeNullableFilter<"AutomationOpportunity"> | Date | string | null
+  nextStep?: Prisma.StringNullableFilter<"AutomationOpportunity"> | string | null
   status?: Prisma.EnumAutomationOpportunityStatusFilter<"AutomationOpportunity"> | $Enums.AutomationOpportunityStatus
   assessment?: Prisma.JsonNullableFilter<"AutomationOpportunity">
   scoreSnapshot?: Prisma.JsonNullableFilter<"AutomationOpportunity">
@@ -465,6 +505,11 @@ export type AutomationOpportunityOrderByWithRelationInput = {
   risk?: Prisma.SortOrderInput | Prisma.SortOrder
   whyThisMatters?: Prisma.SortOrderInput | Prisma.SortOrder
   recommendation?: Prisma.SortOrderInput | Prisma.SortOrder
+  decision?: Prisma.SortOrder
+  decisionRationale?: Prisma.SortOrderInput | Prisma.SortOrder
+  decisionOwner?: Prisma.SortOrderInput | Prisma.SortOrder
+  decidedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  nextStep?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   assessment?: Prisma.SortOrderInput | Prisma.SortOrder
   scoreSnapshot?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -507,6 +552,11 @@ export type AutomationOpportunityWhereUniqueInput = Prisma.AtLeast<{
   risk?: Prisma.StringNullableFilter<"AutomationOpportunity"> | string | null
   whyThisMatters?: Prisma.StringNullableFilter<"AutomationOpportunity"> | string | null
   recommendation?: Prisma.StringNullableFilter<"AutomationOpportunity"> | string | null
+  decision?: Prisma.EnumOpportunityDecisionFilter<"AutomationOpportunity"> | $Enums.OpportunityDecision
+  decisionRationale?: Prisma.StringNullableFilter<"AutomationOpportunity"> | string | null
+  decisionOwner?: Prisma.StringNullableFilter<"AutomationOpportunity"> | string | null
+  decidedAt?: Prisma.DateTimeNullableFilter<"AutomationOpportunity"> | Date | string | null
+  nextStep?: Prisma.StringNullableFilter<"AutomationOpportunity"> | string | null
   status?: Prisma.EnumAutomationOpportunityStatusFilter<"AutomationOpportunity"> | $Enums.AutomationOpportunityStatus
   assessment?: Prisma.JsonNullableFilter<"AutomationOpportunity">
   scoreSnapshot?: Prisma.JsonNullableFilter<"AutomationOpportunity">
@@ -546,6 +596,11 @@ export type AutomationOpportunityOrderByWithAggregationInput = {
   risk?: Prisma.SortOrderInput | Prisma.SortOrder
   whyThisMatters?: Prisma.SortOrderInput | Prisma.SortOrder
   recommendation?: Prisma.SortOrderInput | Prisma.SortOrder
+  decision?: Prisma.SortOrder
+  decisionRationale?: Prisma.SortOrderInput | Prisma.SortOrder
+  decisionOwner?: Prisma.SortOrderInput | Prisma.SortOrder
+  decidedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  nextStep?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   assessment?: Prisma.SortOrderInput | Prisma.SortOrder
   scoreSnapshot?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -587,6 +642,11 @@ export type AutomationOpportunityScalarWhereWithAggregatesInput = {
   risk?: Prisma.StringNullableWithAggregatesFilter<"AutomationOpportunity"> | string | null
   whyThisMatters?: Prisma.StringNullableWithAggregatesFilter<"AutomationOpportunity"> | string | null
   recommendation?: Prisma.StringNullableWithAggregatesFilter<"AutomationOpportunity"> | string | null
+  decision?: Prisma.EnumOpportunityDecisionWithAggregatesFilter<"AutomationOpportunity"> | $Enums.OpportunityDecision
+  decisionRationale?: Prisma.StringNullableWithAggregatesFilter<"AutomationOpportunity"> | string | null
+  decisionOwner?: Prisma.StringNullableWithAggregatesFilter<"AutomationOpportunity"> | string | null
+  decidedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"AutomationOpportunity"> | Date | string | null
+  nextStep?: Prisma.StringNullableWithAggregatesFilter<"AutomationOpportunity"> | string | null
   status?: Prisma.EnumAutomationOpportunityStatusWithAggregatesFilter<"AutomationOpportunity"> | $Enums.AutomationOpportunityStatus
   assessment?: Prisma.JsonNullableWithAggregatesFilter<"AutomationOpportunity">
   scoreSnapshot?: Prisma.JsonNullableWithAggregatesFilter<"AutomationOpportunity">
@@ -617,6 +677,11 @@ export type AutomationOpportunityCreateInput = {
   risk?: string | null
   whyThisMatters?: string | null
   recommendation?: string | null
+  decision?: $Enums.OpportunityDecision
+  decisionRationale?: string | null
+  decisionOwner?: string | null
+  decidedAt?: Date | string | null
+  nextStep?: string | null
   status?: $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -656,6 +721,11 @@ export type AutomationOpportunityUncheckedCreateInput = {
   risk?: string | null
   whyThisMatters?: string | null
   recommendation?: string | null
+  decision?: $Enums.OpportunityDecision
+  decisionRationale?: string | null
+  decisionOwner?: string | null
+  decidedAt?: Date | string | null
+  nextStep?: string | null
   status?: $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -689,6 +759,11 @@ export type AutomationOpportunityUpdateInput = {
   risk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   whyThisMatters?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recommendation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision?: Prisma.EnumOpportunityDecisionFieldUpdateOperationsInput | $Enums.OpportunityDecision
+  decisionRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decisionOwner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumAutomationOpportunityStatusFieldUpdateOperationsInput | $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -728,6 +803,11 @@ export type AutomationOpportunityUncheckedUpdateInput = {
   risk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   whyThisMatters?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recommendation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision?: Prisma.EnumOpportunityDecisionFieldUpdateOperationsInput | $Enums.OpportunityDecision
+  decisionRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decisionOwner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumAutomationOpportunityStatusFieldUpdateOperationsInput | $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -764,6 +844,11 @@ export type AutomationOpportunityCreateManyInput = {
   risk?: string | null
   whyThisMatters?: string | null
   recommendation?: string | null
+  decision?: $Enums.OpportunityDecision
+  decisionRationale?: string | null
+  decisionOwner?: string | null
+  decidedAt?: Date | string | null
+  nextStep?: string | null
   status?: $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -794,6 +879,11 @@ export type AutomationOpportunityUpdateManyMutationInput = {
   risk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   whyThisMatters?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recommendation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision?: Prisma.EnumOpportunityDecisionFieldUpdateOperationsInput | $Enums.OpportunityDecision
+  decisionRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decisionOwner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumAutomationOpportunityStatusFieldUpdateOperationsInput | $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -827,6 +917,11 @@ export type AutomationOpportunityUncheckedUpdateManyInput = {
   risk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   whyThisMatters?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recommendation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision?: Prisma.EnumOpportunityDecisionFieldUpdateOperationsInput | $Enums.OpportunityDecision
+  decisionRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decisionOwner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumAutomationOpportunityStatusFieldUpdateOperationsInput | $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -870,6 +965,11 @@ export type AutomationOpportunityCountOrderByAggregateInput = {
   risk?: Prisma.SortOrder
   whyThisMatters?: Prisma.SortOrder
   recommendation?: Prisma.SortOrder
+  decision?: Prisma.SortOrder
+  decisionRationale?: Prisma.SortOrder
+  decisionOwner?: Prisma.SortOrder
+  decidedAt?: Prisma.SortOrder
+  nextStep?: Prisma.SortOrder
   status?: Prisma.SortOrder
   assessment?: Prisma.SortOrder
   scoreSnapshot?: Prisma.SortOrder
@@ -913,6 +1013,11 @@ export type AutomationOpportunityMaxOrderByAggregateInput = {
   risk?: Prisma.SortOrder
   whyThisMatters?: Prisma.SortOrder
   recommendation?: Prisma.SortOrder
+  decision?: Prisma.SortOrder
+  decisionRationale?: Prisma.SortOrder
+  decisionOwner?: Prisma.SortOrder
+  decidedAt?: Prisma.SortOrder
+  nextStep?: Prisma.SortOrder
   status?: Prisma.SortOrder
   scoredAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -944,6 +1049,11 @@ export type AutomationOpportunityMinOrderByAggregateInput = {
   risk?: Prisma.SortOrder
   whyThisMatters?: Prisma.SortOrder
   recommendation?: Prisma.SortOrder
+  decision?: Prisma.SortOrder
+  decisionRationale?: Prisma.SortOrder
+  decisionOwner?: Prisma.SortOrder
+  decidedAt?: Prisma.SortOrder
+  nextStep?: Prisma.SortOrder
   status?: Prisma.SortOrder
   scoredAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -1099,6 +1209,10 @@ export type NullableEnumStrategicFitFieldUpdateOperationsInput = {
   set?: $Enums.StrategicFit | null
 }
 
+export type EnumOpportunityDecisionFieldUpdateOperationsInput = {
+  set?: $Enums.OpportunityDecision
+}
+
 export type EnumAutomationOpportunityStatusFieldUpdateOperationsInput = {
   set?: $Enums.AutomationOpportunityStatus
 }
@@ -1167,6 +1281,11 @@ export type AutomationOpportunityCreateWithoutAuditInput = {
   risk?: string | null
   whyThisMatters?: string | null
   recommendation?: string | null
+  decision?: $Enums.OpportunityDecision
+  decisionRationale?: string | null
+  decisionOwner?: string | null
+  decidedAt?: Date | string | null
+  nextStep?: string | null
   status?: $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1204,6 +1323,11 @@ export type AutomationOpportunityUncheckedCreateWithoutAuditInput = {
   risk?: string | null
   whyThisMatters?: string | null
   recommendation?: string | null
+  decision?: $Enums.OpportunityDecision
+  decisionRationale?: string | null
+  decisionOwner?: string | null
+  decidedAt?: Date | string | null
+  nextStep?: string | null
   status?: $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1269,6 +1393,11 @@ export type AutomationOpportunityScalarWhereInput = {
   risk?: Prisma.StringNullableFilter<"AutomationOpportunity"> | string | null
   whyThisMatters?: Prisma.StringNullableFilter<"AutomationOpportunity"> | string | null
   recommendation?: Prisma.StringNullableFilter<"AutomationOpportunity"> | string | null
+  decision?: Prisma.EnumOpportunityDecisionFilter<"AutomationOpportunity"> | $Enums.OpportunityDecision
+  decisionRationale?: Prisma.StringNullableFilter<"AutomationOpportunity"> | string | null
+  decisionOwner?: Prisma.StringNullableFilter<"AutomationOpportunity"> | string | null
+  decidedAt?: Prisma.DateTimeNullableFilter<"AutomationOpportunity"> | Date | string | null
+  nextStep?: Prisma.StringNullableFilter<"AutomationOpportunity"> | string | null
   status?: Prisma.EnumAutomationOpportunityStatusFilter<"AutomationOpportunity"> | $Enums.AutomationOpportunityStatus
   assessment?: Prisma.JsonNullableFilter<"AutomationOpportunity">
   scoreSnapshot?: Prisma.JsonNullableFilter<"AutomationOpportunity">
@@ -1299,6 +1428,11 @@ export type AutomationOpportunityCreateWithoutProcessInput = {
   risk?: string | null
   whyThisMatters?: string | null
   recommendation?: string | null
+  decision?: $Enums.OpportunityDecision
+  decisionRationale?: string | null
+  decisionOwner?: string | null
+  decidedAt?: Date | string | null
+  nextStep?: string | null
   status?: $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1336,6 +1470,11 @@ export type AutomationOpportunityUncheckedCreateWithoutProcessInput = {
   risk?: string | null
   whyThisMatters?: string | null
   recommendation?: string | null
+  decision?: $Enums.OpportunityDecision
+  decisionRationale?: string | null
+  decisionOwner?: string | null
+  decidedAt?: Date | string | null
+  nextStep?: string | null
   status?: $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1395,6 +1534,11 @@ export type AutomationOpportunityCreateWithoutScoringModelInput = {
   risk?: string | null
   whyThisMatters?: string | null
   recommendation?: string | null
+  decision?: $Enums.OpportunityDecision
+  decisionRationale?: string | null
+  decisionOwner?: string | null
+  decidedAt?: Date | string | null
+  nextStep?: string | null
   status?: $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1432,6 +1576,11 @@ export type AutomationOpportunityUncheckedCreateWithoutScoringModelInput = {
   risk?: string | null
   whyThisMatters?: string | null
   recommendation?: string | null
+  decision?: $Enums.OpportunityDecision
+  decisionRationale?: string | null
+  decisionOwner?: string | null
+  decidedAt?: Date | string | null
+  nextStep?: string | null
   status?: $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1491,6 +1640,11 @@ export type AutomationOpportunityCreateWithoutBottleneckLinksInput = {
   risk?: string | null
   whyThisMatters?: string | null
   recommendation?: string | null
+  decision?: $Enums.OpportunityDecision
+  decisionRationale?: string | null
+  decisionOwner?: string | null
+  decidedAt?: Date | string | null
+  nextStep?: string | null
   status?: $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1529,6 +1683,11 @@ export type AutomationOpportunityUncheckedCreateWithoutBottleneckLinksInput = {
   risk?: string | null
   whyThisMatters?: string | null
   recommendation?: string | null
+  decision?: $Enums.OpportunityDecision
+  decisionRationale?: string | null
+  decisionOwner?: string | null
+  decidedAt?: Date | string | null
+  nextStep?: string | null
   status?: $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1577,6 +1736,11 @@ export type AutomationOpportunityUpdateWithoutBottleneckLinksInput = {
   risk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   whyThisMatters?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recommendation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision?: Prisma.EnumOpportunityDecisionFieldUpdateOperationsInput | $Enums.OpportunityDecision
+  decisionRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decisionOwner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumAutomationOpportunityStatusFieldUpdateOperationsInput | $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1615,6 +1779,11 @@ export type AutomationOpportunityUncheckedUpdateWithoutBottleneckLinksInput = {
   risk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   whyThisMatters?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recommendation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision?: Prisma.EnumOpportunityDecisionFieldUpdateOperationsInput | $Enums.OpportunityDecision
+  decisionRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decisionOwner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumAutomationOpportunityStatusFieldUpdateOperationsInput | $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1647,6 +1816,11 @@ export type AutomationOpportunityCreateWithoutBaselineLinksInput = {
   risk?: string | null
   whyThisMatters?: string | null
   recommendation?: string | null
+  decision?: $Enums.OpportunityDecision
+  decisionRationale?: string | null
+  decisionOwner?: string | null
+  decidedAt?: Date | string | null
+  nextStep?: string | null
   status?: $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1685,6 +1859,11 @@ export type AutomationOpportunityUncheckedCreateWithoutBaselineLinksInput = {
   risk?: string | null
   whyThisMatters?: string | null
   recommendation?: string | null
+  decision?: $Enums.OpportunityDecision
+  decisionRationale?: string | null
+  decisionOwner?: string | null
+  decidedAt?: Date | string | null
+  nextStep?: string | null
   status?: $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1733,6 +1912,11 @@ export type AutomationOpportunityUpdateWithoutBaselineLinksInput = {
   risk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   whyThisMatters?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recommendation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision?: Prisma.EnumOpportunityDecisionFieldUpdateOperationsInput | $Enums.OpportunityDecision
+  decisionRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decisionOwner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumAutomationOpportunityStatusFieldUpdateOperationsInput | $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1771,6 +1955,11 @@ export type AutomationOpportunityUncheckedUpdateWithoutBaselineLinksInput = {
   risk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   whyThisMatters?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recommendation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision?: Prisma.EnumOpportunityDecisionFieldUpdateOperationsInput | $Enums.OpportunityDecision
+  decisionRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decisionOwner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumAutomationOpportunityStatusFieldUpdateOperationsInput | $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1803,6 +1992,11 @@ export type AutomationOpportunityCreateWithoutPilotInput = {
   risk?: string | null
   whyThisMatters?: string | null
   recommendation?: string | null
+  decision?: $Enums.OpportunityDecision
+  decisionRationale?: string | null
+  decisionOwner?: string | null
+  decidedAt?: Date | string | null
+  nextStep?: string | null
   status?: $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1841,6 +2035,11 @@ export type AutomationOpportunityUncheckedCreateWithoutPilotInput = {
   risk?: string | null
   whyThisMatters?: string | null
   recommendation?: string | null
+  decision?: $Enums.OpportunityDecision
+  decisionRationale?: string | null
+  decisionOwner?: string | null
+  decidedAt?: Date | string | null
+  nextStep?: string | null
   status?: $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1889,6 +2088,11 @@ export type AutomationOpportunityUpdateWithoutPilotInput = {
   risk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   whyThisMatters?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recommendation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision?: Prisma.EnumOpportunityDecisionFieldUpdateOperationsInput | $Enums.OpportunityDecision
+  decisionRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decisionOwner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumAutomationOpportunityStatusFieldUpdateOperationsInput | $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1927,6 +2131,11 @@ export type AutomationOpportunityUncheckedUpdateWithoutPilotInput = {
   risk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   whyThisMatters?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recommendation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision?: Prisma.EnumOpportunityDecisionFieldUpdateOperationsInput | $Enums.OpportunityDecision
+  decisionRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decisionOwner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumAutomationOpportunityStatusFieldUpdateOperationsInput | $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1961,6 +2170,11 @@ export type AutomationOpportunityCreateManyAuditInput = {
   risk?: string | null
   whyThisMatters?: string | null
   recommendation?: string | null
+  decision?: $Enums.OpportunityDecision
+  decisionRationale?: string | null
+  decisionOwner?: string | null
+  decidedAt?: Date | string | null
+  nextStep?: string | null
   status?: $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1991,6 +2205,11 @@ export type AutomationOpportunityUpdateWithoutAuditInput = {
   risk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   whyThisMatters?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recommendation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision?: Prisma.EnumOpportunityDecisionFieldUpdateOperationsInput | $Enums.OpportunityDecision
+  decisionRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decisionOwner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumAutomationOpportunityStatusFieldUpdateOperationsInput | $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -2028,6 +2247,11 @@ export type AutomationOpportunityUncheckedUpdateWithoutAuditInput = {
   risk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   whyThisMatters?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recommendation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision?: Prisma.EnumOpportunityDecisionFieldUpdateOperationsInput | $Enums.OpportunityDecision
+  decisionRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decisionOwner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumAutomationOpportunityStatusFieldUpdateOperationsInput | $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -2063,6 +2287,11 @@ export type AutomationOpportunityUncheckedUpdateManyWithoutAuditInput = {
   risk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   whyThisMatters?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recommendation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision?: Prisma.EnumOpportunityDecisionFieldUpdateOperationsInput | $Enums.OpportunityDecision
+  decisionRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decisionOwner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumAutomationOpportunityStatusFieldUpdateOperationsInput | $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -2095,6 +2324,11 @@ export type AutomationOpportunityCreateManyProcessInput = {
   risk?: string | null
   whyThisMatters?: string | null
   recommendation?: string | null
+  decision?: $Enums.OpportunityDecision
+  decisionRationale?: string | null
+  decisionOwner?: string | null
+  decidedAt?: Date | string | null
+  nextStep?: string | null
   status?: $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -2125,6 +2359,11 @@ export type AutomationOpportunityUpdateWithoutProcessInput = {
   risk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   whyThisMatters?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recommendation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision?: Prisma.EnumOpportunityDecisionFieldUpdateOperationsInput | $Enums.OpportunityDecision
+  decisionRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decisionOwner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumAutomationOpportunityStatusFieldUpdateOperationsInput | $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -2162,6 +2401,11 @@ export type AutomationOpportunityUncheckedUpdateWithoutProcessInput = {
   risk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   whyThisMatters?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recommendation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision?: Prisma.EnumOpportunityDecisionFieldUpdateOperationsInput | $Enums.OpportunityDecision
+  decisionRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decisionOwner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumAutomationOpportunityStatusFieldUpdateOperationsInput | $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -2197,6 +2441,11 @@ export type AutomationOpportunityUncheckedUpdateManyWithoutProcessInput = {
   risk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   whyThisMatters?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recommendation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision?: Prisma.EnumOpportunityDecisionFieldUpdateOperationsInput | $Enums.OpportunityDecision
+  decisionRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decisionOwner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumAutomationOpportunityStatusFieldUpdateOperationsInput | $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -2229,6 +2478,11 @@ export type AutomationOpportunityCreateManyScoringModelInput = {
   risk?: string | null
   whyThisMatters?: string | null
   recommendation?: string | null
+  decision?: $Enums.OpportunityDecision
+  decisionRationale?: string | null
+  decisionOwner?: string | null
+  decidedAt?: Date | string | null
+  nextStep?: string | null
   status?: $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -2259,6 +2513,11 @@ export type AutomationOpportunityUpdateWithoutScoringModelInput = {
   risk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   whyThisMatters?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recommendation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision?: Prisma.EnumOpportunityDecisionFieldUpdateOperationsInput | $Enums.OpportunityDecision
+  decisionRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decisionOwner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumAutomationOpportunityStatusFieldUpdateOperationsInput | $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -2296,6 +2555,11 @@ export type AutomationOpportunityUncheckedUpdateWithoutScoringModelInput = {
   risk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   whyThisMatters?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recommendation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision?: Prisma.EnumOpportunityDecisionFieldUpdateOperationsInput | $Enums.OpportunityDecision
+  decisionRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decisionOwner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumAutomationOpportunityStatusFieldUpdateOperationsInput | $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -2331,6 +2595,11 @@ export type AutomationOpportunityUncheckedUpdateManyWithoutScoringModelInput = {
   risk?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   whyThisMatters?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recommendation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision?: Prisma.EnumOpportunityDecisionFieldUpdateOperationsInput | $Enums.OpportunityDecision
+  decisionRationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decisionOwner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nextStep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumAutomationOpportunityStatusFieldUpdateOperationsInput | $Enums.AutomationOpportunityStatus
   assessment?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   scoreSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -2404,6 +2673,11 @@ export type AutomationOpportunitySelect<ExtArgs extends runtime.Types.Extensions
   risk?: boolean
   whyThisMatters?: boolean
   recommendation?: boolean
+  decision?: boolean
+  decisionRationale?: boolean
+  decisionOwner?: boolean
+  decidedAt?: boolean
+  nextStep?: boolean
   status?: boolean
   assessment?: boolean
   scoreSnapshot?: boolean
@@ -2444,6 +2718,11 @@ export type AutomationOpportunitySelectCreateManyAndReturn<ExtArgs extends runti
   risk?: boolean
   whyThisMatters?: boolean
   recommendation?: boolean
+  decision?: boolean
+  decisionRationale?: boolean
+  decisionOwner?: boolean
+  decidedAt?: boolean
+  nextStep?: boolean
   status?: boolean
   assessment?: boolean
   scoreSnapshot?: boolean
@@ -2480,6 +2759,11 @@ export type AutomationOpportunitySelectUpdateManyAndReturn<ExtArgs extends runti
   risk?: boolean
   whyThisMatters?: boolean
   recommendation?: boolean
+  decision?: boolean
+  decisionRationale?: boolean
+  decisionOwner?: boolean
+  decidedAt?: boolean
+  nextStep?: boolean
   status?: boolean
   assessment?: boolean
   scoreSnapshot?: boolean
@@ -2516,6 +2800,11 @@ export type AutomationOpportunitySelectScalar = {
   risk?: boolean
   whyThisMatters?: boolean
   recommendation?: boolean
+  decision?: boolean
+  decisionRationale?: boolean
+  decisionOwner?: boolean
+  decidedAt?: boolean
+  nextStep?: boolean
   status?: boolean
   assessment?: boolean
   scoreSnapshot?: boolean
@@ -2524,7 +2813,7 @@ export type AutomationOpportunitySelectScalar = {
   updatedAt?: boolean
 }
 
-export type AutomationOpportunityOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "auditId" | "processId" | "scoringModelId" | "title" | "problem" | "currentState" | "proposedOutcome" | "automationConcept" | "expectedFutureState" | "expectedTimeSavingHoursPerPeriod" | "expectedCostSavingCentsPerPeriod" | "savingPeriod" | "implementationComplexity" | "businessValueScore" | "feasibilityScore" | "marketPotentialScore" | "opportunityScore" | "confidenceScore" | "evidenceConfidence" | "strategicFit" | "risk" | "whyThisMatters" | "recommendation" | "status" | "assessment" | "scoreSnapshot" | "scoredAt" | "createdAt" | "updatedAt", ExtArgs["result"]["automationOpportunity"]>
+export type AutomationOpportunityOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "auditId" | "processId" | "scoringModelId" | "title" | "problem" | "currentState" | "proposedOutcome" | "automationConcept" | "expectedFutureState" | "expectedTimeSavingHoursPerPeriod" | "expectedCostSavingCentsPerPeriod" | "savingPeriod" | "implementationComplexity" | "businessValueScore" | "feasibilityScore" | "marketPotentialScore" | "opportunityScore" | "confidenceScore" | "evidenceConfidence" | "strategicFit" | "risk" | "whyThisMatters" | "recommendation" | "decision" | "decisionRationale" | "decisionOwner" | "decidedAt" | "nextStep" | "status" | "assessment" | "scoreSnapshot" | "scoredAt" | "createdAt" | "updatedAt", ExtArgs["result"]["automationOpportunity"]>
 export type AutomationOpportunityInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   audit?: boolean | Prisma.OperationsAuditDefaultArgs<ExtArgs>
   process?: boolean | Prisma.OperationsProcessDefaultArgs<ExtArgs>
@@ -2580,6 +2869,11 @@ export type $AutomationOpportunityPayload<ExtArgs extends runtime.Types.Extensio
     risk: string | null
     whyThisMatters: string | null
     recommendation: string | null
+    decision: $Enums.OpportunityDecision
+    decisionRationale: string | null
+    decisionOwner: string | null
+    decidedAt: Date | null
+    nextStep: string | null
     status: $Enums.AutomationOpportunityStatus
     assessment: runtime.JsonValue | null
     scoreSnapshot: runtime.JsonValue | null
@@ -3039,6 +3333,11 @@ export interface AutomationOpportunityFieldRefs {
   readonly risk: Prisma.FieldRef<"AutomationOpportunity", 'String'>
   readonly whyThisMatters: Prisma.FieldRef<"AutomationOpportunity", 'String'>
   readonly recommendation: Prisma.FieldRef<"AutomationOpportunity", 'String'>
+  readonly decision: Prisma.FieldRef<"AutomationOpportunity", 'OpportunityDecision'>
+  readonly decisionRationale: Prisma.FieldRef<"AutomationOpportunity", 'String'>
+  readonly decisionOwner: Prisma.FieldRef<"AutomationOpportunity", 'String'>
+  readonly decidedAt: Prisma.FieldRef<"AutomationOpportunity", 'DateTime'>
+  readonly nextStep: Prisma.FieldRef<"AutomationOpportunity", 'String'>
   readonly status: Prisma.FieldRef<"AutomationOpportunity", 'AutomationOpportunityStatus'>
   readonly assessment: Prisma.FieldRef<"AutomationOpportunity", 'Json'>
   readonly scoreSnapshot: Prisma.FieldRef<"AutomationOpportunity", 'Json'>

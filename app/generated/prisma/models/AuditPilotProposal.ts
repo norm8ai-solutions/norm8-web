@@ -20,22 +20,49 @@ export type AuditPilotProposalModel = runtime.Types.Result.DefaultSelection<Pris
 
 export type AggregateAuditPilotProposal = {
   _count: AuditPilotProposalCountAggregateOutputType | null
+  _avg: AuditPilotProposalAvgAggregateOutputType | null
+  _sum: AuditPilotProposalSumAggregateOutputType | null
   _min: AuditPilotProposalMinAggregateOutputType | null
   _max: AuditPilotProposalMaxAggregateOutputType | null
+}
+
+export type AuditPilotProposalAvgAggregateOutputType = {
+  priceCents: number | null
+}
+
+export type AuditPilotProposalSumAggregateOutputType = {
+  priceCents: number | null
 }
 
 export type AuditPilotProposalMinAggregateOutputType = {
   id: string | null
   opportunityId: string | null
   projectId: string | null
+  title: string | null
+  objective: string | null
   problem: string | null
   scope: string | null
+  outOfScope: string | null
   workflow: string | null
   baselineSummary: string | null
+  successCriteria: string | null
   targetBusinessOutcome: string | null
+  duration: string | null
+  owner: string | null
+  dependencies: string | null
+  risks: string | null
   expectedRoi: string | null
   implementationEstimate: string | null
   recurringModel: string | null
+  priceCents: number | null
+  currency: string | null
+  commercialNotes: string | null
+  proposedAt: Date | null
+  acceptedAt: Date | null
+  acceptedBy: string | null
+  rejectedAt: Date | null
+  rejectionReason: string | null
+  convertedAt: Date | null
   status: $Enums.PilotProposalStatus | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -45,14 +72,31 @@ export type AuditPilotProposalMaxAggregateOutputType = {
   id: string | null
   opportunityId: string | null
   projectId: string | null
+  title: string | null
+  objective: string | null
   problem: string | null
   scope: string | null
+  outOfScope: string | null
   workflow: string | null
   baselineSummary: string | null
+  successCriteria: string | null
   targetBusinessOutcome: string | null
+  duration: string | null
+  owner: string | null
+  dependencies: string | null
+  risks: string | null
   expectedRoi: string | null
   implementationEstimate: string | null
   recurringModel: string | null
+  priceCents: number | null
+  currency: string | null
+  commercialNotes: string | null
+  proposedAt: Date | null
+  acceptedAt: Date | null
+  acceptedBy: string | null
+  rejectedAt: Date | null
+  rejectionReason: string | null
+  convertedAt: Date | null
   status: $Enums.PilotProposalStatus | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -62,15 +106,32 @@ export type AuditPilotProposalCountAggregateOutputType = {
   id: number
   opportunityId: number
   projectId: number
+  title: number
+  objective: number
   problem: number
   scope: number
+  outOfScope: number
   workflow: number
   baselineSummary: number
+  successCriteria: number
   targetBusinessOutcome: number
+  duration: number
+  owner: number
+  dependencies: number
+  risks: number
   expectedRoi: number
   implementationEstimate: number
   recurringModel: number
   successMetrics: number
+  priceCents: number
+  currency: number
+  commercialNotes: number
+  proposedAt: number
+  acceptedAt: number
+  acceptedBy: number
+  rejectedAt: number
+  rejectionReason: number
+  convertedAt: number
   status: number
   createdAt: number
   updatedAt: number
@@ -78,18 +139,43 @@ export type AuditPilotProposalCountAggregateOutputType = {
 }
 
 
+export type AuditPilotProposalAvgAggregateInputType = {
+  priceCents?: true
+}
+
+export type AuditPilotProposalSumAggregateInputType = {
+  priceCents?: true
+}
+
 export type AuditPilotProposalMinAggregateInputType = {
   id?: true
   opportunityId?: true
   projectId?: true
+  title?: true
+  objective?: true
   problem?: true
   scope?: true
+  outOfScope?: true
   workflow?: true
   baselineSummary?: true
+  successCriteria?: true
   targetBusinessOutcome?: true
+  duration?: true
+  owner?: true
+  dependencies?: true
+  risks?: true
   expectedRoi?: true
   implementationEstimate?: true
   recurringModel?: true
+  priceCents?: true
+  currency?: true
+  commercialNotes?: true
+  proposedAt?: true
+  acceptedAt?: true
+  acceptedBy?: true
+  rejectedAt?: true
+  rejectionReason?: true
+  convertedAt?: true
   status?: true
   createdAt?: true
   updatedAt?: true
@@ -99,14 +185,31 @@ export type AuditPilotProposalMaxAggregateInputType = {
   id?: true
   opportunityId?: true
   projectId?: true
+  title?: true
+  objective?: true
   problem?: true
   scope?: true
+  outOfScope?: true
   workflow?: true
   baselineSummary?: true
+  successCriteria?: true
   targetBusinessOutcome?: true
+  duration?: true
+  owner?: true
+  dependencies?: true
+  risks?: true
   expectedRoi?: true
   implementationEstimate?: true
   recurringModel?: true
+  priceCents?: true
+  currency?: true
+  commercialNotes?: true
+  proposedAt?: true
+  acceptedAt?: true
+  acceptedBy?: true
+  rejectedAt?: true
+  rejectionReason?: true
+  convertedAt?: true
   status?: true
   createdAt?: true
   updatedAt?: true
@@ -116,15 +219,32 @@ export type AuditPilotProposalCountAggregateInputType = {
   id?: true
   opportunityId?: true
   projectId?: true
+  title?: true
+  objective?: true
   problem?: true
   scope?: true
+  outOfScope?: true
   workflow?: true
   baselineSummary?: true
+  successCriteria?: true
   targetBusinessOutcome?: true
+  duration?: true
+  owner?: true
+  dependencies?: true
+  risks?: true
   expectedRoi?: true
   implementationEstimate?: true
   recurringModel?: true
   successMetrics?: true
+  priceCents?: true
+  currency?: true
+  commercialNotes?: true
+  proposedAt?: true
+  acceptedAt?: true
+  acceptedBy?: true
+  rejectedAt?: true
+  rejectionReason?: true
+  convertedAt?: true
   status?: true
   createdAt?: true
   updatedAt?: true
@@ -169,6 +289,18 @@ export type AuditPilotProposalAggregateArgs<ExtArgs extends runtime.Types.Extens
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: AuditPilotProposalAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: AuditPilotProposalSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: AuditPilotProposalMinAggregateInputType
@@ -199,6 +331,8 @@ export type AuditPilotProposalGroupByArgs<ExtArgs extends runtime.Types.Extensio
   take?: number
   skip?: number
   _count?: AuditPilotProposalCountAggregateInputType | true
+  _avg?: AuditPilotProposalAvgAggregateInputType
+  _sum?: AuditPilotProposalSumAggregateInputType
   _min?: AuditPilotProposalMinAggregateInputType
   _max?: AuditPilotProposalMaxAggregateInputType
 }
@@ -207,19 +341,38 @@ export type AuditPilotProposalGroupByOutputType = {
   id: string
   opportunityId: string
   projectId: string | null
+  title: string | null
+  objective: string | null
   problem: string
   scope: string | null
+  outOfScope: string | null
   workflow: string | null
   baselineSummary: string | null
+  successCriteria: string | null
   targetBusinessOutcome: string | null
+  duration: string | null
+  owner: string | null
+  dependencies: string | null
+  risks: string | null
   expectedRoi: string | null
   implementationEstimate: string | null
   recurringModel: string | null
   successMetrics: runtime.JsonValue | null
+  priceCents: number | null
+  currency: string | null
+  commercialNotes: string | null
+  proposedAt: Date | null
+  acceptedAt: Date | null
+  acceptedBy: string | null
+  rejectedAt: Date | null
+  rejectionReason: string | null
+  convertedAt: Date | null
   status: $Enums.PilotProposalStatus
   createdAt: Date
   updatedAt: Date
   _count: AuditPilotProposalCountAggregateOutputType | null
+  _avg: AuditPilotProposalAvgAggregateOutputType | null
+  _sum: AuditPilotProposalSumAggregateOutputType | null
   _min: AuditPilotProposalMinAggregateOutputType | null
   _max: AuditPilotProposalMaxAggregateOutputType | null
 }
@@ -246,40 +399,78 @@ export type AuditPilotProposalWhereInput = {
   id?: Prisma.StringFilter<"AuditPilotProposal"> | string
   opportunityId?: Prisma.StringFilter<"AuditPilotProposal"> | string
   projectId?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  title?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  objective?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
   problem?: Prisma.StringFilter<"AuditPilotProposal"> | string
   scope?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  outOfScope?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
   workflow?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
   baselineSummary?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  successCriteria?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
   targetBusinessOutcome?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  duration?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  owner?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  dependencies?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  risks?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
   expectedRoi?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
   implementationEstimate?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
   recurringModel?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
   successMetrics?: Prisma.JsonNullableFilter<"AuditPilotProposal">
+  priceCents?: Prisma.IntNullableFilter<"AuditPilotProposal"> | number | null
+  currency?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  commercialNotes?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  proposedAt?: Prisma.DateTimeNullableFilter<"AuditPilotProposal"> | Date | string | null
+  acceptedAt?: Prisma.DateTimeNullableFilter<"AuditPilotProposal"> | Date | string | null
+  acceptedBy?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  rejectedAt?: Prisma.DateTimeNullableFilter<"AuditPilotProposal"> | Date | string | null
+  rejectionReason?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  convertedAt?: Prisma.DateTimeNullableFilter<"AuditPilotProposal"> | Date | string | null
   status?: Prisma.EnumPilotProposalStatusFilter<"AuditPilotProposal"> | $Enums.PilotProposalStatus
   createdAt?: Prisma.DateTimeFilter<"AuditPilotProposal"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"AuditPilotProposal"> | Date | string
   opportunity?: Prisma.XOR<Prisma.AutomationOpportunityScalarRelationFilter, Prisma.AutomationOpportunityWhereInput>
   project?: Prisma.XOR<Prisma.ProjectNullableScalarRelationFilter, Prisma.ProjectWhereInput> | null
+  outcome?: Prisma.XOR<Prisma.AuditPilotOutcomeNullableScalarRelationFilter, Prisma.AuditPilotOutcomeWhereInput> | null
+  reportDeliveries?: Prisma.AuditReportDeliveryListRelationFilter
 }
 
 export type AuditPilotProposalOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   opportunityId?: Prisma.SortOrder
   projectId?: Prisma.SortOrderInput | Prisma.SortOrder
+  title?: Prisma.SortOrderInput | Prisma.SortOrder
+  objective?: Prisma.SortOrderInput | Prisma.SortOrder
   problem?: Prisma.SortOrder
   scope?: Prisma.SortOrderInput | Prisma.SortOrder
+  outOfScope?: Prisma.SortOrderInput | Prisma.SortOrder
   workflow?: Prisma.SortOrderInput | Prisma.SortOrder
   baselineSummary?: Prisma.SortOrderInput | Prisma.SortOrder
+  successCriteria?: Prisma.SortOrderInput | Prisma.SortOrder
   targetBusinessOutcome?: Prisma.SortOrderInput | Prisma.SortOrder
+  duration?: Prisma.SortOrderInput | Prisma.SortOrder
+  owner?: Prisma.SortOrderInput | Prisma.SortOrder
+  dependencies?: Prisma.SortOrderInput | Prisma.SortOrder
+  risks?: Prisma.SortOrderInput | Prisma.SortOrder
   expectedRoi?: Prisma.SortOrderInput | Prisma.SortOrder
   implementationEstimate?: Prisma.SortOrderInput | Prisma.SortOrder
   recurringModel?: Prisma.SortOrderInput | Prisma.SortOrder
   successMetrics?: Prisma.SortOrderInput | Prisma.SortOrder
+  priceCents?: Prisma.SortOrderInput | Prisma.SortOrder
+  currency?: Prisma.SortOrderInput | Prisma.SortOrder
+  commercialNotes?: Prisma.SortOrderInput | Prisma.SortOrder
+  proposedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  acceptedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  acceptedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  rejectedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  convertedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   opportunity?: Prisma.AutomationOpportunityOrderByWithRelationInput
   project?: Prisma.ProjectOrderByWithRelationInput
+  outcome?: Prisma.AuditPilotOutcomeOrderByWithRelationInput
+  reportDeliveries?: Prisma.AuditReportDeliveryOrderByRelationAggregateInput
 }
 
 export type AuditPilotProposalWhereUniqueInput = Prisma.AtLeast<{
@@ -289,41 +480,79 @@ export type AuditPilotProposalWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.AuditPilotProposalWhereInput[]
   NOT?: Prisma.AuditPilotProposalWhereInput | Prisma.AuditPilotProposalWhereInput[]
   projectId?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  title?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  objective?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
   problem?: Prisma.StringFilter<"AuditPilotProposal"> | string
   scope?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  outOfScope?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
   workflow?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
   baselineSummary?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  successCriteria?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
   targetBusinessOutcome?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  duration?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  owner?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  dependencies?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  risks?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
   expectedRoi?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
   implementationEstimate?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
   recurringModel?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
   successMetrics?: Prisma.JsonNullableFilter<"AuditPilotProposal">
+  priceCents?: Prisma.IntNullableFilter<"AuditPilotProposal"> | number | null
+  currency?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  commercialNotes?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  proposedAt?: Prisma.DateTimeNullableFilter<"AuditPilotProposal"> | Date | string | null
+  acceptedAt?: Prisma.DateTimeNullableFilter<"AuditPilotProposal"> | Date | string | null
+  acceptedBy?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  rejectedAt?: Prisma.DateTimeNullableFilter<"AuditPilotProposal"> | Date | string | null
+  rejectionReason?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  convertedAt?: Prisma.DateTimeNullableFilter<"AuditPilotProposal"> | Date | string | null
   status?: Prisma.EnumPilotProposalStatusFilter<"AuditPilotProposal"> | $Enums.PilotProposalStatus
   createdAt?: Prisma.DateTimeFilter<"AuditPilotProposal"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"AuditPilotProposal"> | Date | string
   opportunity?: Prisma.XOR<Prisma.AutomationOpportunityScalarRelationFilter, Prisma.AutomationOpportunityWhereInput>
   project?: Prisma.XOR<Prisma.ProjectNullableScalarRelationFilter, Prisma.ProjectWhereInput> | null
+  outcome?: Prisma.XOR<Prisma.AuditPilotOutcomeNullableScalarRelationFilter, Prisma.AuditPilotOutcomeWhereInput> | null
+  reportDeliveries?: Prisma.AuditReportDeliveryListRelationFilter
 }, "id" | "opportunityId">
 
 export type AuditPilotProposalOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   opportunityId?: Prisma.SortOrder
   projectId?: Prisma.SortOrderInput | Prisma.SortOrder
+  title?: Prisma.SortOrderInput | Prisma.SortOrder
+  objective?: Prisma.SortOrderInput | Prisma.SortOrder
   problem?: Prisma.SortOrder
   scope?: Prisma.SortOrderInput | Prisma.SortOrder
+  outOfScope?: Prisma.SortOrderInput | Prisma.SortOrder
   workflow?: Prisma.SortOrderInput | Prisma.SortOrder
   baselineSummary?: Prisma.SortOrderInput | Prisma.SortOrder
+  successCriteria?: Prisma.SortOrderInput | Prisma.SortOrder
   targetBusinessOutcome?: Prisma.SortOrderInput | Prisma.SortOrder
+  duration?: Prisma.SortOrderInput | Prisma.SortOrder
+  owner?: Prisma.SortOrderInput | Prisma.SortOrder
+  dependencies?: Prisma.SortOrderInput | Prisma.SortOrder
+  risks?: Prisma.SortOrderInput | Prisma.SortOrder
   expectedRoi?: Prisma.SortOrderInput | Prisma.SortOrder
   implementationEstimate?: Prisma.SortOrderInput | Prisma.SortOrder
   recurringModel?: Prisma.SortOrderInput | Prisma.SortOrder
   successMetrics?: Prisma.SortOrderInput | Prisma.SortOrder
+  priceCents?: Prisma.SortOrderInput | Prisma.SortOrder
+  currency?: Prisma.SortOrderInput | Prisma.SortOrder
+  commercialNotes?: Prisma.SortOrderInput | Prisma.SortOrder
+  proposedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  acceptedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  acceptedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  rejectedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  convertedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.AuditPilotProposalCountOrderByAggregateInput
+  _avg?: Prisma.AuditPilotProposalAvgOrderByAggregateInput
   _max?: Prisma.AuditPilotProposalMaxOrderByAggregateInput
   _min?: Prisma.AuditPilotProposalMinOrderByAggregateInput
+  _sum?: Prisma.AuditPilotProposalSumOrderByAggregateInput
 }
 
 export type AuditPilotProposalScalarWhereWithAggregatesInput = {
@@ -333,15 +562,32 @@ export type AuditPilotProposalScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"AuditPilotProposal"> | string
   opportunityId?: Prisma.StringWithAggregatesFilter<"AuditPilotProposal"> | string
   projectId?: Prisma.StringNullableWithAggregatesFilter<"AuditPilotProposal"> | string | null
+  title?: Prisma.StringNullableWithAggregatesFilter<"AuditPilotProposal"> | string | null
+  objective?: Prisma.StringNullableWithAggregatesFilter<"AuditPilotProposal"> | string | null
   problem?: Prisma.StringWithAggregatesFilter<"AuditPilotProposal"> | string
   scope?: Prisma.StringNullableWithAggregatesFilter<"AuditPilotProposal"> | string | null
+  outOfScope?: Prisma.StringNullableWithAggregatesFilter<"AuditPilotProposal"> | string | null
   workflow?: Prisma.StringNullableWithAggregatesFilter<"AuditPilotProposal"> | string | null
   baselineSummary?: Prisma.StringNullableWithAggregatesFilter<"AuditPilotProposal"> | string | null
+  successCriteria?: Prisma.StringNullableWithAggregatesFilter<"AuditPilotProposal"> | string | null
   targetBusinessOutcome?: Prisma.StringNullableWithAggregatesFilter<"AuditPilotProposal"> | string | null
+  duration?: Prisma.StringNullableWithAggregatesFilter<"AuditPilotProposal"> | string | null
+  owner?: Prisma.StringNullableWithAggregatesFilter<"AuditPilotProposal"> | string | null
+  dependencies?: Prisma.StringNullableWithAggregatesFilter<"AuditPilotProposal"> | string | null
+  risks?: Prisma.StringNullableWithAggregatesFilter<"AuditPilotProposal"> | string | null
   expectedRoi?: Prisma.StringNullableWithAggregatesFilter<"AuditPilotProposal"> | string | null
   implementationEstimate?: Prisma.StringNullableWithAggregatesFilter<"AuditPilotProposal"> | string | null
   recurringModel?: Prisma.StringNullableWithAggregatesFilter<"AuditPilotProposal"> | string | null
   successMetrics?: Prisma.JsonNullableWithAggregatesFilter<"AuditPilotProposal">
+  priceCents?: Prisma.IntNullableWithAggregatesFilter<"AuditPilotProposal"> | number | null
+  currency?: Prisma.StringNullableWithAggregatesFilter<"AuditPilotProposal"> | string | null
+  commercialNotes?: Prisma.StringNullableWithAggregatesFilter<"AuditPilotProposal"> | string | null
+  proposedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"AuditPilotProposal"> | Date | string | null
+  acceptedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"AuditPilotProposal"> | Date | string | null
+  acceptedBy?: Prisma.StringNullableWithAggregatesFilter<"AuditPilotProposal"> | string | null
+  rejectedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"AuditPilotProposal"> | Date | string | null
+  rejectionReason?: Prisma.StringNullableWithAggregatesFilter<"AuditPilotProposal"> | string | null
+  convertedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"AuditPilotProposal"> | Date | string | null
   status?: Prisma.EnumPilotProposalStatusWithAggregatesFilter<"AuditPilotProposal"> | $Enums.PilotProposalStatus
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"AuditPilotProposal"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"AuditPilotProposal"> | Date | string
@@ -349,89 +595,182 @@ export type AuditPilotProposalScalarWhereWithAggregatesInput = {
 
 export type AuditPilotProposalCreateInput = {
   id?: string
+  title?: string | null
+  objective?: string | null
   problem: string
   scope?: string | null
+  outOfScope?: string | null
   workflow?: string | null
   baselineSummary?: string | null
+  successCriteria?: string | null
   targetBusinessOutcome?: string | null
+  duration?: string | null
+  owner?: string | null
+  dependencies?: string | null
+  risks?: string | null
   expectedRoi?: string | null
   implementationEstimate?: string | null
   recurringModel?: string | null
   successMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  priceCents?: number | null
+  currency?: string | null
+  commercialNotes?: string | null
+  proposedAt?: Date | string | null
+  acceptedAt?: Date | string | null
+  acceptedBy?: string | null
+  rejectedAt?: Date | string | null
+  rejectionReason?: string | null
+  convertedAt?: Date | string | null
   status?: $Enums.PilotProposalStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   opportunity: Prisma.AutomationOpportunityCreateNestedOneWithoutPilotInput
   project?: Prisma.ProjectCreateNestedOneWithoutAuditPilotsInput
+  outcome?: Prisma.AuditPilotOutcomeCreateNestedOneWithoutPilotInput
+  reportDeliveries?: Prisma.AuditReportDeliveryCreateNestedManyWithoutPilotProposalInput
 }
 
 export type AuditPilotProposalUncheckedCreateInput = {
   id?: string
   opportunityId: string
   projectId?: string | null
+  title?: string | null
+  objective?: string | null
   problem: string
   scope?: string | null
+  outOfScope?: string | null
   workflow?: string | null
   baselineSummary?: string | null
+  successCriteria?: string | null
   targetBusinessOutcome?: string | null
+  duration?: string | null
+  owner?: string | null
+  dependencies?: string | null
+  risks?: string | null
   expectedRoi?: string | null
   implementationEstimate?: string | null
   recurringModel?: string | null
   successMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  priceCents?: number | null
+  currency?: string | null
+  commercialNotes?: string | null
+  proposedAt?: Date | string | null
+  acceptedAt?: Date | string | null
+  acceptedBy?: string | null
+  rejectedAt?: Date | string | null
+  rejectionReason?: string | null
+  convertedAt?: Date | string | null
   status?: $Enums.PilotProposalStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  outcome?: Prisma.AuditPilotOutcomeUncheckedCreateNestedOneWithoutPilotInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUncheckedCreateNestedManyWithoutPilotProposalInput
 }
 
 export type AuditPilotProposalUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  objective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   problem?: Prisma.StringFieldUpdateOperationsInput | string
   scope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outOfScope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   workflow?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   baselineSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  successCriteria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetBusinessOutcome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  duration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  owner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dependencies?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  risks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expectedRoi?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   implementationEstimate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recurringModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   successMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  priceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commercialNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  proposedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  convertedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumPilotProposalStatusFieldUpdateOperationsInput | $Enums.PilotProposalStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   opportunity?: Prisma.AutomationOpportunityUpdateOneRequiredWithoutPilotNestedInput
   project?: Prisma.ProjectUpdateOneWithoutAuditPilotsNestedInput
+  outcome?: Prisma.AuditPilotOutcomeUpdateOneWithoutPilotNestedInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUpdateManyWithoutPilotProposalNestedInput
 }
 
 export type AuditPilotProposalUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   opportunityId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  objective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   problem?: Prisma.StringFieldUpdateOperationsInput | string
   scope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outOfScope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   workflow?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   baselineSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  successCriteria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetBusinessOutcome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  duration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  owner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dependencies?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  risks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expectedRoi?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   implementationEstimate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recurringModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   successMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  priceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commercialNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  proposedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  convertedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumPilotProposalStatusFieldUpdateOperationsInput | $Enums.PilotProposalStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  outcome?: Prisma.AuditPilotOutcomeUncheckedUpdateOneWithoutPilotNestedInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUncheckedUpdateManyWithoutPilotProposalNestedInput
 }
 
 export type AuditPilotProposalCreateManyInput = {
   id?: string
   opportunityId: string
   projectId?: string | null
+  title?: string | null
+  objective?: string | null
   problem: string
   scope?: string | null
+  outOfScope?: string | null
   workflow?: string | null
   baselineSummary?: string | null
+  successCriteria?: string | null
   targetBusinessOutcome?: string | null
+  duration?: string | null
+  owner?: string | null
+  dependencies?: string | null
+  risks?: string | null
   expectedRoi?: string | null
   implementationEstimate?: string | null
   recurringModel?: string | null
   successMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  priceCents?: number | null
+  currency?: string | null
+  commercialNotes?: string | null
+  proposedAt?: Date | string | null
+  acceptedAt?: Date | string | null
+  acceptedBy?: string | null
+  rejectedAt?: Date | string | null
+  rejectionReason?: string | null
+  convertedAt?: Date | string | null
   status?: $Enums.PilotProposalStatus
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -439,15 +778,32 @@ export type AuditPilotProposalCreateManyInput = {
 
 export type AuditPilotProposalUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  objective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   problem?: Prisma.StringFieldUpdateOperationsInput | string
   scope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outOfScope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   workflow?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   baselineSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  successCriteria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetBusinessOutcome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  duration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  owner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dependencies?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  risks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expectedRoi?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   implementationEstimate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recurringModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   successMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  priceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commercialNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  proposedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  convertedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumPilotProposalStatusFieldUpdateOperationsInput | $Enums.PilotProposalStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -457,15 +813,32 @@ export type AuditPilotProposalUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   opportunityId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  objective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   problem?: Prisma.StringFieldUpdateOperationsInput | string
   scope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outOfScope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   workflow?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   baselineSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  successCriteria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetBusinessOutcome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  duration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  owner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dependencies?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  risks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expectedRoi?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   implementationEstimate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recurringModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   successMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  priceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commercialNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  proposedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  convertedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumPilotProposalStatusFieldUpdateOperationsInput | $Enums.PilotProposalStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -490,32 +863,70 @@ export type AuditPilotProposalCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   opportunityId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
+  title?: Prisma.SortOrder
+  objective?: Prisma.SortOrder
   problem?: Prisma.SortOrder
   scope?: Prisma.SortOrder
+  outOfScope?: Prisma.SortOrder
   workflow?: Prisma.SortOrder
   baselineSummary?: Prisma.SortOrder
+  successCriteria?: Prisma.SortOrder
   targetBusinessOutcome?: Prisma.SortOrder
+  duration?: Prisma.SortOrder
+  owner?: Prisma.SortOrder
+  dependencies?: Prisma.SortOrder
+  risks?: Prisma.SortOrder
   expectedRoi?: Prisma.SortOrder
   implementationEstimate?: Prisma.SortOrder
   recurringModel?: Prisma.SortOrder
   successMetrics?: Prisma.SortOrder
+  priceCents?: Prisma.SortOrder
+  currency?: Prisma.SortOrder
+  commercialNotes?: Prisma.SortOrder
+  proposedAt?: Prisma.SortOrder
+  acceptedAt?: Prisma.SortOrder
+  acceptedBy?: Prisma.SortOrder
+  rejectedAt?: Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrder
+  convertedAt?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type AuditPilotProposalAvgOrderByAggregateInput = {
+  priceCents?: Prisma.SortOrder
 }
 
 export type AuditPilotProposalMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   opportunityId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
+  title?: Prisma.SortOrder
+  objective?: Prisma.SortOrder
   problem?: Prisma.SortOrder
   scope?: Prisma.SortOrder
+  outOfScope?: Prisma.SortOrder
   workflow?: Prisma.SortOrder
   baselineSummary?: Prisma.SortOrder
+  successCriteria?: Prisma.SortOrder
   targetBusinessOutcome?: Prisma.SortOrder
+  duration?: Prisma.SortOrder
+  owner?: Prisma.SortOrder
+  dependencies?: Prisma.SortOrder
+  risks?: Prisma.SortOrder
   expectedRoi?: Prisma.SortOrder
   implementationEstimate?: Prisma.SortOrder
   recurringModel?: Prisma.SortOrder
+  priceCents?: Prisma.SortOrder
+  currency?: Prisma.SortOrder
+  commercialNotes?: Prisma.SortOrder
+  proposedAt?: Prisma.SortOrder
+  acceptedAt?: Prisma.SortOrder
+  acceptedBy?: Prisma.SortOrder
+  rejectedAt?: Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrder
+  convertedAt?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -525,17 +936,43 @@ export type AuditPilotProposalMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   opportunityId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
+  title?: Prisma.SortOrder
+  objective?: Prisma.SortOrder
   problem?: Prisma.SortOrder
   scope?: Prisma.SortOrder
+  outOfScope?: Prisma.SortOrder
   workflow?: Prisma.SortOrder
   baselineSummary?: Prisma.SortOrder
+  successCriteria?: Prisma.SortOrder
   targetBusinessOutcome?: Prisma.SortOrder
+  duration?: Prisma.SortOrder
+  owner?: Prisma.SortOrder
+  dependencies?: Prisma.SortOrder
+  risks?: Prisma.SortOrder
   expectedRoi?: Prisma.SortOrder
   implementationEstimate?: Prisma.SortOrder
   recurringModel?: Prisma.SortOrder
+  priceCents?: Prisma.SortOrder
+  currency?: Prisma.SortOrder
+  commercialNotes?: Prisma.SortOrder
+  proposedAt?: Prisma.SortOrder
+  acceptedAt?: Prisma.SortOrder
+  acceptedBy?: Prisma.SortOrder
+  rejectedAt?: Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrder
+  convertedAt?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type AuditPilotProposalSumOrderByAggregateInput = {
+  priceCents?: Prisma.SortOrder
+}
+
+export type AuditPilotProposalScalarRelationFilter = {
+  is?: Prisma.AuditPilotProposalWhereInput
+  isNot?: Prisma.AuditPilotProposalWhereInput
 }
 
 export type AuditPilotProposalCreateNestedManyWithoutProjectInput = {
@@ -616,38 +1053,106 @@ export type EnumPilotProposalStatusFieldUpdateOperationsInput = {
   set?: $Enums.PilotProposalStatus
 }
 
+export type AuditPilotProposalCreateNestedOneWithoutOutcomeInput = {
+  create?: Prisma.XOR<Prisma.AuditPilotProposalCreateWithoutOutcomeInput, Prisma.AuditPilotProposalUncheckedCreateWithoutOutcomeInput>
+  connectOrCreate?: Prisma.AuditPilotProposalCreateOrConnectWithoutOutcomeInput
+  connect?: Prisma.AuditPilotProposalWhereUniqueInput
+}
+
+export type AuditPilotProposalUpdateOneRequiredWithoutOutcomeNestedInput = {
+  create?: Prisma.XOR<Prisma.AuditPilotProposalCreateWithoutOutcomeInput, Prisma.AuditPilotProposalUncheckedCreateWithoutOutcomeInput>
+  connectOrCreate?: Prisma.AuditPilotProposalCreateOrConnectWithoutOutcomeInput
+  upsert?: Prisma.AuditPilotProposalUpsertWithoutOutcomeInput
+  connect?: Prisma.AuditPilotProposalWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AuditPilotProposalUpdateToOneWithWhereWithoutOutcomeInput, Prisma.AuditPilotProposalUpdateWithoutOutcomeInput>, Prisma.AuditPilotProposalUncheckedUpdateWithoutOutcomeInput>
+}
+
+export type AuditPilotProposalCreateNestedOneWithoutReportDeliveriesInput = {
+  create?: Prisma.XOR<Prisma.AuditPilotProposalCreateWithoutReportDeliveriesInput, Prisma.AuditPilotProposalUncheckedCreateWithoutReportDeliveriesInput>
+  connectOrCreate?: Prisma.AuditPilotProposalCreateOrConnectWithoutReportDeliveriesInput
+  connect?: Prisma.AuditPilotProposalWhereUniqueInput
+}
+
+export type AuditPilotProposalUpdateOneWithoutReportDeliveriesNestedInput = {
+  create?: Prisma.XOR<Prisma.AuditPilotProposalCreateWithoutReportDeliveriesInput, Prisma.AuditPilotProposalUncheckedCreateWithoutReportDeliveriesInput>
+  connectOrCreate?: Prisma.AuditPilotProposalCreateOrConnectWithoutReportDeliveriesInput
+  upsert?: Prisma.AuditPilotProposalUpsertWithoutReportDeliveriesInput
+  disconnect?: Prisma.AuditPilotProposalWhereInput | boolean
+  delete?: Prisma.AuditPilotProposalWhereInput | boolean
+  connect?: Prisma.AuditPilotProposalWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AuditPilotProposalUpdateToOneWithWhereWithoutReportDeliveriesInput, Prisma.AuditPilotProposalUpdateWithoutReportDeliveriesInput>, Prisma.AuditPilotProposalUncheckedUpdateWithoutReportDeliveriesInput>
+}
+
 export type AuditPilotProposalCreateWithoutProjectInput = {
   id?: string
+  title?: string | null
+  objective?: string | null
   problem: string
   scope?: string | null
+  outOfScope?: string | null
   workflow?: string | null
   baselineSummary?: string | null
+  successCriteria?: string | null
   targetBusinessOutcome?: string | null
+  duration?: string | null
+  owner?: string | null
+  dependencies?: string | null
+  risks?: string | null
   expectedRoi?: string | null
   implementationEstimate?: string | null
   recurringModel?: string | null
   successMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  priceCents?: number | null
+  currency?: string | null
+  commercialNotes?: string | null
+  proposedAt?: Date | string | null
+  acceptedAt?: Date | string | null
+  acceptedBy?: string | null
+  rejectedAt?: Date | string | null
+  rejectionReason?: string | null
+  convertedAt?: Date | string | null
   status?: $Enums.PilotProposalStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   opportunity: Prisma.AutomationOpportunityCreateNestedOneWithoutPilotInput
+  outcome?: Prisma.AuditPilotOutcomeCreateNestedOneWithoutPilotInput
+  reportDeliveries?: Prisma.AuditReportDeliveryCreateNestedManyWithoutPilotProposalInput
 }
 
 export type AuditPilotProposalUncheckedCreateWithoutProjectInput = {
   id?: string
   opportunityId: string
+  title?: string | null
+  objective?: string | null
   problem: string
   scope?: string | null
+  outOfScope?: string | null
   workflow?: string | null
   baselineSummary?: string | null
+  successCriteria?: string | null
   targetBusinessOutcome?: string | null
+  duration?: string | null
+  owner?: string | null
+  dependencies?: string | null
+  risks?: string | null
   expectedRoi?: string | null
   implementationEstimate?: string | null
   recurringModel?: string | null
   successMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  priceCents?: number | null
+  currency?: string | null
+  commercialNotes?: string | null
+  proposedAt?: Date | string | null
+  acceptedAt?: Date | string | null
+  acceptedBy?: string | null
+  rejectedAt?: Date | string | null
+  rejectionReason?: string | null
+  convertedAt?: Date | string | null
   status?: $Enums.PilotProposalStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  outcome?: Prisma.AuditPilotOutcomeUncheckedCreateNestedOneWithoutPilotInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUncheckedCreateNestedManyWithoutPilotProposalInput
 }
 
 export type AuditPilotProposalCreateOrConnectWithoutProjectInput = {
@@ -683,15 +1188,32 @@ export type AuditPilotProposalScalarWhereInput = {
   id?: Prisma.StringFilter<"AuditPilotProposal"> | string
   opportunityId?: Prisma.StringFilter<"AuditPilotProposal"> | string
   projectId?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  title?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  objective?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
   problem?: Prisma.StringFilter<"AuditPilotProposal"> | string
   scope?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  outOfScope?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
   workflow?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
   baselineSummary?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  successCriteria?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
   targetBusinessOutcome?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  duration?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  owner?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  dependencies?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  risks?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
   expectedRoi?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
   implementationEstimate?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
   recurringModel?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
   successMetrics?: Prisma.JsonNullableFilter<"AuditPilotProposal">
+  priceCents?: Prisma.IntNullableFilter<"AuditPilotProposal"> | number | null
+  currency?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  commercialNotes?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  proposedAt?: Prisma.DateTimeNullableFilter<"AuditPilotProposal"> | Date | string | null
+  acceptedAt?: Prisma.DateTimeNullableFilter<"AuditPilotProposal"> | Date | string | null
+  acceptedBy?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  rejectedAt?: Prisma.DateTimeNullableFilter<"AuditPilotProposal"> | Date | string | null
+  rejectionReason?: Prisma.StringNullableFilter<"AuditPilotProposal"> | string | null
+  convertedAt?: Prisma.DateTimeNullableFilter<"AuditPilotProposal"> | Date | string | null
   status?: Prisma.EnumPilotProposalStatusFilter<"AuditPilotProposal"> | $Enums.PilotProposalStatus
   createdAt?: Prisma.DateTimeFilter<"AuditPilotProposal"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"AuditPilotProposal"> | Date | string
@@ -699,36 +1221,74 @@ export type AuditPilotProposalScalarWhereInput = {
 
 export type AuditPilotProposalCreateWithoutOpportunityInput = {
   id?: string
+  title?: string | null
+  objective?: string | null
   problem: string
   scope?: string | null
+  outOfScope?: string | null
   workflow?: string | null
   baselineSummary?: string | null
+  successCriteria?: string | null
   targetBusinessOutcome?: string | null
+  duration?: string | null
+  owner?: string | null
+  dependencies?: string | null
+  risks?: string | null
   expectedRoi?: string | null
   implementationEstimate?: string | null
   recurringModel?: string | null
   successMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  priceCents?: number | null
+  currency?: string | null
+  commercialNotes?: string | null
+  proposedAt?: Date | string | null
+  acceptedAt?: Date | string | null
+  acceptedBy?: string | null
+  rejectedAt?: Date | string | null
+  rejectionReason?: string | null
+  convertedAt?: Date | string | null
   status?: $Enums.PilotProposalStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   project?: Prisma.ProjectCreateNestedOneWithoutAuditPilotsInput
+  outcome?: Prisma.AuditPilotOutcomeCreateNestedOneWithoutPilotInput
+  reportDeliveries?: Prisma.AuditReportDeliveryCreateNestedManyWithoutPilotProposalInput
 }
 
 export type AuditPilotProposalUncheckedCreateWithoutOpportunityInput = {
   id?: string
   projectId?: string | null
+  title?: string | null
+  objective?: string | null
   problem: string
   scope?: string | null
+  outOfScope?: string | null
   workflow?: string | null
   baselineSummary?: string | null
+  successCriteria?: string | null
   targetBusinessOutcome?: string | null
+  duration?: string | null
+  owner?: string | null
+  dependencies?: string | null
+  risks?: string | null
   expectedRoi?: string | null
   implementationEstimate?: string | null
   recurringModel?: string | null
   successMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  priceCents?: number | null
+  currency?: string | null
+  commercialNotes?: string | null
+  proposedAt?: Date | string | null
+  acceptedAt?: Date | string | null
+  acceptedBy?: string | null
+  rejectedAt?: Date | string | null
+  rejectionReason?: string | null
+  convertedAt?: Date | string | null
   status?: $Enums.PilotProposalStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  outcome?: Prisma.AuditPilotOutcomeUncheckedCreateNestedOneWithoutPilotInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUncheckedCreateNestedManyWithoutPilotProposalInput
 }
 
 export type AuditPilotProposalCreateOrConnectWithoutOpportunityInput = {
@@ -749,50 +1309,425 @@ export type AuditPilotProposalUpdateToOneWithWhereWithoutOpportunityInput = {
 
 export type AuditPilotProposalUpdateWithoutOpportunityInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  objective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   problem?: Prisma.StringFieldUpdateOperationsInput | string
   scope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outOfScope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   workflow?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   baselineSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  successCriteria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetBusinessOutcome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  duration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  owner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dependencies?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  risks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expectedRoi?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   implementationEstimate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recurringModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   successMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  priceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commercialNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  proposedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  convertedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumPilotProposalStatusFieldUpdateOperationsInput | $Enums.PilotProposalStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneWithoutAuditPilotsNestedInput
+  outcome?: Prisma.AuditPilotOutcomeUpdateOneWithoutPilotNestedInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUpdateManyWithoutPilotProposalNestedInput
 }
 
 export type AuditPilotProposalUncheckedUpdateWithoutOpportunityInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  objective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   problem?: Prisma.StringFieldUpdateOperationsInput | string
   scope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outOfScope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   workflow?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   baselineSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  successCriteria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetBusinessOutcome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  duration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  owner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dependencies?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  risks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expectedRoi?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   implementationEstimate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recurringModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   successMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  priceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commercialNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  proposedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  convertedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumPilotProposalStatusFieldUpdateOperationsInput | $Enums.PilotProposalStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  outcome?: Prisma.AuditPilotOutcomeUncheckedUpdateOneWithoutPilotNestedInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUncheckedUpdateManyWithoutPilotProposalNestedInput
+}
+
+export type AuditPilotProposalCreateWithoutOutcomeInput = {
+  id?: string
+  title?: string | null
+  objective?: string | null
+  problem: string
+  scope?: string | null
+  outOfScope?: string | null
+  workflow?: string | null
+  baselineSummary?: string | null
+  successCriteria?: string | null
+  targetBusinessOutcome?: string | null
+  duration?: string | null
+  owner?: string | null
+  dependencies?: string | null
+  risks?: string | null
+  expectedRoi?: string | null
+  implementationEstimate?: string | null
+  recurringModel?: string | null
+  successMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  priceCents?: number | null
+  currency?: string | null
+  commercialNotes?: string | null
+  proposedAt?: Date | string | null
+  acceptedAt?: Date | string | null
+  acceptedBy?: string | null
+  rejectedAt?: Date | string | null
+  rejectionReason?: string | null
+  convertedAt?: Date | string | null
+  status?: $Enums.PilotProposalStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  opportunity: Prisma.AutomationOpportunityCreateNestedOneWithoutPilotInput
+  project?: Prisma.ProjectCreateNestedOneWithoutAuditPilotsInput
+  reportDeliveries?: Prisma.AuditReportDeliveryCreateNestedManyWithoutPilotProposalInput
+}
+
+export type AuditPilotProposalUncheckedCreateWithoutOutcomeInput = {
+  id?: string
+  opportunityId: string
+  projectId?: string | null
+  title?: string | null
+  objective?: string | null
+  problem: string
+  scope?: string | null
+  outOfScope?: string | null
+  workflow?: string | null
+  baselineSummary?: string | null
+  successCriteria?: string | null
+  targetBusinessOutcome?: string | null
+  duration?: string | null
+  owner?: string | null
+  dependencies?: string | null
+  risks?: string | null
+  expectedRoi?: string | null
+  implementationEstimate?: string | null
+  recurringModel?: string | null
+  successMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  priceCents?: number | null
+  currency?: string | null
+  commercialNotes?: string | null
+  proposedAt?: Date | string | null
+  acceptedAt?: Date | string | null
+  acceptedBy?: string | null
+  rejectedAt?: Date | string | null
+  rejectionReason?: string | null
+  convertedAt?: Date | string | null
+  status?: $Enums.PilotProposalStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  reportDeliveries?: Prisma.AuditReportDeliveryUncheckedCreateNestedManyWithoutPilotProposalInput
+}
+
+export type AuditPilotProposalCreateOrConnectWithoutOutcomeInput = {
+  where: Prisma.AuditPilotProposalWhereUniqueInput
+  create: Prisma.XOR<Prisma.AuditPilotProposalCreateWithoutOutcomeInput, Prisma.AuditPilotProposalUncheckedCreateWithoutOutcomeInput>
+}
+
+export type AuditPilotProposalUpsertWithoutOutcomeInput = {
+  update: Prisma.XOR<Prisma.AuditPilotProposalUpdateWithoutOutcomeInput, Prisma.AuditPilotProposalUncheckedUpdateWithoutOutcomeInput>
+  create: Prisma.XOR<Prisma.AuditPilotProposalCreateWithoutOutcomeInput, Prisma.AuditPilotProposalUncheckedCreateWithoutOutcomeInput>
+  where?: Prisma.AuditPilotProposalWhereInput
+}
+
+export type AuditPilotProposalUpdateToOneWithWhereWithoutOutcomeInput = {
+  where?: Prisma.AuditPilotProposalWhereInput
+  data: Prisma.XOR<Prisma.AuditPilotProposalUpdateWithoutOutcomeInput, Prisma.AuditPilotProposalUncheckedUpdateWithoutOutcomeInput>
+}
+
+export type AuditPilotProposalUpdateWithoutOutcomeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  objective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  problem?: Prisma.StringFieldUpdateOperationsInput | string
+  scope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outOfScope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workflow?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  baselineSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  successCriteria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  targetBusinessOutcome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  duration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  owner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dependencies?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  risks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedRoi?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  implementationEstimate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  successMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  priceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commercialNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  proposedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  convertedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.EnumPilotProposalStatusFieldUpdateOperationsInput | $Enums.PilotProposalStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  opportunity?: Prisma.AutomationOpportunityUpdateOneRequiredWithoutPilotNestedInput
+  project?: Prisma.ProjectUpdateOneWithoutAuditPilotsNestedInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUpdateManyWithoutPilotProposalNestedInput
+}
+
+export type AuditPilotProposalUncheckedUpdateWithoutOutcomeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  opportunityId?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  objective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  problem?: Prisma.StringFieldUpdateOperationsInput | string
+  scope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outOfScope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workflow?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  baselineSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  successCriteria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  targetBusinessOutcome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  duration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  owner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dependencies?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  risks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedRoi?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  implementationEstimate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  successMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  priceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commercialNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  proposedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  convertedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.EnumPilotProposalStatusFieldUpdateOperationsInput | $Enums.PilotProposalStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reportDeliveries?: Prisma.AuditReportDeliveryUncheckedUpdateManyWithoutPilotProposalNestedInput
+}
+
+export type AuditPilotProposalCreateWithoutReportDeliveriesInput = {
+  id?: string
+  title?: string | null
+  objective?: string | null
+  problem: string
+  scope?: string | null
+  outOfScope?: string | null
+  workflow?: string | null
+  baselineSummary?: string | null
+  successCriteria?: string | null
+  targetBusinessOutcome?: string | null
+  duration?: string | null
+  owner?: string | null
+  dependencies?: string | null
+  risks?: string | null
+  expectedRoi?: string | null
+  implementationEstimate?: string | null
+  recurringModel?: string | null
+  successMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  priceCents?: number | null
+  currency?: string | null
+  commercialNotes?: string | null
+  proposedAt?: Date | string | null
+  acceptedAt?: Date | string | null
+  acceptedBy?: string | null
+  rejectedAt?: Date | string | null
+  rejectionReason?: string | null
+  convertedAt?: Date | string | null
+  status?: $Enums.PilotProposalStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  opportunity: Prisma.AutomationOpportunityCreateNestedOneWithoutPilotInput
+  project?: Prisma.ProjectCreateNestedOneWithoutAuditPilotsInput
+  outcome?: Prisma.AuditPilotOutcomeCreateNestedOneWithoutPilotInput
+}
+
+export type AuditPilotProposalUncheckedCreateWithoutReportDeliveriesInput = {
+  id?: string
+  opportunityId: string
+  projectId?: string | null
+  title?: string | null
+  objective?: string | null
+  problem: string
+  scope?: string | null
+  outOfScope?: string | null
+  workflow?: string | null
+  baselineSummary?: string | null
+  successCriteria?: string | null
+  targetBusinessOutcome?: string | null
+  duration?: string | null
+  owner?: string | null
+  dependencies?: string | null
+  risks?: string | null
+  expectedRoi?: string | null
+  implementationEstimate?: string | null
+  recurringModel?: string | null
+  successMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  priceCents?: number | null
+  currency?: string | null
+  commercialNotes?: string | null
+  proposedAt?: Date | string | null
+  acceptedAt?: Date | string | null
+  acceptedBy?: string | null
+  rejectedAt?: Date | string | null
+  rejectionReason?: string | null
+  convertedAt?: Date | string | null
+  status?: $Enums.PilotProposalStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  outcome?: Prisma.AuditPilotOutcomeUncheckedCreateNestedOneWithoutPilotInput
+}
+
+export type AuditPilotProposalCreateOrConnectWithoutReportDeliveriesInput = {
+  where: Prisma.AuditPilotProposalWhereUniqueInput
+  create: Prisma.XOR<Prisma.AuditPilotProposalCreateWithoutReportDeliveriesInput, Prisma.AuditPilotProposalUncheckedCreateWithoutReportDeliveriesInput>
+}
+
+export type AuditPilotProposalUpsertWithoutReportDeliveriesInput = {
+  update: Prisma.XOR<Prisma.AuditPilotProposalUpdateWithoutReportDeliveriesInput, Prisma.AuditPilotProposalUncheckedUpdateWithoutReportDeliveriesInput>
+  create: Prisma.XOR<Prisma.AuditPilotProposalCreateWithoutReportDeliveriesInput, Prisma.AuditPilotProposalUncheckedCreateWithoutReportDeliveriesInput>
+  where?: Prisma.AuditPilotProposalWhereInput
+}
+
+export type AuditPilotProposalUpdateToOneWithWhereWithoutReportDeliveriesInput = {
+  where?: Prisma.AuditPilotProposalWhereInput
+  data: Prisma.XOR<Prisma.AuditPilotProposalUpdateWithoutReportDeliveriesInput, Prisma.AuditPilotProposalUncheckedUpdateWithoutReportDeliveriesInput>
+}
+
+export type AuditPilotProposalUpdateWithoutReportDeliveriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  objective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  problem?: Prisma.StringFieldUpdateOperationsInput | string
+  scope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outOfScope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workflow?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  baselineSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  successCriteria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  targetBusinessOutcome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  duration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  owner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dependencies?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  risks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedRoi?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  implementationEstimate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  successMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  priceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commercialNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  proposedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  convertedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.EnumPilotProposalStatusFieldUpdateOperationsInput | $Enums.PilotProposalStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  opportunity?: Prisma.AutomationOpportunityUpdateOneRequiredWithoutPilotNestedInput
+  project?: Prisma.ProjectUpdateOneWithoutAuditPilotsNestedInput
+  outcome?: Prisma.AuditPilotOutcomeUpdateOneWithoutPilotNestedInput
+}
+
+export type AuditPilotProposalUncheckedUpdateWithoutReportDeliveriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  opportunityId?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  objective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  problem?: Prisma.StringFieldUpdateOperationsInput | string
+  scope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outOfScope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workflow?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  baselineSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  successCriteria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  targetBusinessOutcome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  duration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  owner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dependencies?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  risks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedRoi?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  implementationEstimate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  successMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  priceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commercialNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  proposedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  convertedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.EnumPilotProposalStatusFieldUpdateOperationsInput | $Enums.PilotProposalStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  outcome?: Prisma.AuditPilotOutcomeUncheckedUpdateOneWithoutPilotNestedInput
 }
 
 export type AuditPilotProposalCreateManyProjectInput = {
   id?: string
   opportunityId: string
+  title?: string | null
+  objective?: string | null
   problem: string
   scope?: string | null
+  outOfScope?: string | null
   workflow?: string | null
   baselineSummary?: string | null
+  successCriteria?: string | null
   targetBusinessOutcome?: string | null
+  duration?: string | null
+  owner?: string | null
+  dependencies?: string | null
+  risks?: string | null
   expectedRoi?: string | null
   implementationEstimate?: string | null
   recurringModel?: string | null
   successMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  priceCents?: number | null
+  currency?: string | null
+  commercialNotes?: string | null
+  proposedAt?: Date | string | null
+  acceptedAt?: Date | string | null
+  acceptedBy?: string | null
+  rejectedAt?: Date | string | null
+  rejectionReason?: string | null
+  convertedAt?: Date | string | null
   status?: $Enums.PilotProposalStatus
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -800,90 +1735,211 @@ export type AuditPilotProposalCreateManyProjectInput = {
 
 export type AuditPilotProposalUpdateWithoutProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  objective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   problem?: Prisma.StringFieldUpdateOperationsInput | string
   scope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outOfScope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   workflow?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   baselineSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  successCriteria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetBusinessOutcome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  duration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  owner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dependencies?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  risks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expectedRoi?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   implementationEstimate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recurringModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   successMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  priceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commercialNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  proposedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  convertedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumPilotProposalStatusFieldUpdateOperationsInput | $Enums.PilotProposalStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   opportunity?: Prisma.AutomationOpportunityUpdateOneRequiredWithoutPilotNestedInput
+  outcome?: Prisma.AuditPilotOutcomeUpdateOneWithoutPilotNestedInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUpdateManyWithoutPilotProposalNestedInput
 }
 
 export type AuditPilotProposalUncheckedUpdateWithoutProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   opportunityId?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  objective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   problem?: Prisma.StringFieldUpdateOperationsInput | string
   scope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outOfScope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   workflow?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   baselineSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  successCriteria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetBusinessOutcome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  duration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  owner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dependencies?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  risks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expectedRoi?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   implementationEstimate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recurringModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   successMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  priceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commercialNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  proposedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  convertedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumPilotProposalStatusFieldUpdateOperationsInput | $Enums.PilotProposalStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  outcome?: Prisma.AuditPilotOutcomeUncheckedUpdateOneWithoutPilotNestedInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUncheckedUpdateManyWithoutPilotProposalNestedInput
 }
 
 export type AuditPilotProposalUncheckedUpdateManyWithoutProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   opportunityId?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  objective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   problem?: Prisma.StringFieldUpdateOperationsInput | string
   scope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outOfScope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   workflow?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   baselineSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  successCriteria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetBusinessOutcome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  duration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  owner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dependencies?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  risks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expectedRoi?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   implementationEstimate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recurringModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   successMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  priceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  commercialNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  proposedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  convertedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumPilotProposalStatusFieldUpdateOperationsInput | $Enums.PilotProposalStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+
+/**
+ * Count Type AuditPilotProposalCountOutputType
+ */
+
+export type AuditPilotProposalCountOutputType = {
+  reportDeliveries: number
+}
+
+export type AuditPilotProposalCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  reportDeliveries?: boolean | AuditPilotProposalCountOutputTypeCountReportDeliveriesArgs
+}
+
+/**
+ * AuditPilotProposalCountOutputType without action
+ */
+export type AuditPilotProposalCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AuditPilotProposalCountOutputType
+   */
+  select?: Prisma.AuditPilotProposalCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * AuditPilotProposalCountOutputType without action
+ */
+export type AuditPilotProposalCountOutputTypeCountReportDeliveriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AuditReportDeliveryWhereInput
+}
 
 
 export type AuditPilotProposalSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   opportunityId?: boolean
   projectId?: boolean
+  title?: boolean
+  objective?: boolean
   problem?: boolean
   scope?: boolean
+  outOfScope?: boolean
   workflow?: boolean
   baselineSummary?: boolean
+  successCriteria?: boolean
   targetBusinessOutcome?: boolean
+  duration?: boolean
+  owner?: boolean
+  dependencies?: boolean
+  risks?: boolean
   expectedRoi?: boolean
   implementationEstimate?: boolean
   recurringModel?: boolean
   successMetrics?: boolean
+  priceCents?: boolean
+  currency?: boolean
+  commercialNotes?: boolean
+  proposedAt?: boolean
+  acceptedAt?: boolean
+  acceptedBy?: boolean
+  rejectedAt?: boolean
+  rejectionReason?: boolean
+  convertedAt?: boolean
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   opportunity?: boolean | Prisma.AutomationOpportunityDefaultArgs<ExtArgs>
   project?: boolean | Prisma.AuditPilotProposal$projectArgs<ExtArgs>
+  outcome?: boolean | Prisma.AuditPilotProposal$outcomeArgs<ExtArgs>
+  reportDeliveries?: boolean | Prisma.AuditPilotProposal$reportDeliveriesArgs<ExtArgs>
+  _count?: boolean | Prisma.AuditPilotProposalCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["auditPilotProposal"]>
 
 export type AuditPilotProposalSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   opportunityId?: boolean
   projectId?: boolean
+  title?: boolean
+  objective?: boolean
   problem?: boolean
   scope?: boolean
+  outOfScope?: boolean
   workflow?: boolean
   baselineSummary?: boolean
+  successCriteria?: boolean
   targetBusinessOutcome?: boolean
+  duration?: boolean
+  owner?: boolean
+  dependencies?: boolean
+  risks?: boolean
   expectedRoi?: boolean
   implementationEstimate?: boolean
   recurringModel?: boolean
   successMetrics?: boolean
+  priceCents?: boolean
+  currency?: boolean
+  commercialNotes?: boolean
+  proposedAt?: boolean
+  acceptedAt?: boolean
+  acceptedBy?: boolean
+  rejectedAt?: boolean
+  rejectionReason?: boolean
+  convertedAt?: boolean
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -895,15 +1951,32 @@ export type AuditPilotProposalSelectUpdateManyAndReturn<ExtArgs extends runtime.
   id?: boolean
   opportunityId?: boolean
   projectId?: boolean
+  title?: boolean
+  objective?: boolean
   problem?: boolean
   scope?: boolean
+  outOfScope?: boolean
   workflow?: boolean
   baselineSummary?: boolean
+  successCriteria?: boolean
   targetBusinessOutcome?: boolean
+  duration?: boolean
+  owner?: boolean
+  dependencies?: boolean
+  risks?: boolean
   expectedRoi?: boolean
   implementationEstimate?: boolean
   recurringModel?: boolean
   successMetrics?: boolean
+  priceCents?: boolean
+  currency?: boolean
+  commercialNotes?: boolean
+  proposedAt?: boolean
+  acceptedAt?: boolean
+  acceptedBy?: boolean
+  rejectedAt?: boolean
+  rejectionReason?: boolean
+  convertedAt?: boolean
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -915,24 +1988,44 @@ export type AuditPilotProposalSelectScalar = {
   id?: boolean
   opportunityId?: boolean
   projectId?: boolean
+  title?: boolean
+  objective?: boolean
   problem?: boolean
   scope?: boolean
+  outOfScope?: boolean
   workflow?: boolean
   baselineSummary?: boolean
+  successCriteria?: boolean
   targetBusinessOutcome?: boolean
+  duration?: boolean
+  owner?: boolean
+  dependencies?: boolean
+  risks?: boolean
   expectedRoi?: boolean
   implementationEstimate?: boolean
   recurringModel?: boolean
   successMetrics?: boolean
+  priceCents?: boolean
+  currency?: boolean
+  commercialNotes?: boolean
+  proposedAt?: boolean
+  acceptedAt?: boolean
+  acceptedBy?: boolean
+  rejectedAt?: boolean
+  rejectionReason?: boolean
+  convertedAt?: boolean
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type AuditPilotProposalOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "opportunityId" | "projectId" | "problem" | "scope" | "workflow" | "baselineSummary" | "targetBusinessOutcome" | "expectedRoi" | "implementationEstimate" | "recurringModel" | "successMetrics" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["auditPilotProposal"]>
+export type AuditPilotProposalOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "opportunityId" | "projectId" | "title" | "objective" | "problem" | "scope" | "outOfScope" | "workflow" | "baselineSummary" | "successCriteria" | "targetBusinessOutcome" | "duration" | "owner" | "dependencies" | "risks" | "expectedRoi" | "implementationEstimate" | "recurringModel" | "successMetrics" | "priceCents" | "currency" | "commercialNotes" | "proposedAt" | "acceptedAt" | "acceptedBy" | "rejectedAt" | "rejectionReason" | "convertedAt" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["auditPilotProposal"]>
 export type AuditPilotProposalInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   opportunity?: boolean | Prisma.AutomationOpportunityDefaultArgs<ExtArgs>
   project?: boolean | Prisma.AuditPilotProposal$projectArgs<ExtArgs>
+  outcome?: boolean | Prisma.AuditPilotProposal$outcomeArgs<ExtArgs>
+  reportDeliveries?: boolean | Prisma.AuditPilotProposal$reportDeliveriesArgs<ExtArgs>
+  _count?: boolean | Prisma.AuditPilotProposalCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AuditPilotProposalIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   opportunity?: boolean | Prisma.AutomationOpportunityDefaultArgs<ExtArgs>
@@ -948,20 +2041,39 @@ export type $AuditPilotProposalPayload<ExtArgs extends runtime.Types.Extensions.
   objects: {
     opportunity: Prisma.$AutomationOpportunityPayload<ExtArgs>
     project: Prisma.$ProjectPayload<ExtArgs> | null
+    outcome: Prisma.$AuditPilotOutcomePayload<ExtArgs> | null
+    reportDeliveries: Prisma.$AuditReportDeliveryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     opportunityId: string
     projectId: string | null
+    title: string | null
+    objective: string | null
     problem: string
     scope: string | null
+    outOfScope: string | null
     workflow: string | null
     baselineSummary: string | null
+    successCriteria: string | null
     targetBusinessOutcome: string | null
+    duration: string | null
+    owner: string | null
+    dependencies: string | null
+    risks: string | null
     expectedRoi: string | null
     implementationEstimate: string | null
     recurringModel: string | null
     successMetrics: runtime.JsonValue | null
+    priceCents: number | null
+    currency: string | null
+    commercialNotes: string | null
+    proposedAt: Date | null
+    acceptedAt: Date | null
+    acceptedBy: string | null
+    rejectedAt: Date | null
+    rejectionReason: string | null
+    convertedAt: Date | null
     status: $Enums.PilotProposalStatus
     createdAt: Date
     updatedAt: Date
@@ -1361,6 +2473,8 @@ export interface Prisma__AuditPilotProposalClient<T, Null = never, ExtArgs exten
   readonly [Symbol.toStringTag]: "PrismaPromise"
   opportunity<T extends Prisma.AutomationOpportunityDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AutomationOpportunityDefaultArgs<ExtArgs>>): Prisma.Prisma__AutomationOpportunityClient<runtime.Types.Result.GetResult<Prisma.$AutomationOpportunityPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   project<T extends Prisma.AuditPilotProposal$projectArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AuditPilotProposal$projectArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  outcome<T extends Prisma.AuditPilotProposal$outcomeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AuditPilotProposal$outcomeArgs<ExtArgs>>): Prisma.Prisma__AuditPilotOutcomeClient<runtime.Types.Result.GetResult<Prisma.$AuditPilotOutcomePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  reportDeliveries<T extends Prisma.AuditPilotProposal$reportDeliveriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AuditPilotProposal$reportDeliveriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditReportDeliveryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1393,15 +2507,32 @@ export interface AuditPilotProposalFieldRefs {
   readonly id: Prisma.FieldRef<"AuditPilotProposal", 'String'>
   readonly opportunityId: Prisma.FieldRef<"AuditPilotProposal", 'String'>
   readonly projectId: Prisma.FieldRef<"AuditPilotProposal", 'String'>
+  readonly title: Prisma.FieldRef<"AuditPilotProposal", 'String'>
+  readonly objective: Prisma.FieldRef<"AuditPilotProposal", 'String'>
   readonly problem: Prisma.FieldRef<"AuditPilotProposal", 'String'>
   readonly scope: Prisma.FieldRef<"AuditPilotProposal", 'String'>
+  readonly outOfScope: Prisma.FieldRef<"AuditPilotProposal", 'String'>
   readonly workflow: Prisma.FieldRef<"AuditPilotProposal", 'String'>
   readonly baselineSummary: Prisma.FieldRef<"AuditPilotProposal", 'String'>
+  readonly successCriteria: Prisma.FieldRef<"AuditPilotProposal", 'String'>
   readonly targetBusinessOutcome: Prisma.FieldRef<"AuditPilotProposal", 'String'>
+  readonly duration: Prisma.FieldRef<"AuditPilotProposal", 'String'>
+  readonly owner: Prisma.FieldRef<"AuditPilotProposal", 'String'>
+  readonly dependencies: Prisma.FieldRef<"AuditPilotProposal", 'String'>
+  readonly risks: Prisma.FieldRef<"AuditPilotProposal", 'String'>
   readonly expectedRoi: Prisma.FieldRef<"AuditPilotProposal", 'String'>
   readonly implementationEstimate: Prisma.FieldRef<"AuditPilotProposal", 'String'>
   readonly recurringModel: Prisma.FieldRef<"AuditPilotProposal", 'String'>
   readonly successMetrics: Prisma.FieldRef<"AuditPilotProposal", 'Json'>
+  readonly priceCents: Prisma.FieldRef<"AuditPilotProposal", 'Int'>
+  readonly currency: Prisma.FieldRef<"AuditPilotProposal", 'String'>
+  readonly commercialNotes: Prisma.FieldRef<"AuditPilotProposal", 'String'>
+  readonly proposedAt: Prisma.FieldRef<"AuditPilotProposal", 'DateTime'>
+  readonly acceptedAt: Prisma.FieldRef<"AuditPilotProposal", 'DateTime'>
+  readonly acceptedBy: Prisma.FieldRef<"AuditPilotProposal", 'String'>
+  readonly rejectedAt: Prisma.FieldRef<"AuditPilotProposal", 'DateTime'>
+  readonly rejectionReason: Prisma.FieldRef<"AuditPilotProposal", 'String'>
+  readonly convertedAt: Prisma.FieldRef<"AuditPilotProposal", 'DateTime'>
   readonly status: Prisma.FieldRef<"AuditPilotProposal", 'PilotProposalStatus'>
   readonly createdAt: Prisma.FieldRef<"AuditPilotProposal", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"AuditPilotProposal", 'DateTime'>
@@ -1822,6 +2953,49 @@ export type AuditPilotProposal$projectArgs<ExtArgs extends runtime.Types.Extensi
    */
   include?: Prisma.ProjectInclude<ExtArgs> | null
   where?: Prisma.ProjectWhereInput
+}
+
+/**
+ * AuditPilotProposal.outcome
+ */
+export type AuditPilotProposal$outcomeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AuditPilotOutcome
+   */
+  select?: Prisma.AuditPilotOutcomeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AuditPilotOutcome
+   */
+  omit?: Prisma.AuditPilotOutcomeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AuditPilotOutcomeInclude<ExtArgs> | null
+  where?: Prisma.AuditPilotOutcomeWhereInput
+}
+
+/**
+ * AuditPilotProposal.reportDeliveries
+ */
+export type AuditPilotProposal$reportDeliveriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AuditReportDelivery
+   */
+  select?: Prisma.AuditReportDeliverySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AuditReportDelivery
+   */
+  omit?: Prisma.AuditReportDeliveryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AuditReportDeliveryInclude<ExtArgs> | null
+  where?: Prisma.AuditReportDeliveryWhereInput
+  orderBy?: Prisma.AuditReportDeliveryOrderByWithRelationInput | Prisma.AuditReportDeliveryOrderByWithRelationInput[]
+  cursor?: Prisma.AuditReportDeliveryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AuditReportDeliveryScalarFieldEnum | Prisma.AuditReportDeliveryScalarFieldEnum[]
 }
 
 /**

@@ -253,6 +253,7 @@ export type OperationsAuditWhereInput = {
   systems?: Prisma.AuditSystemListRelationFilter
   dataSources?: Prisma.AuditDataSourceListRelationFilter
   opportunities?: Prisma.AutomationOpportunityListRelationFilter
+  reportDeliveries?: Prisma.AuditReportDeliveryListRelationFilter
 }
 
 export type OperationsAuditOrderByWithRelationInput = {
@@ -276,6 +277,7 @@ export type OperationsAuditOrderByWithRelationInput = {
   systems?: Prisma.AuditSystemOrderByRelationAggregateInput
   dataSources?: Prisma.AuditDataSourceOrderByRelationAggregateInput
   opportunities?: Prisma.AutomationOpportunityOrderByRelationAggregateInput
+  reportDeliveries?: Prisma.AuditReportDeliveryOrderByRelationAggregateInput
 }
 
 export type OperationsAuditWhereUniqueInput = Prisma.AtLeast<{
@@ -302,6 +304,7 @@ export type OperationsAuditWhereUniqueInput = Prisma.AtLeast<{
   systems?: Prisma.AuditSystemListRelationFilter
   dataSources?: Prisma.AuditDataSourceListRelationFilter
   opportunities?: Prisma.AutomationOpportunityListRelationFilter
+  reportDeliveries?: Prisma.AuditReportDeliveryListRelationFilter
 }, "id">
 
 export type OperationsAuditOrderByWithAggregationInput = {
@@ -361,6 +364,7 @@ export type OperationsAuditCreateInput = {
   systems?: Prisma.AuditSystemCreateNestedManyWithoutAuditInput
   dataSources?: Prisma.AuditDataSourceCreateNestedManyWithoutAuditInput
   opportunities?: Prisma.AutomationOpportunityCreateNestedManyWithoutAuditInput
+  reportDeliveries?: Prisma.AuditReportDeliveryCreateNestedManyWithoutAuditInput
 }
 
 export type OperationsAuditUncheckedCreateInput = {
@@ -382,6 +386,7 @@ export type OperationsAuditUncheckedCreateInput = {
   systems?: Prisma.AuditSystemUncheckedCreateNestedManyWithoutAuditInput
   dataSources?: Prisma.AuditDataSourceUncheckedCreateNestedManyWithoutAuditInput
   opportunities?: Prisma.AutomationOpportunityUncheckedCreateNestedManyWithoutAuditInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUncheckedCreateNestedManyWithoutAuditInput
 }
 
 export type OperationsAuditUpdateInput = {
@@ -403,6 +408,7 @@ export type OperationsAuditUpdateInput = {
   systems?: Prisma.AuditSystemUpdateManyWithoutAuditNestedInput
   dataSources?: Prisma.AuditDataSourceUpdateManyWithoutAuditNestedInput
   opportunities?: Prisma.AutomationOpportunityUpdateManyWithoutAuditNestedInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUpdateManyWithoutAuditNestedInput
 }
 
 export type OperationsAuditUncheckedUpdateInput = {
@@ -424,6 +430,7 @@ export type OperationsAuditUncheckedUpdateInput = {
   systems?: Prisma.AuditSystemUncheckedUpdateManyWithoutAuditNestedInput
   dataSources?: Prisma.AuditDataSourceUncheckedUpdateManyWithoutAuditNestedInput
   opportunities?: Prisma.AutomationOpportunityUncheckedUpdateManyWithoutAuditNestedInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUncheckedUpdateManyWithoutAuditNestedInput
 }
 
 export type OperationsAuditCreateManyInput = {
@@ -693,6 +700,20 @@ export type OperationsAuditUpdateOneRequiredWithoutOpportunitiesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OperationsAuditUpdateToOneWithWhereWithoutOpportunitiesInput, Prisma.OperationsAuditUpdateWithoutOpportunitiesInput>, Prisma.OperationsAuditUncheckedUpdateWithoutOpportunitiesInput>
 }
 
+export type OperationsAuditCreateNestedOneWithoutReportDeliveriesInput = {
+  create?: Prisma.XOR<Prisma.OperationsAuditCreateWithoutReportDeliveriesInput, Prisma.OperationsAuditUncheckedCreateWithoutReportDeliveriesInput>
+  connectOrCreate?: Prisma.OperationsAuditCreateOrConnectWithoutReportDeliveriesInput
+  connect?: Prisma.OperationsAuditWhereUniqueInput
+}
+
+export type OperationsAuditUpdateOneRequiredWithoutReportDeliveriesNestedInput = {
+  create?: Prisma.XOR<Prisma.OperationsAuditCreateWithoutReportDeliveriesInput, Prisma.OperationsAuditUncheckedCreateWithoutReportDeliveriesInput>
+  connectOrCreate?: Prisma.OperationsAuditCreateOrConnectWithoutReportDeliveriesInput
+  upsert?: Prisma.OperationsAuditUpsertWithoutReportDeliveriesInput
+  connect?: Prisma.OperationsAuditWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OperationsAuditUpdateToOneWithWhereWithoutReportDeliveriesInput, Prisma.OperationsAuditUpdateWithoutReportDeliveriesInput>, Prisma.OperationsAuditUncheckedUpdateWithoutReportDeliveriesInput>
+}
+
 export type OperationsAuditCreateWithoutLeadInput = {
   id?: string
   name: string
@@ -711,6 +732,7 @@ export type OperationsAuditCreateWithoutLeadInput = {
   systems?: Prisma.AuditSystemCreateNestedManyWithoutAuditInput
   dataSources?: Prisma.AuditDataSourceCreateNestedManyWithoutAuditInput
   opportunities?: Prisma.AutomationOpportunityCreateNestedManyWithoutAuditInput
+  reportDeliveries?: Prisma.AuditReportDeliveryCreateNestedManyWithoutAuditInput
 }
 
 export type OperationsAuditUncheckedCreateWithoutLeadInput = {
@@ -731,6 +753,7 @@ export type OperationsAuditUncheckedCreateWithoutLeadInput = {
   systems?: Prisma.AuditSystemUncheckedCreateNestedManyWithoutAuditInput
   dataSources?: Prisma.AuditDataSourceUncheckedCreateNestedManyWithoutAuditInput
   opportunities?: Prisma.AutomationOpportunityUncheckedCreateNestedManyWithoutAuditInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUncheckedCreateNestedManyWithoutAuditInput
 }
 
 export type OperationsAuditCreateOrConnectWithoutLeadInput = {
@@ -796,6 +819,7 @@ export type OperationsAuditCreateWithoutOwnerInput = {
   systems?: Prisma.AuditSystemCreateNestedManyWithoutAuditInput
   dataSources?: Prisma.AuditDataSourceCreateNestedManyWithoutAuditInput
   opportunities?: Prisma.AutomationOpportunityCreateNestedManyWithoutAuditInput
+  reportDeliveries?: Prisma.AuditReportDeliveryCreateNestedManyWithoutAuditInput
 }
 
 export type OperationsAuditUncheckedCreateWithoutOwnerInput = {
@@ -816,6 +840,7 @@ export type OperationsAuditUncheckedCreateWithoutOwnerInput = {
   systems?: Prisma.AuditSystemUncheckedCreateNestedManyWithoutAuditInput
   dataSources?: Prisma.AuditDataSourceUncheckedCreateNestedManyWithoutAuditInput
   opportunities?: Prisma.AutomationOpportunityUncheckedCreateNestedManyWithoutAuditInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUncheckedCreateNestedManyWithoutAuditInput
 }
 
 export type OperationsAuditCreateOrConnectWithoutOwnerInput = {
@@ -862,6 +887,7 @@ export type OperationsAuditCreateWithoutStakeholdersInput = {
   systems?: Prisma.AuditSystemCreateNestedManyWithoutAuditInput
   dataSources?: Prisma.AuditDataSourceCreateNestedManyWithoutAuditInput
   opportunities?: Prisma.AutomationOpportunityCreateNestedManyWithoutAuditInput
+  reportDeliveries?: Prisma.AuditReportDeliveryCreateNestedManyWithoutAuditInput
 }
 
 export type OperationsAuditUncheckedCreateWithoutStakeholdersInput = {
@@ -882,6 +908,7 @@ export type OperationsAuditUncheckedCreateWithoutStakeholdersInput = {
   systems?: Prisma.AuditSystemUncheckedCreateNestedManyWithoutAuditInput
   dataSources?: Prisma.AuditDataSourceUncheckedCreateNestedManyWithoutAuditInput
   opportunities?: Prisma.AutomationOpportunityUncheckedCreateNestedManyWithoutAuditInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUncheckedCreateNestedManyWithoutAuditInput
 }
 
 export type OperationsAuditCreateOrConnectWithoutStakeholdersInput = {
@@ -918,6 +945,7 @@ export type OperationsAuditUpdateWithoutStakeholdersInput = {
   systems?: Prisma.AuditSystemUpdateManyWithoutAuditNestedInput
   dataSources?: Prisma.AuditDataSourceUpdateManyWithoutAuditNestedInput
   opportunities?: Prisma.AutomationOpportunityUpdateManyWithoutAuditNestedInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUpdateManyWithoutAuditNestedInput
 }
 
 export type OperationsAuditUncheckedUpdateWithoutStakeholdersInput = {
@@ -938,6 +966,7 @@ export type OperationsAuditUncheckedUpdateWithoutStakeholdersInput = {
   systems?: Prisma.AuditSystemUncheckedUpdateManyWithoutAuditNestedInput
   dataSources?: Prisma.AuditDataSourceUncheckedUpdateManyWithoutAuditNestedInput
   opportunities?: Prisma.AutomationOpportunityUncheckedUpdateManyWithoutAuditNestedInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUncheckedUpdateManyWithoutAuditNestedInput
 }
 
 export type OperationsAuditCreateWithoutProcessesInput = {
@@ -958,6 +987,7 @@ export type OperationsAuditCreateWithoutProcessesInput = {
   systems?: Prisma.AuditSystemCreateNestedManyWithoutAuditInput
   dataSources?: Prisma.AuditDataSourceCreateNestedManyWithoutAuditInput
   opportunities?: Prisma.AutomationOpportunityCreateNestedManyWithoutAuditInput
+  reportDeliveries?: Prisma.AuditReportDeliveryCreateNestedManyWithoutAuditInput
 }
 
 export type OperationsAuditUncheckedCreateWithoutProcessesInput = {
@@ -978,6 +1008,7 @@ export type OperationsAuditUncheckedCreateWithoutProcessesInput = {
   systems?: Prisma.AuditSystemUncheckedCreateNestedManyWithoutAuditInput
   dataSources?: Prisma.AuditDataSourceUncheckedCreateNestedManyWithoutAuditInput
   opportunities?: Prisma.AutomationOpportunityUncheckedCreateNestedManyWithoutAuditInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUncheckedCreateNestedManyWithoutAuditInput
 }
 
 export type OperationsAuditCreateOrConnectWithoutProcessesInput = {
@@ -1014,6 +1045,7 @@ export type OperationsAuditUpdateWithoutProcessesInput = {
   systems?: Prisma.AuditSystemUpdateManyWithoutAuditNestedInput
   dataSources?: Prisma.AuditDataSourceUpdateManyWithoutAuditNestedInput
   opportunities?: Prisma.AutomationOpportunityUpdateManyWithoutAuditNestedInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUpdateManyWithoutAuditNestedInput
 }
 
 export type OperationsAuditUncheckedUpdateWithoutProcessesInput = {
@@ -1034,6 +1066,7 @@ export type OperationsAuditUncheckedUpdateWithoutProcessesInput = {
   systems?: Prisma.AuditSystemUncheckedUpdateManyWithoutAuditNestedInput
   dataSources?: Prisma.AuditDataSourceUncheckedUpdateManyWithoutAuditNestedInput
   opportunities?: Prisma.AutomationOpportunityUncheckedUpdateManyWithoutAuditNestedInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUncheckedUpdateManyWithoutAuditNestedInput
 }
 
 export type OperationsAuditCreateWithoutSystemsInput = {
@@ -1054,6 +1087,7 @@ export type OperationsAuditCreateWithoutSystemsInput = {
   processes?: Prisma.OperationsProcessCreateNestedManyWithoutAuditInput
   dataSources?: Prisma.AuditDataSourceCreateNestedManyWithoutAuditInput
   opportunities?: Prisma.AutomationOpportunityCreateNestedManyWithoutAuditInput
+  reportDeliveries?: Prisma.AuditReportDeliveryCreateNestedManyWithoutAuditInput
 }
 
 export type OperationsAuditUncheckedCreateWithoutSystemsInput = {
@@ -1074,6 +1108,7 @@ export type OperationsAuditUncheckedCreateWithoutSystemsInput = {
   processes?: Prisma.OperationsProcessUncheckedCreateNestedManyWithoutAuditInput
   dataSources?: Prisma.AuditDataSourceUncheckedCreateNestedManyWithoutAuditInput
   opportunities?: Prisma.AutomationOpportunityUncheckedCreateNestedManyWithoutAuditInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUncheckedCreateNestedManyWithoutAuditInput
 }
 
 export type OperationsAuditCreateOrConnectWithoutSystemsInput = {
@@ -1110,6 +1145,7 @@ export type OperationsAuditUpdateWithoutSystemsInput = {
   processes?: Prisma.OperationsProcessUpdateManyWithoutAuditNestedInput
   dataSources?: Prisma.AuditDataSourceUpdateManyWithoutAuditNestedInput
   opportunities?: Prisma.AutomationOpportunityUpdateManyWithoutAuditNestedInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUpdateManyWithoutAuditNestedInput
 }
 
 export type OperationsAuditUncheckedUpdateWithoutSystemsInput = {
@@ -1130,6 +1166,7 @@ export type OperationsAuditUncheckedUpdateWithoutSystemsInput = {
   processes?: Prisma.OperationsProcessUncheckedUpdateManyWithoutAuditNestedInput
   dataSources?: Prisma.AuditDataSourceUncheckedUpdateManyWithoutAuditNestedInput
   opportunities?: Prisma.AutomationOpportunityUncheckedUpdateManyWithoutAuditNestedInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUncheckedUpdateManyWithoutAuditNestedInput
 }
 
 export type OperationsAuditCreateWithoutDataSourcesInput = {
@@ -1150,6 +1187,7 @@ export type OperationsAuditCreateWithoutDataSourcesInput = {
   processes?: Prisma.OperationsProcessCreateNestedManyWithoutAuditInput
   systems?: Prisma.AuditSystemCreateNestedManyWithoutAuditInput
   opportunities?: Prisma.AutomationOpportunityCreateNestedManyWithoutAuditInput
+  reportDeliveries?: Prisma.AuditReportDeliveryCreateNestedManyWithoutAuditInput
 }
 
 export type OperationsAuditUncheckedCreateWithoutDataSourcesInput = {
@@ -1170,6 +1208,7 @@ export type OperationsAuditUncheckedCreateWithoutDataSourcesInput = {
   processes?: Prisma.OperationsProcessUncheckedCreateNestedManyWithoutAuditInput
   systems?: Prisma.AuditSystemUncheckedCreateNestedManyWithoutAuditInput
   opportunities?: Prisma.AutomationOpportunityUncheckedCreateNestedManyWithoutAuditInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUncheckedCreateNestedManyWithoutAuditInput
 }
 
 export type OperationsAuditCreateOrConnectWithoutDataSourcesInput = {
@@ -1206,6 +1245,7 @@ export type OperationsAuditUpdateWithoutDataSourcesInput = {
   processes?: Prisma.OperationsProcessUpdateManyWithoutAuditNestedInput
   systems?: Prisma.AuditSystemUpdateManyWithoutAuditNestedInput
   opportunities?: Prisma.AutomationOpportunityUpdateManyWithoutAuditNestedInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUpdateManyWithoutAuditNestedInput
 }
 
 export type OperationsAuditUncheckedUpdateWithoutDataSourcesInput = {
@@ -1226,6 +1266,7 @@ export type OperationsAuditUncheckedUpdateWithoutDataSourcesInput = {
   processes?: Prisma.OperationsProcessUncheckedUpdateManyWithoutAuditNestedInput
   systems?: Prisma.AuditSystemUncheckedUpdateManyWithoutAuditNestedInput
   opportunities?: Prisma.AutomationOpportunityUncheckedUpdateManyWithoutAuditNestedInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUncheckedUpdateManyWithoutAuditNestedInput
 }
 
 export type OperationsAuditCreateWithoutOpportunitiesInput = {
@@ -1246,6 +1287,7 @@ export type OperationsAuditCreateWithoutOpportunitiesInput = {
   processes?: Prisma.OperationsProcessCreateNestedManyWithoutAuditInput
   systems?: Prisma.AuditSystemCreateNestedManyWithoutAuditInput
   dataSources?: Prisma.AuditDataSourceCreateNestedManyWithoutAuditInput
+  reportDeliveries?: Prisma.AuditReportDeliveryCreateNestedManyWithoutAuditInput
 }
 
 export type OperationsAuditUncheckedCreateWithoutOpportunitiesInput = {
@@ -1266,6 +1308,7 @@ export type OperationsAuditUncheckedCreateWithoutOpportunitiesInput = {
   processes?: Prisma.OperationsProcessUncheckedCreateNestedManyWithoutAuditInput
   systems?: Prisma.AuditSystemUncheckedCreateNestedManyWithoutAuditInput
   dataSources?: Prisma.AuditDataSourceUncheckedCreateNestedManyWithoutAuditInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUncheckedCreateNestedManyWithoutAuditInput
 }
 
 export type OperationsAuditCreateOrConnectWithoutOpportunitiesInput = {
@@ -1302,6 +1345,7 @@ export type OperationsAuditUpdateWithoutOpportunitiesInput = {
   processes?: Prisma.OperationsProcessUpdateManyWithoutAuditNestedInput
   systems?: Prisma.AuditSystemUpdateManyWithoutAuditNestedInput
   dataSources?: Prisma.AuditDataSourceUpdateManyWithoutAuditNestedInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUpdateManyWithoutAuditNestedInput
 }
 
 export type OperationsAuditUncheckedUpdateWithoutOpportunitiesInput = {
@@ -1322,6 +1366,107 @@ export type OperationsAuditUncheckedUpdateWithoutOpportunitiesInput = {
   processes?: Prisma.OperationsProcessUncheckedUpdateManyWithoutAuditNestedInput
   systems?: Prisma.AuditSystemUncheckedUpdateManyWithoutAuditNestedInput
   dataSources?: Prisma.AuditDataSourceUncheckedUpdateManyWithoutAuditNestedInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUncheckedUpdateManyWithoutAuditNestedInput
+}
+
+export type OperationsAuditCreateWithoutReportDeliveriesInput = {
+  id?: string
+  name: string
+  status?: $Enums.OperationsAuditStatus
+  auditType?: string
+  scope?: string | null
+  objectives?: string | null
+  notes?: string | null
+  startedAt?: Date | string | null
+  completedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lead: Prisma.LeadCreateNestedOneWithoutOperationsAuditsInput
+  owner?: Prisma.AdminUserCreateNestedOneWithoutOwnedOperationsAuditsInput
+  stakeholders?: Prisma.AuditStakeholderCreateNestedManyWithoutAuditInput
+  processes?: Prisma.OperationsProcessCreateNestedManyWithoutAuditInput
+  systems?: Prisma.AuditSystemCreateNestedManyWithoutAuditInput
+  dataSources?: Prisma.AuditDataSourceCreateNestedManyWithoutAuditInput
+  opportunities?: Prisma.AutomationOpportunityCreateNestedManyWithoutAuditInput
+}
+
+export type OperationsAuditUncheckedCreateWithoutReportDeliveriesInput = {
+  id?: string
+  leadId: string
+  ownerId?: string | null
+  name: string
+  status?: $Enums.OperationsAuditStatus
+  auditType?: string
+  scope?: string | null
+  objectives?: string | null
+  notes?: string | null
+  startedAt?: Date | string | null
+  completedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  stakeholders?: Prisma.AuditStakeholderUncheckedCreateNestedManyWithoutAuditInput
+  processes?: Prisma.OperationsProcessUncheckedCreateNestedManyWithoutAuditInput
+  systems?: Prisma.AuditSystemUncheckedCreateNestedManyWithoutAuditInput
+  dataSources?: Prisma.AuditDataSourceUncheckedCreateNestedManyWithoutAuditInput
+  opportunities?: Prisma.AutomationOpportunityUncheckedCreateNestedManyWithoutAuditInput
+}
+
+export type OperationsAuditCreateOrConnectWithoutReportDeliveriesInput = {
+  where: Prisma.OperationsAuditWhereUniqueInput
+  create: Prisma.XOR<Prisma.OperationsAuditCreateWithoutReportDeliveriesInput, Prisma.OperationsAuditUncheckedCreateWithoutReportDeliveriesInput>
+}
+
+export type OperationsAuditUpsertWithoutReportDeliveriesInput = {
+  update: Prisma.XOR<Prisma.OperationsAuditUpdateWithoutReportDeliveriesInput, Prisma.OperationsAuditUncheckedUpdateWithoutReportDeliveriesInput>
+  create: Prisma.XOR<Prisma.OperationsAuditCreateWithoutReportDeliveriesInput, Prisma.OperationsAuditUncheckedCreateWithoutReportDeliveriesInput>
+  where?: Prisma.OperationsAuditWhereInput
+}
+
+export type OperationsAuditUpdateToOneWithWhereWithoutReportDeliveriesInput = {
+  where?: Prisma.OperationsAuditWhereInput
+  data: Prisma.XOR<Prisma.OperationsAuditUpdateWithoutReportDeliveriesInput, Prisma.OperationsAuditUncheckedUpdateWithoutReportDeliveriesInput>
+}
+
+export type OperationsAuditUpdateWithoutReportDeliveriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumOperationsAuditStatusFieldUpdateOperationsInput | $Enums.OperationsAuditStatus
+  auditType?: Prisma.StringFieldUpdateOperationsInput | string
+  scope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  objectives?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lead?: Prisma.LeadUpdateOneRequiredWithoutOperationsAuditsNestedInput
+  owner?: Prisma.AdminUserUpdateOneWithoutOwnedOperationsAuditsNestedInput
+  stakeholders?: Prisma.AuditStakeholderUpdateManyWithoutAuditNestedInput
+  processes?: Prisma.OperationsProcessUpdateManyWithoutAuditNestedInput
+  systems?: Prisma.AuditSystemUpdateManyWithoutAuditNestedInput
+  dataSources?: Prisma.AuditDataSourceUpdateManyWithoutAuditNestedInput
+  opportunities?: Prisma.AutomationOpportunityUpdateManyWithoutAuditNestedInput
+}
+
+export type OperationsAuditUncheckedUpdateWithoutReportDeliveriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  leadId?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumOperationsAuditStatusFieldUpdateOperationsInput | $Enums.OperationsAuditStatus
+  auditType?: Prisma.StringFieldUpdateOperationsInput | string
+  scope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  objectives?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stakeholders?: Prisma.AuditStakeholderUncheckedUpdateManyWithoutAuditNestedInput
+  processes?: Prisma.OperationsProcessUncheckedUpdateManyWithoutAuditNestedInput
+  systems?: Prisma.AuditSystemUncheckedUpdateManyWithoutAuditNestedInput
+  dataSources?: Prisma.AuditDataSourceUncheckedUpdateManyWithoutAuditNestedInput
+  opportunities?: Prisma.AutomationOpportunityUncheckedUpdateManyWithoutAuditNestedInput
 }
 
 export type OperationsAuditCreateManyLeadInput = {
@@ -1357,6 +1502,7 @@ export type OperationsAuditUpdateWithoutLeadInput = {
   systems?: Prisma.AuditSystemUpdateManyWithoutAuditNestedInput
   dataSources?: Prisma.AuditDataSourceUpdateManyWithoutAuditNestedInput
   opportunities?: Prisma.AutomationOpportunityUpdateManyWithoutAuditNestedInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUpdateManyWithoutAuditNestedInput
 }
 
 export type OperationsAuditUncheckedUpdateWithoutLeadInput = {
@@ -1377,6 +1523,7 @@ export type OperationsAuditUncheckedUpdateWithoutLeadInput = {
   systems?: Prisma.AuditSystemUncheckedUpdateManyWithoutAuditNestedInput
   dataSources?: Prisma.AuditDataSourceUncheckedUpdateManyWithoutAuditNestedInput
   opportunities?: Prisma.AutomationOpportunityUncheckedUpdateManyWithoutAuditNestedInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUncheckedUpdateManyWithoutAuditNestedInput
 }
 
 export type OperationsAuditUncheckedUpdateManyWithoutLeadInput = {
@@ -1427,6 +1574,7 @@ export type OperationsAuditUpdateWithoutOwnerInput = {
   systems?: Prisma.AuditSystemUpdateManyWithoutAuditNestedInput
   dataSources?: Prisma.AuditDataSourceUpdateManyWithoutAuditNestedInput
   opportunities?: Prisma.AutomationOpportunityUpdateManyWithoutAuditNestedInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUpdateManyWithoutAuditNestedInput
 }
 
 export type OperationsAuditUncheckedUpdateWithoutOwnerInput = {
@@ -1447,6 +1595,7 @@ export type OperationsAuditUncheckedUpdateWithoutOwnerInput = {
   systems?: Prisma.AuditSystemUncheckedUpdateManyWithoutAuditNestedInput
   dataSources?: Prisma.AuditDataSourceUncheckedUpdateManyWithoutAuditNestedInput
   opportunities?: Prisma.AutomationOpportunityUncheckedUpdateManyWithoutAuditNestedInput
+  reportDeliveries?: Prisma.AuditReportDeliveryUncheckedUpdateManyWithoutAuditNestedInput
 }
 
 export type OperationsAuditUncheckedUpdateManyWithoutOwnerInput = {
@@ -1475,6 +1624,7 @@ export type OperationsAuditCountOutputType = {
   systems: number
   dataSources: number
   opportunities: number
+  reportDeliveries: number
 }
 
 export type OperationsAuditCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1483,6 +1633,7 @@ export type OperationsAuditCountOutputTypeSelect<ExtArgs extends runtime.Types.E
   systems?: boolean | OperationsAuditCountOutputTypeCountSystemsArgs
   dataSources?: boolean | OperationsAuditCountOutputTypeCountDataSourcesArgs
   opportunities?: boolean | OperationsAuditCountOutputTypeCountOpportunitiesArgs
+  reportDeliveries?: boolean | OperationsAuditCountOutputTypeCountReportDeliveriesArgs
 }
 
 /**
@@ -1530,6 +1681,13 @@ export type OperationsAuditCountOutputTypeCountOpportunitiesArgs<ExtArgs extends
   where?: Prisma.AutomationOpportunityWhereInput
 }
 
+/**
+ * OperationsAuditCountOutputType without action
+ */
+export type OperationsAuditCountOutputTypeCountReportDeliveriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AuditReportDeliveryWhereInput
+}
+
 
 export type OperationsAuditSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1552,6 +1710,7 @@ export type OperationsAuditSelect<ExtArgs extends runtime.Types.Extensions.Inter
   systems?: boolean | Prisma.OperationsAudit$systemsArgs<ExtArgs>
   dataSources?: boolean | Prisma.OperationsAudit$dataSourcesArgs<ExtArgs>
   opportunities?: boolean | Prisma.OperationsAudit$opportunitiesArgs<ExtArgs>
+  reportDeliveries?: boolean | Prisma.OperationsAudit$reportDeliveriesArgs<ExtArgs>
   _count?: boolean | Prisma.OperationsAuditCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["operationsAudit"]>
 
@@ -1616,6 +1775,7 @@ export type OperationsAuditInclude<ExtArgs extends runtime.Types.Extensions.Inte
   systems?: boolean | Prisma.OperationsAudit$systemsArgs<ExtArgs>
   dataSources?: boolean | Prisma.OperationsAudit$dataSourcesArgs<ExtArgs>
   opportunities?: boolean | Prisma.OperationsAudit$opportunitiesArgs<ExtArgs>
+  reportDeliveries?: boolean | Prisma.OperationsAudit$reportDeliveriesArgs<ExtArgs>
   _count?: boolean | Prisma.OperationsAuditCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type OperationsAuditIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1637,6 +1797,7 @@ export type $OperationsAuditPayload<ExtArgs extends runtime.Types.Extensions.Int
     systems: Prisma.$AuditSystemPayload<ExtArgs>[]
     dataSources: Prisma.$AuditDataSourcePayload<ExtArgs>[]
     opportunities: Prisma.$AutomationOpportunityPayload<ExtArgs>[]
+    reportDeliveries: Prisma.$AuditReportDeliveryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2053,6 +2214,7 @@ export interface Prisma__OperationsAuditClient<T, Null = never, ExtArgs extends 
   systems<T extends Prisma.OperationsAudit$systemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OperationsAudit$systemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditSystemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   dataSources<T extends Prisma.OperationsAudit$dataSourcesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OperationsAudit$dataSourcesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditDataSourcePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   opportunities<T extends Prisma.OperationsAudit$opportunitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OperationsAudit$opportunitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AutomationOpportunityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  reportDeliveries<T extends Prisma.OperationsAudit$reportDeliveriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OperationsAudit$reportDeliveriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditReportDeliveryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2632,6 +2794,30 @@ export type OperationsAudit$opportunitiesArgs<ExtArgs extends runtime.Types.Exte
   take?: number
   skip?: number
   distinct?: Prisma.AutomationOpportunityScalarFieldEnum | Prisma.AutomationOpportunityScalarFieldEnum[]
+}
+
+/**
+ * OperationsAudit.reportDeliveries
+ */
+export type OperationsAudit$reportDeliveriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AuditReportDelivery
+   */
+  select?: Prisma.AuditReportDeliverySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AuditReportDelivery
+   */
+  omit?: Prisma.AuditReportDeliveryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AuditReportDeliveryInclude<ExtArgs> | null
+  where?: Prisma.AuditReportDeliveryWhereInput
+  orderBy?: Prisma.AuditReportDeliveryOrderByWithRelationInput | Prisma.AuditReportDeliveryOrderByWithRelationInput[]
+  cursor?: Prisma.AuditReportDeliveryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AuditReportDeliveryScalarFieldEnum | Prisma.AuditReportDeliveryScalarFieldEnum[]
 }
 
 /**

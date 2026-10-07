@@ -92,6 +92,9 @@ export const ModelName = {
   OpportunityBottleneck: 'OpportunityBottleneck',
   OpportunityBaselineMetric: 'OpportunityBaselineMetric',
   AuditPilotProposal: 'AuditPilotProposal',
+  AuditPilotOutcome: 'AuditPilotOutcome',
+  AuditPilotEconomics: 'AuditPilotEconomics',
+  AuditPilotMetricResult: 'AuditPilotMetricResult',
   AdminSession: 'AdminSession',
   AdminAuthLog: 'AdminAuthLog',
   CompanyLegalSettings: 'CompanyLegalSettings',
@@ -104,7 +107,8 @@ export const ModelName = {
   ContractPhase: 'ContractPhase',
   ContractDeliverable: 'ContractDeliverable',
   ContractPaymentMilestone: 'ContractPaymentMilestone',
-  ContractActivityLog: 'ContractActivityLog'
+  ContractActivityLog: 'ContractActivityLog',
+  AuditReportDelivery: 'AuditReportDelivery'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -842,6 +846,11 @@ export const AutomationOpportunityScalarFieldEnum = {
   risk: 'risk',
   whyThisMatters: 'whyThisMatters',
   recommendation: 'recommendation',
+  decision: 'decision',
+  decisionRationale: 'decisionRationale',
+  decisionOwner: 'decisionOwner',
+  decidedAt: 'decidedAt',
+  nextStep: 'nextStep',
   status: 'status',
   assessment: 'assessment',
   scoreSnapshot: 'scoreSnapshot',
@@ -875,21 +884,101 @@ export const AuditPilotProposalScalarFieldEnum = {
   id: 'id',
   opportunityId: 'opportunityId',
   projectId: 'projectId',
+  title: 'title',
+  objective: 'objective',
   problem: 'problem',
   scope: 'scope',
+  outOfScope: 'outOfScope',
   workflow: 'workflow',
   baselineSummary: 'baselineSummary',
+  successCriteria: 'successCriteria',
   targetBusinessOutcome: 'targetBusinessOutcome',
+  duration: 'duration',
+  owner: 'owner',
+  dependencies: 'dependencies',
+  risks: 'risks',
   expectedRoi: 'expectedRoi',
   implementationEstimate: 'implementationEstimate',
   recurringModel: 'recurringModel',
   successMetrics: 'successMetrics',
+  priceCents: 'priceCents',
+  currency: 'currency',
+  commercialNotes: 'commercialNotes',
+  proposedAt: 'proposedAt',
+  acceptedAt: 'acceptedAt',
+  acceptedBy: 'acceptedBy',
+  rejectedAt: 'rejectedAt',
+  rejectionReason: 'rejectionReason',
+  convertedAt: 'convertedAt',
   status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type AuditPilotProposalScalarFieldEnum = (typeof AuditPilotProposalScalarFieldEnum)[keyof typeof AuditPilotProposalScalarFieldEnum]
+
+
+export const AuditPilotOutcomeScalarFieldEnum = {
+  id: 'id',
+  pilotId: 'pilotId',
+  status: 'status',
+  summary: 'summary',
+  keyLearnings: 'keyLearnings',
+  issuesEncountered: 'issuesEncountered',
+  successAssessment: 'successAssessment',
+  successAssessmentNote: 'successAssessmentNote',
+  conclusion: 'conclusion',
+  nextStep: 'nextStep',
+  completedAt: 'completedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AuditPilotOutcomeScalarFieldEnum = (typeof AuditPilotOutcomeScalarFieldEnum)[keyof typeof AuditPilotOutcomeScalarFieldEnum]
+
+
+export const AuditPilotEconomicsScalarFieldEnum = {
+  id: 'id',
+  outcomeId: 'outcomeId',
+  timeSavingsMetricId: 'timeSavingsMetricId',
+  laborCostPerHourCents: 'laborCostPerHourCents',
+  laborCostQuality: 'laborCostQuality',
+  laborCostSource: 'laborCostSource',
+  laborCostNote: 'laborCostNote',
+  directMonthlySavingsCents: 'directMonthlySavingsCents',
+  directSavingsQuality: 'directSavingsQuality',
+  otherMonthlySavingsCents: 'otherMonthlySavingsCents',
+  ongoingMonthlyCostCents: 'ongoingMonthlyCostCents',
+  investmentCostCents: 'investmentCostCents',
+  currency: 'currency',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AuditPilotEconomicsScalarFieldEnum = (typeof AuditPilotEconomicsScalarFieldEnum)[keyof typeof AuditPilotEconomicsScalarFieldEnum]
+
+
+export const AuditPilotMetricResultScalarFieldEnum = {
+  id: 'id',
+  outcomeId: 'outcomeId',
+  baselineId: 'baselineId',
+  label: 'label',
+  baselineValue: 'baselineValue',
+  targetValue: 'targetValue',
+  actualValue: 'actualValue',
+  unit: 'unit',
+  period: 'period',
+  evidenceQuality: 'evidenceQuality',
+  source: 'source',
+  reference: 'reference',
+  note: 'note',
+  measuredAt: 'measuredAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AuditPilotMetricResultScalarFieldEnum = (typeof AuditPilotMetricResultScalarFieldEnum)[keyof typeof AuditPilotMetricResultScalarFieldEnum]
 
 
 export const AdminSessionScalarFieldEnum = {
@@ -1136,6 +1225,34 @@ export const ContractActivityLogScalarFieldEnum = {
 } as const
 
 export type ContractActivityLogScalarFieldEnum = (typeof ContractActivityLogScalarFieldEnum)[keyof typeof ContractActivityLogScalarFieldEnum]
+
+
+export const AuditReportDeliveryScalarFieldEnum = {
+  id: 'id',
+  auditId: 'auditId',
+  pilotProposalId: 'pilotProposalId',
+  reportType: 'reportType',
+  channel: 'channel',
+  status: 'status',
+  recipientName: 'recipientName',
+  recipientEmail: 'recipientEmail',
+  subject: 'subject',
+  message: 'message',
+  generatedAt: 'generatedAt',
+  sentAt: 'sentAt',
+  sentBy: 'sentBy',
+  providerMessageId: 'providerMessageId',
+  storageKey: 'storageKey',
+  fileName: 'fileName',
+  fileSizeBytes: 'fileSizeBytes',
+  fileSha256: 'fileSha256',
+  pdfBytes: 'pdfBytes',
+  failureReason: 'failureReason',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AuditReportDeliveryScalarFieldEnum = (typeof AuditReportDeliveryScalarFieldEnum)[keyof typeof AuditReportDeliveryScalarFieldEnum]
 
 
 export const SortOrder = {

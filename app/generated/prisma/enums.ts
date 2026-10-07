@@ -147,6 +147,17 @@ export const AutomationOpportunityStatus = {
 export type AutomationOpportunityStatus = (typeof AutomationOpportunityStatus)[keyof typeof AutomationOpportunityStatus]
 
 
+export const OpportunityDecision = {
+  UNDECIDED: 'UNDECIDED',
+  PROCEED_TO_PILOT: 'PROCEED_TO_PILOT',
+  NEEDS_MORE_VALIDATION: 'NEEDS_MORE_VALIDATION',
+  HOLD: 'HOLD',
+  REJECT: 'REJECT'
+} as const
+
+export type OpportunityDecision = (typeof OpportunityDecision)[keyof typeof OpportunityDecision]
+
+
 export const PilotProposalStatus = {
   DRAFT: 'DRAFT',
   PROPOSED: 'PROPOSED',
@@ -156,6 +167,48 @@ export const PilotProposalStatus = {
 } as const
 
 export type PilotProposalStatus = (typeof PilotProposalStatus)[keyof typeof PilotProposalStatus]
+
+
+export const PilotOutcomeStatus = {
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED'
+} as const
+
+export type PilotOutcomeStatus = (typeof PilotOutcomeStatus)[keyof typeof PilotOutcomeStatus]
+
+
+export const PilotSuccessAssessment = {
+  NOT_EVALUATED: 'NOT_EVALUATED',
+  MET: 'MET',
+  PARTIALLY_MET: 'PARTIALLY_MET',
+  NOT_MET: 'NOT_MET'
+} as const
+
+export type PilotSuccessAssessment = (typeof PilotSuccessAssessment)[keyof typeof PilotSuccessAssessment]
+
+
+export const ReportDeliveryType = {
+  AUDIT_REPORT: 'AUDIT_REPORT',
+  PILOT_REPORT: 'PILOT_REPORT'
+} as const
+
+export type ReportDeliveryType = (typeof ReportDeliveryType)[keyof typeof ReportDeliveryType]
+
+
+export const ReportDeliveryChannel = {
+  EMAIL: 'EMAIL'
+} as const
+
+export type ReportDeliveryChannel = (typeof ReportDeliveryChannel)[keyof typeof ReportDeliveryChannel]
+
+
+export const ReportDeliveryStatus = {
+  PENDING: 'PENDING',
+  SENT: 'SENT',
+  FAILED: 'FAILED'
+} as const
+
+export type ReportDeliveryStatus = (typeof ReportDeliveryStatus)[keyof typeof ReportDeliveryStatus]
 
 
 export const SubmissionType = {

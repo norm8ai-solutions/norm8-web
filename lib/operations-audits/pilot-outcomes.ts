@@ -1,0 +1,1 @@
+export function calculatePilotDelta(before: number | null, after: number | null) { if (before === null || after === null) return { absolute: null, percentage: null }; return { absolute: after - before, percentage: before === 0 ? null : ((after - before) / Math.abs(before)) * 100 }; }

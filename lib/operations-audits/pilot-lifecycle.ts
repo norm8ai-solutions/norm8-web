@@ -1,0 +1,5 @@
+import type { PilotProposalStatus } from '@/app/generated/prisma/client';
+
+export const pilotTransitions: Record<PilotProposalStatus, PilotProposalStatus[]> = { DRAFT: ['PROPOSED'], PROPOSED: ['ACCEPTED', 'REJECTED'], ACCEPTED: ['CONVERTED_TO_PROJECT'], REJECTED: [], CONVERTED_TO_PROJECT: [] };
+export function canTransitionPilotStatus(current: PilotProposalStatus, target: PilotProposalStatus) { return pilotTransitions[current].includes(target); }
+export function pilotCompleteness(input: { title: string | null; objective: string | null; scope: string | null; successCriteria: string | null; successMetrics: unknown; duration?: string | null }) { const missing: string[] = []; if (!input.title?.trim()) missing.push('Title'); if (!input.objective?.trim()) missing.push('Objective'); if (!input.scope?.trim()) missing.push('Scope'); if (!input.successCriteria?.trim()) missing.push('Success Criteria'); if (!Array.isArray(input.successMetrics) || input.successMetrics.length === 0) missing.push('at least one Success Metric'); return missing; }

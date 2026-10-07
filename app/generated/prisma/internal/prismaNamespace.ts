@@ -425,6 +425,9 @@ export const ModelName = {
   OpportunityBottleneck: 'OpportunityBottleneck',
   OpportunityBaselineMetric: 'OpportunityBaselineMetric',
   AuditPilotProposal: 'AuditPilotProposal',
+  AuditPilotOutcome: 'AuditPilotOutcome',
+  AuditPilotEconomics: 'AuditPilotEconomics',
+  AuditPilotMetricResult: 'AuditPilotMetricResult',
   AdminSession: 'AdminSession',
   AdminAuthLog: 'AdminAuthLog',
   CompanyLegalSettings: 'CompanyLegalSettings',
@@ -437,7 +440,8 @@ export const ModelName = {
   ContractPhase: 'ContractPhase',
   ContractDeliverable: 'ContractDeliverable',
   ContractPaymentMilestone: 'ContractPaymentMilestone',
-  ContractActivityLog: 'ContractActivityLog'
+  ContractActivityLog: 'ContractActivityLog',
+  AuditReportDelivery: 'AuditReportDelivery'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -453,7 +457,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "lead" | "submission" | "leadActivity" | "leadAction" | "proposal" | "baseOffer" | "discoverySession" | "discoveryQuestion" | "financeTransaction" | "financeRecurringRevenue" | "financeRecurringCost" | "financeCategory" | "financeAccount" | "project" | "projectMilestone" | "projectTask" | "projectTimeEntry" | "projectTimerSession" | "manualIntakeInvite" | "notification" | "emailLog" | "meetingBooking" | "auditAnalysis" | "adminUser" | "operationsAudit" | "auditStakeholder" | "operationsProcess" | "operationsTask" | "processStakeholder" | "auditSystem" | "processSystem" | "taskSystem" | "auditDataSource" | "processDataSource" | "auditBottleneck" | "auditBaselineMetric" | "auditScoringModel" | "automationOpportunity" | "opportunityBottleneck" | "opportunityBaselineMetric" | "auditPilotProposal" | "adminSession" | "adminAuthLog" | "companyLegalSettings" | "contract" | "contractTemplate" | "contractTemplateSection" | "contractSection" | "contractVersion" | "contractNumberSequence" | "contractPhase" | "contractDeliverable" | "contractPaymentMilestone" | "contractActivityLog"
+    modelProps: "lead" | "submission" | "leadActivity" | "leadAction" | "proposal" | "baseOffer" | "discoverySession" | "discoveryQuestion" | "financeTransaction" | "financeRecurringRevenue" | "financeRecurringCost" | "financeCategory" | "financeAccount" | "project" | "projectMilestone" | "projectTask" | "projectTimeEntry" | "projectTimerSession" | "manualIntakeInvite" | "notification" | "emailLog" | "meetingBooking" | "auditAnalysis" | "adminUser" | "operationsAudit" | "auditStakeholder" | "operationsProcess" | "operationsTask" | "processStakeholder" | "auditSystem" | "processSystem" | "taskSystem" | "auditDataSource" | "processDataSource" | "auditBottleneck" | "auditBaselineMetric" | "auditScoringModel" | "automationOpportunity" | "opportunityBottleneck" | "opportunityBaselineMetric" | "auditPilotProposal" | "auditPilotOutcome" | "auditPilotEconomics" | "auditPilotMetricResult" | "adminSession" | "adminAuthLog" | "companyLegalSettings" | "contract" | "contractTemplate" | "contractTemplateSection" | "contractSection" | "contractVersion" | "contractNumberSequence" | "contractPhase" | "contractDeliverable" | "contractPaymentMilestone" | "contractActivityLog" | "auditReportDelivery"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3491,6 +3495,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    AuditPilotOutcome: {
+      payload: Prisma.$AuditPilotOutcomePayload<ExtArgs>
+      fields: Prisma.AuditPilotOutcomeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AuditPilotOutcomeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotOutcomePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AuditPilotOutcomeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotOutcomePayload>
+        }
+        findFirst: {
+          args: Prisma.AuditPilotOutcomeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotOutcomePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AuditPilotOutcomeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotOutcomePayload>
+        }
+        findMany: {
+          args: Prisma.AuditPilotOutcomeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotOutcomePayload>[]
+        }
+        create: {
+          args: Prisma.AuditPilotOutcomeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotOutcomePayload>
+        }
+        createMany: {
+          args: Prisma.AuditPilotOutcomeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AuditPilotOutcomeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotOutcomePayload>[]
+        }
+        delete: {
+          args: Prisma.AuditPilotOutcomeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotOutcomePayload>
+        }
+        update: {
+          args: Prisma.AuditPilotOutcomeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotOutcomePayload>
+        }
+        deleteMany: {
+          args: Prisma.AuditPilotOutcomeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AuditPilotOutcomeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AuditPilotOutcomeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotOutcomePayload>[]
+        }
+        upsert: {
+          args: Prisma.AuditPilotOutcomeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotOutcomePayload>
+        }
+        aggregate: {
+          args: Prisma.AuditPilotOutcomeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAuditPilotOutcome>
+        }
+        groupBy: {
+          args: Prisma.AuditPilotOutcomeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AuditPilotOutcomeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AuditPilotOutcomeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AuditPilotOutcomeCountAggregateOutputType> | number
+        }
+      }
+    }
+    AuditPilotEconomics: {
+      payload: Prisma.$AuditPilotEconomicsPayload<ExtArgs>
+      fields: Prisma.AuditPilotEconomicsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AuditPilotEconomicsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotEconomicsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AuditPilotEconomicsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotEconomicsPayload>
+        }
+        findFirst: {
+          args: Prisma.AuditPilotEconomicsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotEconomicsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AuditPilotEconomicsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotEconomicsPayload>
+        }
+        findMany: {
+          args: Prisma.AuditPilotEconomicsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotEconomicsPayload>[]
+        }
+        create: {
+          args: Prisma.AuditPilotEconomicsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotEconomicsPayload>
+        }
+        createMany: {
+          args: Prisma.AuditPilotEconomicsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AuditPilotEconomicsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotEconomicsPayload>[]
+        }
+        delete: {
+          args: Prisma.AuditPilotEconomicsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotEconomicsPayload>
+        }
+        update: {
+          args: Prisma.AuditPilotEconomicsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotEconomicsPayload>
+        }
+        deleteMany: {
+          args: Prisma.AuditPilotEconomicsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AuditPilotEconomicsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AuditPilotEconomicsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotEconomicsPayload>[]
+        }
+        upsert: {
+          args: Prisma.AuditPilotEconomicsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotEconomicsPayload>
+        }
+        aggregate: {
+          args: Prisma.AuditPilotEconomicsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAuditPilotEconomics>
+        }
+        groupBy: {
+          args: Prisma.AuditPilotEconomicsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AuditPilotEconomicsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AuditPilotEconomicsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AuditPilotEconomicsCountAggregateOutputType> | number
+        }
+      }
+    }
+    AuditPilotMetricResult: {
+      payload: Prisma.$AuditPilotMetricResultPayload<ExtArgs>
+      fields: Prisma.AuditPilotMetricResultFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AuditPilotMetricResultFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotMetricResultPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AuditPilotMetricResultFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotMetricResultPayload>
+        }
+        findFirst: {
+          args: Prisma.AuditPilotMetricResultFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotMetricResultPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AuditPilotMetricResultFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotMetricResultPayload>
+        }
+        findMany: {
+          args: Prisma.AuditPilotMetricResultFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotMetricResultPayload>[]
+        }
+        create: {
+          args: Prisma.AuditPilotMetricResultCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotMetricResultPayload>
+        }
+        createMany: {
+          args: Prisma.AuditPilotMetricResultCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AuditPilotMetricResultCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotMetricResultPayload>[]
+        }
+        delete: {
+          args: Prisma.AuditPilotMetricResultDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotMetricResultPayload>
+        }
+        update: {
+          args: Prisma.AuditPilotMetricResultUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotMetricResultPayload>
+        }
+        deleteMany: {
+          args: Prisma.AuditPilotMetricResultDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AuditPilotMetricResultUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AuditPilotMetricResultUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotMetricResultPayload>[]
+        }
+        upsert: {
+          args: Prisma.AuditPilotMetricResultUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditPilotMetricResultPayload>
+        }
+        aggregate: {
+          args: Prisma.AuditPilotMetricResultAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAuditPilotMetricResult>
+        }
+        groupBy: {
+          args: Prisma.AuditPilotMetricResultGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AuditPilotMetricResultGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AuditPilotMetricResultCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AuditPilotMetricResultCountAggregateOutputType> | number
+        }
+      }
+    }
     AdminSession: {
       payload: Prisma.$AdminSessionPayload<ExtArgs>
       fields: Prisma.AdminSessionFieldRefs
@@ -4453,6 +4679,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    AuditReportDelivery: {
+      payload: Prisma.$AuditReportDeliveryPayload<ExtArgs>
+      fields: Prisma.AuditReportDeliveryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AuditReportDeliveryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditReportDeliveryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AuditReportDeliveryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditReportDeliveryPayload>
+        }
+        findFirst: {
+          args: Prisma.AuditReportDeliveryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditReportDeliveryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AuditReportDeliveryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditReportDeliveryPayload>
+        }
+        findMany: {
+          args: Prisma.AuditReportDeliveryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditReportDeliveryPayload>[]
+        }
+        create: {
+          args: Prisma.AuditReportDeliveryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditReportDeliveryPayload>
+        }
+        createMany: {
+          args: Prisma.AuditReportDeliveryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AuditReportDeliveryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditReportDeliveryPayload>[]
+        }
+        delete: {
+          args: Prisma.AuditReportDeliveryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditReportDeliveryPayload>
+        }
+        update: {
+          args: Prisma.AuditReportDeliveryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditReportDeliveryPayload>
+        }
+        deleteMany: {
+          args: Prisma.AuditReportDeliveryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AuditReportDeliveryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AuditReportDeliveryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditReportDeliveryPayload>[]
+        }
+        upsert: {
+          args: Prisma.AuditReportDeliveryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditReportDeliveryPayload>
+        }
+        aggregate: {
+          args: Prisma.AuditReportDeliveryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAuditReportDelivery>
+        }
+        groupBy: {
+          args: Prisma.AuditReportDeliveryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AuditReportDeliveryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AuditReportDeliveryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AuditReportDeliveryCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -5211,6 +5511,11 @@ export const AutomationOpportunityScalarFieldEnum = {
   risk: 'risk',
   whyThisMatters: 'whyThisMatters',
   recommendation: 'recommendation',
+  decision: 'decision',
+  decisionRationale: 'decisionRationale',
+  decisionOwner: 'decisionOwner',
+  decidedAt: 'decidedAt',
+  nextStep: 'nextStep',
   status: 'status',
   assessment: 'assessment',
   scoreSnapshot: 'scoreSnapshot',
@@ -5244,21 +5549,101 @@ export const AuditPilotProposalScalarFieldEnum = {
   id: 'id',
   opportunityId: 'opportunityId',
   projectId: 'projectId',
+  title: 'title',
+  objective: 'objective',
   problem: 'problem',
   scope: 'scope',
+  outOfScope: 'outOfScope',
   workflow: 'workflow',
   baselineSummary: 'baselineSummary',
+  successCriteria: 'successCriteria',
   targetBusinessOutcome: 'targetBusinessOutcome',
+  duration: 'duration',
+  owner: 'owner',
+  dependencies: 'dependencies',
+  risks: 'risks',
   expectedRoi: 'expectedRoi',
   implementationEstimate: 'implementationEstimate',
   recurringModel: 'recurringModel',
   successMetrics: 'successMetrics',
+  priceCents: 'priceCents',
+  currency: 'currency',
+  commercialNotes: 'commercialNotes',
+  proposedAt: 'proposedAt',
+  acceptedAt: 'acceptedAt',
+  acceptedBy: 'acceptedBy',
+  rejectedAt: 'rejectedAt',
+  rejectionReason: 'rejectionReason',
+  convertedAt: 'convertedAt',
   status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type AuditPilotProposalScalarFieldEnum = (typeof AuditPilotProposalScalarFieldEnum)[keyof typeof AuditPilotProposalScalarFieldEnum]
+
+
+export const AuditPilotOutcomeScalarFieldEnum = {
+  id: 'id',
+  pilotId: 'pilotId',
+  status: 'status',
+  summary: 'summary',
+  keyLearnings: 'keyLearnings',
+  issuesEncountered: 'issuesEncountered',
+  successAssessment: 'successAssessment',
+  successAssessmentNote: 'successAssessmentNote',
+  conclusion: 'conclusion',
+  nextStep: 'nextStep',
+  completedAt: 'completedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AuditPilotOutcomeScalarFieldEnum = (typeof AuditPilotOutcomeScalarFieldEnum)[keyof typeof AuditPilotOutcomeScalarFieldEnum]
+
+
+export const AuditPilotEconomicsScalarFieldEnum = {
+  id: 'id',
+  outcomeId: 'outcomeId',
+  timeSavingsMetricId: 'timeSavingsMetricId',
+  laborCostPerHourCents: 'laborCostPerHourCents',
+  laborCostQuality: 'laborCostQuality',
+  laborCostSource: 'laborCostSource',
+  laborCostNote: 'laborCostNote',
+  directMonthlySavingsCents: 'directMonthlySavingsCents',
+  directSavingsQuality: 'directSavingsQuality',
+  otherMonthlySavingsCents: 'otherMonthlySavingsCents',
+  ongoingMonthlyCostCents: 'ongoingMonthlyCostCents',
+  investmentCostCents: 'investmentCostCents',
+  currency: 'currency',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AuditPilotEconomicsScalarFieldEnum = (typeof AuditPilotEconomicsScalarFieldEnum)[keyof typeof AuditPilotEconomicsScalarFieldEnum]
+
+
+export const AuditPilotMetricResultScalarFieldEnum = {
+  id: 'id',
+  outcomeId: 'outcomeId',
+  baselineId: 'baselineId',
+  label: 'label',
+  baselineValue: 'baselineValue',
+  targetValue: 'targetValue',
+  actualValue: 'actualValue',
+  unit: 'unit',
+  period: 'period',
+  evidenceQuality: 'evidenceQuality',
+  source: 'source',
+  reference: 'reference',
+  note: 'note',
+  measuredAt: 'measuredAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AuditPilotMetricResultScalarFieldEnum = (typeof AuditPilotMetricResultScalarFieldEnum)[keyof typeof AuditPilotMetricResultScalarFieldEnum]
 
 
 export const AdminSessionScalarFieldEnum = {
@@ -5505,6 +5890,34 @@ export const ContractActivityLogScalarFieldEnum = {
 } as const
 
 export type ContractActivityLogScalarFieldEnum = (typeof ContractActivityLogScalarFieldEnum)[keyof typeof ContractActivityLogScalarFieldEnum]
+
+
+export const AuditReportDeliveryScalarFieldEnum = {
+  id: 'id',
+  auditId: 'auditId',
+  pilotProposalId: 'pilotProposalId',
+  reportType: 'reportType',
+  channel: 'channel',
+  status: 'status',
+  recipientName: 'recipientName',
+  recipientEmail: 'recipientEmail',
+  subject: 'subject',
+  message: 'message',
+  generatedAt: 'generatedAt',
+  sentAt: 'sentAt',
+  sentBy: 'sentBy',
+  providerMessageId: 'providerMessageId',
+  storageKey: 'storageKey',
+  fileName: 'fileName',
+  fileSizeBytes: 'fileSizeBytes',
+  fileSha256: 'fileSha256',
+  pdfBytes: 'pdfBytes',
+  failureReason: 'failureReason',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AuditReportDeliveryScalarFieldEnum = (typeof AuditReportDeliveryScalarFieldEnum)[keyof typeof AuditReportDeliveryScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -6227,6 +6640,20 @@ export type ListEnumStrategicFitFieldRefInput<$PrismaModel> = FieldRefInputType<
 
 
 /**
+ * Reference to a field of type 'OpportunityDecision'
+ */
+export type EnumOpportunityDecisionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OpportunityDecision'>
+    
+
+
+/**
+ * Reference to a field of type 'OpportunityDecision[]'
+ */
+export type ListEnumOpportunityDecisionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OpportunityDecision[]'>
+    
+
+
+/**
  * Reference to a field of type 'AutomationOpportunityStatus'
  */
 export type EnumAutomationOpportunityStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AutomationOpportunityStatus'>
@@ -6251,6 +6678,34 @@ export type EnumPilotProposalStatusFieldRefInput<$PrismaModel> = FieldRefInputTy
  * Reference to a field of type 'PilotProposalStatus[]'
  */
 export type ListEnumPilotProposalStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PilotProposalStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'PilotOutcomeStatus'
+ */
+export type EnumPilotOutcomeStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PilotOutcomeStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'PilotOutcomeStatus[]'
+ */
+export type ListEnumPilotOutcomeStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PilotOutcomeStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'PilotSuccessAssessment'
+ */
+export type EnumPilotSuccessAssessmentFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PilotSuccessAssessment'>
+    
+
+
+/**
+ * Reference to a field of type 'PilotSuccessAssessment[]'
+ */
+export type ListEnumPilotSuccessAssessmentFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PilotSuccessAssessment[]'>
     
 
 
@@ -6377,6 +6832,62 @@ export type EnumContractActivityTypeFieldRefInput<$PrismaModel> = FieldRefInputT
  * Reference to a field of type 'ContractActivityType[]'
  */
 export type ListEnumContractActivityTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ContractActivityType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ReportDeliveryType'
+ */
+export type EnumReportDeliveryTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReportDeliveryType'>
+    
+
+
+/**
+ * Reference to a field of type 'ReportDeliveryType[]'
+ */
+export type ListEnumReportDeliveryTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReportDeliveryType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ReportDeliveryChannel'
+ */
+export type EnumReportDeliveryChannelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReportDeliveryChannel'>
+    
+
+
+/**
+ * Reference to a field of type 'ReportDeliveryChannel[]'
+ */
+export type ListEnumReportDeliveryChannelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReportDeliveryChannel[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ReportDeliveryStatus'
+ */
+export type EnumReportDeliveryStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReportDeliveryStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ReportDeliveryStatus[]'
+ */
+export type ListEnumReportDeliveryStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReportDeliveryStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Bytes'
+ */
+export type BytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes'>
+    
+
+
+/**
+ * Reference to a field of type 'Bytes[]'
+ */
+export type ListBytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes[]'>
     
 
 
@@ -6544,6 +7055,9 @@ export type GlobalOmitConfig = {
   opportunityBottleneck?: Prisma.OpportunityBottleneckOmit
   opportunityBaselineMetric?: Prisma.OpportunityBaselineMetricOmit
   auditPilotProposal?: Prisma.AuditPilotProposalOmit
+  auditPilotOutcome?: Prisma.AuditPilotOutcomeOmit
+  auditPilotEconomics?: Prisma.AuditPilotEconomicsOmit
+  auditPilotMetricResult?: Prisma.AuditPilotMetricResultOmit
   adminSession?: Prisma.AdminSessionOmit
   adminAuthLog?: Prisma.AdminAuthLogOmit
   companyLegalSettings?: Prisma.CompanyLegalSettingsOmit
@@ -6557,6 +7071,7 @@ export type GlobalOmitConfig = {
   contractDeliverable?: Prisma.ContractDeliverableOmit
   contractPaymentMilestone?: Prisma.ContractPaymentMilestoneOmit
   contractActivityLog?: Prisma.ContractActivityLogOmit
+  auditReportDelivery?: Prisma.AuditReportDeliveryOmit
 }
 
 /* Types for Logging */

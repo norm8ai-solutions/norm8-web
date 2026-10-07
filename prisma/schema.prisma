@@ -701,6 +701,7 @@ model OperationsAudit {
   systems       AuditSystem[]
   dataSources   AuditDataSource[]
   opportunities AutomationOpportunity[]
+  reportDeliveries AuditReportDelivery[]
 
   @@index([leadId])
   @@index([ownerId])
@@ -937,6 +938,7 @@ model AuditBaselineMetric {
 
   process OperationsProcess @relation(fields: [processId], references: [id], onDelete: Cascade)
   opportunityLinks OpportunityBaselineMetric[]
+  pilotResults    AuditPilotMetricResult[]
 
   @@index([processId])
   @@index([metricKey])
@@ -984,6 +986,11 @@ model AutomationOpportunity {
   risk                             String?
   whyThisMatters                   String?
   recommendation                   String?
+  decision                         OpportunityDecision       @default(UNDECIDED)
+  decisionRationale                String?
+  decisionOwner                    String?
+  decidedAt                        DateTime?
+  nextStep                         String?
   status                           AutomationOpportunityStatus @default(DISCOVERED)
   assessment                       Json?
   scoreSnapshot                    Json?
@@ -1032,24 +1039,108 @@ model AuditPilotProposal {
   id                     String              @id @default(cuid())
   opportunityId          String              @unique
   projectId              String?
+  title                  String?
+  objective              String?
   problem                String
   scope                  String?
+  outOfScope             String?
   workflow               String?
   baselineSummary        String?
+  successCriteria        String?
   targetBusinessOutcome  String?
+  duration               String?
+  owner                  String?
+  dependencies           String?
+  risks                  String?
   expectedRoi            String?
   implementationEstimate String?
   recurringModel         String?
   successMetrics         Json?
+  priceCents             Int?
+  currency               String?             @default("EUR")
+  commercialNotes        String?
+  proposedAt             DateTime?
+  acceptedAt             DateTime?
+  acceptedBy             String?
+  rejectedAt             DateTime?
+  rejectionReason        String?
+  convertedAt            DateTime?
   status                 PilotProposalStatus @default(DRAFT)
   createdAt              DateTime            @default(now())
   updatedAt              DateTime            @updatedAt
 
   opportunity AutomationOpportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
   project     Project?              @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  outcome     AuditPilotOutcome?
+  reportDeliveries AuditReportDelivery[]
 
   @@index([projectId])
   @@index([status])
+}
+
+model AuditPilotOutcome {
+  id                    String                 @id @default(cuid())
+  pilotId               String                 @unique
+  status                PilotOutcomeStatus     @default(IN_PROGRESS)
+  summary               String?
+  keyLearnings          String?
+  issuesEncountered     String?
+  successAssessment     PilotSuccessAssessment @default(NOT_EVALUATED)
+  successAssessmentNote String?
+  conclusion            String?
+  nextStep              String?
+  completedAt           DateTime?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  pilot                 AuditPilotProposal     @relation(fields: [pilotId], references: [id], onDelete: Cascade)
+  metrics               AuditPilotMetricResult[]
+  economics             AuditPilotEconomics?
+}
+
+model AuditPilotEconomics {
+  id                         String              @id @default(cuid())
+  outcomeId                  String              @unique
+  timeSavingsMetricId        String?
+  laborCostPerHourCents      Int?
+  laborCostQuality           EvidenceQuality    @default(UNKNOWN)
+  laborCostSource            String?
+  laborCostNote              String?
+  directMonthlySavingsCents  Int?
+  directSavingsQuality       EvidenceQuality    @default(UNKNOWN)
+  otherMonthlySavingsCents   Int?
+  ongoingMonthlyCostCents    Int?
+  investmentCostCents        Int?
+  currency                   String             @default("EUR")
+  notes                      String?
+  createdAt                  DateTime           @default(now())
+  updatedAt                  DateTime           @updatedAt
+  outcome                    AuditPilotOutcome  @relation(fields: [outcomeId], references: [id], onDelete: Cascade)
+  timeSavingsMetric          AuditPilotMetricResult? @relation(fields: [timeSavingsMetricId], references: [id], onDelete: SetNull)
+  @@index([timeSavingsMetricId])
+}
+
+model AuditPilotMetricResult {
+  id                 String              @id @default(cuid())
+  outcomeId          String
+  baselineId         String?
+  label              String
+  baselineValue      Decimal?
+  targetValue        Decimal?
+  actualValue        Decimal?
+  unit               String?
+  period             String?
+  evidenceQuality    EvidenceQuality     @default(UNKNOWN)
+  source             String?
+  reference          String?
+  note               String?
+  measuredAt         DateTime?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  outcome            AuditPilotOutcome   @relation(fields: [outcomeId], references: [id], onDelete: Cascade)
+  baseline           AuditBaselineMetric? @relation(fields: [baselineId], references: [id], onDelete: SetNull)
+  economicsTimeSavings AuditPilotEconomics[]
+  @@index([outcomeId])
+  @@index([baselineId])
 }
 
 model AdminSession {
@@ -1471,12 +1562,46 @@ enum AutomationOpportunityStatus {
   REJECTED
 }
 
+enum OpportunityDecision {
+  UNDECIDED
+  PROCEED_TO_PILOT
+  NEEDS_MORE_VALIDATION
+  HOLD
+  REJECT
+}
+
 enum PilotProposalStatus {
   DRAFT
   PROPOSED
   ACCEPTED
   REJECTED
   CONVERTED_TO_PROJECT
+}
+
+enum PilotOutcomeStatus {
+  IN_PROGRESS
+  COMPLETED
+}
+enum PilotSuccessAssessment {
+  NOT_EVALUATED
+  MET
+  PARTIALLY_MET
+  NOT_MET
+}
+
+enum ReportDeliveryType {
+  AUDIT_REPORT
+  PILOT_REPORT
+}
+
+enum ReportDeliveryChannel {
+  EMAIL
+}
+
+enum ReportDeliveryStatus {
+  PENDING
+  SENT
+  FAILED
 }
 
 enum SubmissionType {
@@ -1847,4 +1972,36 @@ enum ContractActivityType {
   CONTRACT_FINANCIALS_UPDATED
   CONTRACT_CLAUSES_UPDATED
   CONTRACT_REVIEW_SAVED
+}
+
+model AuditReportDelivery {
+  id                String                @id @default(cuid())
+  auditId           String
+  pilotProposalId   String?
+  reportType        ReportDeliveryType
+  channel           ReportDeliveryChannel @default(EMAIL)
+  status            ReportDeliveryStatus   @default(PENDING)
+  recipientName     String?
+  recipientEmail    String
+  subject           String
+  message           String
+  generatedAt       DateTime
+  sentAt            DateTime?
+  sentBy            String?
+  providerMessageId String?
+  storageKey        String
+  fileName          String
+  fileSizeBytes     Int
+  fileSha256        String
+  pdfBytes          Bytes
+  failureReason     String?
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+
+  audit         OperationsAudit     @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  pilotProposal AuditPilotProposal? @relation(fields: [pilotProposalId], references: [id], onDelete: Cascade)
+
+  @@index([auditId, createdAt])
+  @@index([pilotProposalId, createdAt])
+  @@index([status])
 }

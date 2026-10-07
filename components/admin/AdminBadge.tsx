@@ -36,6 +36,7 @@ type BadgeTone = 'blue' | 'green' | 'yellow' | 'red' | 'purple' | 'slate' | 'cya
 type AdminBadgeProps = {
   children: string;
   tone?: BadgeTone;
+  title?: string;
 };
 
 /**
@@ -44,8 +45,8 @@ type AdminBadgeProps = {
  * @param props Badge text and optional visual tone.
  * @returns Styled badge element.
  */
-export function AdminBadge({ children, tone = 'slate' }: AdminBadgeProps) {
-  return <span className={`admin-badge admin-badge-${tone}`}>{children}</span>;
+export function AdminBadge({ children, tone = 'slate', title }: AdminBadgeProps) {
+  return <span title={title} className={`admin-badge admin-badge-${tone}`}>{children}</span>;
 }
 
 

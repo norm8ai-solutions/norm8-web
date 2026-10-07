@@ -247,6 +247,21 @@ export type OpportunityBaselineMetric = Prisma.OpportunityBaselineMetricModel
  */
 export type AuditPilotProposal = Prisma.AuditPilotProposalModel
 /**
+ * Model AuditPilotOutcome
+ * 
+ */
+export type AuditPilotOutcome = Prisma.AuditPilotOutcomeModel
+/**
+ * Model AuditPilotEconomics
+ * 
+ */
+export type AuditPilotEconomics = Prisma.AuditPilotEconomicsModel
+/**
+ * Model AuditPilotMetricResult
+ * 
+ */
+export type AuditPilotMetricResult = Prisma.AuditPilotMetricResultModel
+/**
  * Model AdminSession
  * 
  */
@@ -311,3 +326,8 @@ export type ContractPaymentMilestone = Prisma.ContractPaymentMilestoneModel
  * Contract-specific audit trail for commercial and document actions.
  */
 export type ContractActivityLog = Prisma.ContractActivityLogModel
+/**
+ * Model AuditReportDelivery
+ * 
+ */
+export type AuditReportDelivery = Prisma.AuditReportDeliveryModel

@@ -306,6 +306,7 @@ export type AuditBaselineMetricWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"AuditBaselineMetric"> | Date | string
   process?: Prisma.XOR<Prisma.OperationsProcessScalarRelationFilter, Prisma.OperationsProcessWhereInput>
   opportunityLinks?: Prisma.OpportunityBaselineMetricListRelationFilter
+  pilotResults?: Prisma.AuditPilotMetricResultListRelationFilter
 }
 
 export type AuditBaselineMetricOrderByWithRelationInput = {
@@ -327,6 +328,7 @@ export type AuditBaselineMetricOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   process?: Prisma.OperationsProcessOrderByWithRelationInput
   opportunityLinks?: Prisma.OpportunityBaselineMetricOrderByRelationAggregateInput
+  pilotResults?: Prisma.AuditPilotMetricResultOrderByRelationAggregateInput
 }
 
 export type AuditBaselineMetricWhereUniqueInput = Prisma.AtLeast<{
@@ -351,6 +353,7 @@ export type AuditBaselineMetricWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"AuditBaselineMetric"> | Date | string
   process?: Prisma.XOR<Prisma.OperationsProcessScalarRelationFilter, Prisma.OperationsProcessWhereInput>
   opportunityLinks?: Prisma.OpportunityBaselineMetricListRelationFilter
+  pilotResults?: Prisma.AuditPilotMetricResultListRelationFilter
 }, "id">
 
 export type AuditBaselineMetricOrderByWithAggregationInput = {
@@ -417,6 +420,7 @@ export type AuditBaselineMetricCreateInput = {
   updatedAt?: Date | string
   process: Prisma.OperationsProcessCreateNestedOneWithoutBaselinesInput
   opportunityLinks?: Prisma.OpportunityBaselineMetricCreateNestedManyWithoutBaselineInput
+  pilotResults?: Prisma.AuditPilotMetricResultCreateNestedManyWithoutBaselineInput
 }
 
 export type AuditBaselineMetricUncheckedCreateInput = {
@@ -437,6 +441,7 @@ export type AuditBaselineMetricUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   opportunityLinks?: Prisma.OpportunityBaselineMetricUncheckedCreateNestedManyWithoutBaselineInput
+  pilotResults?: Prisma.AuditPilotMetricResultUncheckedCreateNestedManyWithoutBaselineInput
 }
 
 export type AuditBaselineMetricUpdateInput = {
@@ -457,6 +462,7 @@ export type AuditBaselineMetricUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   process?: Prisma.OperationsProcessUpdateOneRequiredWithoutBaselinesNestedInput
   opportunityLinks?: Prisma.OpportunityBaselineMetricUpdateManyWithoutBaselineNestedInput
+  pilotResults?: Prisma.AuditPilotMetricResultUpdateManyWithoutBaselineNestedInput
 }
 
 export type AuditBaselineMetricUncheckedUpdateInput = {
@@ -477,6 +483,7 @@ export type AuditBaselineMetricUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   opportunityLinks?: Prisma.OpportunityBaselineMetricUncheckedUpdateManyWithoutBaselineNestedInput
+  pilotResults?: Prisma.AuditPilotMetricResultUncheckedUpdateManyWithoutBaselineNestedInput
 }
 
 export type AuditBaselineMetricCreateManyInput = {
@@ -615,6 +622,11 @@ export type AuditBaselineMetricScalarRelationFilter = {
   isNot?: Prisma.AuditBaselineMetricWhereInput
 }
 
+export type AuditBaselineMetricNullableScalarRelationFilter = {
+  is?: Prisma.AuditBaselineMetricWhereInput | null
+  isNot?: Prisma.AuditBaselineMetricWhereInput | null
+}
+
 export type AuditBaselineMetricCreateNestedManyWithoutProcessInput = {
   create?: Prisma.XOR<Prisma.AuditBaselineMetricCreateWithoutProcessInput, Prisma.AuditBaselineMetricUncheckedCreateWithoutProcessInput> | Prisma.AuditBaselineMetricCreateWithoutProcessInput[] | Prisma.AuditBaselineMetricUncheckedCreateWithoutProcessInput[]
   connectOrCreate?: Prisma.AuditBaselineMetricCreateOrConnectWithoutProcessInput | Prisma.AuditBaselineMetricCreateOrConnectWithoutProcessInput[]
@@ -671,6 +683,22 @@ export type AuditBaselineMetricUpdateOneRequiredWithoutOpportunityLinksNestedInp
   update?: Prisma.XOR<Prisma.XOR<Prisma.AuditBaselineMetricUpdateToOneWithWhereWithoutOpportunityLinksInput, Prisma.AuditBaselineMetricUpdateWithoutOpportunityLinksInput>, Prisma.AuditBaselineMetricUncheckedUpdateWithoutOpportunityLinksInput>
 }
 
+export type AuditBaselineMetricCreateNestedOneWithoutPilotResultsInput = {
+  create?: Prisma.XOR<Prisma.AuditBaselineMetricCreateWithoutPilotResultsInput, Prisma.AuditBaselineMetricUncheckedCreateWithoutPilotResultsInput>
+  connectOrCreate?: Prisma.AuditBaselineMetricCreateOrConnectWithoutPilotResultsInput
+  connect?: Prisma.AuditBaselineMetricWhereUniqueInput
+}
+
+export type AuditBaselineMetricUpdateOneWithoutPilotResultsNestedInput = {
+  create?: Prisma.XOR<Prisma.AuditBaselineMetricCreateWithoutPilotResultsInput, Prisma.AuditBaselineMetricUncheckedCreateWithoutPilotResultsInput>
+  connectOrCreate?: Prisma.AuditBaselineMetricCreateOrConnectWithoutPilotResultsInput
+  upsert?: Prisma.AuditBaselineMetricUpsertWithoutPilotResultsInput
+  disconnect?: Prisma.AuditBaselineMetricWhereInput | boolean
+  delete?: Prisma.AuditBaselineMetricWhereInput | boolean
+  connect?: Prisma.AuditBaselineMetricWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AuditBaselineMetricUpdateToOneWithWhereWithoutPilotResultsInput, Prisma.AuditBaselineMetricUpdateWithoutPilotResultsInput>, Prisma.AuditBaselineMetricUncheckedUpdateWithoutPilotResultsInput>
+}
+
 export type AuditBaselineMetricCreateWithoutProcessInput = {
   id?: string
   metricKey: string
@@ -688,6 +716,7 @@ export type AuditBaselineMetricCreateWithoutProcessInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   opportunityLinks?: Prisma.OpportunityBaselineMetricCreateNestedManyWithoutBaselineInput
+  pilotResults?: Prisma.AuditPilotMetricResultCreateNestedManyWithoutBaselineInput
 }
 
 export type AuditBaselineMetricUncheckedCreateWithoutProcessInput = {
@@ -707,6 +736,7 @@ export type AuditBaselineMetricUncheckedCreateWithoutProcessInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   opportunityLinks?: Prisma.OpportunityBaselineMetricUncheckedCreateNestedManyWithoutBaselineInput
+  pilotResults?: Prisma.AuditPilotMetricResultUncheckedCreateNestedManyWithoutBaselineInput
 }
 
 export type AuditBaselineMetricCreateOrConnectWithoutProcessInput = {
@@ -774,6 +804,7 @@ export type AuditBaselineMetricCreateWithoutOpportunityLinksInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   process: Prisma.OperationsProcessCreateNestedOneWithoutBaselinesInput
+  pilotResults?: Prisma.AuditPilotMetricResultCreateNestedManyWithoutBaselineInput
 }
 
 export type AuditBaselineMetricUncheckedCreateWithoutOpportunityLinksInput = {
@@ -793,6 +824,7 @@ export type AuditBaselineMetricUncheckedCreateWithoutOpportunityLinksInput = {
   observedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  pilotResults?: Prisma.AuditPilotMetricResultUncheckedCreateNestedManyWithoutBaselineInput
 }
 
 export type AuditBaselineMetricCreateOrConnectWithoutOpportunityLinksInput = {
@@ -828,6 +860,7 @@ export type AuditBaselineMetricUpdateWithoutOpportunityLinksInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   process?: Prisma.OperationsProcessUpdateOneRequiredWithoutBaselinesNestedInput
+  pilotResults?: Prisma.AuditPilotMetricResultUpdateManyWithoutBaselineNestedInput
 }
 
 export type AuditBaselineMetricUncheckedUpdateWithoutOpportunityLinksInput = {
@@ -847,6 +880,103 @@ export type AuditBaselineMetricUncheckedUpdateWithoutOpportunityLinksInput = {
   observedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pilotResults?: Prisma.AuditPilotMetricResultUncheckedUpdateManyWithoutBaselineNestedInput
+}
+
+export type AuditBaselineMetricCreateWithoutPilotResultsInput = {
+  id?: string
+  metricKey: string
+  label: string
+  numericValue?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  textValue?: string | null
+  unit?: string | null
+  period?: string | null
+  evidenceQuality?: $Enums.EvidenceQuality
+  source?: string | null
+  evidence?: string | null
+  evidenceReference?: string | null
+  notes?: string | null
+  observedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  process: Prisma.OperationsProcessCreateNestedOneWithoutBaselinesInput
+  opportunityLinks?: Prisma.OpportunityBaselineMetricCreateNestedManyWithoutBaselineInput
+}
+
+export type AuditBaselineMetricUncheckedCreateWithoutPilotResultsInput = {
+  id?: string
+  processId: string
+  metricKey: string
+  label: string
+  numericValue?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  textValue?: string | null
+  unit?: string | null
+  period?: string | null
+  evidenceQuality?: $Enums.EvidenceQuality
+  source?: string | null
+  evidence?: string | null
+  evidenceReference?: string | null
+  notes?: string | null
+  observedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  opportunityLinks?: Prisma.OpportunityBaselineMetricUncheckedCreateNestedManyWithoutBaselineInput
+}
+
+export type AuditBaselineMetricCreateOrConnectWithoutPilotResultsInput = {
+  where: Prisma.AuditBaselineMetricWhereUniqueInput
+  create: Prisma.XOR<Prisma.AuditBaselineMetricCreateWithoutPilotResultsInput, Prisma.AuditBaselineMetricUncheckedCreateWithoutPilotResultsInput>
+}
+
+export type AuditBaselineMetricUpsertWithoutPilotResultsInput = {
+  update: Prisma.XOR<Prisma.AuditBaselineMetricUpdateWithoutPilotResultsInput, Prisma.AuditBaselineMetricUncheckedUpdateWithoutPilotResultsInput>
+  create: Prisma.XOR<Prisma.AuditBaselineMetricCreateWithoutPilotResultsInput, Prisma.AuditBaselineMetricUncheckedCreateWithoutPilotResultsInput>
+  where?: Prisma.AuditBaselineMetricWhereInput
+}
+
+export type AuditBaselineMetricUpdateToOneWithWhereWithoutPilotResultsInput = {
+  where?: Prisma.AuditBaselineMetricWhereInput
+  data: Prisma.XOR<Prisma.AuditBaselineMetricUpdateWithoutPilotResultsInput, Prisma.AuditBaselineMetricUncheckedUpdateWithoutPilotResultsInput>
+}
+
+export type AuditBaselineMetricUpdateWithoutPilotResultsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  metricKey?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  numericValue?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  textValue?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  period?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evidenceQuality?: Prisma.EnumEvidenceQualityFieldUpdateOperationsInput | $Enums.EvidenceQuality
+  source?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evidence?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evidenceReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  observedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  process?: Prisma.OperationsProcessUpdateOneRequiredWithoutBaselinesNestedInput
+  opportunityLinks?: Prisma.OpportunityBaselineMetricUpdateManyWithoutBaselineNestedInput
+}
+
+export type AuditBaselineMetricUncheckedUpdateWithoutPilotResultsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  processId?: Prisma.StringFieldUpdateOperationsInput | string
+  metricKey?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  numericValue?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  textValue?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  period?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evidenceQuality?: Prisma.EnumEvidenceQualityFieldUpdateOperationsInput | $Enums.EvidenceQuality
+  source?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evidence?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evidenceReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  observedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  opportunityLinks?: Prisma.OpportunityBaselineMetricUncheckedUpdateManyWithoutBaselineNestedInput
 }
 
 export type AuditBaselineMetricCreateManyProcessInput = {
@@ -884,6 +1014,7 @@ export type AuditBaselineMetricUpdateWithoutProcessInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   opportunityLinks?: Prisma.OpportunityBaselineMetricUpdateManyWithoutBaselineNestedInput
+  pilotResults?: Prisma.AuditPilotMetricResultUpdateManyWithoutBaselineNestedInput
 }
 
 export type AuditBaselineMetricUncheckedUpdateWithoutProcessInput = {
@@ -903,6 +1034,7 @@ export type AuditBaselineMetricUncheckedUpdateWithoutProcessInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   opportunityLinks?: Prisma.OpportunityBaselineMetricUncheckedUpdateManyWithoutBaselineNestedInput
+  pilotResults?: Prisma.AuditPilotMetricResultUncheckedUpdateManyWithoutBaselineNestedInput
 }
 
 export type AuditBaselineMetricUncheckedUpdateManyWithoutProcessInput = {
@@ -930,10 +1062,12 @@ export type AuditBaselineMetricUncheckedUpdateManyWithoutProcessInput = {
 
 export type AuditBaselineMetricCountOutputType = {
   opportunityLinks: number
+  pilotResults: number
 }
 
 export type AuditBaselineMetricCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   opportunityLinks?: boolean | AuditBaselineMetricCountOutputTypeCountOpportunityLinksArgs
+  pilotResults?: boolean | AuditBaselineMetricCountOutputTypeCountPilotResultsArgs
 }
 
 /**
@@ -951,6 +1085,13 @@ export type AuditBaselineMetricCountOutputTypeDefaultArgs<ExtArgs extends runtim
  */
 export type AuditBaselineMetricCountOutputTypeCountOpportunityLinksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.OpportunityBaselineMetricWhereInput
+}
+
+/**
+ * AuditBaselineMetricCountOutputType without action
+ */
+export type AuditBaselineMetricCountOutputTypeCountPilotResultsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AuditPilotMetricResultWhereInput
 }
 
 
@@ -973,6 +1114,7 @@ export type AuditBaselineMetricSelect<ExtArgs extends runtime.Types.Extensions.I
   updatedAt?: boolean
   process?: boolean | Prisma.OperationsProcessDefaultArgs<ExtArgs>
   opportunityLinks?: boolean | Prisma.AuditBaselineMetric$opportunityLinksArgs<ExtArgs>
+  pilotResults?: boolean | Prisma.AuditBaselineMetric$pilotResultsArgs<ExtArgs>
   _count?: boolean | Prisma.AuditBaselineMetricCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["auditBaselineMetric"]>
 
@@ -1039,6 +1181,7 @@ export type AuditBaselineMetricOmit<ExtArgs extends runtime.Types.Extensions.Int
 export type AuditBaselineMetricInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   process?: boolean | Prisma.OperationsProcessDefaultArgs<ExtArgs>
   opportunityLinks?: boolean | Prisma.AuditBaselineMetric$opportunityLinksArgs<ExtArgs>
+  pilotResults?: boolean | Prisma.AuditBaselineMetric$pilotResultsArgs<ExtArgs>
   _count?: boolean | Prisma.AuditBaselineMetricCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AuditBaselineMetricIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1053,6 +1196,7 @@ export type $AuditBaselineMetricPayload<ExtArgs extends runtime.Types.Extensions
   objects: {
     process: Prisma.$OperationsProcessPayload<ExtArgs>
     opportunityLinks: Prisma.$OpportunityBaselineMetricPayload<ExtArgs>[]
+    pilotResults: Prisma.$AuditPilotMetricResultPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1467,6 +1611,7 @@ export interface Prisma__AuditBaselineMetricClient<T, Null = never, ExtArgs exte
   readonly [Symbol.toStringTag]: "PrismaPromise"
   process<T extends Prisma.OperationsProcessDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OperationsProcessDefaultArgs<ExtArgs>>): Prisma.Prisma__OperationsProcessClient<runtime.Types.Result.GetResult<Prisma.$OperationsProcessPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   opportunityLinks<T extends Prisma.AuditBaselineMetric$opportunityLinksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AuditBaselineMetric$opportunityLinksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OpportunityBaselineMetricPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  pilotResults<T extends Prisma.AuditBaselineMetric$pilotResultsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AuditBaselineMetric$pilotResultsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditPilotMetricResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1934,6 +2079,30 @@ export type AuditBaselineMetric$opportunityLinksArgs<ExtArgs extends runtime.Typ
   take?: number
   skip?: number
   distinct?: Prisma.OpportunityBaselineMetricScalarFieldEnum | Prisma.OpportunityBaselineMetricScalarFieldEnum[]
+}
+
+/**
+ * AuditBaselineMetric.pilotResults
+ */
+export type AuditBaselineMetric$pilotResultsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AuditPilotMetricResult
+   */
+  select?: Prisma.AuditPilotMetricResultSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AuditPilotMetricResult
+   */
+  omit?: Prisma.AuditPilotMetricResultOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AuditPilotMetricResultInclude<ExtArgs> | null
+  where?: Prisma.AuditPilotMetricResultWhereInput
+  orderBy?: Prisma.AuditPilotMetricResultOrderByWithRelationInput | Prisma.AuditPilotMetricResultOrderByWithRelationInput[]
+  cursor?: Prisma.AuditPilotMetricResultWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AuditPilotMetricResultScalarFieldEnum | Prisma.AuditPilotMetricResultScalarFieldEnum[]
 }
 
 /**
